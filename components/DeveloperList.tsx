@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ExternalLink } from "lucide-react"
+import Image from "next/image"
 
 interface Developer {
   login: string
@@ -27,7 +28,9 @@ export default function DeveloperList({ developers, isLoading }: DeveloperListPr
         <Card key={developer.login}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <img
+              <Image
+              width={32}
+              height={32}
                 src={developer.avatar_url || "/placeholder.svg"}
                 alt={developer.login}
                 className="w-8 h-8 rounded-full"
