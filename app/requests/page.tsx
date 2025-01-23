@@ -114,10 +114,10 @@ export default function RequestsPage() {
                         width={40}
                         height={40}
                         src={request.sender?.avatar_url || "/placeholder.svg"}
-                        alt={request.sender?.login}
+                        alt={request.sender?.name}
                         className="w-10 h-10 rounded-full"
                       />
-                      {request.sender?.login}
+                      {request.sender?.name}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -148,14 +148,21 @@ export default function RequestsPage() {
                 <Card key={request._id}>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-4">
-                      <Image 
-                      height={40}
-                      width={40}
-                        src={request.receiver?.avatar_url || request.receiverAvatar}
-                        alt={request.receiver?.login}
+                      <Image
+                        height={40}
+                        width={40}
+                        src={
+                          request.receiver?.avatar_url || request.receiverAvatar
+                        }
+                        alt={request.receiver?.name}
                         className="w-10 h-10 rounded-full"
                       />
-                      {request.receiver?.login}
+                      {request.receiver?.name}
+                      {!request.receiver && (
+                        <span className="text-muted-foreground">
+                          Not in CodeNearby {request.receiverGithubUrl}
+                        </span>
+                      )}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
