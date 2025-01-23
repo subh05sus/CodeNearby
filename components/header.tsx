@@ -21,14 +21,22 @@ export default function Header() {
             <li>
               <Link href="/search">Search</Link>
             </li>
+            <li>
+              <Link href="/connect">Connect</Link>
+            </li>
             {session ? (
               <>
                 <li>
-                  <img
-                    src={session.user.image || "/placeholder.svg"}
-                    alt={session.user.name}
-                    className="w-8 h-8 rounded-full"
-                  />
+                  <Link href="/requests">Requests</Link>
+                </li>
+                <li>
+                  <Link href="/profile">
+                    <img
+                      src={session?.user?.image || "/placeholder.svg"}
+                      alt={session?.user?.name || ""}
+                      className="w-8 h-8 rounded-full"
+                    />
+                  </Link>
                 </li>
                 <li>
                   <Button variant="outline" onClick={() => signOut()}>
