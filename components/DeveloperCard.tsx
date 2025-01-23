@@ -5,7 +5,7 @@ import TinderCard from "react-tinder-card"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { ExternalLink, ThumbsDown, ThumbsUp } from "lucide-react"
-
+import Image from "next/image"
 interface Developer {
   login: string
   avatar_url: string
@@ -39,7 +39,7 @@ export default function DeveloperCard({ developers, onSwipe }: DeveloperCardProp
               <CardDescription>{developer.bio}</CardDescription>
             </CardHeader>
             <CardContent>
-              <img
+              <Image width={64} height={64}
                 src={developer.avatar_url || "/placeholder.svg"}
                 alt={developer.login}
                 className="w-full h-64 object-cover rounded-md"

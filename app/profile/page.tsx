@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
-
+import Image from "next/image"
 export default function Profile() {
   const { data: session } = useSession()
   const [profile, setProfile] = useState<any>(null)
@@ -37,7 +37,7 @@ export default function Profile() {
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Your Profile</h1>
       <div className="bg-white shadow-md rounded-lg p-6">
-        <img
+        <Image width={64} height={64}
           src={profile.avatar_url || "/placeholder.svg"}
           alt={profile.login}
           className="w-32 h-32 rounded-full mx-auto mb-4"

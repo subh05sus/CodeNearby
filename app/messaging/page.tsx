@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
-
+import Image from "next/image"
 import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
@@ -37,7 +37,7 @@ export default function Messaging() {
         {friends.map((friend: any) => (
           <li key={friend.id} className="bg-white shadow-md rounded-lg p-4">
             <Link href={`/messaging/${friend.id}`} className="flex items-center">
-              <img
+              <Image width={64} height={64}
                 src={friend.avatar_url || "/placeholder.svg"}
                 alt={friend.login}
                 className="w-12 h-12 rounded-full mr-4"
