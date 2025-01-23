@@ -1,67 +1,75 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useSession } from "next-auth/react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useToast } from "@/components/ui/use-toast"
-import { Loader2 } from "lucide-react"
-import type { FriendRequest, Developer } from "@/types"
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
+import type { FriendRequest, Developer } from "@/types";
+import Image from "next/image";
 
 export default function RequestsPage() {
-  const { data: session } = useSession()
-  const [loading, setLoading] = useState(true)
-  const [requests, setRequests] = useState<(FriendRequest & { sender?: Developer; receiver?: Developer })[]>([])
-  const { toast } = useToast()
+  const { data: session } = useSession();
+  const [loading, setLoading] = useState(true);
+  const [requests, setRequests] = useState<
+    (FriendRequest & { sender?: Developer; receiver?: Developer })[]
+  >([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (session) {
-      fetchRequests()
+      fetchRequests();
     }
-  }, [session])
+  }, [session]);
 
   const fetchRequests = async () => {
     try {
-      const response = await fetch("/api/friends/requests")
-      const data = await response.json()
-      setRequests(data)
+      const response = await fetch("/api/friends/requests");
+      const data = await response.json();
+      setRequests(data);
     } catch {
       toast({
         title: "Error",
         description: "Failed to fetch requests.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const handleRequest = async (requestId: string, action: "accept" | "reject") => {
+  const handleRequest = async (
+    requestId: string,
+    action: "accept" | "reject"
+  ) => {
     try {
       const response = await fetch(`/api/friends/request/${requestId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: action === "accept" ? "accepted" : "rejected" }),
-      })
+        body: JSON.stringify({
+          status: action === "accept" ? "accepted" : "rejected",
+        }),
+      });
 
-      if (!response.ok) throw new Error("Failed to update request")
+      if (!response.ok) throw new Error("Failed to update request");
 
       toast({
         title: "Success",
         description: `Request ${action}ed successfully!`,
-      })
+      });
 
-      fetchRequests()
-    } catch  {
+      fetchRequests();
+    } catch {
       toast({
         title: "Error",
         description: `Failed to ${action} request.`,
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   if (!session) {
     return (
@@ -69,7 +77,7 @@ export default function RequestsPage() {
         <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
         <p>You need to be signed in to view requests.</p>
       </div>
-    )
+    );
   }
 
   if (loading) {
@@ -77,7 +85,7 @@ export default function RequestsPage() {
       <div className="flex justify-center items-center min-h-[50vh]">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
-    )
+    );
   }
 
   return (
@@ -93,12 +101,18 @@ export default function RequestsPage() {
         <TabsContent value="received">
           <div className="grid gap-4">
             {requests
-              .filter((req) => req.receiverId === session?.user?.id && req.status === "pending")
+              .filter(
+                (req) =>
+                  req.receiverId === session?.user?.id &&
+                  req.status === "pending"
+              )
               .map((request) => (
                 <Card key={request._id}>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-4">
-                      <img
+                      <Image
+                        width={40}
+                        height={40}
                         src={request.sender?.avatar_url || "/placeholder.svg"}
                         alt={request.sender?.login}
                         className="w-10 h-10 rounded-full"
@@ -108,8 +122,15 @@ export default function RequestsPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="flex gap-2">
-                      <Button onClick={() => handleRequest(request._id!, "accept")}>Accept</Button>
-                      <Button variant="outline" onClick={() => handleRequest(request._id!, "reject")}>
+                      <Button
+                        onClick={() => handleRequest(request._id!, "accept")}
+                      >
+                        Accept
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => handleRequest(request._id!, "reject")}
+                      >
                         Reject
                       </Button>
                     </div>
@@ -127,8 +148,10 @@ export default function RequestsPage() {
                 <Card key={request._id}>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-4">
-                      <img
-                        src={request.receiver?.avatar_url || "/placeholder.svg"}
+                      <Image 
+                      height={40}
+                      width={40}
+                        src={request.receiver?.avatar_url || request.receiverAvatar}
                         alt={request.receiver?.login}
                         className="w-10 h-10 rounded-full"
                       />
@@ -136,7 +159,9 @@ export default function RequestsPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <span className="capitalize text-muted-foreground">Status: {request.status}</span>
+                    <span className="capitalize text-muted-foreground">
+                      Status: {request.status}
+                    </span>
                   </CardContent>
                 </Card>
               ))}
@@ -144,6 +169,5 @@ export default function RequestsPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
-

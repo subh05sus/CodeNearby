@@ -99,7 +99,7 @@ export default function ConnectPage() {
     }
   };
 
-  const onSwipe = async (direction: string, developerId: string) => {
+  const onSwipe = async (direction: string, developer: Developer) => {
     if (!session) return;
 
     if (direction === "right") {
@@ -107,7 +107,7 @@ export default function ConnectPage() {
         const response = await fetch("/api/friends/request", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ receiverId: developerId }),
+          body: JSON.stringify(developer),
         });
 
         if (!response.ok) throw new Error("Failed to send friend request");
@@ -127,7 +127,7 @@ export default function ConnectPage() {
       }
     }
 
-    setDevelopers((prev) => prev.filter((dev) => dev.id !== developerId));
+    setDevelopers((prev) => prev.filter((dev) => dev.id !== developer.id));
   };
 
   if (!session) {
@@ -180,10 +180,10 @@ export default function ConnectPage() {
       </div>
 
       <div className="relative w-full h-[60vh]">
-        {developers.map((developer) => (
+        {developers.reverse().map((developer) => (
           <TinderCard
             key={developer.id}
-            onSwipe={(dir) => onSwipe(dir, developer.id)}
+            onSwipe={(dir) => onSwipe(dir, developer)}
             preventSwipe={["up", "down"]}
             className="absolute w-full h-full"
           >
@@ -216,7 +216,7 @@ export default function ConnectPage() {
           className="rounded-full p-6"
           onClick={() =>
             developers.length > 0 &&
-            onSwipe("left", developers[developers.length - 1].id)
+            onSwipe("left", developers[developers.length - 1])
           }
         >
           <X className="h-6 w-6 text-destructive" />
@@ -226,7 +226,7 @@ export default function ConnectPage() {
           className="rounded-full p-6"
           onClick={() =>
             developers.length > 0 &&
-            onSwipe("right", developers[developers.length - 1].id)
+            onSwipe("right", developers[developers.length - 1])
           }
         >
           <Heart className="h-6 w-6" />

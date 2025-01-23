@@ -10,15 +10,17 @@ export async function POST(request: Request) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
-
-    const { receiverId } = await request.json()
+    const developerData = await request.json()
+    console.log(developerData)
     const client = await clientPromise
     const db = client.db()
 
     // Check if request already exists
     const existingRequest = await db.collection("friendRequests").findOne({
       senderId: session.user.id,
-      receiverId,
+      receiverId:developerData.id,
+      receiverGithubUrl: developerData.html_url,
+      receiverAvatar: developerData.avatar_url,
       status: "pending",
     })
 
@@ -29,7 +31,9 @@ export async function POST(request: Request) {
     // Create new request
     const result = await db.collection("friendRequests").insertOne({
       senderId: session.user.id,
-      receiverId,
+      receiverId:developerData.id,
+      receiverGithubUrl: developerData.html_url,
+      receiverAvatar: developerData.avatar_url,
       status: "pending",
       createdAt: new Date(),
     })
