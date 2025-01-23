@@ -1,77 +1,90 @@
-"use client"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useToast } from "@/components/ui/use-toast"
-import { Loader2 } from "lucide-react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
+import Image from "next/image";
 
 export default function ExplorePage() {
-  const [location, setLocation] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [developers, setDevelopers] = useState([])
-  const { toast } = useToast()
+  const [location, setLocation] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [developers, setDevelopers] = useState<
+    { id: number; login: string; avatar_url?: string; html_url: string }[]
+  >([]);
+  const { toast } = useToast();
 
-  const handleLocationSubmit = async (e) => {
-    e.preventDefault()
-    if (!location) return
-    setLoading(true)
+  const handleLocationSubmit = async (e: any) => {
+    e.preventDefault();
+    if (!location) return;
+    setLoading(true);
     try {
-      const response = await fetch(`/api/developers?location=${encodeURIComponent(location)}`)
-      const data = await response.json()
-      setDevelopers(data)
-    } catch (error) {
+      const response = await fetch(
+        `/api/developers?location=${encodeURIComponent(location)}`
+      );
+      const data = await response.json();
+      setDevelopers(data);
+    } catch {
       toast({
         title: "Error",
         description: "Failed to fetch developers. Please try again.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleGeolocation = () => {
     if ("geolocation" in navigator) {
-      setLoading(true)
+      setLoading(true);
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           try {
-            const { latitude, longitude } = position.coords
+            const { latitude, longitude } = position.coords;
             const response = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
-            )
-            const data = await response.json()
-            const locationName = data.address.city || data.address.town || data.address.village || data.address.county
-            setLocation(locationName)
-            handleLocationSubmit({ preventDefault: () => {} })
-          } catch (error) {
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+            );
+            const data = await response.json();
+            const locationName =
+              data.address.city ||
+              data.address.town ||
+              data.address.village ||
+              data.address.county;
+            setLocation(locationName);
+            handleLocationSubmit({ preventDefault: () => {} });
+          } catch {
             toast({
               title: "Error",
-              description: "Failed to get your location. Please enter it manually.",
+              description:
+                "Failed to get your location. Please enter it manually.",
               variant: "destructive",
-            })
-            setLoading(false)
+            });
+            setLoading(false);
           }
         },
         () => {
           toast({
             title: "Error",
-            description: "Failed to get your location. Please enter it manually.",
+            description:
+              "Failed to get your location. Please enter it manually.",
             variant: "destructive",
-          })
-          setLoading(false)
-        },
-      )
+          });
+          setLoading(false);
+        }
+      );
     } else {
       toast({
         title: "Error",
-        description: "Geolocation is not supported by your browser. Please enter your location manually.",
+        description:
+          "Geolocation is not supported by your browser. Please enter your location manually.",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   return (
     <div>
@@ -88,7 +101,12 @@ export default function ExplorePage() {
           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Search
         </Button>
-        <Button type="button" onClick={handleGeolocation} disabled={loading} variant="outline">
+        <Button
+          type="button"
+          onClick={handleGeolocation}
+          disabled={loading}
+          variant="outline"
+        >
           Use My Location
         </Button>
       </form>
@@ -99,7 +117,13 @@ export default function ExplorePage() {
               <CardTitle>{dev.login}</CardTitle>
             </CardHeader>
             <CardContent>
-              <img src={dev.avatar_url || "/placeholder.svg"} alt={dev.login} className="w-20 h-20 rounded-full mb-2" />
+              <Image
+                height={32}
+                width={32}
+                src={dev.avatar_url || "/placeholder.svg"}
+                alt={dev.login}
+                className="w-20 h-20 rounded-full mb-2"
+              />
               <a
                 href={dev.html_url}
                 target="_blank"
@@ -113,6 +137,5 @@ export default function ExplorePage() {
         ))}
       </div>
     </div>
-  )
+  );
 }
-
