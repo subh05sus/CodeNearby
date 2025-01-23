@@ -2,10 +2,11 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
 import { ObjectId } from "mongodb"
 import clientPromise from "@/lib/mongodb"
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
   try {
-    const session = await getServerSession()
+    const session = await getServerSession(authOptions)
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }

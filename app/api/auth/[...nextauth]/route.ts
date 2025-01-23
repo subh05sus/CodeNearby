@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { default as NextAuth } from "next-auth/next"
 import GithubProvider from "next-auth/providers/github"
-import { MongoDBAdapter } from "@auth/mongodb-adapter"
+import { MongoDBAdapter } from "@next-auth/mongodb-adapter"
 import clientPromise from "@/lib/mongodb"
 
 declare module "next-auth" {
@@ -16,7 +16,7 @@ declare module "next-auth" {
   }
 }
 
-const handler = NextAuth({
+export const authOptions = {
   adapter: MongoDBAdapter(clientPromise),
   providers: [
     GithubProvider({
@@ -42,7 +42,9 @@ const handler = NextAuth({
     signIn: "/auth/signin",
     error: "/auth/error",
   },
-})
+}
+
+const handler = NextAuth(authOptions)
 
 export { handler as GET, handler as POST }
 
