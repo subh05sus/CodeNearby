@@ -1,18 +1,20 @@
+import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <h1 className="text-4xl font-bold mb-8">GitHub Nearby</h1>
-      <div className="flex space-x-4">
-        <Link href="/connect" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Connect
-        </Link>
-        <Link href="/search" className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-          Search
-        </Link>
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <h1 className="text-4xl font-bold mb-6">Welcome to CodeNearby</h1>
+      <p className="text-xl mb-8 text-center">Discover GitHub developers in your area or search for specific users.</p>
+      <div className="space-x-4">
+        <Button asChild>
+          <Link href="/explore">Explore Nearby</Link>
+        </Button>
+        <Button asChild variant="outline">
+          <Link href="/search">Search Users</Link>
+        </Button>
       </div>
-    </main>
+    </div>
   )
 }
 

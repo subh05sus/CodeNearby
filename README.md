@@ -1,25 +1,36 @@
-# CodeNearby
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## 🚀 About the Project
+## Getting Started
 
-**CodeNearby** is an innovative platform designed to bring developers closer, literally! By leveraging GitHub profiles and geolocation, we aim to foster meaningful connections among developers based on proximity and shared interests. 
+First, run the development server:
 
-Whether you're looking for a coding buddy, seeking collaborators for your next big idea, or simply want to network, **CodeNearby** will be your go-to platform.
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
----
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## 🌟 Features (Coming Soon)
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-- 🌐 **GitHub Login**: Secure login with GitHub OAuth.
-- 📍 **Location-Based Matching**: Find developers near you.
-- 💻 **Interest-Based Filtering**: Match with like-minded developers based on repositories, languages, and contributions.
-- 💬 **Messaging**: Connect and chat with fellow developers.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
----
+## Learn More
 
-## 🛠️ Project Status
+To learn more about Next.js, take a look at the following resources:
 
-**Under Construction** 🚧  
-We're actively developing the platform and excited to share updates soon. Stay tuned!
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
----
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
