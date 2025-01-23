@@ -30,7 +30,6 @@ const handler = NextAuth({
       },
     }),
   ],
-  // callbacks: {
   callbacks: {
     async session({ session, user }: { session: any; user: any }) {
       if (session.user) {
