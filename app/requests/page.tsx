@@ -109,7 +109,7 @@ export default function RequestsPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-4">
                       <Image
-                        src={request.otherUser?.image || "/placeholder.svg"}
+                        src={request.otherUser?.image || request.otherUser?.avatar_url || "/placeholder.svg"}
                         alt={request.otherUser?.name || ""}
                         width={40}
                         height={40}
@@ -143,7 +143,7 @@ export default function RequestsPage() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-4">
                       <Image
-                        src={request.otherUser?.image || "/placeholder.svg"}
+                        src={request.otherUser?.avatar_url|| request.otherUser?.image||"/placeholder.svg"}
                         alt={request.otherUser?.name || ""}
                         width={40}
                         height={40}

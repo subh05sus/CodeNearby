@@ -8,7 +8,6 @@ export interface Developer {
   location?: string
   email?: string
   githubId?: number
-  
 }
 
 export interface FriendRequest {
@@ -23,7 +22,8 @@ export interface FriendRequest {
   receiver?: {
     id: number;
     login: string;
-    avatar_url: string;
+    avatar_url?: string;
+    image?: string;
     html_url: string;
   };
   otherUser?: {
@@ -31,6 +31,7 @@ export interface FriendRequest {
     name?: string;
     email?: string;
     image?: string;
+    avatar_url?: string;
     emailVerified?: Date | null;
     githubBio?: string | null;
     githubId?: number;

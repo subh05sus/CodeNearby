@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { signIn, signOut, useSession } from "next-auth/react"
+import Image from "next/image"
 
 export default function Header() {
   const { data: session } = useSession()
@@ -31,10 +32,12 @@ export default function Header() {
                 </li>
                 <li>
                   <Link href="/profile">
-                    <img
+                    <Image
                       src={session?.user?.image || "/placeholder.svg"}
                       alt={session?.user?.name || ""}
                       className="w-8 h-8 rounded-full"
+                      width={32}
+                      height={32}
                     />
                   </Link>
                 </li>
