@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client"
 
 import { useEffect, useState } from "react"
@@ -21,6 +20,7 @@ export default function RequestsPage() {
     if (session) {
       fetchRequests()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session])
 
   const fetchRequests = async () => {
@@ -28,7 +28,7 @@ export default function RequestsPage() {
       const response = await fetch("/api/friends/requests")
       const data = await response.json()
       setRequests(data)
-    } catch {
+    } catch  {
       toast({
         title: "Error",
         description: "Failed to fetch requests.",
@@ -55,7 +55,7 @@ export default function RequestsPage() {
       })
 
       fetchRequests()
-    } catch {
+    } catch  {
       toast({
         title: "Error",
         description: `Failed to ${action} request.`,
@@ -103,19 +103,19 @@ export default function RequestsPage() {
         <TabsContent value="received">
           <div className="grid gap-4">
             {requests
-              .filter((req) => req.receiverGithubId === session.user.githubId && req.status === "pending")
+              .filter((req) => req.receiverGithubId === session?.user?.githubId && req.status === "pending")
               .map((request) => (
                 <Card key={request._id}>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-4">
                       <Image
-                        src={request.sender?.image || "/placeholder.svg"}
-                        alt={request.sender?.name || ""}
+                        src={request.otherUser?.image || "/placeholder.svg"}
+                        alt={request.otherUser?.name || ""}
                         width={40}
                         height={40}
                         className="rounded-full"
                       />
-                      {request.sender?.name || request.senderGithubUsername}
+                      {request.otherUser?.githubUsername || request.senderGithubUsername}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -137,19 +137,19 @@ export default function RequestsPage() {
         <TabsContent value="sent">
           <div className="grid gap-4">
             {requests
-              .filter((req) => req.senderId === session.user.id)
+              .filter((req) => req.senderId === session?.user?.id)
               .map((request) => (
                 <Card key={request._id}>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-4">
                       <Image
-                        src={request.receiver?.image || request.receiver?.avatar_url || "/placeholder.svg"}
-                        alt={request.receiver?.name || request.receiverGithubUsername || ""}
+                        src={request.otherUser?.image || "/placeholder.svg"}
+                        alt={request.otherUser?.name || ""}
                         width={40}
                         height={40}
                         className="rounded-full"
                       />
-                      {request.receiver?.name || request.receiverGithubUsername}
+                      {request.otherUser?.githubUsername || request.receiverGithubUsername}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -159,9 +159,9 @@ export default function RequestsPage() {
                     <p className="text-sm text-muted-foreground">
                       Status: <span className="capitalize">{request.status}</span>
                     </p>
-                    {request.receiverInCodeNearby ? (
+                    {request.otherUserInCodeNearby ? (
                       <a
-                        href={request.receiver?.githubProfileUrl || request.receiver?.html_url}
+                        href={request.otherUser?.githubProfileUrl || "#"}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-500 hover:underline mt-2 inline-block"
