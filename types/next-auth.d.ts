@@ -11,6 +11,11 @@ declare module "next-auth" {
       githubUsername: string
       githubId: string
       friends: any[]
+      githubLocation?: string
+      githubBio?: string
+      githubProfileUrl?: string
+      
+
     }
   }
 
