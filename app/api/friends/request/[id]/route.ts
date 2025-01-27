@@ -18,7 +18,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     const requestId = new ObjectId(params.id)
     const friendRequest = await db.collection("friendRequests").findOne({
       _id: requestId,
-      receiverId: session.user.id,
+      receiverGithubId: Number.parseInt(session.user.githubId),
     })
 
     if (!friendRequest) {
@@ -31,10 +31,16 @@ export async function PATCH(request: Request, { params }: { params: { id: string
       // Add users to each other's friends list
       await db
         .collection("users")
-        .updateOne({ _id: new ObjectId(session.user.id) }, { $addToSet: { friends: friendRequest.senderId } })
+        .updateOne(
+          { githubId: Number.parseInt(session.user.githubId) },
+          { $addToSet: { friends: friendRequest.senderGithubId } },
+        )
       await db
         .collection("users")
-        .updateOne({ _id: new ObjectId(friendRequest.senderId) }, { $addToSet: { friends: session.user.id } })
+        .updateOne(
+          { githubId: friendRequest.senderGithubId },
+          { $addToSet: { friends: Number.parseInt(session.user.githubId) } },
+        )
     }
 
     return NextResponse.json({ success: true })

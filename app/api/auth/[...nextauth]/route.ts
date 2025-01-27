@@ -13,6 +13,7 @@ declare module "next-auth" {
       image: string
       githubUsername: string
       githubId: string
+      friends: any[]
     }
   }
 }
@@ -36,31 +37,48 @@ export const authOptions = {
         const client = await clientPromise
         const db = client.db()
 
-        // Update or create user with additional GitHub data
-        await db.collection("users").updateOne(
-          { email: user.email },
-          {
-            $set: {
-              name: user.name,
-              email: user.email,
-              image: user.image,
-              githubId: profile.id,
-              githubUsername: profile.login,
-              githubProfileUrl: profile.html_url,
-              githubBio: profile.bio,
-              githubLocation: profile.location,
+        const existingUser = await db.collection("users").findOne({ email: user.email })
+
+        if (existingUser) {
+          // Update existing user
+          await db.collection("users").updateOne(
+            { email: user.email },
+            {
+              $set: {
+                name: user.name,
+                email: user.email,
+                image: user.image,
+                githubId: profile.id,
+                githubUsername: profile.login,
+                githubProfileUrl: profile.html_url,
+                githubBio: profile.bio,
+                githubLocation: profile.location,
+              },
             },
-          },
-          { upsert: true },
-        )
+          )
+        } else {
+          // Create new user
+          await db.collection("users").insertOne({
+            name: user.name,
+            email: user.email,
+            image: user.image,
+            githubId: profile.id,
+            githubUsername: profile.login,
+            githubProfileUrl: profile.html_url,
+            githubBio: profile.bio,
+            githubLocation: profile.location,
+            friends: [],
+          })
+        }
       }
       return true
     },
-    async session({ session, user }:{ session: any; user: any }) {
+    async session({ session, user }: { session: any; user: any }) {
       if (session.user) {
         session.user.id = user.id
         session.user.githubUsername = user.githubUsername
         session.user.githubId = user.githubId
+        session.user.friends = user.friends || []
       }
       return session
     },

@@ -1,90 +1,81 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+"use client"
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
-import { Loader2 } from "lucide-react";
-import Image from "next/image";
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useToast } from "@/components/ui/use-toast"
+import { Loader2, MapPin, GitBranch, Users } from "lucide-react"
+import Link from "next/link"
+import Image from "next/image"
+import { Developer } from "@/types"
 
 export default function ExplorePage() {
-  const [location, setLocation] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [developers, setDevelopers] = useState<
-    { id: number; login: string; avatar_url?: string; html_url: string }[]
-  >([]);
-  const { toast } = useToast();
+  const [location, setLocation] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [developers, setDevelopers] = useState<Developer[]>([])
+  const { toast } = useToast()
 
-  const handleLocationSubmit = async (e: any) => {
-    e.preventDefault();
-    if (!location) return;
-    setLoading(true);
+  const handleLocationSubmit = async (e:any) => {
+    e.preventDefault()
+    if (!location) return
+    setLoading(true)
     try {
-      const response = await fetch(
-        `/api/developers?location=${encodeURIComponent(location)}`
-      );
-      const data = await response.json();
-      setDevelopers(data);
-    } catch {
+      const response = await fetch(`/api/developers?location=${encodeURIComponent(location)}`)
+      const data = await response.json()
+      setDevelopers(data)
+    } catch  {
       toast({
         title: "Error",
         description: "Failed to fetch developers. Please try again.",
         variant: "destructive",
-      });
+      })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleGeolocation = () => {
     if ("geolocation" in navigator) {
-      setLoading(true);
+      setLoading(true)
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           try {
-            const { latitude, longitude } = position.coords;
+            const { latitude, longitude } = position.coords
             const response = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-            );
-            const data = await response.json();
-            const locationName =
-              data.address.city ||
-              data.address.town ||
-              data.address.village ||
-              data.address.county;
-            setLocation(locationName);
-            handleLocationSubmit({ preventDefault: () => {} });
-          } catch {
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
+            )
+            const data = await response.json()
+            const locationName = data.address.city || data.address.town || data.address.village || data.address.county
+            setLocation(locationName)
+            handleLocationSubmit({ preventDefault: () => {} })
+          } catch  {
             toast({
               title: "Error",
-              description:
-                "Failed to get your location. Please enter it manually.",
+              description: "Failed to get your location. Please enter it manually.",
               variant: "destructive",
-            });
-            setLoading(false);
+            })
+            setLoading(false)
           }
         },
         () => {
           toast({
             title: "Error",
-            description:
-              "Failed to get your location. Please enter it manually.",
+            description: "Failed to get your location. Please enter it manually.",
             variant: "destructive",
-          });
-          setLoading(false);
-        }
-      );
+          })
+          setLoading(false)
+        },
+      )
     } else {
       toast({
         title: "Error",
-        description:
-          "Geolocation is not supported by your browser. Please enter your location manually.",
+        description: "Geolocation is not supported by your browser. Please enter your location manually.",
         variant: "destructive",
-      });
+      })
     }
-  };
+  }
 
   return (
     <div>
@@ -101,12 +92,7 @@ export default function ExplorePage() {
           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Search
         </Button>
-        <Button
-          type="button"
-          onClick={handleGeolocation}
-          disabled={loading}
-          variant="outline"
-        >
+        <Button type="button" onClick={handleGeolocation} disabled={loading} variant="outline">
           Use My Location
         </Button>
       </form>
@@ -117,25 +103,41 @@ export default function ExplorePage() {
               <CardTitle>{dev.login}</CardTitle>
             </CardHeader>
             <CardContent>
-              <Image
-                height={32}
-                width={32}
-                src={dev.avatar_url || "/placeholder.svg"}
-                alt={dev.login}
-                className="w-20 h-20 rounded-full mb-2"
+              <Image  src={dev.avatar_url || "/placeholder.svg"} alt={dev.login} className="w-20 h-20 rounded-full mb-2" 
+                height={80} width={80}
               />
-              <a
+              {dev.name && <p className="text-sm text-muted-foreground mb-1">{dev.name}</p>}
+              {dev.location && (
+                <p className="text-sm text-muted-foreground mb-1">
+                  <MapPin className="inline-block w-4 h-4 mr-1" />
+                  {dev.location}
+                </p>
+              )}
+              {dev.public_repos && (
+                <p className="text-sm text-muted-foreground mb-1">
+                  <GitBranch className="inline-block w-4 h-4 mr-1" />
+                  {dev.public_repos} public repos
+                </p>
+              )}
+              {dev.followers && (
+                <p className="text-sm text-muted-foreground mb-1">
+                  <Users className="inline-block w-4 h-4 mr-1" />
+                  {dev.followers} followers
+                </p>
+              )}
+              <Link
                 href={dev.html_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-500 hover:underline"
+                className="text-blue-500 hover:underline mt-2 inline-block"
               >
                 View Profile
-              </a>
+              </Link>
             </CardContent>
           </Card>
         ))}
       </div>
     </div>
-  );
+  )
 }
+

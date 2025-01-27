@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface Developer {
+  public_repos: any
+  followers: any
   id: string
   login: string
   avatar_url: string
@@ -46,7 +49,7 @@ export interface FriendRequest {
 
 export interface UserProfile extends Developer {
   githubId: number
-  friends: string[]
+  friends:any[]
   sentRequests: string[]
   receivedRequests: string[]
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // import NextAuth from "next-auth"
 
 declare module "next-auth" {
@@ -9,6 +10,7 @@ declare module "next-auth" {
       image: string
       githubUsername: string
       githubId: string
+      friends: any[]
     }
   }
 
@@ -22,6 +24,7 @@ declare module "next-auth" {
     githubProfileUrl: string
     githubBio?: string
     githubLocation?: string
+    friends: any[]
   }
 }
 

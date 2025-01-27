@@ -29,10 +29,18 @@ export async function GET() {
       })
       .toArray()
 
+    const friendIds = user.friends || []
+    const friends = await db
+      .collection("users")
+      .find({ githubId: { $in: friendIds } })
+      .project({ githubId: 1, githubUsername: 1 })
+      .toArray()
+
     const profile = {
       ...user,
-      sentRequests: friendRequests.filter((req) => req.senderId === session!.user!.id).map((req) => req.receiverId),
-      receivedRequests: friendRequests.filter((req) => req.receiverId === session!.user!.id).map((req) => req.senderId),
+      friends: friends.map((friend) => ({ githubId: friend.githubId, githubUsername: friend.githubUsername })),
+      sentRequests: friendRequests.filter((req) => req.senderId === session.user.id).map((req) => req.receiverId),
+      receivedRequests: friendRequests.filter((req) => req.receiverId === session.user.id).map((req) => req.senderId),
     }
 
     return NextResponse.json(profile)
