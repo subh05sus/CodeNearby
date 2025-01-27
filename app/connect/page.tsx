@@ -52,7 +52,7 @@ export default function ConnectPage() {
           !userProfile?.sentRequests.includes(dev.id) &&
           dev.id !== session?.user?.id,
       )
-      setDevelopers(filteredDevelopers)
+      setDevelopers(filteredDevelopers.reverse())
     } catch {
       toast({
         title: "Error",
@@ -137,7 +137,7 @@ export default function ConnectPage() {
     )
   }
 
-  if (!location) {
+  if (developers.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] max-w-md mx-auto">
         <h1 className="text-2xl font-bold mb-6">Find Developers Nearby</h1>
