@@ -10,9 +10,10 @@ import { Input } from "@/components/ui/input"
 import { useToast } from "@/components/ui/use-toast"
 import { Loader2, X, Heart, MapPin, GitBranch, Users } from "lucide-react"
 import type { Developer, UserProfile } from "@/types"
+import { Session } from "next-auth"
 
 export default function ConnectPage() {
-  const { data: session } = useSession()
+  const { data: session } = useSession() as { data: Session | null }
   const [location, setLocation] = useState("")
   const [loading, setLoading] = useState(false)
   const [developers, setDevelopers] = useState<Developer[]>([])

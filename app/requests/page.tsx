@@ -9,9 +9,10 @@ import { useToast } from "@/components/ui/use-toast"
 import { Loader2 } from "lucide-react"
 import Image from "next/image"
 import type { FriendRequest } from "@/types"
+import { Session } from "next-auth"
 
 export default function RequestsPage() {
-  const { data: session } = useSession()
+  const { data: session } = useSession() as { data: Session | null }
   const [loading, setLoading] = useState(true)
   const [requests, setRequests] = useState<FriendRequest[]>([])
   const { toast } = useToast()
@@ -103,7 +104,7 @@ export default function RequestsPage() {
         <TabsContent value="received">
           <div className="grid gap-4">
             {requests
-              .filter((req) => req.receiverGithubId === session?.user?.githubId && req.status === "pending")
+              .filter((req) => String(req.receiverGithubId) === String(session?.user?.githubId) && req.status === "pending")
               .map((request) => (
                 <Card key={request._id}>
                   <CardHeader>

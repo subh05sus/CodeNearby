@@ -21,9 +21,10 @@ import Image from "next/image";
 import Link from "next/link";
 import type { UserProfile } from "@/types";
 import { fetchGitHubActivities } from "@/lib/github";
+import { Session } from "next-auth";
 
 export default function ProfilePage() {
-  const { data: session } = useSession();
+  const { data: session } = useSession() as { data: Session | null }
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [stats, setStats] = useState<any>(null);
