@@ -1,26 +1,24 @@
 import { NextResponse } from "next/server"
-import clientPromise from "@/lib/mongodb"
 import { getServerSession } from "next-auth/next"
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"
+import clientPromise from "@/lib/mongodb"
+import type { Developer } from "@/types"
+import { authOptions } from "../../auth/[...nextauth]/route"
 
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions)
-    console.log("session", session)
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
-    const developerData = await request.json()
-    console.log(developerData)
+
+    const developer: Developer = await request.json()
     const client = await clientPromise
     const db = client.db()
 
     // Check if request already exists
     const existingRequest = await db.collection("friendRequests").findOne({
       senderId: session.user.id,
-      receiverId:developerData.id,
-      receiverGithubUrl: developerData.html_url,
-      receiverAvatar: developerData.avatar_url,
+      receiverGithubId: developer.id,
       status: "pending",
     })
 
@@ -28,14 +26,27 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Request already sent" }, { status: 400 })
     }
 
+    // Check if the receiver is in our database
+    const receiverUser = await db.collection("users").findOne({
+      githubId: developer.id.toString(),
+    })
+
     // Create new request
     const result = await db.collection("friendRequests").insertOne({
       senderId: session.user.id,
-      receiverId:developerData.id,
-      receiverGithubUrl: developerData.html_url,
-      receiverAvatar: developerData.avatar_url,
+      senderGithubId: session.user.githubId,
+      senderGithubUsername: session.user.githubUsername,
+      receiverGithubId: developer.id,
+      receiverGithubUsername: developer.login,
       status: "pending",
       createdAt: new Date(),
+      receiver: {
+        id: developer.id,
+        login: developer.login,
+        avatar_url: developer.avatar_url,
+        html_url: developer.html_url,
+      },
+      receiverInCodeNearby: !!receiverUser,
     })
 
     return NextResponse.json({ id: result.insertedId })

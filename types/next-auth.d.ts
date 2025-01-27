@@ -7,8 +7,21 @@ declare module "next-auth" {
       name: string
       email: string
       image: string
-      login: string
+      githubUsername: string
+      githubId: string
     }
+  }
+
+  interface User {
+    id: string
+    name: string
+    email: string
+    image: string
+    githubId: string
+    githubUsername: string
+    githubProfileUrl: string
+    githubBio?: string
+    githubLocation?: string
   }
 }
 

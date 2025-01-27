@@ -11,7 +11,8 @@ declare module "next-auth" {
       name: string
       email: string
       image: string
-      login: string
+      githubUsername: string
+      githubId: string
     }
   }
 }
@@ -25,15 +26,41 @@ export const authOptions = {
       authorization: {
         params: {
           scope: "read:user user:email",
-          redirect_uri: process.env.GITHUB_REDIRECT_URI,
         },
       },
     }),
   ],
   callbacks: {
-    async session({ session, user }: { session: any; user: any }) {
+    async signIn({ user, account, profile }: { user: any; account: any | null; profile?: any }) {
+      if (account?.provider === "github" && profile) {
+        const client = await clientPromise
+        const db = client.db()
+
+        // Update or create user with additional GitHub data
+        await db.collection("users").updateOne(
+          { email: user.email },
+          {
+            $set: {
+              name: user.name,
+              email: user.email,
+              image: user.image,
+              githubId: profile.id,
+              githubUsername: profile.login,
+              githubProfileUrl: profile.html_url,
+              githubBio: profile.bio,
+              githubLocation: profile.location,
+            },
+          },
+          { upsert: true },
+        )
+      }
+      return true
+    },
+    async session({ session, user }:{ session: any; user: any }) {
       if (session.user) {
         session.user.id = user.id
+        session.user.githubUsername = user.githubUsername
+        session.user.githubId = user.githubId
       }
       return session
     },

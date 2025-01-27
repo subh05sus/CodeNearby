@@ -3,7 +3,6 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
 import clientPromise from "@/lib/mongodb"
 import { authOptions } from "../../auth/[...nextauth]/route"
-import { ObjectId } from "mongodb"
 
 export async function GET() {
   try {
@@ -18,32 +17,36 @@ export async function GET() {
     const requests = await db
       .collection("friendRequests")
       .find({
-        $or: [{ senderId: session.user.id }, { receiverId: session.user.id }],
+        $or: [{ senderId: session.user.id }, { receiverGithubId: session.user.githubId }],
       })
       .toArray()
 
-      
-      console.log("requests", requests)
     // Fetch user details for senders and receivers
-    const userIds = Array.from(new Set(requests.map((r) => r.senderId).concat(requests.map((r) => r.receiverId))))
-      .filter(id => typeof id === 'string')
-      // console.log("userIds", userIds)
+    const githubIds = Array.from(
+      new Set(requests.map((r) => r.senderGithubId).concat(requests.map((r) => r.receiverGithubId))),
+    )
     const users = await db
       .collection("users")
-      .find({ _id: { $in: userIds.map(id => new ObjectId(id)) } })
+      .find({ githubId: { $in: githubIds } })
       .toArray()
-      // console.log("users", users)
-    const usersMap = users.reduce<Record<string, any>>((acc, user) => {
-      acc[user._id.toString()] = user
+
+    const usersMap = users.reduce<{ [key: string]: any }>((acc, user) => {
+      acc[user.githubId] = user
       return acc
     }, {})
-    // console.log("usersMap", usersMap)
+
     const enrichedRequests = requests.map((request) => ({
       ...request,
-      sender: usersMap[request.senderId],
-      receiver: usersMap[request.receiverId],
+      sender: request.senderId === session.user.id ? null : usersMap[request.senderGithubId],
+      receiver: usersMap[request.receiverGithubId] || {
+        id: request.receiverGithubId,
+        login: request.receiverGithubUsername,
+        avatar_url: request.receiver?.avatar_url,
+        html_url: request.receiver?.html_url,
+      },
+      receiverInCodeNearby: !!usersMap[request.receiverGithubId],
     }))
-    console.log("enrichedRequests", enrichedRequests)
+
     return NextResponse.json(enrichedRequests)
   } catch (error) {
     console.error("Error fetching friend requests:", error)
