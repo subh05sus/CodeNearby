@@ -50,7 +50,7 @@ export default function MessagePage() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]); // Removed unnecessary dependency: messages
+  }, [messages]); 
 
   const initializeSocket = () => {
     socketRef.current = io("http://localhost:5000", {
