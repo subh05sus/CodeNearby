@@ -1,114 +1,153 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client"
+"use client";
 
-import { useEffect, useState, useRef } from "react"
-import { useParams } from "next/navigation"
-import { useSession } from "next-auth/react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { useToast } from "@/components/ui/use-toast"
-import { Loader2, Send } from "lucide-react"
-import io from "socket.io-client"
+import { useEffect, useState, useRef } from "react";
+import { useParams } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { Loader2, Send } from "lucide-react";
+import io from "socket.io-client";
+import { Session } from "next-auth";
 
 interface Message {
-  id: string
-  senderId: string
-  receiverId: string
-  content: string
-  timestamp: Date
+  id: string;
+  senderId: string;
+  receiverId: string;
+  content: string;
+  timestamp: Date;
 }
+const minimum = (a: string, b: string) => (a < b ? a : b);
+const maximum = (a: string, b: string) => (a > b ? a : b);
 
 export default function MessagePage() {
-  const params = useParams()
-  const { data: session } = useSession() as { data: Session | null }
-  const [loading, setLoading] = useState(true)
-  const [messages, setMessages] = useState<Message[]>([])
-  const [inputMessage, setInputMessage] = useState("")
-  const [friend, setFriend] = useState<any>(null)
-  const { toast } = useToast()
-  const socketRef = useRef<any>(null)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const params = useParams();
+  const { data: session } = useSession() as { data: Session | null };
+  const [loading, setLoading] = useState(true);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputMessage, setInputMessage] = useState("");
+  const [friend, setFriend] = useState<any>(null);
+  const { toast } = useToast();
+  const socketRef = useRef<any>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (session && params.id) {
-      fetchMessages()
-      fetchFriend()
-      initializeSocket()
+      fetchMessages();
+      fetchFriend();
+      initializeSocket();
     }
 
     return () => {
       if (socketRef.current) {
-        socketRef.current.disconnect()
+        socketRef.current.disconnect();
       }
-    }
-  }, [session, params.id])
+    };
+  }, [params.id]);
 
   useEffect(() => {
-    scrollToBottom()
-  }, []) // Removed unnecessary dependency: messages
+    scrollToBottom();
+  }, []); // Removed unnecessary dependency: messages
 
   const initializeSocket = () => {
-    socketRef.current = io("http://localhost:5000")
+    socketRef.current = io("http://localhost:5000", {
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
     socketRef.current.on("connect", () => {
-      console.log("Connected to socket server")
-      socketRef.current.emit("join", params.id)
-    })
+      console.log("Connected to socket server");
+      console.log(
+        "Joining room:",
+        minimum(
+          params.id as string,
+          String(session?.user?.githubId).toString()
+        ) +
+          maximum(
+            params.id as string,
+            String(session?.user?.githubId).toString()
+          )
+      );
+      socketRef.current.emit(
+        "join",
+        minimum(
+          params.id as string,
+          String(session?.user?.githubId).toString()
+        ) +
+          maximum(
+            params.id as string,
+            String(session?.user?.githubId).toString()
+          )
+      );
+    });
 
     socketRef.current.on("message", (message: Message) => {
-      setMessages((prevMessages) => [...prevMessages, message])
-    })
-  }
+      setMessages((prevMessages) => [...prevMessages, message]);
+    });
+  };
 
   const fetchMessages = async () => {
     try {
-      const response = await fetch(`/api/messages/${params.id}`)
-      const data = await response.json()
-      setMessages(data)
-    } catch  {
+      const response = await fetch(`/api/messages/${params.id}`);
+      const data = await response.json();
+      setMessages(data);
+    } catch {
       toast({
         title: "Error",
         description: "Failed to fetch messages.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const fetchFriend = async () => {
     try {
-      const response = await fetch(`/api/user/${params.id}`)
-      const data = await response.json()
-      setFriend(data)
-    } catch  {
+      const response = await fetch(`/api/user/${params.id}`);
+      const data = await response.json();
+      setFriend(data);
+    } catch {
       toast({
         title: "Error",
         description: "Failed to fetch friend details.",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   const sendMessage = () => {
-    if (inputMessage.trim() === "") return
+    if (inputMessage.trim() === "") return;
 
     const messageData = {
-      roomId: params.id,
+      roomId:
+        minimum(
+          params.id as string,
+          String(session?.user?.githubId).toString()
+        ) +
+        maximum(
+          params.id as string,
+          String(session?.user?.githubId).toString()
+        ),
       senderId: String(session?.user?.githubId),
-      receiverId: params.id,
+      receiverId: (params.id as string).replace(
+        String(session?.user?.githubId),
+        ""
+      ),
       content: inputMessage,
-    }
-    console.log("Sending message:", messageData)
+    };
+    console.log("Sending message:", messageData);
 
-    socketRef.current.emit("message", messageData)
-    setInputMessage("")
-  }
+    socketRef.current.emit("message", messageData);
+    setInputMessage("");
+  };
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   if (!session) {
     return (
@@ -116,7 +155,7 @@ export default function MessagePage() {
         <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
         <p>You need to be signed in to view messages.</p>
       </div>
-    )
+    );
   }
 
   if (loading) {
@@ -124,7 +163,7 @@ export default function MessagePage() {
       <div className="flex justify-center items-center min-h-[50vh]">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
-    )
+    );
   }
 
   return (
@@ -138,11 +177,17 @@ export default function MessagePage() {
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`mb-2 ${message.senderId === String(session.user?.githubId) ? "text-right" : "text-left"}`}
+                className={`mb-2 ${
+                  message.senderId === String(session.user?.githubId)
+                    ? "text-right"
+                    : "text-left"
+                }`}
               >
                 <span
                   className={`inline-block p-2 rounded-lg ${
-                    message.senderId === String(session.user?.githubId) ? "bg-blue-500 text-white" : "bg-gray-200"
+                    message.senderId === String(session.user?.githubId)
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200"
                   }`}
                 >
                   {message.content}
@@ -167,6 +212,5 @@ export default function MessagePage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-
