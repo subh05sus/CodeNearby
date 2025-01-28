@@ -13,7 +13,8 @@ interface Friend {
   id: string
   name: string
   githubUsername: string
-  avatar_url: string
+  image: string
+  githubId: number
 }
 
 export default function MessagesPage() {
@@ -66,14 +67,14 @@ export default function MessagesPage() {
       <h1 className="text-3xl font-bold mb-6">Messages</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {friends.map((friend) => (
-          <Link key={friend.id} href={`/messages/${friend.id}`}>
+          <Link key={friend.id} href={`/messages/${friend.githubId}`}>
             <Card className="hover:bg-gray-100 transition-colors duration-200">
               <CardHeader>
                 <CardTitle className="flex items-center gap-4">
                   <Image
                   height={40}
                     width={40}
-                    src={friend.avatar_url || "/placeholder.svg"}
+                    src={friend.image || "/placeholder.svg"}
                     alt={friend.name}
                     className="w-10 h-10 rounded-full"
                   />

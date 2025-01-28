@@ -9,9 +9,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, Send } from "lucide-react";
+import { ArrowLeft, Loader2, Send } from "lucide-react";
 import io from "socket.io-client";
 import { Session } from "next-auth";
+import Image from "next/image";
+import Link from "next/link";
 
 interface Message {
   id: string;
@@ -170,7 +172,26 @@ export default function MessagePage() {
     <div className="max-w-4xl mx-auto">
       <Card>
         <CardHeader>
-          <CardTitle>{friend?.name || "Chat"}</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Link href="/messages">
+            <ArrowLeft className="h-6 w-6" />
+            </Link>
+            <Link href={`/user/${friend.githubId}`} className="flex items-center gap-2">
+
+            <Image
+            src={friend?.image || "/placeholder.svg"}
+            alt={friend?.name || ""}
+            className="w-10 h-10 rounded-full"
+            height={40}
+            width={40}
+            
+            />
+            <span>
+
+            {friend?.name || "Chat"}
+            </span>
+            </Link>
+            </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-[60vh] overflow-y-auto mb-4">

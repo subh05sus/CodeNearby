@@ -4,7 +4,7 @@ import clientPromise from "@/lib/mongodb"
 import { ObjectId } from "mongodb"
 import { authOptions } from "../auth/[...nextauth]/route"
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user?.id) {
@@ -25,10 +25,10 @@ export async function GET(request: Request) {
       .collection("users")
       .find(
         { githubId: { $in: friendIds } },
-        { projection: { _id: 0, githubId: 1, name: 1, githubUsername: 1, avatar_url: 1 } },
+        { projection: { _id: 0, githubId: 1, name: 1, githubUsername: 1, image: 1 } },
       )
       .toArray()
-
+      
     return NextResponse.json(friends)
   } catch (error) {
     console.error("Error fetching friends:", error)

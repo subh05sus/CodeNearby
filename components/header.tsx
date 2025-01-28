@@ -31,6 +31,9 @@ export default function Header() {
                   <Link href="/requests">Requests</Link>
                 </li>
                 <li>
+                  <Link href="/messages">Messages</Link>
+                </li>
+                <li>
                   <Link href="/profile">
                     <Image
                       src={session?.user?.image || "/placeholder.svg"}
