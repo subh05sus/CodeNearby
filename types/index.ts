@@ -48,7 +48,9 @@ export interface FriendRequest {
 
 
 export interface UserProfile extends Developer {
+  image: string
   githubId: number
+  githubUsername: string
   friends:any[]
   sentRequests: string[]
   receivedRequests: string[]

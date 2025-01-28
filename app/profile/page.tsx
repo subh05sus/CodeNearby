@@ -16,6 +16,8 @@ import {
   LinkIcon,
   Github,
   Twitter,
+  Eye,
+  MessageSquare,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -229,7 +231,7 @@ export default function ProfilePage() {
 
         <TabsContent value="friends">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {profile?.friends?.map((friend: any) => (
+            {profile?.friends?.map((friend) => (
               <Card key={friend.githubId}>
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
@@ -241,15 +243,29 @@ export default function ProfilePage() {
                     >
                       {friend.githubUsername}
                     </Link>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => removeFriend(friend.githubId)}
-                    >
-                      Remove
-                    </Button>
                   </CardTitle>
                 </CardHeader>
+                <CardContent>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <Button variant="outline" size="sm" asChild className="mr-2">
+                        <Link href={`/user/${friend.githubId}`}>
+                          <Eye className="h-4 w-4 mr-2" />
+                          View
+                        </Link>
+                      </Button>
+                      <Button variant="outline" size="sm" asChild>
+                        <Link href={`/messages/${friend.githubId}`}>
+                          <MessageSquare className="h-4 w-4 mr-2" />
+                          Chat
+                        </Link>
+                      </Button>
+                    </div>
+                    <Button variant="destructive" size="sm" onClick={() => removeFriend(friend.githubId)}>
+                      Remove
+                    </Button>
+                  </div>
+                </CardContent>
               </Card>
             ))}
           </div>
