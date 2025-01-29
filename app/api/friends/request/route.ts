@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth/next"
 import clientPromise from "@/lib/mongodb"
 import type { Developer } from "@/types"
-import { authOptions } from "../../auth/[...nextauth]/route"
+import { authOptions } from "@/app/options"
 
 export async function POST(request: Request) {
   try {
