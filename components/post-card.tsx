@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { useState } from "react"
@@ -5,7 +6,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/components/ui/use-toast"
-import { ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react"
+import { ThumbsUp, ThumbsDown, MessageSquare, MapPin, Calendar } from "lucide-react"
 import { motion } from "framer-motion"
 import Image from "next/image"
 import { useSession } from "next-auth/react"
@@ -33,17 +34,27 @@ interface Post {
   imageUrl?: string
   createdAt: string
   votes: { up: number; down: number }
-  userVotes?: Record<string, number>
+  userVotes: Record<string, number>
   comments: Comment[]
+  poll?: Poll
+  location?: { lat: number; lng: number }
+  schedule?: string
+}
+
+interface Poll {
+  question: string
+  options: string[]
+  votes: Record<string, number>
 }
 
 interface PostCardProps {
   post: Post
   onVote: (postId: string, voteType: "up" | "down") => Promise<void>
   onAddComment: (postId: string, content: string, parentCommentId?: string) => Promise<void>
+  onVotePoll?: (postId: string, optionIndex: number) => Promise<void>
 }
 
-export function PostCard({ post, onVote, onAddComment }: PostCardProps) {
+export function PostCard({ post, onVote, onAddComment, onVotePoll }: PostCardProps) {
   const { data: session } = useSession() as { data: Session | null };
   const [commentContent, setCommentContent] = useState("")
   const [showComments, setShowComments] = useState(false)
@@ -67,7 +78,10 @@ export function PostCard({ post, onVote, onAddComment }: PostCardProps) {
 
     setIsVoting(true)
     try {
-      await onVote(post._id, voteType)
+      const updatedPost:any = await onVote(post._id, voteType)
+      // Update only the votes and userVotes, keeping other post data intact
+      post.votes = updatedPost?.votes || post.votes
+      post.userVotes = updatedPost?.userVotes || post.userVotes
     } finally {
       setIsVoting(false)
     }
@@ -89,7 +103,7 @@ export function PostCard({ post, onVote, onAddComment }: PostCardProps) {
       await onAddComment(post._id, commentContent, parentCommentId)
       setCommentContent("")
       setShowComments(true)
-    } catch  {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to add comment",
@@ -110,6 +124,36 @@ export function PostCard({ post, onVote, onAddComment }: PostCardProps) {
             height={200}
             className="mt-2 rounded-lg"
           />
+        )}
+        {post.poll && (
+          <div className="mt-4 p-4 bg-muted rounded-lg">
+            <h3 className="font-semibold mb-2">{post.poll.question}</h3>
+            {post.poll.options.map((option, index) => (
+              <Button
+                key={index}
+                variant="outline"
+                className="w-full mb-2 justify-between"
+                onClick={() => onVotePoll && onVotePoll(post._id, index)}
+              >
+                <span>{option}</span>
+                <span>{post.poll?.votes[index] || 0} votes</span>
+              </Button>
+            ))}
+          </div>
+        )}
+        {post.location && (
+          <div className="mt-2 flex items-center text-muted-foreground">
+            <MapPin className="h-4 w-4 mr-1" />
+            <span>
+              Lat: {post.location.lat.toFixed(6)}, Lng: {post.location.lng.toFixed(6)}
+            </span>
+          </div>
+        )}
+        {post.schedule && (
+          <div className="mt-2 flex items-center text-muted-foreground">
+            <Calendar className="h-4 w-4 mr-1" />
+            <span>{new Date(post.schedule).toLocaleString()}</span>
+          </div>
         )}
       </CardContent>
       <CardFooter className="flex flex-col">
@@ -135,7 +179,7 @@ export function PostCard({ post, onVote, onAddComment }: PostCardProps) {
           </div>
           <Button variant="ghost" size="sm" onClick={() => setShowComments(!showComments)} className="ml-4">
             <MessageSquare className="h-4 w-4 mr-1" />
-            {(post.comments ?? []).length} Comments
+            {(post.comments?.length ?? 0)} Comments
           </Button>
         </div>
         {showComments && (
@@ -149,7 +193,7 @@ export function PostCard({ post, onVote, onAddComment }: PostCardProps) {
               <Button onClick={() => handleAddComment()}>Comment</Button>
             </div>
             <div className="space-y-4">
-              {(post.comments ?? []).map((comment) => (
+              {post.comments?.map((comment) => (
                 <CommentThread
                   key={comment._id}
                   comment={comment}

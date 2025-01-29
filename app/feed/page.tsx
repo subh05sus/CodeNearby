@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client"
 
 import { useState, useEffect } from "react"
@@ -18,6 +17,9 @@ interface Post {
   votes: { up: number; down: number }
   userVotes: Record<string, number>
   comments: Comment[]
+  poll?: Poll
+  location?: { lat: number; lng: number }
+  schedule?: string
 }
 
 interface Comment {
@@ -34,6 +36,12 @@ interface Comment {
   }
 }
 
+interface Poll {
+  question: string
+  options: string[]
+  votes: Record<string, number>
+}
+
 export default function FeedPage() {
   const { data: session } = useSession()
   const [posts, setPosts] = useState<Post[]>([])
@@ -46,6 +54,7 @@ export default function FeedPage() {
     if (inView) {
       loadMorePosts()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inView])
 
   const loadMorePosts = async () => {
@@ -67,7 +76,13 @@ export default function FeedPage() {
     }
   }
 
-  const handleCreatePost = async (content: string, image: File | null) => {
+  const handleCreatePost = async (
+    content: string,
+    image: File | null,
+    poll?: { question: string; options: string[] },
+    location?: { lat: number; lng: number },
+    schedule?: Date,
+  ) => {
     try {
       let imageUrl = ""
       if (image) {
@@ -84,10 +99,18 @@ export default function FeedPage() {
         imageUrl = uploadData.imageUrl
       }
 
+      const postData = {
+        content,
+        imageUrl,
+        poll,
+        location,
+        schedule: schedule?.toISOString(),
+      }
+
       const response = await fetch("/api/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content, imageUrl }),
+        body: JSON.stringify(postData),
       })
 
       if (!response.ok) {
@@ -135,7 +158,7 @@ export default function FeedPage() {
       setPosts((prevPosts) =>
         prevPosts.map((post) => {
           if (post._id === postId) {
-            return updatedPost
+            return { ...post, votes: updatedPost.votes, userVotes: updatedPost.userVotes }
           }
           return post
         }),

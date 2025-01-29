@@ -8,6 +8,7 @@ import { ChevronDown, ChevronUp, MessageSquare, Award, ChevronRight } from "luci
 import { motion } from "framer-motion"
 import { useSession } from "next-auth/react"
 import { formatDistanceToNow } from "date-fns"
+import { toast } from "@/components/ui/use-toast"
 import { Session } from "next-auth"
 
 interface Comment {
@@ -33,8 +34,8 @@ interface CommentThreadProps {
 }
 
 export function CommentThread({ comment, postId, depth = 0, onVote, onReply }: CommentThreadProps) {
-  const { data: session } = useSession() as { data: Session | null };
-  const [isCollapsed, setIsCollapsed] = useState(false)
+    const { data: session } = useSession() as { data: Session | null };
+    const [isCollapsed, setIsCollapsed] = useState(false)
   const [isReplying, setIsReplying] = useState(false)
   const [replyContent, setReplyContent] = useState("")
   const [isVoting, setIsVoting] = useState(false)
@@ -54,9 +55,18 @@ export function CommentThread({ comment, postId, depth = 0, onVote, onReply }: C
 
   const handleReply = async () => {
     if (!replyContent.trim()) return
-    await onReply(postId, replyContent, comment._id)
-    setReplyContent("")
-    setIsReplying(false)
+    try {
+      await onReply(postId, replyContent, comment._id)
+      // Keep the comment data intact, just clear the reply input and hide the reply form
+      setReplyContent("")
+      setIsReplying(false)
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to add reply",
+        variant: "destructive",
+      })
+    }
   }
 
   return (

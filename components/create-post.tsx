@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/alt-text */
 "use client"
 
 import { useState } from "react"
@@ -6,29 +5,56 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useSession } from "next-auth/react"
-import { Image, Smile, Calendar, MapPin, BarChart2, FileImageIcon as FileGif } from "lucide-react"
+import { Image, Smile, FileImageIcon as FileGif } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { CreatePoll } from "./create-poll"
+import { ShareLocation } from "./share-location"
+import { ShareSchedule } from "./share-schedule"
 
 interface CreatePostProps {
-  onSubmit: (content: string, image: File | null) => Promise<void>
+  onSubmit: (
+    content: string,
+    image: File | null,
+    poll?: { question: string; options: string[] },
+    location?: { lat: number; lng: number },
+    schedule?: Date,
+  ) => Promise<void>
 }
 
 export function CreatePost({ onSubmit }: CreatePostProps) {
   const { data: session } = useSession()
   const [content, setContent] = useState("")
   const [image, setImage] = useState<File | null>(null)
+  const [poll, setPoll] = useState<{ question: string; options: string[] } | null>(null)
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null)
+  const [schedule, setSchedule] = useState<Date | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async () => {
-    if (!content.trim()) return
+    if (!content.trim() && !image && !poll && !location && !schedule) return
     setIsSubmitting(true)
     try {
-      await onSubmit(content, image)
+      await onSubmit(content, image, poll || undefined, location || undefined, schedule || undefined)
       setContent("")
       setImage(null)
+      setPoll(null)
+      setLocation(null)
+      setSchedule(null)
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  const handleCreatePoll = (question: string, options: string[]) => {
+    setPoll({ question, options })
+  }
+
+  const handleShareLocation = (lat: number, lng: number) => {
+    setLocation({ lat, lng })
+  }
+
+  const handleShareSchedule = (date: Date) => {
+    setSchedule(date)
   }
 
   return (
@@ -65,27 +91,46 @@ export function CreatePost({ onSubmit }: CreatePostProps) {
               <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/10 rounded-full">
                 <FileGif className="w-5 h-5" />
               </Button>
-              <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/10 rounded-full">
-                <BarChart2 className="w-5 h-5" />
-              </Button>
+              <CreatePoll onCreatePoll={handleCreatePoll} />
+              <ShareLocation onShareLocation={handleShareLocation} />
+              <ShareSchedule onShareSchedule={handleShareSchedule} />
               <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/10 rounded-full">
                 <Smile className="w-5 h-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/10 rounded-full">
-                <Calendar className="w-5 h-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/10 rounded-full">
-                <MapPin className="w-5 h-5" />
               </Button>
             </div>
             <Button
               onClick={handleSubmit}
-              disabled={!content.trim() || isSubmitting}
-              className={cn("rounded-full px-6", !content.trim() && "opacity-50")}
+              disabled={(!content.trim() && !image && !poll && !location && !schedule) || isSubmitting}
+              className={cn(
+                "rounded-full px-6",
+                !content.trim() && !image && !poll && !location && !schedule && "opacity-50",
+              )}
             >
               Post
             </Button>
           </div>
+          {poll && (
+            <div className="mt-2 p-2 bg-muted rounded-md">
+              <p className="font-semibold">{poll.question}</p>
+              <ul className="list-disc list-inside">
+                {poll.options.map((option, index) => (
+                  <li key={index}>{option}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {location && (
+            <div className="mt-2 p-2 bg-muted rounded-md">
+              <p>
+                Location: Lat {location.lat.toFixed(6)}, Lng {location.lng.toFixed(6)}
+              </p>
+            </div>
+          )}
+          {schedule && (
+            <div className="mt-2 p-2 bg-muted rounded-md">
+              <p>Schedule: {schedule.toLocaleString()}</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -30,7 +30,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { content, imageUrl } = await request.json()
+    const { content, imageUrl, poll, location, schedule } = await request.json()
     const client = await clientPromise
     const db = client.db()
 
@@ -43,11 +43,14 @@ export async function POST(request: Request) {
       votes: { up: 0, down: 0 },
       userVotes: {},
       comments: [],
+      poll: poll ? { ...poll, votes: {} } : undefined,
+      location,
+      schedule,
     }
 
     const result = await db.collection("posts").insertOne(post)
 
-    return NextResponse.json({ id: result.insertedId })
+    return NextResponse.json({ id: result.insertedId, ...post })
   } catch (error) {
     console.error("Error creating post:", error)
     return NextResponse.json({ error: "Failed to create post" }, { status: 500 })
