@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface Developer {
   public_repos: any
@@ -56,3 +57,16 @@ export interface UserProfile extends Developer {
   receivedRequests: string[]
 }
 
+
+export interface Post {
+  _id: string
+  userId: string
+  content: string
+  imageUrl?: string
+  createdAt: string
+  votes: { up: number; down: number }
+  userVotes?: Record<string, number>
+  comments: Comment[]
+}
+
+export type Comment = {}

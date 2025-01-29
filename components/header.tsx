@@ -25,6 +25,9 @@ export default function Header() {
             <li>
               <Link href="/connect">Connect</Link>
             </li>
+            <li>
+              <Link href="/feed">Feed</Link>
+            </li>
             {session ? (
               <>
                 <li>
