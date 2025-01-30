@@ -1,139 +1,168 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useSession } from "next-auth/react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { useToast } from "@/components/ui/use-toast"
-import { Loader2, Users, GitBranch, Star, LinkIcon, Github, Twitter, Eye, MessageSquare } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
-import type { UserProfile } from "@/types"
-import { PostCard } from "@/components/post-card"
-import { Session } from "next-auth"
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  Loader2,
+  Users,
+  GitBranch,
+  Star,
+  LinkIcon,
+  Github,
+  Twitter,
+  Eye,
+  MessageSquare,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import type { UserProfile } from "@/types";
+import { PostCard } from "@/components/post-card";
+import { Session } from "next-auth";
+import { fetchGitHubActivities } from "@/lib/github";
+import { formatDistanceToNow } from "date-fns";
 
 interface Post {
-  _id: string
-  userId: string
-  content: string
-  imageUrl?: string
-  createdAt: string
-  votes: { up: number; down: number }
-  userVotes: Record<string, number>
-  comments: Comment[]
-  poll?: Poll
-  location?: { lat: number; lng: number }
-  schedule?: string
+  _id: string;
+  userId: string;
+  content: string;
+  imageUrl?: string;
+  createdAt: string;
+  votes: { up: number; down: number };
+  userVotes: Record<string, number>;
+  comments: Comment[];
+  poll?: Poll;
+  location?: { lat: number; lng: number };
+  schedule?: string;
 }
 
 interface Comment {
-  _id: string
-  userId: string
-  content: string
-  createdAt: string
-  votes: { up: number; down: number }
-  userVotes: Record<string, number>
-  replies: Comment[]
+  _id: string;
+  userId: string;
+  content: string;
+  createdAt: string;
+  votes: { up: number; down: number };
+  userVotes: Record<string, number>;
+  replies: Comment[];
   user?: {
-    name: string
-    image: string
-  }
+    name: string;
+    image: string;
+  };
 }
 
 interface Poll {
-  question: string
-  options: string[]
-  votes: Record<string, number>
+  question: string;
+  options: string[];
+  votes: Record<string, number>;
 }
 
-
 export default function ProfilePage() {
-  const { data: session } = useSession() as {data:Session| null}
-  const [loading, setLoading] = useState(true)
-  const [profile, setProfile] = useState<UserProfile | null>(null)
-  const [stats, setStats] = useState<any>(null)
-  const [posts, setPosts] = useState<Post[]>([])
-  const { toast } = useToast()
+  const { data: session } = useSession() as { data: Session | null };
+  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [stats, setStats] = useState<any>(null);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const { toast } = useToast();
+  const [activities, setActivities] = useState<any[]>([]);
+
+  const loadActivities = async () => {
+    if (!session?.user?.githubUsername) return;
+    try {
+      const data = await fetchGitHubActivities(session.user.githubUsername);
+      setActivities(data);
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to fetch GitHub activities.",
+        variant: "destructive",
+      });
+    }
+  };
 
   useEffect(() => {
     if (session) {
-      fetchProfile()
-      fetchGitHubStats()
-      fetchUserPosts()
+      fetchProfile();
+      fetchGitHubStats();
+      fetchUserPosts();
+      loadActivities();
     }
-  }, [session])
+  }, [session]);
 
   const fetchProfile = async () => {
     try {
-      const response = await fetch("/api/profile")
-      const data = await response.json()
-      setProfile(data)
+      const response = await fetch("/api/profile");
+      const data = await response.json();
+      setProfile(data);
     } catch {
       toast({
         title: "Error",
         description: "Failed to fetch profile.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const fetchGitHubStats = async () => {
-    if (!session?.user?.githubUsername) return
+    if (!session?.user?.githubUsername) return;
     try {
-      const response = await fetch(`https://api.github.com/users/${session.user.githubUsername}`)
-      const data = await response.json()
-      setStats(data)
+      const response = await fetch(
+        `https://api.github.com/users/${session.user.githubUsername}`
+      );
+      const data = await response.json();
+      setStats(data);
     } catch {
       toast({
         title: "Error",
         description: "Failed to fetch GitHub stats.",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   const fetchUserPosts = async () => {
     if (!session?.user?.id) return;
     try {
-      const response = await fetch(`/api/posts/user/${session.user.id}`)
-      const data = await response.json()
-      setPosts(data)
+      const response = await fetch(`/api/posts/user/${session.user.id}`);
+      const data = await response.json();
+      setPosts(data);
     } catch {
       toast({
         title: "Error",
         description: "Failed to fetch user posts.",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   const removeFriend = async (friendId: number) => {
     try {
       const response = await fetch(`/api/friends/${friendId}`, {
         method: "DELETE",
-      })
+      });
       if (response.ok) {
         toast({
           title: "Success",
           description: "Friend removed successfully.",
-        })
-        fetchProfile()
+        });
+        fetchProfile();
       } else {
-        throw new Error("Failed to remove friend")
+        throw new Error("Failed to remove friend");
       }
     } catch {
       toast({
         title: "Error",
         description: "Failed to remove friend.",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   if (!session) {
     return (
@@ -141,7 +170,7 @@ export default function ProfilePage() {
         <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
         <p>You need to be signed in to view your profile.</p>
       </div>
-    )
+    );
   }
 
   if (loading) {
@@ -149,7 +178,7 @@ export default function ProfilePage() {
       <div className="flex justify-center items-center min-h-[50vh]">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
-    )
+    );
   }
 
   return (
@@ -165,8 +194,12 @@ export default function ProfilePage() {
           />
           <div>
             <h1 className="text-3xl font-bold">{session.user.name}</h1>
-            <p className="text-muted-foreground">@{session.user.githubUsername}</p>
-            <p className="text-sm text-muted-foreground">GitHub ID: {session.user.githubId}</p>
+            <p className="text-muted-foreground">
+              @{session.user.githubUsername}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              GitHub ID: {session.user.githubId}
+            </p>
             <div className="flex items-center gap-2 mt-2">
               <Link
                 href={`https://github.com/${session.user.githubUsername}`}
@@ -179,7 +212,11 @@ export default function ProfilePage() {
                 </Button>
               </Link>
               {stats?.twitter_username && (
-                <Link href={`https://twitter.com/${stats.twitter_username}`} target="_blank" rel="noopener noreferrer">
+                <Link
+                  href={`https://twitter.com/${stats.twitter_username}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Button variant="outline" size="sm">
                     <Twitter className="h-4 w-4 mr-2" />
                     Twitter
@@ -187,7 +224,11 @@ export default function ProfilePage() {
                 </Link>
               )}
               {stats?.blog && (
-                <Link href={stats.blog} target="_blank" rel="noopener noreferrer">
+                <Link
+                  href={stats.blog}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Button variant="outline" size="sm">
                     <LinkIcon className="h-4 w-4 mr-2" />
                     Website
@@ -206,7 +247,9 @@ export default function ProfilePage() {
               <Users className="h-4 w-4" />
               <span>Friends</span>
             </div>
-            <span className="text-2xl font-bold">{profile?.friends?.length || 0}</span>
+            <span className="text-2xl font-bold">
+              {profile?.friends?.length || 0}
+            </span>
           </CardContent>
         </Card>
         <Card>
@@ -215,7 +258,9 @@ export default function ProfilePage() {
               <GitBranch className="h-4 w-4" />
               <span>Repositories</span>
             </div>
-            <span className="text-2xl font-bold">{stats?.public_repos || 0}</span>
+            <span className="text-2xl font-bold">
+              {stats?.public_repos || 0}
+            </span>
           </CardContent>
         </Card>
         <Card>
@@ -255,7 +300,12 @@ export default function ProfilePage() {
                 <CardContent>
                   <div className="flex justify-between items-center">
                     <div>
-                      <Button variant="outline" size="sm" asChild className="mr-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        asChild
+                        className="mr-2"
+                      >
                         <Link href={`/user/${friend.githubId}`}>
                           <Eye className="h-4 w-4 mr-2" />
                           View
@@ -268,7 +318,11 @@ export default function ProfilePage() {
                         </Link>
                       </Button>
                     </div>
-                    <Button variant="destructive" size="sm" onClick={() => removeFriend(friend.githubId)}>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeFriend(friend.githubId)}
+                    >
                       Remove
                     </Button>
                   </div>
@@ -295,12 +349,66 @@ export default function ProfilePage() {
         <TabsContent value="activity">
           <Card>
             <CardContent className="p-6">
-              <p className="text-muted-foreground">Recent activity will be shown here...</p>
+              {(() => {
+                if (activities.length === 0) {
+                  return (
+                    <p className="text-muted-foreground">
+                      No recent GitHub activity found.
+                    </p>
+                  );
+                }
+                return (
+                  <div className="space-y-4">
+                    {activities.map((activity) => (
+                      <div
+                        key={activity.id}
+                        className="flex items-start gap-4 py-3 border-b"
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">
+                              {activity.type.replace("Event", "")}
+                            </span>
+                            <span className="text-muted-foreground text-sm">
+                              {formatDistanceToNow(
+                                new Date(activity.created_at),
+                                { addSuffix: true }
+                              )}
+                            </span>
+                          </div>
+                          <Link
+                            href={`https://github.com/${activity.repo.name}`}
+                            className="text-sm hover:underline text-muted-foreground"
+                            target="_blank"
+                          >
+                            {activity.repo.name}
+                          </Link>
+                          {activity.payload?.commits && (
+                            <div className="mt-2 space-y-1">
+                              {activity.payload.commits.map((commit: any) => (
+                                <div key={commit.sha} className="text-sm">
+                                  <Link
+                                    href={`https://github.com/${activity.repo.name}/commit/${commit.sha}`}
+                                    className="text-xs font-mono text-muted-foreground hover:underline"
+                                    target="_blank"
+                                  >
+                                    {commit.sha.substring(0, 7)}
+                                  </Link>
+                                  <span className="ml-2">{commit.message}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
-

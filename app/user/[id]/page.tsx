@@ -13,6 +13,8 @@ import Image from "next/image"
 import Link from "next/link"
 import type { UserProfile } from "@/types"
 import { PostCard } from "@/components/post-card"
+import { formatDistanceToNow } from "date-fns"
+import { fetchGitHubActivities } from "@/lib/github"
 
 
 interface Post {
@@ -58,6 +60,21 @@ export default function UserProfilePage() {
   const [stats, setStats] = useState<any>(null)
   const [posts, setPosts] = useState<Post[]>([])
   const { toast } = useToast()
+  const [activities, setActivities] = useState<any[]>([])
+  
+
+  const loadActivities = async (username:string) => {
+    try {
+      const data = await fetchGitHubActivities(username);
+      setActivities(data);
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to fetch GitHub activities.",
+        variant: "destructive",
+      });
+    }
+  };
 
   useEffect(() => {
     fetchProfile()
@@ -67,6 +84,7 @@ export default function UserProfilePage() {
     if (profile) {
       fetchGitHubStats()
       fetchUserPosts()
+      loadActivities(profile.githubUsername)
     }
   }, [profile])
 
@@ -226,7 +244,62 @@ export default function UserProfilePage() {
         <TabsContent value="activity">
           <Card>
             <CardContent className="p-6">
-              <p className="text-muted-foreground">Recent activity will be shown here...</p>
+            {(() => {
+                if (activities.length === 0) {
+                  return (
+                    <p className="text-muted-foreground">
+                      No recent GitHub activity found.
+                    </p>
+                  );
+                }
+                return (
+                  <div className="space-y-4">
+                    {activities.map((activity) => (
+                      <div
+                        key={activity.id}
+                        className="flex items-start gap-4 py-3 border-b"
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">
+                              {activity.type.replace("Event", "")}
+                            </span>
+                            <span className="text-muted-foreground text-sm">
+                              {formatDistanceToNow(
+                                new Date(activity.created_at),
+                                { addSuffix: true }
+                              )}
+                            </span>
+                          </div>
+                          <Link
+                            href={`https://github.com/${activity.repo.name}`}
+                            className="text-sm hover:underline text-muted-foreground"
+                            target="_blank"
+                          >
+                            {activity.repo.name}
+                          </Link>
+                          {activity.payload?.commits && (
+                            <div className="mt-2 space-y-1">
+                              {activity.payload.commits.map((commit: any) => (
+                                <div key={commit.sha} className="text-sm">
+                                  <Link
+                                    href={`https://github.com/${activity.repo.name}/commit/${commit.sha}`}
+                                    className="text-xs font-mono text-muted-foreground hover:underline"
+                                    target="_blank"
+                                  >
+                                    {commit.sha.substring(0, 7)}
+                                  </Link>
+                                  <span className="ml-2">{commit.message}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
             </CardContent>
           </Card>
         </TabsContent>
