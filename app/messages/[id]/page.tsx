@@ -208,7 +208,7 @@ export default function MessagePage() {
                   className={`inline-block p-2 rounded-lg ${
                     message.senderId === String(session.user?.githubId)
                       ? "bg-blue-500 text-white"
-                      : "bg-gray-200"
+                      : "bg-gray-200 dark:bg-zinc-900 text-black dark:text-white"
                   }`}
                 >
                   {message.content}

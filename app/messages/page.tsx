@@ -68,7 +68,7 @@ export default function MessagesPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {friends.map((friend) => (
           <Link key={friend.id} href={`/messages/${friend.githubId}`}>
-            <Card className="hover:bg-gray-100 transition-colors duration-200">
+            <Card className="hover:bg-gray-100 dark:hover:bg-zinc-900 transition-colors duration-200">
               <CardHeader>
                 <CardTitle className="flex items-center gap-4">
                   <Image

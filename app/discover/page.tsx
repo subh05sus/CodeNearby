@@ -253,7 +253,7 @@ export default function DiscoverPage() {
                         layout="fill"
                         objectFit="cover"
                       />
-                      <div className="p-4 absolute bottom-0 left-0 w-full flex items-end  bg-gradient-to-t from-black/80  h-1/2 to-transparent">
+                      <div className="p-4 absolute bottom-0 left-0 w-full flex items-end  bg-gradient-to-t from-black/80   h-1/2 to-transparent">
                         <h3 className="text-2xl font-bold text-white ">
                           {developer.login}
                         </h3>
@@ -349,7 +349,7 @@ export default function DiscoverPage() {
                 </Card>
               ))}
             </div>
-            <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-white dark:from-black to-transparent pointer-events-none" />
           </div>
         </div>
       </div>

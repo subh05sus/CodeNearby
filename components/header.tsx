@@ -9,6 +9,7 @@ import { Command, Search } from "lucide-react"
 import { SearchOverlay } from "./search-overlay"
 import Image from "next/image"
 import type { Session } from "next-auth"
+import { ThemeToggle } from "./theme-toggle"
 
 export default function Header() {
   const router = useRouter()
@@ -40,6 +41,9 @@ export default function Header() {
         </Link>
         <nav>
           <ul className="flex space-x-4 items-center">
+            <li>
+            <ThemeToggle />
+            </li>
             <li>
               <Button variant="outline" size="sm" className="px-1 py-4" onClick={() => setShowSearch(true)}>
                 <Search className="h-5 w-5 ml-2" />
