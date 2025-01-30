@@ -11,9 +11,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { Loader2, MapPin, X, Heart, SkipForward } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import TinderCard from "react-tinder-card";
 import type { Developer, UserProfile } from "@/types";
 import { Session } from "next-auth";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface ExtendedDeveloper extends Developer {
   distance?: string;
@@ -134,27 +134,22 @@ export default function DiscoverPage() {
     }
   };
 
-  const onSwipe = async (direction: string, developer: Developer) => {
+
+  const handleSwipe = async (direction: string, developer: Developer) => {
     if (!session) return;
 
     if (direction === "right") {
       try {
-        const response = await fetch("/api/friends/request", {
+        await fetch("/api/friends/request", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(developer),
         });
-
-        if (!response.ok) throw new Error("Failed to send friend request");
-
-        toast({
-          title: "Success",
-          description: "Friend request sent!",
-        });
+        toast({ title: "Success", description: "Friend request sent!" });
       } catch {
         toast({
           title: "Error",
-          description: "Failed to send friend request.",
+          description: "Failed to send request.",
           variant: "destructive",
         });
       }
@@ -238,30 +233,39 @@ export default function DiscoverPage() {
           <h2 className="text-2xl font-semibold">Connect</h2>
           {connectDevelopers.length > 0 ? (
             <div className="relative h-[60vh]">
-              {connectDevelopers.map((developer) => (
-                <TinderCard
-                  key={developer.id}
-                  onSwipe={(dir) => onSwipe(dir, developer)}
-                  preventSwipe={["up", "down"]}
-                  className="absolute w-full h-[-webkit-fill-available]  rounded-lg select-none"
-                >
-                  <Card className="w-full h-[-webkit-fill-available] shadow-none overflow-hidden">
-                    <CardContent className="relative w-full h-[-webkit-fill-available] ">
-                      <Image
-                        src={developer.avatar_url || "/placeholder.svg"}
-                        alt={developer.login}
-                        layout="fill"
-                        objectFit="cover"
-                      />
-                      <div className="p-4 absolute bottom-0 left-0 w-full flex items-end  bg-gradient-to-t from-black/80   h-1/2 to-transparent">
-                        <h3 className="text-2xl font-bold text-white ">
-                          {developer.login}
-                        </h3>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </TinderCard>
-              ))}
+              <AnimatePresence>
+                {connectDevelopers.length > 0 && (
+                  <motion.div
+                    key={connectDevelopers[0].id}
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -50 }}
+                    transition={{ duration: 0.3 }}
+                    className="absolute w-full  h-[60vh]"
+                  >
+                    <Card className="w-full overflow-hidden h-full shadow-lg">
+                      <CardContent className="relative h-[-webkit-fill-available]">
+                        <Image
+                          src={
+                            connectDevelopers[0].avatar_url ||
+                            "/placeholder.svg"
+                          }
+                          alt={connectDevelopers[0].login}
+                          fill 
+                          objectFit="cover"
+                          style={{ objectFit: 'cover' }}
+                          className="rounded-lg h-[-webkit-fill-available] w-[-webkit-fill-available] object-cover"
+                        />
+                        <div className="p-4 bg-gradient-to-t from-black/80 to-transparent absolute bottom-0 left-0 w-full">
+                          <h3 className="text-2xl font-bold text-white">
+                            {connectDevelopers[0].login}
+                          </h3>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           ) : (
             <p>No developers to connect with at the moment.</p>
@@ -274,7 +278,7 @@ export default function DiscoverPage() {
                 className="rounded-full p-6"
                 onClick={() =>
                   connectDevelopers.length > 0 &&
-                  onSwipe("left", connectDevelopers[0])
+                  handleSwipe("left", connectDevelopers[0])
                 }
               >
                 <X className="h-6 w-6 text-destructive" />
@@ -295,7 +299,7 @@ export default function DiscoverPage() {
                 className="rounded-full p-6"
                 onClick={() =>
                   connectDevelopers.length > 0 &&
-                  onSwipe("right", connectDevelopers[0])
+                  handleSwipe("right", connectDevelopers[0])
                 }
               >
                 <Heart className="h-6 w-6" />
