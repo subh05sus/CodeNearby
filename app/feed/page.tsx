@@ -194,14 +194,20 @@ export default function FeedPage() {
       }
 
       const updatedPost = await response.json()
+      const newComment = updatedPost.comment;
       setPosts((prevPosts) =>
         prevPosts.map((post) => {
           if (post._id === postId) {
-            return updatedPost
+            return {
+              ...post,
+              comments: [...post.comments, newComment]
+            };
           }
-          return post
+          return post;
         }),
-      )
+      );
+
+
 
       toast({
         title: "Success",
