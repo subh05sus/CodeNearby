@@ -15,7 +15,7 @@ import { PostCard } from "@/components/post-card";
 import { MasonryGrid } from "@/components/masonry-grid";
 import { useInView } from "react-intersection-observer";
 
-export default function SearchPage() {
+ function SearchPage() {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
@@ -255,7 +255,6 @@ export default function SearchPage() {
   };
   return (
     <div className="container mx-auto px-4 py-8">
-      <Suspense fallback={<div>Loading...</div>}>
         <h1 className="text-3xl font-bold mb-6">
           Search Results for &quot;{query}&quot;
         </h1>
@@ -339,7 +338,17 @@ export default function SearchPage() {
             <div ref={ref} className="h-10" />
           </section>
         </div>
-      </Suspense>
+     
     </div>
+  );
+}
+
+
+
+export default function SearchMain() {
+  return (
+    <Suspense fallback="Loading...">
+      <SearchPage />
+    </Suspense>
   );
 }
