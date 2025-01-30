@@ -67,6 +67,7 @@ export default function ConnectPage() {
   }
 
   const calculateDistance = async (devLocation: string) => {
+    console.log("Calculating distance...")
     if (!location || !devLocation) return null
 
     try {
@@ -100,7 +101,7 @@ export default function ConnectPage() {
 
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
       const distance = R * c
-
+      console.log("Distance calculated:", distance)
       return `${Math.round(distance)} km away`
     } catch (error) {
       console.error("Error calculating distance:", error)

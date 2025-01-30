@@ -2,7 +2,6 @@ export async function fetchGitHubData(username: string) {
   const response = await fetch(`https://api.github.com/users/${username}`, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.GITHUB_ACCESS_TOKEN}`
     },
   });
 
