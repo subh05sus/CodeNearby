@@ -49,7 +49,7 @@ export function LocationPreview({ lat, lng }: LocationPreviewProps) {
             {lat.toFixed(4)}, {lng.toFixed(4)}
           </span>
         </div>
-        <Button size="sm" onClick={openInMaps}>
+        <Button size="sm" onClick={openInMaps} className="rounded-full">
           View in Maps
         </Button>
       </div>

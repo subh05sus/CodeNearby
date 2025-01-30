@@ -297,7 +297,7 @@ import { useInView } from "react-intersection-observer";
                       </Link>
                       {session && (
                         <Button
-                          variant="outline"
+                          variant="default"
                           size="sm"
                           onClick={() => sendFriendRequest(dev)}
                         >
@@ -306,11 +306,6 @@ import { useInView } from "react-intersection-observer";
                         </Button>
                       )}
                     </div>
-                    {!dev.isOnCodeNearby && (
-                      <p className="text-sm text-muted-foreground mt-2">
-                        Not on CodeNearby
-                      </p>
-                    )}
                   </CardContent>
                 </Card>
               ))}

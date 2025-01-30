@@ -28,7 +28,7 @@ export default function RequestsPage() {
     try {
       const response = await fetch("/api/friends/requests")
       const data = await response.json()
-      setRequests(data)
+      setRequests(data.reverse())
     } catch  {
       toast({
         title: "Error",

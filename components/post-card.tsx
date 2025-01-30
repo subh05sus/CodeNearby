@@ -204,7 +204,7 @@ export function PostCard({ post, onVote, onAddComment, onVotePoll }: PostCardPro
                   <p className="text-sm text-muted-foreground">{format(new Date(post.schedule), "p")}</p>
                 </div>
               </div>
-              <Button onClick={addToCalendar} size="sm">
+              <Button onClick={addToCalendar} size="sm" className="rounded-full">
                 Add to Calendar
               </Button>
             </div>

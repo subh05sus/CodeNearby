@@ -8,15 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  Loader2,
-  MapPin,
-  GitBranch,
-  Users,
-  X,
-  Heart,
-  SkipForward,
-} from "lucide-react";
+import { Loader2, MapPin, X, Heart, SkipForward } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import TinderCard from "react-tinder-card";
@@ -86,7 +78,7 @@ export default function DiscoverPage() {
         )
         .map((dev: Developer) => ({ ...dev }));
 
-      setConnectDevelopers(filteredDevelopers);
+      setConnectDevelopers(filteredDevelopers.reverse());
       setExploreDevelopers(data);
     } catch {
       toast({
@@ -183,6 +175,29 @@ export default function DiscoverPage() {
     );
   };
 
+  const handleAddFriend = async (developer: any) => {
+    try {
+      const response = await fetch("/api/friends/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(developer),
+      });
+
+      if (!response.ok) throw new Error("Failed to send friend request");
+
+      toast({
+        title: "Success",
+        description: "Friend request sent!",
+      });
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to send friend request.",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (!session) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
@@ -193,7 +208,7 @@ export default function DiscoverPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4">
       <h1 className="text-3xl font-bold mb-6">Discover Developers</h1>
       <form onSubmit={handleLocationSubmit} className="flex space-x-2 mb-6">
         <Input
@@ -228,48 +243,20 @@ export default function DiscoverPage() {
                   key={developer.id}
                   onSwipe={(dir) => onSwipe(dir, developer)}
                   preventSwipe={["up", "down"]}
-                  className="absolute w-full"
+                  className="absolute w-full h-[-webkit-fill-available]  rounded-lg select-none"
                 >
-                  <Card className="w-full">
-                    <CardContent className="p-0">
-                      <div className="relative w-full h-48">
-                        <Image
-                          src={developer.avatar_url || "/placeholder.svg"}
-                          alt={developer.login}
-                          layout="fill"
-                          objectFit="cover"
-                        />
-                      </div>
-                      <div className="p-4">
-                        <h3 className="text-xl font-bold">{developer.login}</h3>
-                        {developer.name && (
-                          <p className="text-sm text-muted-foreground">
-                            {developer.name}
-                          </p>
-                        )}
-                        {developer.location && (
-                          <p className="text-sm text-muted-foreground mt-1">
-                            <MapPin className="inline-block w-4 h-4 mr-1" />
-                            {developer.location}
-                          </p>
-                        )}
-                        {developer.public_repos && (
-                          <p className="text-sm text-muted-foreground mt-1">
-                            <GitBranch className="inline-block w-4 h-4 mr-1" />
-                            {developer.public_repos} public repos
-                          </p>
-                        )}
-                        {developer.followers && (
-                          <p className="text-sm text-muted-foreground mt-1">
-                            <Users className="inline-block w-4 h-4 mr-1" />
-                            {developer.followers} followers
-                          </p>
-                        )}
-                        {developer.bio && (
-                          <p className="text-sm text-muted-foreground mt-2">
-                            {developer.bio}
-                          </p>
-                        )}
+                  <Card className="w-full h-[-webkit-fill-available] shadow-none overflow-hidden">
+                    <CardContent className="relative w-full h-[-webkit-fill-available] ">
+                      <Image
+                        src={developer.avatar_url || "/placeholder.svg"}
+                        alt={developer.login}
+                        layout="fill"
+                        objectFit="cover"
+                      />
+                      <div className="p-4 absolute bottom-0 left-0 w-full flex items-end  bg-gradient-to-t from-black/80  h-1/2 to-transparent">
+                        <h3 className="text-2xl font-bold text-white ">
+                          {developer.login}
+                        </h3>
                       </div>
                     </CardContent>
                   </Card>
@@ -319,54 +306,50 @@ export default function DiscoverPage() {
 
         <div className="space-y-6">
           <h2 className="text-2xl font-semibold">Explore</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {exploreDevelopers.map((dev) => (
-              <Card key={dev.id}>
-                <CardHeader>
-                  <CardTitle>{dev.login}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Image
-                    src={dev.avatar_url || "/placeholder.svg"}
-                    alt={dev.login}
-                    width={80}
-                    height={80}
-                    className="rounded-full mb-2"
-                  />
-                  {dev.name && (
-                    <p className="text-sm text-muted-foreground mb-1">
-                      {dev.name}
-                    </p>
-                  )}
-                  {dev.location && (
-                    <p className="text-sm text-muted-foreground mb-1">
-                      <MapPin className="inline-block w-4 h-4 mr-1" />
-                      {dev.location}
-                    </p>
-                  )}
-                  {dev.public_repos && (
-                    <p className="text-sm text-muted-foreground mb-1">
-                      <GitBranch className="inline-block w-4 h-4 mr-1" />
-                      {dev.public_repos} public repos
-                    </p>
-                  )}
-                  {dev.followers && (
-                    <p className="text-sm text-muted-foreground mb-1">
-                      <Users className="inline-block w-4 h-4 mr-1" />
-                      {dev.followers} followers
-                    </p>
-                  )}
-                  <Link
-                    href={dev.html_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline mt-2 inline-block"
-                  >
-                    View Profile
-                  </Link>
-                </CardContent>
-              </Card>
-            ))}
+          <div className="relative">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-[60vh] no-scrollbar overflow-y-scroll">
+              {exploreDevelopers.map((dev) => (
+                <Card key={dev.id}>
+                  <CardHeader>
+                    <CardTitle>{dev.login}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Image
+                      src={dev.avatar_url || "/placeholder.svg"}
+                      alt={dev.login}
+                      width={80}
+                      height={80}
+                      className="rounded-full mb-2"
+                    />
+                    {dev.name && (
+                      <p className="text-sm text-muted-foreground mb-1">
+                        {dev.name}
+                      </p>
+                    )}
+                    <div className="mt-2 flex gap-2">
+                      <Button
+                        variant={"default"}
+                        size={"sm"}
+                        onClick={() => handleAddFriend(dev)}
+                      >
+                        Add Friend
+                      </Button>
+                      <Button asChild variant={"outline"} size={"sm"}>
+                        <Link
+                          href={dev.html_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className=" inline-block"
+                        >
+                          View GitHub
+                        </Link>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-white to-transparent pointer-events-none" />
           </div>
         </div>
       </div>
