@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { Suspense,useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -254,92 +254,92 @@ export default function SearchPage() {
     }
   };
   return (
-    <Suspense fallback={<div>Loading...</div>}>
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">
-        Search Results for &quot;{query}&quot;
-      </h1>
+      <Suspense fallback={<div>Loading...</div>}>
+        <h1 className="text-3xl font-bold mb-6">
+          Search Results for &quot;{query}&quot;
+        </h1>
 
-      <div className="space-y-8">
-        <section>
-          <h2 className="text-2xl font-semibold mb-4">GitHub Profiles</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {developers.map((dev: any) => (
-              <Card key={dev.id}>
-                <CardHeader>
-                  <CardTitle>{dev.login}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Image
-                    src={dev.avatar_url || "/placeholder.svg"}
-                    alt={dev.login}
-                    width={80}
-                    height={80}
-                    className="rounded-full mb-2"
-                  />
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Name: {dev.name || "N/A"}
-                  </p>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Location: {dev.location || "N/A"}
-                  </p>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Public Repos: {dev.public_repos || "N/A"}
-                  </p>
-                  <div className="flex space-x-2 mt-4">
-                    <Link
-                      href={dev.html_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Button variant="outline" size="sm">
-                        View Profile
-                      </Button>
-                    </Link>
-                    {session && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => sendFriendRequest(dev)}
-                      >
-                        <UserPlus className="h-4 w-4 mr-2" />
-                        Add Friend
-                      </Button>
-                    )}
-                  </div>
-                  {!dev.isOnCodeNearby && (
-                    <p className="text-sm text-muted-foreground mt-2">
-                      Not on CodeNearby
+        <div className="space-y-8">
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">GitHub Profiles</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {developers.map((dev: any) => (
+                <Card key={dev.id}>
+                  <CardHeader>
+                    <CardTitle>{dev.login}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Image
+                      src={dev.avatar_url || "/placeholder.svg"}
+                      alt={dev.login}
+                      width={80}
+                      height={80}
+                      className="rounded-full mb-2"
+                    />
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Name: {dev.name || "N/A"}
                     </p>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
-
-        <section>
-          <h2 className="text-2xl font-semibold mb-4">Posts</h2>
-          <MasonryGrid>
-            {posts.map((post) => (
-              <PostCard
-                key={post._id}
-                post={post}
-                onVote={handleVote}
-                onAddComment={handleAddComment}
-                onVotePoll={handleVotePoll}
-              />
-            ))}
-          </MasonryGrid>
-          {loading && (
-            <div className="flex justify-center my-4">
-              <Loader2 className="h-6 w-6 animate-spin" />
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Location: {dev.location || "N/A"}
+                    </p>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Public Repos: {dev.public_repos || "N/A"}
+                    </p>
+                    <div className="flex space-x-2 mt-4">
+                      <Link
+                        href={dev.html_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Button variant="outline" size="sm">
+                          View Profile
+                        </Button>
+                      </Link>
+                      {session && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => sendFriendRequest(dev)}
+                        >
+                          <UserPlus className="h-4 w-4 mr-2" />
+                          Add Friend
+                        </Button>
+                      )}
+                    </div>
+                    {!dev.isOnCodeNearby && (
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Not on CodeNearby
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-          )}
-          <div ref={ref} className="h-10" />
-        </section>
-      </div>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">Posts</h2>
+            <MasonryGrid>
+              {posts.map((post) => (
+                <PostCard
+                  key={post._id}
+                  post={post}
+                  onVote={handleVote}
+                  onAddComment={handleAddComment}
+                  onVotePoll={handleVotePoll}
+                />
+              ))}
+            </MasonryGrid>
+            {loading && (
+              <div className="flex justify-center my-4">
+                <Loader2 className="h-6 w-6 animate-spin" />
+              </div>
+            )}
+            <div ref={ref} className="h-10" />
+          </section>
+        </div>
+      </Suspense>
     </div>
-    </Suspense>
   );
 }
