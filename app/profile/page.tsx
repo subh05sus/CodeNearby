@@ -1,117 +1,139 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
-"use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client"
 
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
-import {
-  Loader2,
-  Users,
-  GitBranch,
-  Star,
-  LinkIcon,
-  Github,
-  Twitter,
-  Eye,
-  MessageSquare,
-} from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import type { UserProfile } from "@/types";
-import { fetchGitHubActivities } from "@/lib/github";
-import { Session } from "next-auth";
+import { useEffect, useState } from "react"
+import { useSession } from "next-auth/react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from "@/components/ui/button"
+import { useToast } from "@/components/ui/use-toast"
+import { Loader2, Users, GitBranch, Star, LinkIcon, Github, Twitter, Eye, MessageSquare } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+import type { UserProfile } from "@/types"
+import { PostCard } from "@/components/post-card"
+import { Session } from "next-auth"
+
+interface Post {
+  _id: string
+  userId: string
+  content: string
+  imageUrl?: string
+  createdAt: string
+  votes: { up: number; down: number }
+  userVotes: Record<string, number>
+  comments: Comment[]
+  poll?: Poll
+  location?: { lat: number; lng: number }
+  schedule?: string
+}
+
+interface Comment {
+  _id: string
+  userId: string
+  content: string
+  createdAt: string
+  votes: { up: number; down: number }
+  userVotes: Record<string, number>
+  replies: Comment[]
+  user?: {
+    name: string
+    image: string
+  }
+}
+
+interface Poll {
+  question: string
+  options: string[]
+  votes: Record<string, number>
+}
+
 
 export default function ProfilePage() {
-  const { data: session } = useSession() as { data: Session | null }
-  const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [stats, setStats] = useState<any>(null);
-  const [activities, setActivities] = useState<any>(null);
-  const { toast } = useToast();
+  const { data: session } = useSession() as {data:Session| null}
+  const [loading, setLoading] = useState(true)
+  const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [stats, setStats] = useState<any>(null)
+  const [posts, setPosts] = useState<Post[]>([])
+  const { toast } = useToast()
 
   useEffect(() => {
     if (session) {
-      fetchProfile();
-      fetchGitHubStats();
-      fetchActivities();
+      fetchProfile()
+      fetchGitHubStats()
+      fetchUserPosts()
     }
-  }, [session]);
+  }, [session])
 
   const fetchProfile = async () => {
     try {
-      const response = await fetch("/api/profile");
-      const data = await response.json();
-      setProfile(data);
+      const response = await fetch("/api/profile")
+      const data = await response.json()
+      setProfile(data)
     } catch {
       toast({
         title: "Error",
         description: "Failed to fetch profile.",
         variant: "destructive",
-      });
+      })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const fetchGitHubStats = async () => {
-    if (!session?.user?.githubUsername) return;
+    if (!session?.user?.githubUsername) return
     try {
-      const response = await fetch(
-        `https://api.github.com/users/${session.user?.githubUsername}`
-      );
-      const data = await response.json();
-      setStats(data);
+      const response = await fetch(`https://api.github.com/users/${session.user.githubUsername}`)
+      const data = await response.json()
+      setStats(data)
     } catch {
       toast({
         title: "Error",
         description: "Failed to fetch GitHub stats.",
         variant: "destructive",
-      });
+      })
     }
-  };
+  }
 
-  const fetchActivities = async () => {
-    console.log("fetchActivities");
-    if (!session?.user?.githubUsername) return;
+  const fetchUserPosts = async () => {
+    if (!session?.user?.id) return;
     try {
-      const data = await fetchGitHubActivities(session.user?.githubUsername);
-      console.log(data);
-      setActivities(data);
+      const response = await fetch(`/api/posts/user/${session.user.id}`)
+      const data = await response.json()
+      setPosts(data)
     } catch {
       toast({
         title: "Error",
-        description: "Failed to fetch GitHub activities.",
+        description: "Failed to fetch user posts.",
         variant: "destructive",
-      });
+      })
     }
-  };
+  }
 
   const removeFriend = async (friendId: number) => {
     try {
       const response = await fetch(`/api/friends/${friendId}`, {
         method: "DELETE",
-      });
+      })
       if (response.ok) {
         toast({
           title: "Success",
           description: "Friend removed successfully.",
-        });
-        fetchProfile();
+        })
+        fetchProfile()
       } else {
-        throw new Error("Failed to remove friend");
+        throw new Error("Failed to remove friend")
       }
     } catch {
       toast({
         title: "Error",
         description: "Failed to remove friend.",
         variant: "destructive",
-      });
+      })
     }
-  };
+  }
 
   if (!session) {
     return (
@@ -119,7 +141,7 @@ export default function ProfilePage() {
         <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
         <p>You need to be signed in to view your profile.</p>
       </div>
-    );
+    )
   }
 
   if (loading) {
@@ -127,7 +149,7 @@ export default function ProfilePage() {
       <div className="flex justify-center items-center min-h-[50vh]">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
-    );
+    )
   }
 
   return (
@@ -135,23 +157,19 @@ export default function ProfilePage() {
       <div className="mb-8">
         <div className="flex items-center gap-6">
           <Image
-            src={session.user?.image || "/placeholder.svg"}
-            alt={session.user?.name || "Profile"}
+            src={session.user.image || "/placeholder.svg"}
+            alt={session.user.name || "Profile"}
             width={96}
             height={96}
             className="rounded-full"
           />
           <div>
-            <h1 className="text-3xl font-bold">{session.user?.name}</h1>
-            <p className="text-muted-foreground">
-              @{session.user?.githubUsername}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              GitHub ID: {session.user?.githubId}
-            </p>
+            <h1 className="text-3xl font-bold">{session.user.name}</h1>
+            <p className="text-muted-foreground">@{session.user.githubUsername}</p>
+            <p className="text-sm text-muted-foreground">GitHub ID: {session.user.githubId}</p>
             <div className="flex items-center gap-2 mt-2">
               <Link
-                href={`https://github.com/${session.user?.githubUsername}`}
+                href={`https://github.com/${session.user.githubUsername}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -161,11 +179,7 @@ export default function ProfilePage() {
                 </Button>
               </Link>
               {stats?.twitter_username && (
-                <Link
-                  href={`https://twitter.com/${stats.twitter_username}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <Link href={`https://twitter.com/${stats.twitter_username}`} target="_blank" rel="noopener noreferrer">
                   <Button variant="outline" size="sm">
                     <Twitter className="h-4 w-4 mr-2" />
                     Twitter
@@ -173,11 +187,7 @@ export default function ProfilePage() {
                 </Link>
               )}
               {stats?.blog && (
-                <Link
-                  href={stats.blog}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <Link href={stats.blog} target="_blank" rel="noopener noreferrer">
                   <Button variant="outline" size="sm">
                     <LinkIcon className="h-4 w-4 mr-2" />
                     Website
@@ -196,9 +206,7 @@ export default function ProfilePage() {
               <Users className="h-4 w-4" />
               <span>Friends</span>
             </div>
-            <span className="text-2xl font-bold">
-              {profile?.friends?.length || 0}
-            </span>
+            <span className="text-2xl font-bold">{profile?.friends?.length || 0}</span>
           </CardContent>
         </Card>
         <Card>
@@ -207,9 +215,7 @@ export default function ProfilePage() {
               <GitBranch className="h-4 w-4" />
               <span>Repositories</span>
             </div>
-            <span className="text-2xl font-bold">
-              {stats?.public_repos || 0}
-            </span>
+            <span className="text-2xl font-bold">{stats?.public_repos || 0}</span>
           </CardContent>
         </Card>
         <Card>
@@ -226,6 +232,7 @@ export default function ProfilePage() {
       <Tabs defaultValue="friends">
         <TabsList>
           <TabsTrigger value="friends">Friends</TabsTrigger>
+          <TabsTrigger value="posts">Posts</TabsTrigger>
           <TabsTrigger value="activity">Recent Activity</TabsTrigger>
         </TabsList>
 
@@ -271,70 +278,29 @@ export default function ProfilePage() {
           </div>
         </TabsContent>
 
+        <TabsContent value="posts">
+          <div className="space-y-6">
+            {posts.map((post) => (
+              <PostCard
+                key={post._id}
+                post={post}
+                onVote={async () => {}}
+                onAddComment={async () => {}}
+                onVotePoll={async () => {}}
+              />
+            ))}
+          </div>
+        </TabsContent>
+
         <TabsContent value="activity">
           <Card>
             <CardContent className="p-6">
-              {activities?.map((activity: any) => (
-                <div
-                  key={activity.id}
-                  className="mb-4 border p-3 rounded-lg shadow-sm bg-white"
-                >
-                  {/* Timestamp */}
-                  <p className="text-xs text-muted-foreground">
-                    {new Date(activity.created_at).toLocaleString()}
-                  </p>
-
-                  {/* Activity Type */}
-                  <p className="text-sm font-semibold">{activity.type}</p>
-
-                  {/* Repository Name with Link */}
-                  <p className="text-sm">
-                    Repository:{" "}
-                    <Link
-                      href={`https://github.com/${activity.repo.name}`}
-                      className="text-blue-600 hover:underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {activity.repo.name}
-                    </Link>
-                  </p>
-
-                  {/* Commit Details */}
-                  {activity.payload?.commits?.length > 0 && (
-                    <div className="mt-2">
-                      <p className="text-sm font-medium">Recent Commits:</p>
-                      <ul className="list-disc pl-5 text-sm">
-                        {activity.payload.commits.map((commit: any) => (
-                          <li key={commit.sha}>
-                            <p>
-                                <Link
-                                href={commit.url.replace(
-                                  "api.github.com/repos",
-                                  "github.com"
-                                )}
-                                className="text-blue-600 hover:underline"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                >
-                                {commit.message}
-                                </Link>
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              Author: {commit.author.name} (
-                              {commit.author.email})
-                            </p>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              ))}
+              <p className="text-muted-foreground">Recent activity will be shown here...</p>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
     </div>
-  );
+  )
 }
+

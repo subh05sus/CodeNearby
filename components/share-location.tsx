@@ -19,9 +19,7 @@ export function ShareLocation({ onShareLocation }: ShareLocationProps) {
             lng: position.coords.longitude,
           })
         },
-        () => {
-          alert("Unable to retrieve your location")
-        },
+        
       )
     } else {
       alert("Geolocation is not supported by your browser")

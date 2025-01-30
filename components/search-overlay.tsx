@@ -1,20 +1,72 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { X } from "lucide-react"
+import { Search, X, Home, Globe, Bell, MessageSquare, User, Command } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { cn } from "@/lib/utils"
 
 interface SearchOverlayProps {
   onClose: () => void
   onSearch: (query: string) => void
 }
 
+interface NavigationItem {
+  icon: React.ReactNode
+  label: string
+  shortcut: string
+  path: string
+}
+
 export function SearchOverlay({ onClose, onSearch }: SearchOverlayProps) {
   const [query, setQuery] = useState("")
+  const [selectedIndex, setSelectedIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
+  const router = useRouter()
+
+  const navigationItems: NavigationItem[] = [
+    { icon: <Home className="h-5 w-5" />, label: "Go to Feed", shortcut: "F", path: "/feed" },
+    { icon: <Globe className="h-5 w-5" />, label: "Discover", shortcut: "D", path: "/discover" },
+    { icon: <Bell className="h-5 w-5" />, label: "View Requests", shortcut: "R", path: "/requests" },
+    { icon: <MessageSquare className="h-5 w-5" />, label: "Open Messages", shortcut: "M", path: "/messages" },
+    { icon: <User className="h-5 w-5" />, label: "Your Profile", shortcut: "P", path: "/profile" },
+  ]
 
   useEffect(() => {
     inputRef.current?.focus()
-  }, [])
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose()
+      } else if (e.altKey && e.key === "ArrowDown") {
+        e.preventDefault()
+        setSelectedIndex((prev) => (prev < filteredItems.length - 1 ? prev + 1 : prev))
+      } else if (e.altKey && e.key === "ArrowUp") {
+        e.preventDefault()
+        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev))
+      } else if (e.key === "Enter" && selectedIndex >= 0) {
+        e.preventDefault()
+        const selectedItem = filteredItems[selectedIndex]
+        if (selectedItem) {
+          router.push(selectedItem.path)
+          onClose()
+        }
+      } else if (
+        (e.metaKey || e.ctrlKey) &&
+        navigationItems.some((item) => item.shortcut.toLowerCase() === e.key.toLowerCase())
+      ) {
+        e.preventDefault()
+        const item = navigationItems.find((item) => item.shortcut.toLowerCase() === e.key.toLowerCase())
+        if (item) {
+          router.push(item.path)
+          onClose()
+        }
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown)
+    return () => document.removeEventListener("keydown", handleKeyDown)
+  }, [onClose, selectedIndex, router]) // Removed unnecessary dependencies: query, navigationItems
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -23,29 +75,86 @@ export function SearchOverlay({ onClose, onSearch }: SearchOverlayProps) {
     }
   }
 
+  const filteredItems = navigationItems.filter((item) => item.label.toLowerCase().includes(query.toLowerCase()))
+
+  // Reset selected index when filtered items change
+  useEffect(() => {
+    setSelectedIndex(0)
+  }, [query])
+
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50">
-      <div className="container mx-auto px-4 h-full flex items-center justify-center">
-        <div className="w-full max-w-2xl">
-          <form onSubmit={handleSubmit} className="relative">
+    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm">
+      <div className="fixed inset-x-0 top-[20vh] mx-auto max-w-2xl overflow-hidden rounded-xl border bg-background shadow-2xl dark:bg-zinc-900">
+        <div className="flex items-center w-full ">
+          <Search className=" ml-2  h-5 w-5 text-muted-foreground" />
+          <form onSubmit={handleSubmit} className="flex-1">
             <Input
               ref={inputRef}
-              type="text"
-              placeholder="Search for developers or posts..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="pr-10 text-lg py-6"
+              placeholder="Search for commands..."
+              className="w-full border-0 bg-transparent py-4  text-lg text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0"
             />
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="absolute right-2 top-1/2 -translate-y-1/2"
-              onClick={onClose}
-            >
-              <X className="h-5 w-5" />
-            </Button>
           </form>
+          <Button onClick={onClose} variant="ghost" className="  text-muted-foreground hover:text-foreground">
+            <X className="h-5 w-5" />
+          </Button>
+        </div>
+        <div className="border-t" />
+        <div className="max-h-[60vh] overflow-y-auto px-2 pb-0">
+          {filteredItems.map((item, index) => (
+            <button
+              key={index}
+              onClick={() => {
+                router.push(item.path)
+                onClose()
+              }}
+              onMouseEnter={() => setSelectedIndex(index)}
+              className={cn(
+                "flex w-full items-center my-1 justify-between rounded-lg px-4 py-3 text-sm text-foreground transition-colors",
+                selectedIndex === index
+                  ? "bg-accent text-accent-foreground"
+                  : "hover:bg-accent hover:text-accent-foreground",
+              )}
+            >
+              <div className="flex items-center gap-3">
+                {item.icon}
+                <span>{item.label}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <kbd
+                  className={cn(
+                    "rounded px-2 py-1 text-xs",
+                    selectedIndex === index
+                      ? "bg-accent-foreground/10 text-accent-foreground"
+                      : "bg-muted text-muted-foreground",
+                  )}
+                >
+                  <Command className="h-3 w-3 inline-block mr-1" /> {item.shortcut}
+                </kbd>
+              </div>
+            </button>
+          ))}
+        </div>
+        <div className="border-t p-4">
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <kbd className="rounded bg-muted px-2 py-1">alt</kbd>
+              <span>+</span>
+              <kbd className="rounded bg-muted px-2 py-1">↑</kbd>
+              <span>/</span>
+              <kbd className="rounded bg-muted px-2 py-1">↓</kbd>
+              <span className="ml-1">to navigate</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <kbd className="rounded bg-muted px-2 py-1">enter</kbd>
+              <span className="ml-1">to select</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <kbd className="rounded bg-muted px-2 py-1">esc</kbd>
+              <span className="ml-1">to close</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

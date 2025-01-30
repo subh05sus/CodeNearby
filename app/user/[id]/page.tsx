@@ -12,25 +12,70 @@ import { Loader2, Users, GitBranch, Star, LinkIcon, Github, Twitter, MessageSqua
 import Image from "next/image"
 import Link from "next/link"
 import type { UserProfile } from "@/types"
+import { PostCard } from "@/components/post-card"
+
+
+interface Post {
+  _id: string
+  userId: string
+  content: string
+  imageUrl?: string
+  createdAt: string
+  votes: { up: number; down: number }
+  userVotes: Record<string, number>
+  comments: Comment[]
+  poll?: Poll
+  location?: { lat: number; lng: number }
+  schedule?: string
+}
+
+interface Comment {
+  _id: string
+  userId: string
+  content: string
+  createdAt: string
+  votes: { up: number; down: number }
+  userVotes: Record<string, number>
+  replies: Comment[]
+  user?: {
+    name: string
+    image: string
+  }
+}
+
+interface Poll {
+  question: string
+  options: string[]
+  votes: Record<string, number>
+}
+
+
 
 export default function UserProfilePage() {
   const params = useParams()
   const [loading, setLoading] = useState(true)
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [stats, setStats] = useState<any>(null)
+  const [posts, setPosts] = useState<Post[]>([])
   const { toast } = useToast()
 
   useEffect(() => {
     fetchProfile()
-    fetchGitHubStats()
-  }, [params.id, profile?.githubUsername]) // Added profile?.githubUsername to dependencies
+  }, [params.id])
+
+  useEffect(() => {
+    if (profile) {
+      fetchGitHubStats()
+      fetchUserPosts()
+    }
+  }, [profile])
 
   const fetchProfile = async () => {
     try {
       const response = await fetch(`/api/user/${params.id}`)
       const data = await response.json()
       setProfile(data)
-    } catch  {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to fetch profile.",
@@ -47,10 +92,30 @@ export default function UserProfilePage() {
       const response = await fetch(`https://api.github.com/users/${profile.githubUsername}`)
       const data = await response.json()
       setStats(data)
-    } catch  {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to fetch GitHub stats.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const fetchUserPosts = async () => {
+    
+    if (!profile) {
+      console.log('No profile found, returning')
+      return
+    }
+    try {
+      const response = await fetch(`/api/posts/user/${profile._id}`)
+      const data = await response.json()
+      setPosts(Array.isArray(data) ? data : [])
+    } catch (error) {
+      console.error('Error fetching posts:', error)
+      toast({
+        title: "Error",
+        description: "Failed to fetch user posts.",
         variant: "destructive",
       })
     }
@@ -155,6 +220,7 @@ export default function UserProfilePage() {
       <Tabs defaultValue="activity">
         <TabsList>
           <TabsTrigger value="activity">Recent Activity</TabsTrigger>
+          <TabsTrigger value="posts">Posts</TabsTrigger>
         </TabsList>
 
         <TabsContent value="activity">
@@ -163,6 +229,19 @@ export default function UserProfilePage() {
               <p className="text-muted-foreground">Recent activity will be shown here...</p>
             </CardContent>
           </Card>
+        </TabsContent>
+        <TabsContent value="posts">
+          <div className="space-y-6">
+            {posts.map((post) => (
+              <PostCard
+                key={post._id}
+                post={post}
+                onVote={async () => {}}
+                onAddComment={async () => {}}
+                onVotePoll={async () => {}}
+              />
+            ))}
+          </div>
         </TabsContent>
       </Tabs>
     </div>
