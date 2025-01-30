@@ -1,32 +1,50 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/components/ui/use-toast"
 import { Loader2, UserPlus } from "lucide-react"
 import Link from "next/link"
-import { Developer } from "@/types"
 import Image from "next/image"
+import { PostCard } from "@/components/post-card"
+import { MasonryGrid } from "@/components/masonry-grid"
+import { useInView } from "react-intersection-observer"
 
 export default function SearchPage() {
   const { data: session } = useSession()
-  const [query, setQuery] = useState("")
+  const searchParams = useSearchParams()
+  const query = searchParams.get("q") || ""
   const [loading, setLoading] = useState(false)
   const [developers, setDevelopers] = useState([])
+  const [posts, setPosts] = useState<Array<any>>([])
+  const [page, setPage] = useState(1)
   const { toast } = useToast()
+  const { ref, inView } = useInView()
 
-  const handleSearch = async (e:any) => {
-    e.preventDefault()
-    if (!query) return
+  useEffect(() => {
+    if (query) {
+      searchDevelopers()
+      searchPosts()
+    }
+  }, [query])
+
+  useEffect(() => {
+    if (inView) {
+      loadMorePosts()
+    }
+  }, [inView])
+
+  const searchDevelopers = async () => {
     setLoading(true)
     try {
       const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`)
       const data = await response.json()
-      setDevelopers(data)
+      setDevelopers(data.slice(0, 10))
     } catch  {
       toast({
         title: "Error",
@@ -38,7 +56,44 @@ export default function SearchPage() {
     }
   }
 
-  const sendFriendRequest = async (developer:Developer) => {
+  const searchPosts = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch(`/api/posts/search?q=${encodeURIComponent(query)}&page=1`)
+      const data = await response.json()
+      setPosts(Array.isArray(data) ? data : [])
+      setPage(2)
+    } catch  {
+      toast({
+        title: "Error",
+        description: "Failed to search posts. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const loadMorePosts = async () => {
+    if (loading) return
+    setLoading(true)
+    try {
+      const response = await fetch(`/api/posts/search?q=${encodeURIComponent(query)}&page=${page}`)
+      const newPosts = await response.json()
+      setPosts((prevPosts) => [...prevPosts, ...(Array.isArray(newPosts) ? newPosts : [])])
+      setPage((prevPage) => prevPage + 1)
+    } catch  {
+      toast({
+        title: "Error",
+        description: "Failed to load more posts",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const sendFriendRequest = async (developer:any) => {
     try {
       const response = await fetch("/api/friends/request", {
         method: "POST",
@@ -61,51 +116,147 @@ export default function SearchPage() {
     }
   }
 
+  const handleVote = async (postId: string, voteType: "up" | "down") => {
+    if (!session) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to vote",
+        variant: "destructive",
+      })
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/posts/${postId}/vote`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ voteType }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to vote")
+      }
+
+      const updatedPost = await response.json()
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => {
+          if (post._id === postId) {
+            return { ...post, votes: updatedPost.votes, userVotes: updatedPost.userVotes }
+          }
+          return post
+        }),
+      )
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to vote",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const handleAddComment = async (postId: string, content: string, parentCommentId?: string) => {
+    if (!session) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to comment",
+        variant: "destructive",
+      })
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/posts/${postId}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content, parentCommentId }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to add comment")
+      }
+
+      const updatedPost = await response.json()
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => {
+          if (post._id === postId) {
+            return updatedPost
+          }
+          return post
+        }),
+      )
+
+      toast({
+        title: "Success",
+        description: "Comment added successfully",
+      })
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to add comment",
+        variant: "destructive",
+      })
+    }
+  }
+
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6">Search Developers</h1>
-      <form onSubmit={handleSearch} className="flex space-x-2 mb-6">
-        <Input
-          type="text"
-          placeholder="Enter username or name"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="flex-grow"
-        />
-        <Button type="submit" disabled={loading}>
-          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Search
-        </Button>
-      </form>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {developers.map((dev:Developer) => (
-          <Card key={dev.id}>
-            <CardHeader>
-              <CardTitle>{dev.login}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Image src={dev.avatar_url || "/placeholder.svg"} alt={dev.login} className="w-20 h-20 rounded-full mb-2" 
-              height={80} width={80}
-              />
-              <p className="text-sm text-muted-foreground mb-2">Name: {dev.name || "N/A"}</p>
-              <p className="text-sm text-muted-foreground mb-2">Location: {dev.location || "N/A"}</p>
-              <p className="text-sm text-muted-foreground mb-2">Public Repos: {dev.public_repos || "N/A"}</p>
-              <div className="flex space-x-2 mt-4">
-                <Link href={dev.html_url} target="_blank" rel="noopener noreferrer">
-                  <Button variant="outline" size="sm">
-                    View Profile
-                  </Button>
-                </Link>
-                {session && (
-                  <Button variant="outline" size="sm" onClick={() => sendFriendRequest(dev)}>
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    Add Friend
-                  </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6">Search Results for &quot;{query}&quot;</h1>
+
+      <div className="space-y-8">
+        <section>
+          <h2 className="text-2xl font-semibold mb-4">GitHub Profiles</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {developers.map((dev:any) => (
+              <Card key={dev.id}>
+                <CardHeader>
+                  <CardTitle>{dev.login}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Image
+                    src={dev.avatar_url || "/placeholder.svg"}
+                    alt={dev.login}
+                    width={80}
+                    height={80}
+                    className="rounded-full mb-2"
+                  />
+                  <p className="text-sm text-muted-foreground mb-2">Name: {dev.name || "N/A"}</p>
+                  <p className="text-sm text-muted-foreground mb-2">Location: {dev.location || "N/A"}</p>
+                  <p className="text-sm text-muted-foreground mb-2">Public Repos: {dev.public_repos || "N/A"}</p>
+                  <div className="flex space-x-2 mt-4">
+                    <Link href={dev.html_url} target="_blank" rel="noopener noreferrer">
+                      <Button variant="outline" size="sm">
+                        View Profile
+                      </Button>
+                    </Link>
+                    {session && (
+                      <Button variant="outline" size="sm" onClick={() => sendFriendRequest(dev)}>
+                        <UserPlus className="h-4 w-4 mr-2" />
+                        Add Friend
+                      </Button>
+                    )}
+                  </div>
+                  {!dev.isOnCodeNearby && <p className="text-sm text-muted-foreground mt-2">Not on CodeNearby</p>}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <h2 className="text-2xl font-semibold mb-4">Posts</h2>
+          <MasonryGrid>
+            {posts.map((post) => (
+              <PostCard key={post._id} post={post} onVote={handleVote} onAddComment={handleAddComment} />
+            ))}
+          </MasonryGrid>
+          {loading && (
+            <div className="flex justify-center my-4">
+              <Loader2 className="h-6 w-6 animate-spin" />
+            </div>
+          )}
+          <div ref={ref} className="h-10" />
+        </section>
       </div>
     </div>
   )
