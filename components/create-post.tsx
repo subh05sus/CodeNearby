@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useSession } from "next-auth/react"
-import { Image, Smile, FileImageIcon as FileGif } from "lucide-react"
+import { Image, FileImageIcon as FileGif } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { CreatePoll } from "./create-poll"
 import { ShareLocation } from "./share-location"
 import { ShareSchedule } from "./share-schedule"
+import { EmojiPicker } from "./emoji-picker"
 
 interface CreatePostProps {
   onSubmit: (
@@ -58,6 +59,10 @@ export function CreatePost({ onSubmit }: CreatePostProps) {
     setSchedule(date)
   }
 
+  const handleEmojiSelect = (emoji: string) => {
+    setContent((prev) => prev + emoji)
+  }
+
   return (
     <div className="bg-background border rounded-lg p-4">
       <div className="flex gap-4">
@@ -95,9 +100,7 @@ export function CreatePost({ onSubmit }: CreatePostProps) {
               <CreatePoll onCreatePoll={handleCreatePoll} />
               <ShareLocation onShareLocation={handleShareLocation} />
               <ShareSchedule onShareSchedule={handleShareSchedule} />
-              <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/10 rounded-full">
-                <Smile className="w-5 h-5" />
-              </Button>
+              <EmojiPicker onChange={handleEmojiSelect} />
             </div>
             <Button
               onClick={handleSubmit}

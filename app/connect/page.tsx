@@ -174,14 +174,16 @@ export default function ConnectPage() {
       </div>
 
       <div className="relative w-full h-[60vh]">
-        {developers.map((developer) => (
+        {developers.map((developer) => {
+          
+          return(
           <TinderCard
             key={developer.id}
             onSwipe={(dir) => onSwipe(dir, developer)}
             preventSwipe={["up", "down"]}
-            className="absolute w-full h-full"
+            className="absolute w-full h-full select-none"
           >
-            <div className="relative w-full h-full bg-card rounded-xl shadow-xl overflow-hidden">
+            <div className="relative w-full h-full bg-card rounded-xl border dark:border-white/20 border-black/20 overflow-hidden">
               <div className="relative w-full h-1/2">
                 <Image
                   src={developer.avatar_url || "/placeholder.svg"}
@@ -215,10 +217,10 @@ export default function ConnectPage() {
               </div>
             </div>
           </TinderCard>
-        ))}
+        )})}
       </div>
 
-      <div className="flex justify-center gap-4 mt-6">
+      <div className="flex justify-center gap-4 mt-16">
         <Button
           size="lg"
           variant="outline"

@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast"
 import { Loader2 } from "lucide-react"
 import { CreatePost } from "@/components/create-post"
 import { PostCard } from "@/components/post-card"
+import { MasonryGrid } from "@/components/masonry-grid"
 
 interface Post {
   _id: string
@@ -65,7 +66,7 @@ export default function FeedPage() {
       const newPosts = await response.json()
       setPosts((prevPosts) => [...prevPosts, ...newPosts])
       setPage((prevPage) => prevPage + 1)
-    } catch  {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to load posts",
@@ -124,7 +125,7 @@ export default function FeedPage() {
         title: "Success",
         description: "Post created successfully",
       })
-    } catch  {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to create post",
@@ -163,7 +164,7 @@ export default function FeedPage() {
           return post
         }),
       )
-    } catch  {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to vote",
@@ -194,26 +195,24 @@ export default function FeedPage() {
       }
 
       const updatedPost = await response.json()
-      const newComment = updatedPost.comment;
+      const newComment = updatedPost.comment
       setPosts((prevPosts) =>
         prevPosts.map((post) => {
           if (post._id === postId) {
             return {
               ...post,
-              comments: [...post.comments, newComment]
-            };
+              comments: [...post.comments, newComment],
+            }
           }
-          return post;
+          return post
         }),
-      );
-
-
+      )
 
       toast({
         title: "Success",
         description: "Comment added successfully",
       })
-    } catch  {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to add comment",
@@ -252,7 +251,7 @@ export default function FeedPage() {
           return post
         }),
       )
-    } catch  {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to vote on poll",
@@ -262,21 +261,24 @@ export default function FeedPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Feed</h1>
-
-      <CreatePost onSubmit={handleCreatePost} />
+    <div className="max-w-6xl mx-auto">
+      <div className="relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 blur-3xl -z-10" />
+        <CreatePost onSubmit={handleCreatePost} />
+      </div>
 
       <div className="mt-6">
-        {posts.map((post) => (
-          <PostCard
-            key={post._id}
-            post={post}
-            onVote={handleVote}
-            onAddComment={handleAddComment}
-            onVotePoll={handleVotePoll}
-          />
-        ))}
+        <MasonryGrid>
+          {posts.map((post) => (
+            <PostCard
+              key={post._id}
+              post={post}
+              onVote={handleVote}
+              onAddComment={handleAddComment}
+              onVotePoll={handleVotePoll}
+            />
+          ))}
+        </MasonryGrid>
       </div>
 
       {loading && (
