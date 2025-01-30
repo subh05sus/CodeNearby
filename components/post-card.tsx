@@ -6,12 +6,15 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/components/ui/use-toast"
-import { ThumbsUp, ThumbsDown, MessageSquare, MapPin, Calendar } from "lucide-react"
+import { ThumbsUp, ThumbsDown, MessageSquare, Calendar, Share2 } from "lucide-react"
 import { motion } from "framer-motion"
 import Image from "next/image"
 import { useSession } from "next-auth/react"
 import { CommentThread } from "./comment-thread"
-import { Session } from "next-auth"
+import { LocationPreview } from "./location-preview"
+import { PollDisplay } from "./poll-display"
+import type { Session } from "next-auth"
+import { format } from "date-fns"
 
 interface Comment {
   _id: string
@@ -55,7 +58,7 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, onVote, onAddComment, onVotePoll }: PostCardProps) {
-  const { data: session } = useSession() as { data: Session | null };
+  const { data: session } = useSession() as { data: Session | null }
   const [commentContent, setCommentContent] = useState("")
   const [showComments, setShowComments] = useState(false)
   const [isVoting, setIsVoting] = useState(false)
@@ -78,8 +81,7 @@ export function PostCard({ post, onVote, onAddComment, onVotePoll }: PostCardPro
 
     setIsVoting(true)
     try {
-      const updatedPost:any = await onVote(post._id, voteType)
-      // Update only the votes and userVotes, keeping other post data intact
+      const updatedPost: any = await onVote(post._id, voteType)
       post.votes = updatedPost?.votes || post.votes
       post.userVotes = updatedPost?.userVotes || post.userVotes
     } finally {
@@ -112,52 +114,78 @@ export function PostCard({ post, onVote, onAddComment, onVotePoll }: PostCardPro
     }
   }
 
+  const addToCalendar = () => {
+    if (!post.schedule) return
+    const date = new Date(post.schedule)
+    const encodedText = encodeURIComponent(post.content)
+    const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodedText}&dates=${date.toISOString().replace(/[-:]/g, "").split(".")[0]}Z/${date.toISOString().replace(/[-:]/g, "").split(".")[0]}Z`
+    window.open(googleCalendarUrl, "_blank")
+  }
+
+  const sharePost = async () => {
+    try {
+      await navigator.share({
+        title: "Check out this post",
+        text: post.content,
+        url: window.location.href,
+      })
+    } catch (error) {
+      console.log("Error sharing:", error)
+    }
+  }
+
   return (
-    <Card className="mb-4">
-      <CardContent>
-        <p>{post.content}</p>
-        {post.imageUrl && (
-          <Image
-            src={post.imageUrl || "/placeholder.svg"}
-            alt="Post image"
-            width={300}
-            height={200}
-            className="mt-2 rounded-lg"
-          />
-        )}
-        {post.poll && (
-          <div className="mt-4 p-4 bg-muted rounded-lg">
-            <h3 className="font-semibold mb-2">{post.poll.question}</h3>
-            {post.poll.options.map((option, index) => (
-              <Button
-                key={index}
-                variant="outline"
-                className="w-full mb-2 justify-between"
-                onClick={() => onVotePoll && onVotePoll(post._id, index)}
-              >
-                <span>{option}</span>
-                <span>{post.poll?.votes[index] || 0} votes</span>
+    <Card className="mb-6">
+      <CardContent className="p-6">
+        <div className="space-y-4">
+          {/* Post Content */}
+          <p className="text-lg">{post.content}</p>
+
+          {/* Image */}
+          {post.imageUrl && (
+            <Image
+              src={post.imageUrl || "/placeholder.svg"}
+              alt="Post image"
+              width={600}
+              height={400}
+              className="rounded-lg w-full object-cover"
+            />
+          )}
+
+          {/* Poll */}
+          {post.poll && (
+            <div className="mt-4">
+              <PollDisplay poll={post.poll} postId={post._id} onVote={onVotePoll!} />
+            </div>
+          )}
+
+          {/* Location */}
+          {post.location && (
+            <div className="mt-4">
+              <LocationPreview lat={post.location.lat} lng={post.location.lng} />
+            </div>
+          )}
+
+          {/* Schedule */}
+          {post.schedule && (
+            <div className="mt-4 flex items-center justify-between bg-muted rounded-lg p-4">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-5 w-5" />
+                <div>
+                  <p className="font-medium">{format(new Date(post.schedule), "PPPP")}</p>
+                  <p className="text-sm text-muted-foreground">{format(new Date(post.schedule), "p")}</p>
+                </div>
+              </div>
+              <Button onClick={addToCalendar} size="sm">
+                Add to Calendar
               </Button>
-            ))}
-          </div>
-        )}
-        {post.location && (
-          <div className="mt-2 flex items-center text-muted-foreground">
-            <MapPin className="h-4 w-4 mr-1" />
-            <span>
-              Lat: {post.location.lat.toFixed(6)}, Lng: {post.location.lng.toFixed(6)}
-            </span>
-          </div>
-        )}
-        {post.schedule && (
-          <div className="mt-2 flex items-center text-muted-foreground">
-            <Calendar className="h-4 w-4 mr-1" />
-            <span>{new Date(post.schedule).toLocaleString()}</span>
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </CardContent>
-      <CardFooter className="flex flex-col">
-        <div className="flex items-center w-full">
+
+      <CardFooter className="flex flex-col border-t">
+        <div className="flex items-center justify-between w-full py-2">
           <div className="flex items-center gap-1">
             <motion.button
               whileTap={{ scale: 0.9 }}
@@ -167,7 +195,7 @@ export function PostCard({ post, onVote, onAddComment, onVotePoll }: PostCardPro
             >
               <ThumbsUp className="h-4 w-4" />
             </motion.button>
-            <span className="text-sm">{(post.votes?.up ?? 0) - (post.votes?.down ?? 0)}</span>
+            <span className="text-sm font-medium">{(post.votes?.up ?? 0) - (post.votes?.down ?? 0)}</span>
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => handleVote("down")}
@@ -177,14 +205,22 @@ export function PostCard({ post, onVote, onAddComment, onVotePoll }: PostCardPro
               <ThumbsDown className="h-4 w-4" />
             </motion.button>
           </div>
-          <Button variant="ghost" size="sm" onClick={() => setShowComments(!showComments)} className="ml-4">
-            <MessageSquare className="h-4 w-4 mr-1" />
-            {(post.comments?.length ?? 0)} Comments
-          </Button>
+
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={() => setShowComments(!showComments)}>
+              <MessageSquare className="h-4 w-4 mr-2" />
+              {post.comments?.length ?? 0} Comments
+            </Button>
+            <Button variant="ghost" size="sm" onClick={sharePost}>
+              <Share2 className="h-4 w-4 mr-2" />
+              Share
+            </Button>
+          </div>
         </div>
+
         {showComments && (
-          <div className="w-full mt-4">
-            <div className="flex gap-2 mb-4">
+          <div className="w-full mt-4 space-y-4">
+            <div className="flex gap-2">
               <Input
                 placeholder="Write a comment..."
                 value={commentContent}

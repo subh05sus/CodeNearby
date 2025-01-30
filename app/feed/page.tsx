@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client"
 
 import { useState, useEffect } from "react"
@@ -54,7 +55,6 @@ export default function FeedPage() {
     if (inView) {
       loadMorePosts()
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inView])
 
   const loadMorePosts = async () => {
@@ -216,6 +216,45 @@ export default function FeedPage() {
     }
   }
 
+  const handleVotePoll = async (postId: string, optionIndex: number) => {
+    if (!session) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to vote",
+        variant: "destructive",
+      })
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/posts/${postId}/poll-vote`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ optionIndex }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to vote on poll")
+      }
+
+      const updatedPost = await response.json()
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => {
+          if (post._id === postId) {
+            return { ...post, poll: updatedPost.poll }
+          }
+          return post
+        }),
+      )
+    } catch  {
+      toast({
+        title: "Error",
+        description: "Failed to vote on poll",
+        variant: "destructive",
+      })
+    }
+  }
+
   return (
     <div className="max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">Feed</h1>
@@ -224,7 +263,13 @@ export default function FeedPage() {
 
       <div className="mt-6">
         {posts.map((post) => (
-          <PostCard key={post._id} post={post} onVote={handleVote} onAddComment={handleAddComment} />
+          <PostCard
+            key={post._id}
+            post={post}
+            onVote={handleVote}
+            onAddComment={handleAddComment}
+            onVotePoll={handleVotePoll}
+          />
         ))}
       </div>
 

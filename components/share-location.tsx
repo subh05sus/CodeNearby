@@ -37,9 +37,12 @@ export function ShareLocation({ onShareLocation }: ShareLocationProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">
-          <MapPin className="h-4 w-4 mr-2" />
-          Share Location
+      <Button
+          variant="ghost"
+          size="icon"
+          className="text-primary hover:bg-primary/10 rounded-full"
+        >
+          <MapPin className="w-5 h-5" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

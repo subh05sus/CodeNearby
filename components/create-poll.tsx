@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Plus, Minus } from "lucide-react"
+import { Plus, Minus, ChartNoAxesColumn } from "lucide-react"
 
 interface CreatePollProps {
   onCreatePoll: (question: string, options: string[]) => void
@@ -39,7 +39,13 @@ export function CreatePoll({ onCreatePoll }: CreatePollProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Create Poll</Button>
+      <Button
+          variant="ghost"
+          size="icon"
+          className="text-primary hover:bg-primary/10 rounded-full"
+        >
+          <ChartNoAxesColumn className="w-5 h-5" />
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

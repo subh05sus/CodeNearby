@@ -27,9 +27,12 @@ export function ShareSchedule({ onShareSchedule }: ShareScheduleProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">
-          <CalendarIcon className="h-4 w-4 mr-2" />
-          Share Schedule
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-primary hover:bg-primary/10 rounded-full"
+        >
+          <CalendarIcon className="w-5 h-5" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
