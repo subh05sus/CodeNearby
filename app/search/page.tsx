@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense,useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -254,6 +254,7 @@ export default function SearchPage() {
     }
   };
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">
         Search Results for &quot;{query}&quot;
@@ -339,5 +340,6 @@ export default function SearchPage() {
         </section>
       </div>
     </div>
+    </Suspense>
   );
 }
