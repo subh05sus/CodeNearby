@@ -14,6 +14,7 @@ import Link from "next/link";
 import type { Developer, UserProfile } from "@/types";
 import { Session } from "next-auth";
 import { AnimatePresence, motion } from "framer-motion";
+import { getLocationByIp } from "@/lib/location";
 
 interface ExtendedDeveloper extends Developer {
   distance?: string;
@@ -29,6 +30,27 @@ export default function DiscoverPage() {
   const [exploreDevelopers, setExploreDevelopers] = useState<Developer[]>([]);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const { toast } = useToast();
+
+
+  useEffect(() => {
+    const fetchLocation = async () => {
+      try {
+        const data = await getLocationByIp();
+        setLocation(data.city);
+      } catch {
+        toast({
+          title: "Error",
+          description: "Failed to get your location automatically.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    if (!location) {
+      fetchLocation();
+    }
+  }, [location, toast]);
+
 
   useEffect(() => {
     if (session) {
