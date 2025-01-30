@@ -38,6 +38,7 @@
     "react": "^18",
     "react-day-picker": "^9.5.1",
     "react-dom": "^18",
+    "react-icons": "^5.4.0",
     "react-intersection-observer": "^9.15.1",
     "react-masonry-css": "^1.0.16",
     "react-tinder-card": "^1.6.4",

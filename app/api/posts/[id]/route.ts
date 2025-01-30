@@ -4,9 +4,10 @@ import { ObjectId } from "mongodb"
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
+    
     const client = await clientPromise
     const db = client.db()
-
+    console.log(params.id)
     const post = await db.collection("posts").findOne({ _id: new ObjectId(params.id) })
 
     if (!post) {
