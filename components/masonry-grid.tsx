@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import Masonry from "react-masonry-css"
-import type React from "react" // Added import for React
+import Masonry from "react-masonry-css";
+import type React from "react"; // Added import for React
 
 interface MasonryGridProps {
-  children: React.ReactNode
-  className?: string
+  children: React.ReactNode;
+  className?: string;
 }
 
 export function MasonryGrid({ children, className }: MasonryGridProps) {
@@ -14,7 +14,7 @@ export function MasonryGrid({ children, className }: MasonryGridProps) {
     1100: 2,
     700: 1,
     500: 1,
-  }
+  };
 
   return (
     <Masonry
@@ -24,6 +24,5 @@ export function MasonryGrid({ children, className }: MasonryGridProps) {
     >
       {children}
     </Masonry>
-  )
+  );
 }
-

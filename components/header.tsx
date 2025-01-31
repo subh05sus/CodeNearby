@@ -1,37 +1,45 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { signIn, signOut, useSession } from "next-auth/react"
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { Command, Search } from "lucide-react"
-import { SearchOverlay } from "./search-overlay"
-import Image from "next/image"
-import type { Session } from "next-auth"
-import { ThemeToggle } from "./theme-toggle"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Command, Search } from "lucide-react";
+import { SearchOverlay } from "./search-overlay";
+import Image from "next/image";
+import type { Session } from "next-auth";
+import { ThemeToggle } from "./theme-toggle";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Menu } from "lucide-react";
 
 export default function Header() {
-  const router = useRouter()
-  const { data: session } = useSession() as { data: Session | null }
-  const [showSearch, setShowSearch] = useState(false)
+  const router = useRouter();
+  const { data: session } = useSession() as { data: Session | null };
+  const [showSearch, setShowSearch] = useState(false);
 
   const handleSearch = (query: string) => {
-    router.push(`/search?q=${encodeURIComponent(query)}`)
-    setShowSearch(false)
-  }
+    router.push(`/search?q=${encodeURIComponent(query)}`);
+    setShowSearch(false);
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault()
-        setShowSearch(true)
+        e.preventDefault();
+        setShowSearch(true);
       }
-    }
+    };
 
-    document.addEventListener("keydown", handleKeyDown)
-    return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [])
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   return (
     <header className="border-b bg-background">
@@ -39,13 +47,18 @@ export default function Header() {
         <Link href="/" className="text-2xl font-bold">
           CodeNearby
         </Link>
-        <nav>
+        <nav className="hidden md:block">
           <ul className="flex space-x-4 items-center">
             <li>
-            <ThemeToggle />
+              <ThemeToggle />
             </li>
             <li>
-              <Button variant="outline" size="sm" className="px-1 py-4" onClick={() => setShowSearch(true)}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="px-1 py-4"
+                onClick={() => setShowSearch(true)}
+              >
                 <Search className="h-5 w-5 ml-2" />
                 <span className="mx-4">Search</span>
                 <div className="border rounded p-1 flex text-center items-center justify-center gap-1">
@@ -106,9 +119,60 @@ export default function Header() {
             )}
           </ul>
         </nav>
+        <div className="md:hidden flex items-center space-x-2">
+          <ThemeToggle />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Open menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onSelect={() => setShowSearch(true)}>
+                <Search className="mr-2 h-4 w-4" />
+                <span>Search</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => router.push("/explore")}>
+                Explore
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => router.push("/discover")}>
+                Discover
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => router.push("/feed")}>
+                Feed
+              </DropdownMenuItem>
+              {session ? (
+                <>
+                  <DropdownMenuItem onSelect={() => router.push("/requests")}>
+                    Requests
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => router.push("/messages")}>
+                    Messages
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => router.push("/profile")}>
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onSelect={() => signOut()}>
+                    Logout
+                  </DropdownMenuItem>
+                </>
+              ) : (
+                <DropdownMenuItem onSelect={() => signIn("github")}>
+                  Login with GitHub
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
-      {showSearch && <SearchOverlay onClose={() => setShowSearch(false)} onSearch={handleSearch} />}
+      {showSearch && (
+        <SearchOverlay
+          onClose={() => setShowSearch(false)}
+          onSearch={handleSearch}
+        />
+      )}
     </header>
-  )
+  );
 }
-

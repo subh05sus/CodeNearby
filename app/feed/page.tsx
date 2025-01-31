@@ -1,103 +1,103 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
-import { useInView } from "react-intersection-observer"
-import { useToast } from "@/components/ui/use-toast"
-import { Loader2 } from "lucide-react"
-import { CreatePost } from "@/components/create-post"
-import { PostCard } from "@/components/post-card"
-import { MasonryGrid } from "@/components/masonry-grid"
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useInView } from "react-intersection-observer";
+import { useToast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
+import { CreatePost } from "@/components/create-post";
+import { PostCard } from "@/components/post-card";
+import { MasonryGrid } from "@/components/masonry-grid";
 
 interface Post {
-  _id: string
-  userId: string
-  content: string
-  imageUrl?: string
-  createdAt: string
-  votes: { up: number; down: number }
-  userVotes: Record<string, number>
-  comments: Comment[]
-  poll?: Poll
-  location?: { lat: number; lng: number }
-  schedule?: string
+  _id: string;
+  userId: string;
+  content: string;
+  imageUrl?: string;
+  createdAt: string;
+  votes: { up: number; down: number };
+  userVotes: Record<string, number>;
+  comments: Comment[];
+  poll?: Poll;
+  location?: { lat: number; lng: number };
+  schedule?: string;
 }
 
 interface Comment {
-  _id: string
-  userId: string
-  content: string
-  createdAt: string
-  votes: { up: number; down: number }
-  userVotes: Record<string, number>
-  replies: Comment[]
+  _id: string;
+  userId: string;
+  content: string;
+  createdAt: string;
+  votes: { up: number; down: number };
+  userVotes: Record<string, number>;
+  replies: Comment[];
   user?: {
-    name: string
-    image: string
-  }
+    name: string;
+    image: string;
+  };
 }
 
 interface Poll {
-  question: string
-  options: string[]
-  votes: Record<string, number>
+  question: string;
+  options: string[];
+  votes: Record<string, number>;
 }
 
 export default function FeedPage() {
-  const { data: session } = useSession()
-  const [posts, setPosts] = useState<Post[]>([])
-  const [page, setPage] = useState(1)
-  const [loading, setLoading] = useState(false)
-  const { toast } = useToast()
-  const { ref, inView } = useInView()
+  const { data: session } = useSession();
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
+  const { ref, inView } = useInView();
 
   useEffect(() => {
     if (inView) {
-      loadMorePosts()
+      loadMorePosts();
     }
-  }, [inView])
+  }, [inView]);
 
   const loadMorePosts = async () => {
-    if (loading) return
-    setLoading(true)
+    if (loading) return;
+    setLoading(true);
     try {
-      const response = await fetch(`/api/posts?page=${page}`)
-      const newPosts = await response.json()
-      setPosts((prevPosts) => [...prevPosts, ...newPosts])
-      setPage((prevPage) => prevPage + 1)
+      const response = await fetch(`/api/posts?page=${page}`);
+      const newPosts = await response.json();
+      setPosts((prevPosts) => [...prevPosts, ...newPosts]);
+      setPage((prevPage) => prevPage + 1);
     } catch {
       toast({
         title: "Error",
         description: "Failed to load posts",
         variant: "destructive",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleCreatePost = async (
     content: string,
     image: File | null,
     poll?: { question: string; options: string[] },
     location?: { lat: number; lng: number },
-    schedule?: Date,
+    schedule?: Date
   ) => {
     try {
-      let imageUrl = ""
+      let imageUrl = "";
       if (image) {
-        const formData = new FormData()
-        formData.append("file", image)
+        const formData = new FormData();
+        formData.append("file", image);
         const uploadResponse = await fetch("/api/upload", {
           method: "POST",
           body: formData,
-        })
+        });
         if (!uploadResponse.ok) {
-          throw new Error("Failed to upload image")
+          throw new Error("Failed to upload image");
         }
-        const uploadData = await uploadResponse.json()
-        imageUrl = uploadData.imageUrl
+        const uploadData = await uploadResponse.json();
+        imageUrl = uploadData.imageUrl;
       }
 
       const postData = {
@@ -106,33 +106,33 @@ export default function FeedPage() {
         poll,
         location,
         schedule: schedule?.toISOString(),
-      }
+      };
 
       const response = await fetch("/api/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(postData),
-      })
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to create post")
+        throw new Error("Failed to create post");
       }
 
-      const newPost = await response.json()
-      setPosts((prevPosts) => [newPost, ...prevPosts])
+      const newPost = await response.json();
+      setPosts((prevPosts) => [newPost, ...prevPosts]);
 
       toast({
         title: "Success",
         description: "Post created successfully",
-      })
+      });
     } catch {
       toast({
         title: "Error",
         description: "Failed to create post",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   const handleVote = async (postId: string, voteType: "up" | "down") => {
     if (!session) {
@@ -140,8 +140,8 @@ export default function FeedPage() {
         title: "Error",
         description: "You must be logged in to vote",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
     try {
@@ -149,38 +149,46 @@ export default function FeedPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ voteType }),
-      })
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to vote")
+        throw new Error("Failed to vote");
       }
 
-      const updatedPost = await response.json()
+      const updatedPost = await response.json();
       setPosts((prevPosts) =>
         prevPosts.map((post) => {
           if (post._id === postId) {
-            return { ...post, votes: updatedPost.votes, userVotes: updatedPost.userVotes }
+            return {
+              ...post,
+              votes: updatedPost.votes,
+              userVotes: updatedPost.userVotes,
+            };
           }
-          return post
-        }),
-      )
+          return post;
+        })
+      );
     } catch {
       toast({
         title: "Error",
         description: "Failed to vote",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
-  const handleAddComment = async (postId: string, content: string, parentCommentId?: string) => {
+  const handleAddComment = async (
+    postId: string,
+    content: string,
+    parentCommentId?: string
+  ) => {
     if (!session) {
       toast({
         title: "Error",
         description: "You must be logged in to comment",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
     try {
@@ -188,38 +196,38 @@ export default function FeedPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content, parentCommentId }),
-      })
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to add comment")
+        throw new Error("Failed to add comment");
       }
 
-      const updatedPost = await response.json()
-      const newComment = updatedPost.comment
+      const updatedPost = await response.json();
+      const newComment = updatedPost.comment;
       setPosts((prevPosts) =>
         prevPosts.map((post) => {
           if (post._id === postId) {
             return {
               ...post,
               comments: [...post.comments, newComment],
-            }
+            };
           }
-          return post
-        }),
-      )
+          return post;
+        })
+      );
 
       toast({
         title: "Success",
         description: "Comment added successfully",
-      })
+      });
     } catch {
       toast({
         title: "Error",
         description: "Failed to add comment",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   const handleVotePoll = async (postId: string, optionIndex: number) => {
     if (!session) {
@@ -227,8 +235,8 @@ export default function FeedPage() {
         title: "Error",
         description: "You must be logged in to vote",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
     try {
@@ -236,33 +244,33 @@ export default function FeedPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ optionIndex }),
-      })
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to vote on poll")
+        throw new Error("Failed to vote on poll");
       }
 
-      const updatedPost = await response.json()
+      const updatedPost = await response.json();
       setPosts((prevPosts) =>
         prevPosts.map((post) => {
           if (post._id === postId) {
-            return { ...post, poll: updatedPost.poll }
+            return { ...post, poll: updatedPost.poll };
           }
-          return post
-        }),
-      )
+          return post;
+        })
+      );
     } catch {
       toast({
         title: "Error",
         description: "Failed to vote on poll",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="relative">
+    <div className="max-w-6xl mx-auto px-4">
+      <div className="relative mb-8">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 blur-3xl -z-10" />
         <CreatePost onSubmit={handleCreatePost} />
       </div>
@@ -289,6 +297,5 @@ export default function FeedPage() {
 
       <div ref={ref} className="h-10" />
     </div>
-  )
+  );
 }
-
