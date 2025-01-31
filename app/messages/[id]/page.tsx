@@ -55,7 +55,7 @@ export default function MessagePage() {
   }, [messages]);
 
   const initializeSocket = () => {
-    socketRef.current = io("http://localhost:5000", {
+    socketRef.current = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:5000", {
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
