@@ -139,7 +139,7 @@ export function SearchOverlay({ onClose, onSearch }: SearchOverlayProps) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search for commands..."
-              className="w-full border-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-0"
+              className="w-full border-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none shadow-none focus-visible:ring-0"
             />
           </form>
           <Button
