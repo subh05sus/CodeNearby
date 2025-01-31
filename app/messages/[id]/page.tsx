@@ -52,7 +52,7 @@ export default function MessagePage() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]); 
+  }, [messages]);
 
   const initializeSocket = () => {
     socketRef.current = io("http://localhost:5000", {
@@ -174,24 +174,22 @@ export default function MessagePage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Link href="/messages">
-            <ArrowLeft className="h-6 w-6" />
+              <ArrowLeft className="h-6 w-6" />
             </Link>
-            <Link href={`/user/${friend.githubId}`} className="flex items-center gap-2">
-
-            <Image
-            src={friend?.image || "/placeholder.svg"}
-            alt={friend?.name || ""}
-            className="w-10 h-10 rounded-full"
-            height={40}
-            width={40}
-            
-            />
-            <span>
-
-            {friend?.name || "Chat"}
-            </span>
+            <Link
+              href={friend ? `/user/${friend.githubId}` : '#'}
+              className="flex items-center gap-2"
+            >
+              <Image
+                src={friend?.image || "/placeholder.svg"}
+                alt={friend?.name || ""}
+                className="w-10 h-10 rounded-full"
+                height={40}
+                width={40}
+              />
+              <span>{friend?.name || "Chat"}</span>
             </Link>
-            </CardTitle>
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-[60vh] overflow-y-auto mb-4">

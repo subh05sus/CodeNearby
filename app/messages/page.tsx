@@ -1,49 +1,49 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useSession } from "next-auth/react"
-import Link from "next/link"
-import { Card, CardHeader, CardTitle } from "@/components/ui/card"
-import { useToast } from "@/components/ui/use-toast"
-import { Loader2 } from "lucide-react"
-import Image from "next/image"
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
+import Image from "next/image";
 
 interface Friend {
-  id: string
-  name: string
-  githubUsername: string
-  image: string
-  githubId: number
+  id: string;
+  name: string;
+  githubUsername: string;
+  image: string;
+  githubId: number;
 }
 
 export default function MessagesPage() {
-  const { data: session } = useSession()
-  const [loading, setLoading] = useState(true)
-  const [friends, setFriends] = useState<Friend[]>([])
-  const { toast } = useToast()
+  const { data: session } = useSession();
+  const [loading, setLoading] = useState(true);
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (session) {
-      fetchFriends()
+      fetchFriends();
     }
-  }, [session])
+  }, [session]);
 
   const fetchFriends = async () => {
     try {
-      const response = await fetch("/api/friends")
-      const data = await response.json()
-      setFriends(data)
-    } catch  {
+      const response = await fetch("/api/friends");
+      const data = await response.json();
+      setFriends(data);
+    } catch {
       toast({
         title: "Error",
         description: "Failed to fetch friends.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (!session) {
     return (
@@ -51,7 +51,7 @@ export default function MessagesPage() {
         <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
         <p>You need to be signed in to view your messages.</p>
       </div>
-    )
+    );
   }
 
   if (loading) {
@@ -59,7 +59,7 @@ export default function MessagesPage() {
       <div className="flex justify-center items-center min-h-[50vh]">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
-    )
+    );
   }
 
   return (
@@ -72,7 +72,7 @@ export default function MessagesPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-4">
                   <Image
-                  height={40}
+                    height={40}
                     width={40}
                     src={friend.image || "/placeholder.svg"}
                     alt={friend.name}
@@ -80,7 +80,9 @@ export default function MessagesPage() {
                   />
                   <div>
                     <p>{friend.name}</p>
-                    <p className="text-sm text-muted-foreground">@{friend.githubUsername}</p>
+                    <p className="text-sm text-muted-foreground">
+                      @{friend.githubUsername}
+                    </p>
                   </div>
                 </CardTitle>
               </CardHeader>
@@ -89,6 +91,5 @@ export default function MessagesPage() {
         ))}
       </div>
     </div>
-  )
+  );
 }
-
