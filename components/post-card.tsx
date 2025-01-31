@@ -13,7 +13,6 @@ import {
   Calendar,
   Share2,
   Twitter,
-  PhoneIcon as Whatsapp,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -30,6 +29,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import WhatsappIcon from "./whatsapp-icon";
 
 interface Comment {
   _id: string;
@@ -263,6 +263,9 @@ export function PostCard({
             </div>
           )}
         </div>
+        <span className="text-xs text-muted-foreground md:hidden block mt-3">
+          {formatDistanceToNow(new Date(post.createdAt))} ago
+        </span>
       </CardContent>
 
       <CardFooter className="flex flex-col border-t">
@@ -294,7 +297,7 @@ export function PostCard({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs text-muted-foreground md:block hidden">
               {formatDistanceToNow(new Date(post.createdAt))} ago
             </span>
             <Button
@@ -316,11 +319,15 @@ export function PostCard({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={shareOnWhatsApp}>
-                  <Whatsapp className="h-4 w-4 mr-2" /> Share to WhatsApp
+                  <div className="h-4 w-4 mr-2">
+                    <WhatsappIcon />
+                  </div>{" "}
+                  WhatsApp
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={shareOnTwitter}>
-                  <Twitter className="h-4 w-4 mr-2" /> Share to Twitter
+                  <Twitter className="h-4 w-4 mr-2" /> Twitter
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={sharePost}>More...</DropdownMenuItem>
                 {/* Add more share options here */}
               </DropdownMenuContent>
             </DropdownMenu>
