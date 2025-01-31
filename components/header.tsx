@@ -48,7 +48,7 @@ export default function Header() {
           CodeNearby
         </Link>
         <nav className="hidden md:block">
-          <ul className="flex space-x-4 items-center">
+          <ul className="flex space-x-3 items-center">
             <li>
               <ThemeToggle />
             </li>

@@ -14,8 +14,9 @@ import Image from "next/image";
 import { PostCard } from "@/components/post-card";
 import { MasonryGrid } from "@/components/masonry-grid";
 import { useInView } from "react-intersection-observer";
+import { Input } from "@/components/ui/input";
 
- function SearchPage() {
+function SearchPage() {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
@@ -30,14 +31,19 @@ import { useInView } from "react-intersection-observer";
     if (query) {
       searchDevelopers();
       searchPosts();
+    } else {
+      // Clear results when query is empty
+      setDevelopers([]);
+      setPosts([]);
     }
   }, [query]);
 
   useEffect(() => {
-    if (inView) {
+    if (inView && query) {
+      // Only load more if there's a query
       loadMorePosts();
     }
-  }, [inView]);
+  }, [inView, query]); // Added query as a dependency
 
   const searchDevelopers = async () => {
     setLoading(true);
@@ -255,90 +261,118 @@ import { useInView } from "react-intersection-observer";
   };
   return (
     <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">
-          Search Results for &quot;{query}&quot;
-        </h1>
+      {query ? (
+        <>
+          <h1 className="text-3xl font-bold mb-6">
+            Search Results for &quot;{query}&quot;
+          </h1>
 
-        <div className="space-y-8">
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">GitHub Profiles</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {developers.map((dev: any) => (
-                <Card key={dev.id}>
-                  <CardHeader>
-                    <CardTitle>{dev.login}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Image
-                      src={dev.avatar_url || "/placeholder.svg"}
-                      alt={dev.login}
-                      width={80}
-                      height={80}
-                      className="rounded-full mb-2"
-                    />
-                    <p className="text-sm text-muted-foreground mb-2">
-                      Name: {dev.name || "N/A"}
-                    </p>
-                    <p className="text-sm text-muted-foreground mb-2">
-                      Location: {dev.location || "N/A"}
-                    </p>
-                    <p className="text-sm text-muted-foreground mb-2">
-                      Public Repos: {dev.public_repos || "N/A"}
-                    </p>
-                    <div className="flex space-x-2 mt-4">
-                      <Link
-                        href={dev.html_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Button variant="outline" size="sm">
-                          View Profile
-                        </Button>
-                      </Link>
-                      {session && (
-                        <Button
-                          variant="default"
-                          size="sm"
-                          onClick={() => sendFriendRequest(dev)}
+          <div className="space-y-8">
+            <section>
+              <h2 className="text-2xl font-semibold mb-4">GitHub Profiles</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {developers.map((dev: any) => (
+                  <Card key={dev.id}>
+                    <CardHeader>
+                      <CardTitle>{dev.login}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <Image
+                        src={dev.avatar_url || "/placeholder.svg"}
+                        alt={dev.login}
+                        width={80}
+                        height={80}
+                        className="rounded-full mb-2"
+                      />
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Name: {dev.name || "N/A"}
+                      </p>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Location: {dev.location || "N/A"}
+                      </p>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Public Repos: {dev.public_repos || "N/A"}
+                      </p>
+                      <div className="flex space-x-2 mt-4">
+                        <Link
+                          href={dev.html_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
                         >
-                          <UserPlus className="h-4 w-4 mr-2" />
-                          Add Friend
-                        </Button>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">Posts</h2>
-            <MasonryGrid>
-              {posts.map((post) => (
-                <PostCard
-                  key={post._id}
-                  post={post}
-                  onVote={handleVote}
-                  onAddComment={handleAddComment}
-                  onVotePoll={handleVotePoll}
-                />
-              ))}
-            </MasonryGrid>
-            {loading && (
-              <div className="flex justify-center my-4">
-                <Loader2 className="h-6 w-6 animate-spin" />
+                          <Button variant="outline" size="sm">
+                            View Profile
+                          </Button>
+                        </Link>
+                        {session && (
+                          <Button
+                            variant="default"
+                            size="sm"
+                            onClick={() => sendFriendRequest(dev)}
+                          >
+                            <UserPlus className="h-4 w-4 mr-2" />
+                            Add Friend
+                          </Button>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
-            )}
-            <div ref={ref} className="h-10" />
-          </section>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-semibold mb-4">Posts</h2>
+              <MasonryGrid>
+                {posts.map((post) => (
+                  <PostCard
+                    key={post._id}
+                    post={post}
+                    onVote={handleVote}
+                    onAddComment={handleAddComment}
+                    onVotePoll={handleVotePoll}
+                  />
+                ))}
+              </MasonryGrid>
+              {loading && (
+                <div className="flex justify-center my-4">
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                </div>
+              )}
+              <div ref={ref} className="h-10" />
+            </section>
+          </div>
+        </>
+      ) : (
+        <div className="flex flex-col items-center justify-center min-h-[50vh]">
+          <h1 className="text-2xl font-bold mb-4">
+            Search for users and posts
+          </h1>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const searchInput = e.currentTarget.querySelector("input");
+              if (searchInput) {
+                const searchQuery = searchInput.value.trim();
+                if (searchQuery) {
+                  window.location.href = `/search?q=${encodeURIComponent(
+                    searchQuery
+                  )}`;
+                }
+              }
+            }}
+            className="w-full max-w-md"
+          >
+            <Input
+              type="text"
+              placeholder="Enter your search query"
+              className="w-full"
+            />
+          </form>
         </div>
-     
+      )}
     </div>
   );
 }
-
-
 
 export default function SearchMain() {
   return (
