@@ -61,10 +61,6 @@ export default function MessagePage() {
         reconnection: true,
         reconnectionAttempts: 5,
         reconnectionDelay: 1000,
-        transports: [ "polling"], // Add both transports
-        auth: {
-          token: session?.user?.githubId,
-        },
       }
     );
     socketRef.current.on("connect", () => {
