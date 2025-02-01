@@ -55,11 +55,18 @@ export default function MessagePage() {
   }, [messages]);
 
   const initializeSocket = () => {
-    socketRef.current = io(process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:5000", {
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-    });
+    socketRef.current = io(
+      process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:5000",
+      {
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        transports: ["websocket", "polling"], // Add both transports
+        auth: {
+          token: session?.user?.githubId,
+        },
+      }
+    );
     socketRef.current.on("connect", () => {
       console.log("Connected to socket server");
       console.log(
@@ -177,7 +184,7 @@ export default function MessagePage() {
               <ArrowLeft className="h-6 w-6" />
             </Link>
             <Link
-              href={friend ? `/user/${friend.githubId}` : '#'}
+              href={friend ? `/user/${friend.githubId}` : "#"}
               className="flex items-center gap-2"
             >
               <Image
