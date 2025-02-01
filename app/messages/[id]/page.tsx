@@ -10,18 +10,34 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { ArrowLeft, Loader2, Send } from "lucide-react";
-import io from "socket.io-client";
-import { Session } from "next-auth";
+import type { Session } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
+import { getDatabase, ref, push, onChildAdded, off } from "firebase/database";
+import { initializeApp } from "firebase/app";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyABLK0zLU5bJ3D6YV-yIFuW-wPE8VBu5zU",
+  authDomain: "codenearby-99.firebaseapp.com",
+  projectId: "codenearby-99",
+  storageBucket: "codenearby-99.firebasestorage.app",
+  messagingSenderId: "725950504151",
+  appId: "1:725950504151:web:964e851000f99319cf2492",
+  measurementId: "G-4SP02T6P15",
+  databaseURL: "https://codenearby-99-default-rtdb.firebaseio.com",
+};
+
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
 
 interface Message {
   id: string;
   senderId: string;
   receiverId: string;
   content: string;
-  timestamp: Date;
+  timestamp: number;
 }
+
 const minimum = (a: string, b: string) => (a < b ? a : b);
 const maximum = (a: string, b: string) => (a > b ? a : b);
 
@@ -33,81 +49,52 @@ export default function MessagePage() {
   const [inputMessage, setInputMessage] = useState("");
   const [friend, setFriend] = useState<any>(null);
   const { toast } = useToast();
-  const socketRef = useRef<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (session && params.id) {
       fetchMessages();
       fetchFriend();
-      initializeSocket();
     }
-
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-      }
-    };
-  }, [params.id]);
+  }, [params.id, session]);
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
-
-  const initializeSocket = () => {
-    socketRef.current = io(
-      process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:5000",
-      {
-        reconnection: true,
-        reconnectionAttempts: 5,
-        reconnectionDelay: 1000,
-      }
-    );
-    socketRef.current.on("connect", () => {
-      console.log("Connected to socket server");
-      console.log(
-        "Joining room:",
-        minimum(
-          params.id as string,
-          String(session?.user?.githubId).toString()
-        ) +
-          maximum(
-            params.id as string,
-            String(session?.user?.githubId).toString()
-          )
-      );
-      socketRef.current.emit(
-        "join",
-        minimum(
-          params.id as string,
-          String(session?.user?.githubId).toString()
-        ) +
-          maximum(
-            params.id as string,
-            String(session?.user?.githubId).toString()
-          )
-      );
-    });
-
-    socketRef.current.on("message", (message: Message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
-    });
-  };
+  }, [messagesEndRef]); //Corrected dependency
 
   const fetchMessages = async () => {
-    try {
-      const response = await fetch(`/api/messages/${params.id}`);
-      const data = await response.json();
-      setMessages(data);
-    } catch {
-      toast({
-        title: "Error",
-        description: "Failed to fetch messages.",
-        variant: "destructive",
+    if (!session?.user?.githubId || !params.id) return;
+
+    setMessages([]); // Reset messages when fetching new ones
+
+    const roomId =
+      minimum(params.id as string, session.user.githubId) +
+      maximum(params.id as string, session.user.githubId);
+
+    const messagesRef = ref(database, `messages/${roomId}`);
+
+    // Remove any existing listeners first
+    off(messagesRef);
+
+    onChildAdded(messagesRef, (snapshot) => {
+      const message = {
+        id: snapshot.key,
+        ...snapshot.val(),
+      };
+      setMessages((prevMessages) => {
+        // Check if message already exists to prevent duplicates
+        if (prevMessages.some((m) => m.id === message.id)) {
+          return prevMessages;
+        }
+        return [...prevMessages, message];
       });
-    } finally {
-      setLoading(false);
-    }
+    });
+
+    setLoading(false);
+
+    return () => {
+      off(messagesRef);
+    };
   };
 
   const fetchFriend = async () => {
@@ -125,28 +112,21 @@ export default function MessagePage() {
   };
 
   const sendMessage = () => {
-    if (inputMessage.trim() === "") return;
+    if (inputMessage.trim() === "" || !session?.user?.githubId || !params.id)
+      return;
 
-    const messageData = {
-      roomId:
-        minimum(
-          params.id as string,
-          String(session?.user?.githubId).toString()
-        ) +
-        maximum(
-          params.id as string,
-          String(session?.user?.githubId).toString()
-        ),
-      senderId: String(session?.user?.githubId),
-      receiverId: (params.id as string).replace(
-        String(session?.user?.githubId),
-        ""
-      ),
+    const roomId =
+      minimum(params.id as string, session.user.githubId) +
+      maximum(params.id as string, session.user.githubId);
+
+    const messagesRef = ref(database, `messages/${roomId}`);
+    push(messagesRef, {
+      senderId: session.user.githubId,
+      receiverId: params.id,
       content: inputMessage,
-    };
-    console.log("Sending message:", messageData);
+      timestamp: Date.now(),
+    });
 
-    socketRef.current.emit("message", messageData);
     setInputMessage("");
   };
 
@@ -200,14 +180,14 @@ export default function MessagePage() {
               <div
                 key={message.id}
                 className={`mb-2 ${
-                  message.senderId === String(session.user?.githubId)
+                  message.senderId === session.user.githubId
                     ? "text-right"
                     : "text-left"
                 }`}
               >
                 <span
                   className={`inline-block p-2 rounded-lg ${
-                    message.senderId === String(session.user?.githubId)
+                    message.senderId === session.user.githubId
                       ? "bg-blue-500 text-white"
                       : "bg-gray-200 dark:bg-zinc-900 text-black dark:text-white"
                   }`}
