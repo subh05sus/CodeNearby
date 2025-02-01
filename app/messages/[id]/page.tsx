@@ -81,12 +81,14 @@ export default function MessagePage() {
         id: snapshot.key,
         ...snapshot.val(),
       };
+
       setMessages((prevMessages) => {
-        // Check if message already exists to prevent duplicates
         if (prevMessages.some((m) => m.id === message.id)) {
           return prevMessages;
         }
-        return [...prevMessages, message];
+        const newMessages = [...prevMessages, message];
+        setTimeout(scrollToBottom, 100); // Delay ensures DOM updates before scrolling
+        return newMessages;
       });
     });
 
@@ -196,7 +198,7 @@ export default function MessagePage() {
                 </span>
               </div>
             ))}
-            <div ref={messagesEndRef} />
+            <div ref={messagesEndRef} className="h-2" />
           </div>
           <div className="flex gap-2">
             <Input
