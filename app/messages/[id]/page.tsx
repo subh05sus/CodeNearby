@@ -61,7 +61,7 @@ export default function MessagePage() {
         reconnection: true,
         reconnectionAttempts: 5,
         reconnectionDelay: 1000,
-        transports: ["websocket", "polling"], // Add both transports
+        transports: [ "polling"], // Add both transports
         auth: {
           token: session?.user?.githubId,
         },
