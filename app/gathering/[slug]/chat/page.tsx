@@ -7,14 +7,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, Send, ImageIcon } from "lucide-react";
+import { Loader2, Send, ImageIcon, Pin } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { db } from "@/lib/firebase";
-import { ref, onChildAdded } from "firebase/database";
+import { ref, onChildAdded, onChildChanged } from "firebase/database";
 import type { Session } from "next-auth";
 import { CreateGatheringPoll } from "@/components/gatheringPoll";
 import Image from "next/image";
+import { Progress } from "@/components/ui/progress";
+
 interface Message {
   id: string;
   senderId: string;
@@ -30,6 +32,13 @@ interface Message {
   };
 }
 
+interface PollData {
+  question: string;
+  options: string[];
+  votes: { [key: string]: number };
+  totalVotes: number;
+}
+
 export default function GatheringChatPage() {
   const { data: session } = useSession() as { data: Session | null };
   const params = useParams();
@@ -40,8 +49,10 @@ export default function GatheringChatPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isHostOnly, setIsHostOnly] = useState(false);
   const [isHost, setIsHost] = useState(false);
+  const [pinnedMessageId, setPinnedMessageId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [mentionSuggestions, setMentionSuggestions] = useState<string[]>([]);
 
   useEffect(() => {
     let unsubscribe: () => void;
@@ -56,7 +67,7 @@ export default function GatheringChatPage() {
         }
       };
     }
-  }, [session, params.slug]);
+  }, [session]); // Removed params.slug from dependencies
 
   const fetchMessages = async () => {
     const messagesRef = ref(db, `messages/${params.slug}`);
@@ -70,8 +81,27 @@ export default function GatheringChatPage() {
       });
     });
 
+    const updateUnsubscribe = onChildChanged(messagesRef, (snapshot) => {
+      const updatedMessage = snapshot.val();
+      setMessages((prevMessages) =>
+        prevMessages.map((message) =>
+          message.id === snapshot.key
+            ? { ...message, ...updatedMessage }
+            : message
+        )
+      );
+      if (updatedMessage.isPinned) {
+        setPinnedMessageId(snapshot.key);
+      } else if (snapshot.key === pinnedMessageId) {
+        setPinnedMessageId(null);
+      }
+    });
+
     setIsLoading(false);
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      updateUnsubscribe();
+    };
   };
 
   const checkHostStatus = async () => {
@@ -92,7 +122,7 @@ export default function GatheringChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(scrollToBottom, []); //Fixed useEffect dependency
+  useEffect(scrollToBottom, [messages]);
 
   const handleSendMessage = async (pollMessage?: string) => {
     if ((!inputMessage.trim() && !pollMessage) || !session) return;
@@ -186,6 +216,31 @@ export default function GatheringChatPage() {
     }
   };
 
+  const handleUnpinMessage = async (messageId: string) => {
+    try {
+      const response = await fetch(`/api/gathering/${params.slug}/chat/unpin`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messageId }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to unpin message");
+      }
+
+      toast({
+        title: "Success",
+        description: "Message unpinned successfully.",
+      });
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to unpin message. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handlePollVote = async (pollId: string, optionIndex: number) => {
     try {
       const response = await fetch(
@@ -214,6 +269,35 @@ export default function GatheringChatPage() {
     }
   };
 
+  const scrollToPinnedMessage = () => {
+    const pinnedMessage = document.getElementById(`message-${pinnedMessageId}`);
+    if (pinnedMessage) {
+      pinnedMessage.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputMessage(e.target.value);
+    const lastWord = e.target.value.split(" ").pop() || "";
+    if (lastWord.startsWith("@") && lastWord.length > 1) {
+      const query = lastWord.slice(1).toLowerCase();
+      const suggestions = messages
+        .filter((message) => message.senderName.toLowerCase().includes(query))
+        .map((message) => message.senderName)
+        .slice(0, 3);
+      setMentionSuggestions(suggestions);
+    } else {
+      setMentionSuggestions([]);
+    }
+  };
+
+  const handleMentionSelect = (name: string) => {
+    const words = inputMessage.split(" ");
+    words[words.length - 1] = `@${name}`;
+    setInputMessage(words.join(" "));
+    setMentionSuggestions([]);
+  };
+
   if (!session) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
@@ -235,119 +319,165 @@ export default function GatheringChatPage() {
     <div className="container mx-auto px-4 py-8">
       <Card>
         <CardHeader>
-          <CardTitle>Chat</CardTitle>
+          <CardTitle className="flex justify-between items-center">
+            Chat
+            {pinnedMessageId && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={scrollToPinnedMessage}
+              >
+                <Pin className="h-4 w-4 mr-2" />
+                View Pinned Message
+              </Button>
+            )}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-[60vh] overflow-y-auto mb-4 space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex items-start space-x-2 ${
-                  message.senderId === session.user.id
-                    ? "justify-end"
-                    : "justify-start"
-                }`}
-              >
-                {(!message.isAnonymous ||
-                  (isHost && message.realSenderInfo)) && (
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage
-                      src={
-                        isHost && message.realSenderInfo
-                          ? message.realSenderInfo.image
-                          : message.senderImage
-                      }
-                      alt={
-                        isHost && message.realSenderInfo
-                          ? message.realSenderInfo.name
-                          : message.senderName
-                      }
-                    />
-                    <AvatarFallback>
-                      {isHost && message.realSenderInfo
-                        ? message.realSenderInfo.name[0]
-                        : message.senderName[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                )}
+            {messages.map((message) => {
+              const isPoll = message.content.startsWith('{"type":"poll"');
+              const pollData: PollData | null = isPoll
+                ? JSON.parse(message.content)
+                : null;
+
+              return (
                 <div
-                  className={`bg-muted p-2 rounded-lg ${
-                    message.isPinned ? "border-2 border-yellow-500" : ""
+                  key={message.id}
+                  id={`message-${message.id}`}
+                  className={`flex items-start space-x-2 ${
+                    message.senderId === session.user.id
+                      ? "justify-end"
+                      : "justify-start"
                   }`}
                 >
-                  {message.isAnonymous ? (
-                    <p className="text-sm font-semibold">
-                      Anonymous
-                      {isHost && message.realSenderInfo && (
-                        <span className="text-xs text-muted-foreground">
-                          {" "}
-                          ({message.realSenderInfo.name})
-                        </span>
-                      )}
-                    </p>
-                  ) : (
-                    <p className="text-sm font-semibold">
-                      {message.senderName}
-                    </p>
+                  {(!message.isAnonymous ||
+                    (isHost && message.realSenderInfo)) && (
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage
+                        src={
+                          isHost && message.realSenderInfo
+                            ? message.realSenderInfo.image
+                            : message.senderImage
+                        }
+                        alt={
+                          isHost && message.realSenderInfo
+                            ? message.realSenderInfo.name
+                            : message.senderName
+                        }
+                      />
+                      <AvatarFallback>
+                        {isHost && message.realSenderInfo
+                          ? message.realSenderInfo.name[0]
+                          : message.senderName[0]}
+                      </AvatarFallback>
+                    </Avatar>
                   )}
-                  {message.content.startsWith('{"type":"poll"') ? (
-                    <div className="space-y-2">
-                      <p className="font-semibold">Poll</p>
-                      <p>{JSON.parse(message.content).question}</p>
-                      <div className="space-y-1">
-                        {JSON.parse(message.content).options.map(
-                          (option: string, index: number) => (
+                  <div
+                    className={`bg-muted p-2 rounded-lg ${
+                      message.isPinned ? "border-2 border-yellow-500" : ""
+                    }`}
+                  >
+                    {message.isAnonymous ? (
+                      <p className="text-sm font-semibold">
+                        Anonymous
+                        {isHost && message.realSenderInfo && (
+                          <span className="text-xs text-muted-foreground">
+                            {" "}
+                            ({message.realSenderInfo.name})
+                          </span>
+                        )}
+                      </p>
+                    ) : (
+                      <p className="text-sm font-semibold">
+                        {message.senderName}
+                      </p>
+                    )}
+                    {isPoll && pollData ? (
+                      <div className="space-y-2">
+                        <p className="font-semibold">{pollData.question}</p>
+                        {pollData.options.map((option, index) => (
+                          <div key={index} className="space-y-1">
                             <Button
-                              key={index}
                               variant="outline"
-                              className="w-full text-left justify-start"
+                              size="sm"
+                              className="w-full justify-between"
                               onClick={() => handlePollVote(message.id, index)}
                             >
-                              {option}
+                              <span>{option}</span>
+                              <span>{pollData.votes?.[index] ?? 0} votes</span>
                             </Button>
-                          )
-                        )}
+                            <Progress
+                              value={
+                                ((pollData.votes?.[index] ?? 0) /
+                                  pollData.totalVotes) *
+                                100
+                              }
+                              className="h-2"
+                            />
+                          </div>
+                        ))}
                       </div>
-                    </div>
-                  ) : message.content.startsWith("[Image](") ? (
-                    <div>
-                      <Image
-                        height={200}
-                        width={200}
-                        src={
-                          message.content.match(/\[Image\]\((.*?)\)/)?.[1] || ""
-                        }
-                        alt="Image"
-                        className="max-w-[200px] rounded-lg"
-                      />
-                    </div>
-                  ) : (
-                    <p>{message.content}</p>
-                  )}
+                    ) : message.content.startsWith("[Image](") ? (
+                      <div>
+                        <Image
+                          height={200}
+                          width={200}
+                          src={
+                            message.content.match(/\[Image\]\((.*?)\)/)?.[1] ||
+                            ""
+                          }
+                          alt="Image"
+                          className="max-w-[200px] rounded-lg"
+                        />
+                      </div>
+                    ) : (
+                      <p>{message.content}</p>
+                    )}
 
-                  {isHost && !message.isPinned && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handlePinMessage(message.id)}
-                      className="mt-1"
-                    >
-                      Pin
-                    </Button>
-                  )}
+                    {isHost && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() =>
+                          message.isPinned
+                            ? handleUnpinMessage(message.id)
+                            : handlePinMessage(message.id)
+                        }
+                        className="mt-1"
+                      >
+                        {message.isPinned ? "Unpin" : "Pin"}
+                      </Button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             <div ref={messagesEndRef} />
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="relative">
             <Input
               value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
+              onChange={handleInputChange}
               placeholder="Type your message..."
               onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
               disabled={isHostOnly && !isHost}
             />
+            {mentionSuggestions.length > 0 && (
+              <div className="absolute bottom-full left-0 bg-white border border-gray-300 rounded-md shadow-lg">
+                {mentionSuggestions.map((name) => (
+                  <div
+                    key={name}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => handleMentionSelect(name)}
+                  >
+                    {name}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="flex items-center space-x-2 mt-2">
             <Button
               onClick={() => handleSendMessage()}
               disabled={isHostOnly && !isHost}
@@ -371,16 +501,16 @@ export default function GatheringChatPage() {
               gatheringSlug={params.slug as string}
               onPollCreated={(pollMessage) => handleSendMessage(pollMessage)}
             />
-          </div>
-          <div className="flex items-center mt-2">
-            <Switch
-              checked={isAnonymous}
-              onCheckedChange={setIsAnonymous}
-              id="anonymous-mode"
-            />
-            <label htmlFor="anonymous-mode" className="ml-2">
-              Send anonymously
-            </label>
+            <div className="flex items-center">
+              <Switch
+                checked={isAnonymous}
+                onCheckedChange={setIsAnonymous}
+                id="anonymous-mode"
+              />
+              <label htmlFor="anonymous-mode" className="ml-2">
+                Send anonymously
+              </label>
+            </div>
           </div>
         </CardContent>
       </Card>

@@ -6,16 +6,16 @@ import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, MessageSquare, UserX, UserMinus, Copy } from "lucide-react";
+import { Loader2, MessageSquare, UserX, VolumeX, Copy } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { QRCodeDisplay } from "@/components/qr-code-display";
 import type { Session } from "next-auth";
-import { Input } from "@/components/ui/input"; // Import the Input component
+import { Input } from "@/components/ui/input";
 
 interface User {
-  [x: string]: string;
+  _id: string;
   id: string;
   name: string;
   image: string;
@@ -28,6 +28,8 @@ interface Gathering {
   expiresAt: string;
   hostId: string;
   participants: User[];
+  blockedUsers: string[];
+  mutedUsers: string[];
 }
 
 export default function GatheringRoomPage() {
@@ -63,30 +65,6 @@ export default function GatheringRoomPage() {
     }
   };
 
-  const handleKickUser = async (userId: string) => {
-    try {
-      const response = await fetch(`/api/gathering/${params.slug}/moderate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "kick", userId }),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to kick user");
-      }
-      fetchGathering();
-      toast({
-        title: "Success",
-        description: "User has been kicked from the gathering.",
-      });
-    } catch {
-      toast({
-        title: "Error",
-        description: "Failed to kick user. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
   const handleBlockUser = async (userId: string) => {
     try {
       const response = await fetch(`/api/gathering/${params.slug}/moderate`, {
@@ -100,12 +78,36 @@ export default function GatheringRoomPage() {
       fetchGathering();
       toast({
         title: "Success",
-        description: "User has been blocked from sending messages.",
+        description: "User has been blocked from the gathering.",
       });
     } catch {
       toast({
         title: "Error",
         description: "Failed to block user. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleMuteUser = async (userId: string) => {
+    try {
+      const response = await fetch(`/api/gathering/${params.slug}/moderate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "mute", userId }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to mute user");
+      }
+      fetchGathering();
+      toast({
+        title: "Success",
+        description: "User has been muted in the gathering.",
+      });
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to mute user. Please try again.",
         variant: "destructive",
       });
     }
@@ -201,15 +203,21 @@ export default function GatheringRoomPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => handleBlockUser(user._id)}
+                          disabled={
+                            gathering.blockedUsers?.includes(user._id) ?? false
+                          }
                         >
                           <UserX className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => handleKickUser(user._id)}
+                          onClick={() => handleMuteUser(user._id)}
+                          disabled={
+                            gathering.mutedUsers?.includes(user._id) ?? false
+                          }
                         >
-                          <UserMinus className="h-4 w-4" />
+                          <VolumeX className="h-4 w-4" />
                         </Button>
                       </div>
                     )}

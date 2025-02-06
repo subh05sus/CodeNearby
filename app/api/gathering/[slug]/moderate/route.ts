@@ -15,7 +15,6 @@ export async function POST(
 
   try {
     const { action, userId, enabled } = await request.json();
-    console.log(action, userId, enabled);
     const client = await clientPromise;
     const db = client.db();
 
@@ -46,13 +45,26 @@ export async function POST(
             { $addToSet: { blockedUsers: new ObjectId(userId) } }
           );
         break;
-      case "kick":
+      case "unblock":
         await db
           .collection("gatherings")
           .updateOne(
             { _id: gathering._id },
-            { $pull: { participants: userId } }
+            { $pull: { blockedUsers: userId } }
           );
+        break;
+      case "mute":
+        await db
+          .collection("gatherings")
+          .updateOne(
+            { _id: gathering._id },
+            { $addToSet: { mutedUsers: new ObjectId(userId) } }
+          );
+        break;
+      case "unmute":
+        await db
+          .collection("gatherings")
+          .updateOne({ _id: gathering._id }, { $pull: { mutedUsers: userId } });
         break;
       case "hostOnly":
         await db.collection("gatherings").updateOne(
