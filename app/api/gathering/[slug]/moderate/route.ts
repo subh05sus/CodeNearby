@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/options";
@@ -46,12 +47,16 @@ export async function POST(
           );
         break;
       case "unblock":
-        await db
-          .collection("gatherings")
-          .updateOne(
-            { _id: gathering._id },
-            { $pull: { blockedUsers: userId } }
-          );
+        await db.collection("gatherings").updateOne(
+          { _id: gathering._id },
+          {
+            $set: {
+              blockedUsers: gathering.blockedUsers.filter(
+                (id: any) => id.toString() !== userId
+              ),
+            },
+          }
+        );
         break;
       case "mute":
         await db
@@ -62,9 +67,16 @@ export async function POST(
           );
         break;
       case "unmute":
-        await db
-          .collection("gatherings")
-          .updateOne({ _id: gathering._id }, { $pull: { mutedUsers: userId } });
+        await db.collection("gatherings").updateOne(
+          { _id: gathering._id },
+          {
+            $set: {
+              mutedUsers: gathering.mutedUsers.filter(
+                (id: any) => id.toString() !== userId
+              ),
+            },
+          }
+        );
         break;
       case "hostOnly":
         await db.collection("gatherings").updateOne(

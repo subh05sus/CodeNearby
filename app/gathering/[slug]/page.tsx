@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -6,7 +7,15 @@ import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, MessageSquare, UserX, VolumeX, Copy } from "lucide-react";
+import {
+  Loader2,
+  MessageSquare,
+  UserX,
+  VolumeX,
+  Copy,
+  UserCheck2Icon,
+  UserPlus2,
+} from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
@@ -89,6 +98,30 @@ export default function GatheringRoomPage() {
     }
   };
 
+  const handleUnblockUser = async (userId: string) => {
+    try {
+      const response = await fetch(`/api/gathering/${params.slug}/moderate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "unblock", userId }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to unblock user");
+      }
+      fetchGathering();
+      toast({
+        title: "Success",
+        description: "User has been unblocked from the gathering.",
+      });
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to unblock user. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleMuteUser = async (userId: string) => {
     try {
       const response = await fetch(`/api/gathering/${params.slug}/moderate`, {
@@ -108,6 +141,30 @@ export default function GatheringRoomPage() {
       toast({
         title: "Error",
         description: "Failed to mute user. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUnmuteUser = async (userId: string) => {
+    try {
+      const response = await fetch(`/api/gathering/${params.slug}/moderate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "unmute", userId }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to unmute user");
+      }
+      fetchGathering();
+      toast({
+        title: "Success",
+        description: "User has been unmuted in the gathering.",
+      });
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to unmute user. Please try again.",
         variant: "destructive",
       });
     }
@@ -199,26 +256,48 @@ export default function GatheringRoomPage() {
                     </div>
                     {isHost && user.id !== session.user.id && (
                       <div className="flex space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleBlockUser(user._id)}
-                          disabled={
-                            gathering.blockedUsers?.includes(user._id) ?? false
-                          }
-                        >
-                          <UserX className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleMuteUser(user._id)}
-                          disabled={
-                            gathering.mutedUsers?.includes(user._id) ?? false
-                          }
-                        >
-                          <VolumeX className="h-4 w-4" />
-                        </Button>
+                        {!gathering.blockedUsers?.includes(user._id) ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleBlockUser(user._id)}
+                            disabled={
+                              gathering.blockedUsers?.includes(user._id) ??
+                              false
+                            }
+                          >
+                            <UserX className="h-4 w-4" />
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleUnblockUser(user._id)}
+                          >
+                            <UserCheck2Icon className="h-4 w-4" />
+                          </Button>
+                        )}
+
+                        {!gathering.mutedUsers?.includes(user._id) ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleMuteUser(user._id)}
+                            disabled={
+                              gathering.mutedUsers?.includes(user._id) ?? false
+                            }
+                          >
+                            <VolumeX className="h-4 w-4" />
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleUnmuteUser(user._id)}
+                          >
+                            <UserPlus2 className="h-4 w-4" />
+                          </Button>
+                        )}
                       </div>
                     )}
                   </div>
