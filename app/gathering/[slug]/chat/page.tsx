@@ -233,6 +233,7 @@ export default function GatheringChatPage() {
         title: "Success",
         description: "Message unpinned successfully.",
       });
+      setPinnedMessageId(null);
     } catch {
       toast({
         title: "Error",
@@ -461,20 +462,37 @@ export default function GatheringChatPage() {
               value={inputMessage}
               onChange={handleInputChange}
               placeholder="Type your message..."
-              onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSendMessage();
+                } else if (e.key === "Tab" && mentionSuggestions.length > 0) {
+                  e.preventDefault();
+                  handleMentionSelect(mentionSuggestions[0]);
+                }
+              }}
               disabled={isHostOnly && !isHost}
             />
             {mentionSuggestions.length > 0 && (
-              <div className="absolute bottom-full left-0 bg-white border border-gray-300 rounded-md shadow-lg">
-                {mentionSuggestions.map((name) => (
-                  <div
-                    key={name}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => handleMentionSelect(name)}
-                  >
-                    {name}
-                  </div>
-                ))}
+              <div className="absolute bottom-full left-0 bg-background border rounded-md shadow-lg">
+                {Array.from(new Set(mentionSuggestions))
+                  .filter((name) => name.toLowerCase() !== "anonymous")
+                  .map((name, index) => (
+                    <div
+                      key={name}
+                      className={`px-4 py-2 hover:bg-muted cursor-pointer ${
+                        index === 0 ? "bg-muted" : ""
+                      }`}
+                      onClick={() => handleMentionSelect(name)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Tab" && index === 0) {
+                          e.preventDefault();
+                          handleMentionSelect(name);
+                        }
+                      }}
+                    >
+                      {name}
+                    </div>
+                  ))}
               </div>
             )}
           </div>
