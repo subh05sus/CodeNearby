@@ -15,6 +15,7 @@ export async function POST(
 
   try {
     const { action, userId, enabled } = await request.json();
+    console.log(action, userId, enabled);
     const client = await clientPromise;
     const db = client.db();
 
@@ -50,7 +51,7 @@ export async function POST(
           .collection("gatherings")
           .updateOne(
             { _id: gathering._id },
-            { $pull: { participants: new ObjectId(userId) } }
+            { $pull: { participants: userId } }
           );
         break;
       case "hostOnly":

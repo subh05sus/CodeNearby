@@ -6,14 +6,16 @@ import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, MessageSquare, UserX, UserMinus } from "lucide-react";
+import { Loader2, MessageSquare, UserX, UserMinus, Copy } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { QRCodeDisplay } from "@/components/qr-code-display";
-import { Session } from "next-auth";
+import type { Session } from "next-auth";
+import { Input } from "@/components/ui/input"; // Import the Input component
 
 interface User {
+  [x: string]: string;
   id: string;
   name: string;
   image: string;
@@ -40,7 +42,7 @@ export default function GatheringRoomPage() {
     if (session) {
       fetchGathering();
     }
-  }, [session]); // Removed params.slug from dependencies
+  }, [session]);
 
   const fetchGathering = async () => {
     try {
@@ -133,6 +135,15 @@ export default function GatheringRoomPage() {
     }
   };
 
+  const copyInviteLink = () => {
+    const inviteLink = `${window.location.origin}/gathering/join/${gathering?.slug}`;
+    navigator.clipboard.writeText(inviteLink);
+    toast({
+      title: "Success",
+      description: "Invite link copied to clipboard.",
+    });
+  };
+
   if (!session) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
@@ -163,73 +174,92 @@ export default function GatheringRoomPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Card>
-        <CardHeader>
-          <CardTitle>{gathering.name}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground mb-4">
-            Expires: {new Date(gathering.expiresAt).toLocaleString()}
-          </p>
-          <div className="flex justify-between items-center mb-6">
-            <Button asChild>
-              <Link href={`/gathering/${gathering.slug}/chat`}>
-                <MessageSquare className="mr-2 h-4 w-4" />
-                Join Chat
-              </Link>
-            </Button>
-            {isHost && (
-              <div className="flex items-center space-x-2">
-                <Switch
-                  checked={hostOnlyMode}
-                  onCheckedChange={handleHostOnlyMode}
-                  id="host-only-mode"
-                />
-                <label htmlFor="host-only-mode">Host-only mode</label>
+      <h1 className="text-3xl font-bold mb-6">{gathering.name}</h1>
+      <div className="flex flex-col md:flex-row gap-8">
+        <div className="w-full md:w-1/2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Participants</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {gathering.participants.map((user) => (
+                  <div
+                    key={user.id}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={user.image} alt={user.name} />
+                        <AvatarFallback>{user.name[0]}</AvatarFallback>
+                      </Avatar>
+                      <span>{user.name}</span>
+                    </div>
+                    {isHost && user.id !== session.user.id && (
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleBlockUser(user._id)}
+                        >
+                          <UserX className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleKickUser(user._id)}
+                        >
+                          <UserMinus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
-            )}
-          </div>
-          <h3 className="text-lg font-semibold mb-2">Participants</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {gathering.participants.slice(0, 10).map((user) => (
-              <div key={user.id} className="flex flex-col items-center">
-                <Avatar className="h-12 w-12 mb-2">
-                  <AvatarImage src={user.image} alt={user.name} />
-                  <AvatarFallback>{user.name[0]}</AvatarFallback>
-                </Avatar>
-                <p className="text-sm text-center">{user.name}</p>
-                {isHost && user.id !== session.user.id && (
-                  <div className="flex mt-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleBlockUser(user.id)}
-                      className="mr-1"
-                    >
-                      <UserX className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleKickUser(user.id)}
-                    >
-                      <UserMinus className="h-4 w-4" />
-                    </Button>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="w-full md:w-1/2">
+          <Card>
+            <CardHeader>
+              <CardTitle>Invite Others</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <QRCodeDisplay slug={gathering.slug} />
+              <div className="mt-4 flex items-center space-x-2">
+                <Input
+                  readOnly
+                  value={`${window.location.origin}/gathering/join/${gathering.slug}`}
+                />
+                <Button onClick={copyInviteLink}>
+                  <Copy className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="mt-4">
+            <CardContent className="pt-6">
+              <div className="flex justify-between items-center">
+                <Button asChild>
+                  <Link href={`/gathering/${gathering.slug}/chat`}>
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    Join Chat
+                  </Link>
+                </Button>
+                {isHost && (
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      checked={hostOnlyMode}
+                      onCheckedChange={handleHostOnlyMode}
+                      id="host-only-mode"
+                    />
+                    <label htmlFor="host-only-mode">Host-only mode</label>
                   </div>
                 )}
               </div>
-            ))}
-          </div>
-          {gathering.participants.length > 10 && (
-            <p className="text-sm text-muted-foreground mt-4">
-              And {gathering.participants.length - 10} more participants...
-            </p>
-          )}
-        </CardContent>
-      </Card>
-      <div className="mt-8">
-        <h3 className="text-lg font-semibold mb-4">Invite Others</h3>
-        <QRCodeDisplay slug={gathering.slug} />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
