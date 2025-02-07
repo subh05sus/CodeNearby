@@ -83,6 +83,7 @@ interface PostCardProps {
     voteType: "up" | "down"
   ) => Promise<void>;
 }
+
 export function PostCard({
   post,
   onVote,
@@ -241,9 +242,9 @@ export function PostCard({
 
           {/* Post Content */}
           <p className="break-words md:text-lg text-base">
-            {post.content.split(/\b(https?:\/\/\S+)/g).map((part, i) =>
+            {post.content.split(/\b(https?:\/\/\S+)/g).map((part) =>
               part.match(/^https?:\/\//) ? (
-                <LinkPreview url={part} className="font-medium">
+                <LinkPreview url={part} className="font-medium" key={part}>
                   {part}
                 </LinkPreview>
               ) : (

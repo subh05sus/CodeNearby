@@ -20,6 +20,11 @@ interface Post {
   poll?: Poll;
   location?: { lat: number; lng: number };
   schedule?: string;
+  user: {
+    name: string;
+    image: string;
+    githubUsername: string;
+  };
 }
 
 interface Comment {
@@ -145,6 +150,54 @@ export default function FeedPage() {
     }
   };
 
+  const handleCommentVote = async (
+    postId: string,
+    commentId: string,
+    voteType: "up" | "down"
+  ) => {
+    if (!session) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to vote",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `/api/posts/${postId}/comments/${commentId}/vote`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ voteType }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to vote on comment");
+      }
+
+      const updatedComment = await response.json();
+      setPost((prevPost) => {
+        if (!prevPost) return prevPost;
+        const updatedComments = prevPost.comments.map((comment) => {
+          if (comment._id === updatedComment._id) {
+            return updatedComment;
+          }
+          return comment;
+        });
+        return { ...prevPost, comments: updatedComments };
+      });
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to vote on comment",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleVotePoll = async (postId: string, optionIndex: number) => {
     if (!session) {
       toast({
@@ -192,6 +245,7 @@ export default function FeedPage() {
               onVote={handleVote}
               onAddComment={handleAddComment}
               onVotePoll={handleVotePoll}
+              onCommentVote={handleCommentVote}
             />
           ) : (
             <div className="flex flex-col items-center justify-center min-h-[50vh]">

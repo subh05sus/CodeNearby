@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/header";
 import { NextAuthProvider } from "@/components/providers";
 import { Toaster } from "@/components/ui/toaster";
+import Footer from "@/components/footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,7 +29,10 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <Header />
-            <main className="container mx-auto px-4 py-8">{children}</main>
+            <main className="flex-1 container mx-auto px-4 py-8 min-h-[calc(100vh-9rem)]">
+              {children}
+            </main>
+            <Footer />
             <Toaster />
           </ThemeProvider>
         </NextAuthProvider>

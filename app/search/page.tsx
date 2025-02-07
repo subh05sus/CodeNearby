@@ -259,6 +259,63 @@ function SearchPage() {
       });
     }
   };
+
+  const handleCommentVote = async (
+    postId: string,
+    commentId: string,
+    voteType: "up" | "down"
+  ) => {
+    if (!session) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to vote",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `/api/posts/${postId}/comments/${commentId}/vote`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ voteType }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to vote on comment");
+      }
+
+      const updatedComment = await response.json();
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => {
+          if (post._id === postId) {
+            return {
+              ...post,
+              comments: post.comments.map((comment: any) =>
+                comment._id === commentId
+                  ? {
+                      ...comment,
+                      votes: updatedComment.votes,
+                      userVotes: updatedComment.userVotes,
+                    }
+                  : comment
+              ),
+            };
+          }
+          return post;
+        })
+      );
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to vote on comment",
+        variant: "destructive",
+      });
+    }
+  };
   return (
     <div className="container mx-auto px-4 py-8">
       {query ? (
@@ -330,6 +387,7 @@ function SearchPage() {
                     onVote={handleVote}
                     onAddComment={handleAddComment}
                     onVotePoll={handleVotePoll}
+                    onCommentVote={handleCommentVote}
                   />
                 ))}
               </MasonryGrid>

@@ -39,6 +39,11 @@ interface Post {
   poll?: Poll;
   location?: { lat: number; lng: number };
   schedule?: string;
+  user: {
+    name: string;
+    image: string;
+    githubUsername: string;
+  };
 }
 
 interface Comment {
@@ -159,6 +164,197 @@ export default function ProfilePage() {
       toast({
         title: "Error",
         description: "Failed to remove friend.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleVote = async (postId: string, voteType: "up" | "down") => {
+    if (!session) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to vote",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/posts/${postId}/vote`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ voteType }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to vote");
+      }
+
+      const updatedPost = await response.json();
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => {
+          if (post._id === postId) {
+            return {
+              ...post,
+              votes: updatedPost.votes,
+              userVotes: updatedPost.userVotes,
+            };
+          }
+          return post;
+        })
+      );
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to vote",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAddComment = async (
+    postId: string,
+    content: string,
+    parentCommentId?: string
+  ) => {
+    if (!session) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to comment",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/posts/${postId}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content, parentCommentId }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add comment");
+      }
+
+      const updatedPost = await response.json();
+      const newComment = updatedPost.comment;
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => {
+          if (post._id === postId) {
+            return {
+              ...post,
+              comments: [...post.comments, newComment],
+            };
+          }
+          return post;
+        })
+      );
+
+      toast({
+        title: "Success",
+        description: "Comment added successfully",
+      });
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to add comment",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleVotePoll = async (postId: string, optionIndex: number) => {
+    if (!session) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to vote",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/posts/${postId}/poll-vote`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ optionIndex }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to vote on poll");
+      }
+
+      const updatedPost = await response.json();
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => {
+          if (post._id === postId) {
+            return { ...post, poll: updatedPost.poll };
+          }
+          return post;
+        })
+      );
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to vote on poll",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCommentVote = async (
+    postId: string,
+    commentId: string,
+    voteType: "up" | "down"
+  ) => {
+    if (!session) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to vote",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `/api/posts/${postId}/comments/${commentId}/vote`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ voteType }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to vote on comment");
+      }
+
+      const updatedComment = await response.json();
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => {
+          if (post._id === postId) {
+            return {
+              ...post,
+              comments: post.comments.map((comment) =>
+                comment._id === commentId
+                  ? {
+                      ...comment,
+                      votes: updatedComment.votes,
+                      userVotes: updatedComment.userVotes,
+                    }
+                  : comment
+              ),
+            };
+          }
+          return post;
+        })
+      );
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to vote on comment",
         variant: "destructive",
       });
     }
@@ -338,9 +534,10 @@ export default function ProfilePage() {
               <PostCard
                 key={post._id}
                 post={post}
-                onVote={async () => {}}
-                onAddComment={async () => {}}
-                onVotePoll={async () => {}}
+                onVote={handleVote}
+                onAddComment={handleAddComment}
+                onVotePoll={handleVotePoll}
+                onCommentVote={handleCommentVote}
               />
             ))}
           </div>

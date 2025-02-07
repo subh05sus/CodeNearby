@@ -9,7 +9,7 @@ import { Command, Search } from "lucide-react";
 import { SearchOverlay } from "./search-overlay";
 import Image from "next/image";
 import type { Session } from "next-auth";
-import { ThemeToggle } from "./theme-toggle";
+// import { ThemeToggle } from "./theme-toggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Menu } from "lucide-react";
-import { ThemeSwitch } from "./ThemeSwitch";
+// import { ThemeSwitch } from "./ThemeSwitch";
 
 export default function Header() {
   const router = useRouter();
@@ -50,10 +50,10 @@ export default function Header() {
         </Link>
         <nav className="hidden md:block">
           <ul className="flex space-x-3 items-center">
-            <li>
-              {/* <ThemeToggle /> */}
-              <ThemeSwitch />
-            </li>
+            {/* <li> */}
+            {/* <ThemeToggle /> */}
+            {/* <ThemeSwitch /> */}
+            {/* </li> */}
             <li>
               <Button
                 variant="outline"
@@ -122,7 +122,7 @@ export default function Header() {
           </ul>
         </nav>
         <div className="md:hidden flex items-center space-x-2">
-          <ThemeToggle />
+          {/* <ThemeToggle /> */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon">

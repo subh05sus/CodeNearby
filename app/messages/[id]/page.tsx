@@ -5,15 +5,14 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { ArrowLeft, Loader2, Send } from "lucide-react";
-import type { Session } from "next-auth";
+import { Loader2, Send } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { getDatabase, ref, push, onChildAdded, off } from "firebase/database";
+import { format } from "date-fns";
+import { Session } from "next-auth";
 import { initializeApp } from "firebase/app";
 
 const firebaseConfig = {
@@ -117,14 +116,11 @@ export default function MessagePage() {
     if (inputMessage.trim() === "" || !session?.user?.githubId || !params.id)
       return;
 
-    const roomId =
-      minimum(params.id as string, session.user.githubId) +
-      maximum(params.id as string, session.user.githubId);
+    const roomId = [session.user.githubId, params.id].sort().join("");
 
     const messagesRef = ref(database, `messages/${roomId}`);
     push(messagesRef, {
       senderId: session.user.githubId,
-      receiverId: params.id,
       content: inputMessage,
       timestamp: Date.now(),
     });
@@ -138,7 +134,7 @@ export default function MessagePage() {
 
   if (!session) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+      <div className="flex flex-col items-center justify-center h-full">
         <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
         <p>You need to be signed in to view messages.</p>
       </div>
@@ -147,74 +143,64 @@ export default function MessagePage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[50vh]">
+      <div className="flex justify-center items-center h-full">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Link href="/messages">
-              <ArrowLeft className="h-6 w-6" />
-            </Link>
-            <Link
-              href={friend ? `/user/${friend.githubId}` : "#"}
-              className="flex items-center gap-2"
+    <>
+      <div className="border-b border-gray-200 dark:border-gray-800 p-4 flex items-center">
+        <Image
+          src={friend?.image || "/placeholder.svg"}
+          alt={friend?.name || ""}
+          className="w-10 h-10 rounded-full mr-4"
+          width={40}
+          height={40}
+        />
+        <h2 className="text-xl font-semibold">{friend?.name || "Chat"}</h2>
+      </div>
+      <div className="flex-grow overflow-y-auto p-4">
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`mb-4 flex ${
+              message.senderId === session.user.githubId
+                ? "justify-end"
+                : "justify-start"
+            }`}
+          >
+            <div
+              className={`max-w-[70%] p-3 rounded-lg ${
+                message.senderId === session.user.githubId
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 dark:bg-zinc-800"
+              }`}
             >
-              <Image
-                src={friend?.image || "/placeholder.svg"}
-                alt={friend?.name || ""}
-                className="w-10 h-10 rounded-full"
-                height={40}
-                width={40}
-              />
-              <span>{friend?.name || "Chat"}</span>
-            </Link>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[60vh] overflow-y-auto mb-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`mb-2 ${
-                  message.senderId === session.user.githubId
-                    ? "text-right"
-                    : "text-left"
-                }`}
-              >
-                <span
-                  className={`inline-block p-2 rounded-lg ${
-                    message.senderId === session.user.githubId
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 dark:bg-zinc-900 text-black dark:text-white"
-                  }`}
-                >
-                  {message.content}
-                </span>
-              </div>
-            ))}
-            <div ref={messagesEndRef} className="h-2" />
+              <p>{message.content}</p>
+              <p className="text-xs mt-1 opacity-70">
+                {format(new Date(message.timestamp), "HH:mm")}
+              </p>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <Input
-              type="text"
-              placeholder="Type a message..."
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-            />
-            <Button onClick={sendMessage}>
-              <Send className="h-4 w-4 mr-2" />
-              Send
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+        ))}
+        <div ref={messagesEndRef} className="h-2" />
+      </div>
+      <div className="border-t border-gray-200 dark:border-gray-800 p-4 flex">
+        <Input
+          type="text"
+          placeholder="Type a message..."
+          value={inputMessage}
+          onChange={(e) => setInputMessage(e.target.value)}
+          onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+          className="flex-grow mr-2"
+        />
+        <Button onClick={sendMessage}>
+          <Send className="h-4 w-4 mr-2" />
+          Send
+        </Button>
+      </div>
+    </>
   );
 }
