@@ -16,7 +16,7 @@ const firebaseDb = getDatabase(firebaseApp);
 
 export async function POST(
   request: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: { slug: string } } 
 ) {
   try {
     const session = await getServerSession(authOptions);

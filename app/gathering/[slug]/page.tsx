@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
@@ -225,6 +226,24 @@ export default function GatheringRoomPage() {
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <h1 className="text-2xl font-bold mb-4">Gathering Not Found</h1>
         <p>The requested gathering could not be found.</p>
+      </div>
+    );
+  }
+
+  if (
+    gathering.participants &&
+    !gathering.participants.some(
+      (participant: any) => participant._id === session.user.id
+    )
+  ) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+        <h1 className="text-2xl font-bold mb-4">Unauthorized</h1>
+        <p>You are not a participant of this gathering.</p>
+        <p className="mb-4">Would you like to join this gathering?</p>
+        <Button asChild>
+          <Link href={`/gathering/join/${params.slug}`}>Join Gathering</Link>
+        </Button>
       </div>
     );
   }

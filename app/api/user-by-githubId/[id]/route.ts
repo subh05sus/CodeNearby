@@ -17,7 +17,7 @@ export async function GET(
     const db = client.db();
     const user = await db
       .collection("users")
-      .findOne({ githubId: Number(params.id) });
+      .findOne({ githubUsername: params.id });
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }

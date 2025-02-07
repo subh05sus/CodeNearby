@@ -68,11 +68,6 @@ export default function Header() {
             </li>
             <li>
               <Button variant="ghost" asChild>
-                <Link href="/explore">Explore</Link>
-              </Button>
-            </li>
-            <li>
-              <Button variant="ghost" asChild>
                 <Link href="/discover">Discover</Link>
               </Button>
             </li>

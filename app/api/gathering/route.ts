@@ -21,7 +21,6 @@ export async function GET(request: Request) {
       .find({ participants: new ObjectId(session.user.id) })
       .sort({ createdAt: -1 })
       .toArray();
-    console.log("gatherings", gatherings);
     return NextResponse.json(gatherings);
   } catch (error) {
     console.error("Error fetching gatherings:", error);

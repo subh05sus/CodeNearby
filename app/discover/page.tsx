@@ -31,7 +31,6 @@ export default function DiscoverPage() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const { toast } = useToast();
 
-
   useEffect(() => {
     const fetchLocation = async () => {
       try {
@@ -50,7 +49,6 @@ export default function DiscoverPage() {
       fetchLocation();
     }
   }, [location, toast]);
-
 
   useEffect(() => {
     if (session) {
@@ -155,7 +153,6 @@ export default function DiscoverPage() {
       );
     }
   };
-
 
   const handleSwipe = async (direction: string, developer: Developer) => {
     if (!session) return;
@@ -273,9 +270,9 @@ export default function DiscoverPage() {
                             "/placeholder.svg"
                           }
                           alt={connectDevelopers[0].login}
-                          fill 
+                          fill
                           objectFit="cover"
-                          style={{ objectFit: 'cover' }}
+                          style={{ objectFit: "cover" }}
                           className="rounded-lg h-[-webkit-fill-available] w-[-webkit-fill-available] object-cover"
                         />
                         <div className="p-4 bg-gradient-to-t from-black/80 to-transparent absolute bottom-0 left-0 w-full">
@@ -375,7 +372,7 @@ export default function DiscoverPage() {
                 </Card>
               ))}
             </div>
-            <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-white dark:from-black to-transparent pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-background to-transparent pointer-events-none" />
           </div>
         </div>
       </div>

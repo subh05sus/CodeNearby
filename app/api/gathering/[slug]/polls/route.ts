@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/options";
-import { db } from "@/lib/firebase";
 import { ref, push } from "firebase/database";
+
+import { getDatabase } from "firebase/database";
+import { firebaseApp } from "@/lib/firebase";
+
+const db = getDatabase(firebaseApp);
 
 export async function POST(
   request: Request,
