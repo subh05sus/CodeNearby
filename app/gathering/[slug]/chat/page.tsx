@@ -11,7 +11,6 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2, Send, ImageIcon, Pin } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Switch } from "@/components/ui/switch";
 import { db } from "@/lib/firebase";
 import { ref, onChildAdded, onChildChanged, get } from "firebase/database";
 import type { Session } from "next-auth";
@@ -19,6 +18,7 @@ import { CreateGatheringPoll } from "@/components/gatheringPoll";
 import Image from "next/image";
 import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
+import { AnonymousSwitch } from "@/components/ui/AnonymousSwitch";
 
 interface Message {
   id: string;
@@ -62,6 +62,7 @@ export default function GatheringChatPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [mentionSuggestions, setMentionSuggestions] = useState<string[]>([]);
   const [gathering, setGathering] = useState<any>(null);
+  const [participants, setParticipants] = useState<any>(null);
 
   useEffect(() => {
     let unsubscribe: () => void;
@@ -141,6 +142,7 @@ export default function GatheringChatPage() {
       setIsHost(data.hostId === session?.user?.id);
       setIsHostOnly(data.hostOnly || false);
       setGathering(data);
+      setParticipants(data.participants);
       setIsHostOnly(data.hostOnly || false);
     } catch {
       console.error("Error checking host status");
@@ -341,9 +343,15 @@ export default function GatheringChatPage() {
     const lastWord = e.target.value.split(" ").pop() || "";
     if (lastWord.startsWith("@") && lastWord.length > 1) {
       const query = lastWord.slice(1).toLowerCase();
-      const suggestions = messages
-        .filter((message) => message.senderName.toLowerCase().includes(query))
-        .map((message) => message.senderName)
+      const suggestions = participants
+        .filter((participant: any) =>
+          participant.githubUsername?.toLowerCase().includes(query)
+        )
+        .map((participant: any) => participant.githubUsername)
+        .filter(
+          (username: string | undefined): username is string =>
+            username !== undefined
+        )
         .slice(0, 3);
       setMentionSuggestions(suggestions);
     } else {
@@ -440,13 +448,12 @@ export default function GatheringChatPage() {
             )}
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="h-[60vh] overflow-y-auto mb-4 space-y-4">
+        <CardContent className="relative">
+          <div className="h-[60vh] overflow-y-auto mb-4 pb-8 space-y-4 no-scrollbar relative">
             {messages.map((message) => {
               const isPoll = message.content.startsWith('{"type":"poll"');
               const pollContent = isPoll ? JSON.parse(message.content) : null;
               const pollData = pollContent ? polls[pollContent.pollId] : null;
-              console.log(pollData);
               return (
                 <div
                   key={message.id}
@@ -480,7 +487,7 @@ export default function GatheringChatPage() {
                     </Avatar>
                   )}
                   <div
-                    className={`bg-muted p-2 rounded-lg ${
+                    className={`bg-muted max-w-[60vw] md:max-w-[40vw] p-2 rounded-lg ${
                       message.isPinned ? "border-2 border-yellow-500" : ""
                     }`}
                   >
@@ -572,11 +579,13 @@ export default function GatheringChatPage() {
             })}
             <div ref={messagesEndRef} />
           </div>
-          <div className="relative">
+
+          <div className="relative flex items-end space-x-2 z-30">
             <Input
               value={inputMessage}
               onChange={handleInputChange}
               placeholder="Type your message..."
+              className="pr-16"
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   handleSendMessage();
@@ -587,6 +596,51 @@ export default function GatheringChatPage() {
               }}
               disabled={isHostOnly && !isHost}
             />
+            <div className="flex items-center h-full "></div>
+            <div className="flex space-x-2 mt-2 relative">
+              <Button
+                onClick={() => handleSendMessage()}
+                disabled={isHostOnly && !isHost}
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+              <AnonymousSwitch
+                checked={isAnonymous}
+                onCheckedChange={setIsAnonymous}
+                id="anonymous-mode"
+                className="absolute -left-[160%] top-0 mt-1.5"
+              />
+            </div>
+
+            {(!isHostOnly || isHost) && (
+              <div className="flex space-x-2 mt-2 absolute right-0 -top-full">
+                <Button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isHostOnly && !isHost}
+                  variant={"secondary"}
+                >
+                  <ImageIcon className="h-4 w-4" />
+                </Button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                  accept="image/*"
+                  style={{ display: "none" }}
+                />
+                <CreateGatheringPoll
+                  gatheringSlug={params.slug as string}
+                  onPollCreated={(pollMessage) =>
+                    handleSendMessage(pollMessage)
+                  }
+                />
+
+                <label htmlFor="anonymous-mode" className="ml-2 hidden">
+                  Send anonymously
+                </label>
+              </div>
+            )}
+
             {mentionSuggestions.length > 0 && (
               <div className="absolute bottom-full left-0 bg-background border rounded-md shadow-lg">
                 {Array.from(new Set(mentionSuggestions))
@@ -611,41 +665,7 @@ export default function GatheringChatPage() {
               </div>
             )}
           </div>
-          <div className="flex items-center space-x-2 mt-2">
-            <Button
-              onClick={() => handleSendMessage()}
-              disabled={isHostOnly && !isHost}
-            >
-              <Send className="h-4 w-4" />
-            </Button>
-            <Button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isHostOnly && !isHost}
-            >
-              <ImageIcon className="h-4 w-4" />
-            </Button>
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleImageUpload}
-              accept="image/*"
-              style={{ display: "none" }}
-            />
-            <CreateGatheringPoll
-              gatheringSlug={params.slug as string}
-              onPollCreated={(pollMessage) => handleSendMessage(pollMessage)}
-            />
-            <div className="flex items-center">
-              <Switch
-                checked={isAnonymous}
-                onCheckedChange={setIsAnonymous}
-                id="anonymous-mode"
-              />
-              <label htmlFor="anonymous-mode" className="ml-2">
-                Send anonymously
-              </label>
-            </div>
-          </div>
+          <div className="absolute bottom-20 left-0 w-full h-20 bg-gradient-to-t from-background to-transparent pointer-events-none" />
         </CardContent>
       </Card>
     </div>

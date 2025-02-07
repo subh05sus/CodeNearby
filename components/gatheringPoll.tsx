@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { PlusCircle, Minus } from "lucide-react";
+import { PlusCircle, Minus, BarChart2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 interface CreatePollProps {
@@ -95,9 +95,8 @@ export function CreateGatheringPoll({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">
-          <PlusCircle className="h-4 w-4 mr-2" />
-          Create Poll
+        <Button variant="secondary">
+          <BarChart2 className="h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent>
