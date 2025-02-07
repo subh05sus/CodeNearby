@@ -1,22 +1,13 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/options";
-import { ref, push, getDatabase } from "firebase/database";
+import { ref, push } from "firebase/database";
 import clientPromise from "@/lib/mongodb";
-import { initializeApp } from "firebase/app";
-
-const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
-  authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-  databaseURL: process.env.FIREBASE_DATABASE_URL,
-};
-
-const firebaseApp = initializeApp(firebaseConfig);
-const firebaseDb = getDatabase(firebaseApp);
+import { db as firebaseDb } from "@/lib/firebase";
 
 export async function POST(
   request: Request,
-  { params }: { params: { slug: string } } 
+  { params }: { params: { slug: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
