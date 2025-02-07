@@ -94,6 +94,7 @@ export function PostCard({
   const [commentContent, setCommentContent] = useState("");
   const [showComments, setShowComments] = useState(false);
   const [isVoting, setIsVoting] = useState(false);
+  const [imageExpanded, setImageExpanded] = useState(false);
   const { toast } = useToast();
 
   const userVoteCount = (post.userVotes ?? {})[session?.user?.id || ""] || 0;
@@ -253,15 +254,24 @@ export function PostCard({
 
           {/* Image */}
           {post.imageUrl && (
-            <div className="relative w-full h-auto">
-              <Image
-                src={post.imageUrl || "/placeholder.svg"}
-                alt="Post image"
-                width={600}
-                height={400}
-                className="rounded-lg w-full object-cover md:h-[400px] h-auto"
-              />
-            </div>
+            <motion.div
+              className="relative w-full h-auto aspect-[4/3]"
+              onClick={() => setImageExpanded(!imageExpanded)}
+              layout
+            >
+              <motion.div className="relative w-full h-full" layout>
+                <Image
+                  src={post.imageUrl || "/placeholder.svg"}
+                  alt="Post image"
+                  fill
+                  className={`rounded-lg cursor-pointer transition-all duration-300 ${
+                    imageExpanded ? "object-contain" : "object-cover"
+                  }`}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  priority={false}
+                />
+              </motion.div>
+            </motion.div>
           )}
 
           {/* Poll */}
