@@ -10,24 +10,10 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2, Send } from "lucide-react";
 import Image from "next/image";
-import { getDatabase, ref, push, onChildAdded, off } from "firebase/database";
+import { ref, push, onChildAdded, off } from "firebase/database";
 import { format } from "date-fns";
 import { Session } from "next-auth";
-import { initializeApp } from "firebase/app";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyABLK0zLU5bJ3D6YV-yIFuW-wPE8VBu5zU",
-  authDomain: "codenearby-99.firebaseapp.com",
-  projectId: "codenearby-99",
-  storageBucket: "codenearby-99.firebasestorage.app",
-  messagingSenderId: "725950504151",
-  appId: "1:725950504151:web:964e851000f99319cf2492",
-  measurementId: "G-4SP02T6P15",
-  databaseURL: "https://codenearby-99-default-rtdb.firebaseio.com",
-};
-
-const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
+import { db as database } from "@/lib/firebase";
 
 interface Message {
   id: string;
