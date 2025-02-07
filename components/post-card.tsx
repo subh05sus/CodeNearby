@@ -30,6 +30,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import WhatsappIcon from "./whatsapp-icon";
+import Link from "next/link";
+import { LinkPreview } from "./ui/link-preview";
 
 interface Comment {
   _id: string;
@@ -46,6 +48,7 @@ interface Comment {
 }
 
 interface Post {
+  user: any;
   _id: string;
   userId: string;
   content: string;
@@ -198,19 +201,50 @@ export function PostCard({
     <Card className="mb-6">
       <CardContent className="p-4">
         <div className="space-y-4">
+          {/* user details */}
+          {/* User Avatar and Name */}
+          <div className="flex items-center gap-2">
+            <Link href={`/user/${post.user?.githubId ?? post.userId}`}>
+              <div className="relative h-10 w-10">
+                {post.user?.image ? (
+                  <Image
+                    src={post.user.image}
+                    alt={post.user?.name || "User"}
+                    fill
+                    className="rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="h-full w-full bg-muted  rounded-full" />
+                )}
+              </div>
+            </Link>
+            <div>
+              <Link href={`/user/${post.user?.githubId ?? post.userId}`}>
+                <p className="font-medium">{post.user?.name || "Anonymous"}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {post.user?.githubUsername && (
+                    <>
+                      <span>@{post.user.githubUsername}</span>
+                      <span>{" | "}</span>
+                    </>
+                  )}
+                  <span title={format(new Date(post.createdAt), "PPpp")}>
+                    {formatDistanceToNow(new Date(post.createdAt), {
+                      addSuffix: true,
+                    })}
+                  </span>
+                </p>
+              </Link>
+            </div>
+          </div>
+
           {/* Post Content */}
           <p className="break-words md:text-lg text-base">
             {post.content.split(/\b(https?:\/\/\S+)/g).map((part, i) =>
               part.match(/^https?:\/\//) ? (
-                <a
-                  key={i}
-                  href={part}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:underline"
-                >
+                <LinkPreview url={part} className="font-medium">
                   {part}
-                </a>
+                </LinkPreview>
               ) : (
                 part
               )
@@ -268,9 +302,6 @@ export function PostCard({
             </div>
           )}
         </div>
-        <span className="text-xs text-muted-foreground md:hidden block mt-3">
-          {formatDistanceToNow(new Date(post.createdAt))} ago
-        </span>
       </CardContent>
 
       <CardFooter className="flex flex-col border-t">
@@ -302,9 +333,6 @@ export function PostCard({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground md:block hidden">
-              {formatDistanceToNow(new Date(post.createdAt))} ago
-            </span>
             <Button
               variant="ghost"
               size="sm"

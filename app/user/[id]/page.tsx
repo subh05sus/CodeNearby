@@ -38,6 +38,11 @@ interface Post {
   poll?: Poll;
   location?: { lat: number; lng: number };
   schedule?: string;
+  user: {
+    name: string;
+    image: string;
+    githubId: string;
+  };
 }
 
 interface Comment {

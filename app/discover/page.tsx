@@ -36,6 +36,8 @@ export default function DiscoverPage() {
       try {
         const data = await getLocationByIp();
         setLocation(data.city);
+        // load the developers based on the location initally
+        initialLocationSubmit(data.city);
       } catch {
         toast({
           title: "Error",
@@ -72,6 +74,46 @@ export default function DiscoverPage() {
 
   const handleLocationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!location) return;
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `/api/developers?location=${encodeURIComponent(location)}`
+      );
+      const data = await response.json();
+
+      const declinedResponse = await fetch("/api/declined-profiles");
+      const declinedData = await declinedResponse.json();
+      const declinedIds = new Set(
+        declinedData.map((profile: any) => profile.githubId)
+      );
+
+      const filteredDevelopers = data
+        .filter(
+          (dev: Developer) =>
+            dev.id !== session?.user?.id &&
+            !userProfile?.friends.some(
+              (friend) => friend.githubId.toString() === dev.id
+            ) &&
+            !userProfile?.sentRequests.includes(dev.id) &&
+            !declinedIds.has(dev.id)
+        )
+        .map((dev: Developer) => ({ ...dev }));
+
+      setConnectDevelopers(filteredDevelopers.reverse());
+      setExploreDevelopers(data);
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to fetch developers. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const initialLocationSubmit = async (location: string) => {
     if (!location) return;
     setLoading(true);
     try {

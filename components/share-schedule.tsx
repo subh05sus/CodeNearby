@@ -1,28 +1,40 @@
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Calendar } from "@/components/ui/calendar"
-import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react"
-import { TimePickerInput } from "./time-picker-input"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Calendar } from "@/components/ui/calendar";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { TimePickerInput } from "./time-picker-input";
 
 interface ShareScheduleProps {
-  onShareSchedule: (date: Date) => void
+  onShareSchedule: (date: Date) => void;
 }
 
 export function ShareSchedule({ onShareSchedule }: ShareScheduleProps) {
-  const [selectedDateTime, setSelectedDateTime] = useState<Date>(new Date())
+  const [selectedDateTime, setSelectedDateTime] = useState<Date>(new Date());
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleShareSchedule = () => {
     if (selectedDateTime) {
-      onShareSchedule(selectedDateTime)
+      onShareSchedule(selectedDateTime);
+      setIsOpen(false);
     }
-  }
+  };
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="text-primary hover:bg-primary/10 rounded-full">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-primary hover:bg-primary/10 rounded-full"
+        >
           <CalendarIcon className="w-5 h-5" />
         </Button>
       </DialogTrigger>
@@ -36,20 +48,33 @@ export function ShareSchedule({ onShareSchedule }: ShareScheduleProps) {
             selected={selectedDateTime}
             onSelect={(date) =>
               date &&
-              setSelectedDateTime(new Date(date.setHours(selectedDateTime.getHours(), selectedDateTime.getMinutes())))
+              setSelectedDateTime(
+                new Date(
+                  date.setHours(
+                    selectedDateTime.getHours(),
+                    selectedDateTime.getMinutes()
+                  )
+                )
+              )
             }
             className="rounded-md border"
           />
           <div className="mt-4">
-            <TimePickerInput date={selectedDateTime} setDate={setSelectedDateTime} />
+            <TimePickerInput
+              date={selectedDateTime}
+              setDate={setSelectedDateTime}
+            />
           </div>
-          {selectedDateTime && <p className="mt-4 text-sm">Selected date and time: {format(selectedDateTime, "PPP p")}</p>}
+          {selectedDateTime && (
+            <p className="mt-4 text-sm">
+              Selected date and time: {format(selectedDateTime, "PPP p")}
+            </p>
+          )}
           <Button onClick={handleShareSchedule} className="mt-4">
             Share This Schedule
           </Button>
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
-

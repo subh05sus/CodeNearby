@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Menu } from "lucide-react";
+import { ThemeSwitch } from "./ThemeSwitch";
 
 export default function Header() {
   const router = useRouter();
@@ -50,7 +51,8 @@ export default function Header() {
         <nav className="hidden md:block">
           <ul className="flex space-x-3 items-center">
             <li>
-              <ThemeToggle />
+              {/* <ThemeToggle /> */}
+              <ThemeSwitch />
             </li>
             <li>
               <Button
