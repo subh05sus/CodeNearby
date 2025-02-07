@@ -1,69 +1,76 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
-import { Card, CardContent } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import { useToast } from "@/components/ui/use-toast"
-import { Loader2, Users, GitBranch, Star, LinkIcon, Github, Twitter, MessageSquare } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
-import type { UserProfile } from "@/types"
-import { PostCard } from "@/components/post-card"
-import { formatDistanceToNow } from "date-fns"
-import { fetchGitHubActivities } from "@/lib/github"
-
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  Loader2,
+  Users,
+  GitBranch,
+  Star,
+  LinkIcon,
+  Github,
+  Twitter,
+  MessageSquare,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import type { UserProfile } from "@/types";
+import { PostCard } from "@/components/post-card";
+import { formatDistanceToNow } from "date-fns";
+import { fetchGitHubActivities } from "@/lib/github";
+import { useSession } from "next-auth/react";
 
 interface Post {
-  _id: string
-  userId: string
-  content: string
-  imageUrl?: string
-  createdAt: string
-  votes: { up: number; down: number }
-  userVotes: Record<string, number>
-  comments: Comment[]
-  poll?: Poll
-  location?: { lat: number; lng: number }
-  schedule?: string
+  _id: string;
+  userId: string;
+  content: string;
+  imageUrl?: string;
+  createdAt: string;
+  votes: { up: number; down: number };
+  userVotes: Record<string, number>;
+  comments: Comment[];
+  poll?: Poll;
+  location?: { lat: number; lng: number };
+  schedule?: string;
 }
 
 interface Comment {
-  _id: string
-  userId: string
-  content: string
-  createdAt: string
-  votes: { up: number; down: number }
-  userVotes: Record<string, number>
-  replies: Comment[]
+  _id: string;
+  userId: string;
+  content: string;
+  createdAt: string;
+  votes: { up: number; down: number };
+  userVotes: Record<string, number>;
+  replies: Comment[];
   user?: {
-    name: string
-    image: string
-  }
+    name: string;
+    image: string;
+  };
 }
 
 interface Poll {
-  question: string
-  options: string[]
-  votes: Record<string, number>
+  question: string;
+  options: string[];
+  votes: Record<string, number>;
 }
 
-
-
 export default function UserProfilePage() {
-  const params = useParams()
-  const [loading, setLoading] = useState(true)
-  const [profile, setProfile] = useState<UserProfile | null>(null)
-  const [stats, setStats] = useState<any>(null)
-  const [posts, setPosts] = useState<Post[]>([])
-  const { toast } = useToast()
-  const [activities, setActivities] = useState<any[]>([])
-  
+  const { data: session } = useSession();
+  const params = useParams();
+  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [stats, setStats] = useState<any>(null);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const { toast } = useToast();
+  const [activities, setActivities] = useState<any[]>([]);
 
-  const loadActivities = async (username:string) => {
+  const loadActivities = async (username: string) => {
     try {
       const data = await fetchGitHubActivities(username);
       setActivities(data);
@@ -77,74 +84,266 @@ export default function UserProfilePage() {
   };
 
   useEffect(() => {
-    fetchProfile()
-  }, [params.id])
+    fetchProfile();
+  }, [params.id]);
 
   useEffect(() => {
     if (profile) {
-      fetchGitHubStats()
-      fetchUserPosts()
-      loadActivities(profile.githubUsername)
+      fetchGitHubStats();
+      fetchUserPosts();
+      loadActivities(profile.githubUsername);
     }
-  }, [profile])
+  }, [profile]);
 
   const fetchProfile = async () => {
     try {
-      const response = await fetch(`/api/user/${params.id}`)
-      const data = await response.json()
-      setProfile(data)
+      const response = await fetch(`/api/user/${params.id}`);
+      const data = await response.json();
+      setProfile(data);
     } catch {
       toast({
         title: "Error",
         description: "Failed to fetch profile.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const fetchGitHubStats = async () => {
-    if (!profile?.githubUsername) return
+    if (!profile?.githubUsername) return;
     try {
-      const response = await fetch(`https://api.github.com/users/${profile.githubUsername}`)
-      const data = await response.json()
-      setStats(data)
+      const response = await fetch(
+        `https://api.github.com/users/${profile.githubUsername}`
+      );
+      const data = await response.json();
+      setStats(data);
     } catch {
       toast({
         title: "Error",
         description: "Failed to fetch GitHub stats.",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   const fetchUserPosts = async () => {
-    
     if (!profile) {
-      console.log('No profile found, returning')
-      return
+      console.log("No profile found, returning");
+      return;
     }
     try {
-      const response = await fetch(`/api/posts/user/${profile._id}`)
-      const data = await response.json()
-      setPosts(Array.isArray(data) ? data : [])
+      const response = await fetch(`/api/posts/user/${profile._id}`);
+      const data = await response.json();
+      setPosts(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error('Error fetching posts:', error)
+      console.error("Error fetching posts:", error);
       toast({
         title: "Error",
         description: "Failed to fetch user posts.",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
+
+  const handleVote = async (postId: string, voteType: "up" | "down") => {
+    if (!session) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to vote",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/posts/${postId}/vote`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ voteType }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to vote");
+      }
+
+      const updatedPost = await response.json();
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => {
+          if (post._id === postId) {
+            return {
+              ...post,
+              votes: updatedPost.votes,
+              userVotes: updatedPost.userVotes,
+            };
+          }
+          return post;
+        })
+      );
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to vote",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAddComment = async (
+    postId: string,
+    content: string,
+    parentCommentId?: string
+  ) => {
+    if (!session) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to comment",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/posts/${postId}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content, parentCommentId }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add comment");
+      }
+
+      const updatedPost = await response.json();
+      const newComment = updatedPost.comment;
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => {
+          if (post._id === postId) {
+            return {
+              ...post,
+              comments: [...post.comments, newComment],
+            };
+          }
+          return post;
+        })
+      );
+
+      toast({
+        title: "Success",
+        description: "Comment added successfully",
+      });
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to add comment",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleVotePoll = async (postId: string, optionIndex: number) => {
+    if (!session) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to vote",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/posts/${postId}/poll-vote`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ optionIndex }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to vote on poll");
+      }
+
+      const updatedPost = await response.json();
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => {
+          if (post._id === postId) {
+            return { ...post, poll: updatedPost.poll };
+          }
+          return post;
+        })
+      );
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to vote on poll",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCommentVote = async (
+    postId: string,
+    commentId: string,
+    voteType: "up" | "down"
+  ) => {
+    if (!session) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to vote",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `/api/posts/${postId}/comments/${commentId}/vote`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ voteType }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to vote on comment");
+      }
+
+      const updatedComment = await response.json();
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => {
+          if (post._id === postId) {
+            return {
+              ...post,
+              comments: post.comments.map((comment) =>
+                comment._id === commentId
+                  ? {
+                      ...comment,
+                      votes: updatedComment.votes,
+                      userVotes: updatedComment.userVotes,
+                    }
+                  : comment
+              ),
+            };
+          }
+          return post;
+        })
+      );
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to vote on comment",
+        variant: "destructive",
+      });
+    }
+  };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
-    )
+    );
   }
 
   if (!profile) {
@@ -153,7 +352,7 @@ export default function UserProfilePage() {
         <h1 className="text-2xl font-bold mb-4">User Not Found</h1>
         <p>The requested user profile could not be found.</p>
       </div>
-    )
+    );
   }
 
   return (
@@ -170,16 +369,26 @@ export default function UserProfilePage() {
           <div>
             <h1 className="text-3xl font-bold">{profile.name}</h1>
             <p className="text-muted-foreground">@{profile.githubUsername}</p>
-            <p className="text-sm text-muted-foreground">ID: {profile.githubId}</p>
+            <p className="text-sm text-muted-foreground">
+              ID: {profile.githubId}
+            </p>
             <div className="flex items-center gap-2 mt-2">
-              <Link href={`https://github.com/${profile.githubUsername}`} target="_blank" rel="noopener noreferrer">
+              <Link
+                href={`https://github.com/${profile.githubUsername}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Button variant="outline" size="sm">
                   <Github className="h-4 w-4 mr-2" />
                   GitHub Profile
                 </Button>
               </Link>
               {stats?.twitter_username && (
-                <Link href={`https://twitter.com/${stats.twitter_username}`} target="_blank" rel="noopener noreferrer">
+                <Link
+                  href={`https://twitter.com/${stats.twitter_username}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Button variant="outline" size="sm">
                     <Twitter className="h-4 w-4 mr-2" />
                     Twitter
@@ -187,7 +396,11 @@ export default function UserProfilePage() {
                 </Link>
               )}
               {stats?.blog && (
-                <Link href={stats.blog} target="_blank" rel="noopener noreferrer">
+                <Link
+                  href={stats.blog}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Button variant="outline" size="sm">
                     <LinkIcon className="h-4 w-4 mr-2" />
                     Website
@@ -212,7 +425,9 @@ export default function UserProfilePage() {
               <Users className="h-4 w-4" />
               <span>Friends</span>
             </div>
-            <span className="text-2xl font-bold">{profile.friends?.length || 0}</span>
+            <span className="text-2xl font-bold">
+              {profile.friends?.length || 0}
+            </span>
           </CardContent>
         </Card>
         <Card>
@@ -221,7 +436,9 @@ export default function UserProfilePage() {
               <GitBranch className="h-4 w-4" />
               <span>Repositories</span>
             </div>
-            <span className="text-2xl font-bold">{stats?.public_repos || 0}</span>
+            <span className="text-2xl font-bold">
+              {stats?.public_repos || 0}
+            </span>
           </CardContent>
         </Card>
         <Card>
@@ -244,7 +461,7 @@ export default function UserProfilePage() {
         <TabsContent value="activity">
           <Card>
             <CardContent className="p-6">
-            {(() => {
+              {(() => {
                 if (activities.length === 0) {
                   return (
                     <p className="text-muted-foreground">
@@ -309,15 +526,15 @@ export default function UserProfilePage() {
               <PostCard
                 key={post._id}
                 post={post}
-                onVote={async () => {}}
-                onAddComment={async () => {}}
-                onVotePoll={async () => {}}
+                onVote={handleVote}
+                onAddComment={handleAddComment}
+                onVotePoll={handleVotePoll}
+                onCommentVote={handleCommentVote}
               />
             ))}
           </div>
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
-

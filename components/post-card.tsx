@@ -7,12 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  ThumbsUp,
-  ThumbsDown,
   MessageSquare,
   Calendar,
   Share2,
   Twitter,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -74,13 +74,18 @@ interface PostCardProps {
     parentCommentId?: string
   ) => Promise<void>;
   onVotePoll?: (postId: string, optionIndex: number) => Promise<void>;
+  onCommentVote: (
+    postId: string,
+    commentId: string,
+    voteType: "up" | "down"
+  ) => Promise<void>;
 }
-
 export function PostCard({
   post,
   onVote,
   onAddComment,
   onVotePoll,
+  onCommentVote,
 }: PostCardProps) {
   const { data: session } = useSession() as { data: Session | null };
   const [commentContent, setCommentContent] = useState("");
@@ -89,7 +94,7 @@ export function PostCard({
   const { toast } = useToast();
 
   const userVoteCount = (post.userVotes ?? {})[session?.user?.id || ""] || 0;
-  const canVote = userVoteCount < 50;
+  const canVote = userVoteCount < 10;
 
   const handleVote = async (voteType: "up" | "down") => {
     if (!session) {
@@ -279,7 +284,7 @@ export function PostCard({
               }`}
               disabled={!canVote || isVoting}
             >
-              <ThumbsUp className="h-4 w-4" />
+              <ArrowUp className="h-4 w-4" />
             </motion.button>
             <span className="text-sm font-medium">
               {(post.votes?.up ?? 0) - (post.votes?.down ?? 0)}
@@ -292,7 +297,7 @@ export function PostCard({
               }`}
               disabled={!canVote || isVoting}
             >
-              <ThumbsDown className="h-4 w-4" />
+              <ArrowDown className="h-4 w-4" />
             </motion.button>
           </div>
 
@@ -353,7 +358,9 @@ export function PostCard({
                   key={comment._id}
                   comment={comment}
                   postId={post._id}
-                  onVote={onVote}
+                  onVote={(commentId, voteType) =>
+                    onCommentVote(post._id, commentId, voteType)
+                  }
                   onReply={onAddComment}
                 />
               ))}
