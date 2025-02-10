@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Link from "next/link";
@@ -17,7 +19,6 @@ import {
   MoonIcon,
   PlusCircle,
   Search,
-  Sticker,
   SunMediumIcon,
   User,
   UserPlus,
@@ -44,8 +45,6 @@ import {
 import { Menu } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useToast } from "./ui/use-toast";
-
-const modes = ["system", "light", "dark"];
 
 export default function Header() {
   const router = useRouter();
