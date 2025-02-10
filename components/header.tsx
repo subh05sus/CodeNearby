@@ -58,12 +58,12 @@ export default function Header() {
               <Button
                 variant="outline"
                 size="sm"
-                className="px-1 py-4"
+                className="px-1 py-4 rounded-lg"
                 onClick={() => setShowSearch(true)}
               >
                 <Search className="h-5 w-5 ml-2" />
                 <span className="mx-4">Search</span>
-                <div className="border rounded p-1 flex text-center items-center justify-center gap-1">
+                <div className="border rounded-md p-1 flex text-center items-center justify-center gap-1 bg-muted text-muted-foreground">
                   <Command className="h-5 w-5 inline-block" /> K
                 </div>
               </Button>

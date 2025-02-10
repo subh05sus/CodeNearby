@@ -7,7 +7,7 @@ import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 
-const modes = ["light", "dark", "system"];
+const modes = ["system", "light", "dark"];
 
 export function ThemeSwitch() {
   const { theme, setTheme } = useTheme();
@@ -47,7 +47,7 @@ export function ThemeSwitch() {
             animate={{ scale: 1 }}
             transition={{ duration: 0.2 }}
           >
-            <Sun className="h-3 w-3 text-muted-foreground" />
+            <Monitor className="h-3 w-3 text-muted-foreground" />
           </motion.div>
         ) : modeIndex === 1 ? (
           <motion.div
@@ -55,7 +55,7 @@ export function ThemeSwitch() {
             animate={{ scale: 1 }}
             transition={{ duration: 0.2 }}
           >
-            <Moon className="h-3 w-3 text-muted-foreground dark:text-muted-foreground" />
+            <Sun className="h-3 w-3 text-muted-foreground" />
           </motion.div>
         ) : (
           <motion.div
@@ -63,7 +63,7 @@ export function ThemeSwitch() {
             animate={{ scale: 1 }}
             transition={{ duration: 0.2 }}
           >
-            <Monitor className="h-3 w-3 text-muted-foreground" />
+            <Moon className="h-3 w-3 text-muted-foreground dark:text-muted-foreground" />
           </motion.div>
         )}
       </motion.div>

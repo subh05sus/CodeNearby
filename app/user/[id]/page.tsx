@@ -135,7 +135,6 @@ export default function UserProfilePage() {
 
   const fetchUserPosts = async () => {
     if (!profile) {
-      console.log("No profile found, returning");
       return;
     }
     try {
