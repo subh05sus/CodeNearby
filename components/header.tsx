@@ -43,6 +43,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Menu } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useToast } from "./ui/use-toast";
 
 const modes = ["system", "light", "dark"];
 
@@ -52,6 +53,7 @@ export default function Header() {
   const [showSearch, setShowSearch] = useState(false);
   const { theme, setTheme } = useTheme();
   const [currentTheme, setCurrentTheme] = useState("system");
+  const { toast } = useToast();
 
   const handleSearch = (query: string) => {
     router.push(`/search?q=${encodeURIComponent(query)}`);
@@ -77,6 +79,63 @@ export default function Header() {
   const toggleMode = (value: any) => {
     setCurrentTheme(value);
     setTheme(value);
+  };
+
+  // Add these functions before the return statement in the Header component
+  const handleInviteUsersViaEmail = () => {
+    // Create a mailto link with pre-filled content
+    const subject = encodeURIComponent("Join me on CodeNearby");
+    const body = encodeURIComponent(
+      `Hey! I'd like to invite you to join CodeNearby. Check it out!\n\nhttps://codenearby.com/invite${
+        session?.user?.githubUsername
+          ? `?ref=${session.user.githubUsername}`
+          : ""
+      }`
+    );
+    window.open(`mailto:?subject=${subject}&body=${body}`);
+  };
+
+  const handleInviteUsersViaWhatsApp = () => {
+    // Create a WhatsApp share link
+    const text = encodeURIComponent(
+      `Hey! Join me on CodeNearby: https://codenearby.com/invite${
+        session?.user?.githubUsername
+          ? `?ref=${session.user.githubUsername}`
+          : ""
+      }`
+    );
+    window.open(`https://wa.me/?text=${text}`);
+  };
+
+  const handleInviteUsersViaLink = async () => {
+    const link = `https://codenearby.com/invite${
+      session?.user?.githubUsername ? `?ref=${session.user.githubUsername}` : ""
+    }`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Join CodeNearby",
+          text: "Hey! Join me on CodeNearby",
+          url: link,
+        });
+      } catch (error) {
+        console.error("Error sharing:", error);
+      }
+    } else {
+      // Fallback to clipboard
+      navigator.clipboard
+        .writeText(link)
+        .then(() => {
+          toast({
+            title: "Success",
+            description: "Invite link copied to clipboard!",
+          });
+        })
+        .catch((err) => {
+          console.error("Failed to copy link:", err);
+        });
+    }
   };
 
   return (
@@ -233,16 +292,22 @@ export default function Header() {
                         </DropdownMenuSubTrigger>
                         <DropdownMenuPortal>
                           <DropdownMenuSubContent>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={handleInviteUsersViaEmail}
+                            >
                               <Mail />
                               <span>Email</span>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={handleInviteUsersViaWhatsApp}
+                            >
                               <MessageSquare />
-                              <span>Message</span>
+                              <span>WhatsApp</span>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={handleInviteUsersViaLink}
+                            >
                               <PlusCircle />
                               <span>More...</span>
                             </DropdownMenuItem>
