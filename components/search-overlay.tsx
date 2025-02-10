@@ -11,6 +11,7 @@ import {
   MessageSquare,
   User,
   Command,
+  Users,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -36,7 +37,7 @@ export function SearchOverlay({ onClose, onSearch }: SearchOverlayProps) {
   const navigationItems: NavigationItem[] = [
     {
       icon: <Home className="h-5 w-5" />,
-      label: "Go to Feed",
+      label: "Feed",
       shortcut: "F",
       path: "/feed",
     },
@@ -51,6 +52,12 @@ export function SearchOverlay({ onClose, onSearch }: SearchOverlayProps) {
       label: "View Requests",
       shortcut: "R",
       path: "/requests",
+    },
+    {
+      icon: <Users className="h-5 w-5" />,
+      label: "View Gatherings",
+      shortcut: "G",
+      path: "/gathering",
     },
     {
       icon: <MessageSquare className="h-5 w-5" />,

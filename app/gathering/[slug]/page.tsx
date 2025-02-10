@@ -292,7 +292,8 @@ export default function GatheringRoomPage() {
                       OwnProfileImageSize={80}
                     />
                     <Button
-                      variant={"secondary"}
+                      variant={"ghost"}
+                      size={"icon"}
                       onClick={fetchGathering}
                       className="absolute top-0 right-0 z-30"
                     >

@@ -5,7 +5,24 @@ import { Button } from "@/components/ui/button";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Command, Search } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  Command,
+  LogOut,
+  Mail,
+  MessageSquare,
+  MessagesSquare,
+  Monitor,
+  MoonIcon,
+  PlusCircle,
+  Search,
+  Sticker,
+  SunMediumIcon,
+  User,
+  UserPlus,
+  Users,
+} from "lucide-react";
 import { SearchOverlay } from "./search-overlay";
 import Image from "next/image";
 import type { Session } from "next-auth";
@@ -14,16 +31,27 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Menu } from "lucide-react";
-// import { ThemeSwitch } from "./ThemeSwitch";
+import { useTheme } from "next-themes";
+
+const modes = ["system", "light", "dark"];
 
 export default function Header() {
   const router = useRouter();
   const { data: session } = useSession() as { data: Session | null };
   const [showSearch, setShowSearch] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [currentTheme, setCurrentTheme] = useState("system");
 
   const handleSearch = (query: string) => {
     router.push(`/search?q=${encodeURIComponent(query)}`);
@@ -41,6 +69,15 @@ export default function Header() {
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
+
+  useEffect(() => {
+    setCurrentTheme(theme || "system");
+  }, [theme]);
+
+  const toggleMode = (value: any) => {
+    setCurrentTheme(value);
+    setTheme(value);
+  };
 
   return (
     <header className="border-b bg-background">
@@ -96,6 +133,133 @@ export default function Header() {
                   </Button>
                 </li>
                 <li>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="flex items-center gap-2 h-fit"
+                      >
+                        <Image
+                          height={20}
+                          width={20}
+                          src={session.user.image || "/placeholder.svg"}
+                          alt={session.user.name || ""}
+                          className="w-8 h-8 rounded-full"
+                        />
+                        <div className="text-left">
+                          <p className="text-sm">{session.user.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            @{session.user.githubUsername}
+                          </p>
+                        </div>
+                        <div className="flex  flex-col items-center">
+                          <ChevronUp size={5} />
+                          <ChevronDown size={5} />
+                        </div>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56">
+                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {/* profile */}
+                      <DropdownMenuItem asChild>
+                        <Link href="/profile">
+                          <User />
+                          <span>Profile</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      {/* messages */}
+                      <DropdownMenuItem asChild>
+                        <Link href="/messages">
+                          <MessagesSquare />
+                          <span>Messages</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      {/* Requests */}
+                      <DropdownMenuItem asChild>
+                        <Link href="/requests">
+                          <Users />
+                          <span>Requests</span>
+                        </Link>
+                      </DropdownMenuItem>
+
+                      {/* Projects */}
+
+                      {/* Edit Profile */}
+
+                      {/* apperance */}
+                      <DropdownMenuSeparator />
+                      <DropdownMenuSub>
+                        <DropdownMenuSubTrigger>
+                          <UserPlus />
+                          <span>Appearance</span>
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuPortal>
+                          <DropdownMenuSubContent>
+                            <DropdownMenuRadioGroup
+                              value={currentTheme}
+                              onValueChange={toggleMode}
+                            >
+                              <DropdownMenuRadioItem
+                                value="system"
+                                className="flex items-center gap-2"
+                              >
+                                <Monitor size={16} />
+                                <span>Systen</span>
+                              </DropdownMenuRadioItem>
+                              <DropdownMenuRadioItem
+                                value="light"
+                                className="flex items-center gap-2"
+                              >
+                                <SunMediumIcon size={16} />
+                                <span>Light</span>
+                              </DropdownMenuRadioItem>
+                              <DropdownMenuRadioItem
+                                value="dark"
+                                className="flex items-center gap-2"
+                              >
+                                <MoonIcon size={16} />
+                                <span>Dark</span>
+                              </DropdownMenuRadioItem>
+                            </DropdownMenuRadioGroup>
+                          </DropdownMenuSubContent>
+                        </DropdownMenuPortal>
+                      </DropdownMenuSub>
+                      {/* invite */}
+                      <DropdownMenuSub>
+                        <DropdownMenuSubTrigger>
+                          <UserPlus />
+                          <span>Invite users</span>
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuPortal>
+                          <DropdownMenuSubContent>
+                            <DropdownMenuItem>
+                              <Mail />
+                              <span>Email</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                              <MessageSquare />
+                              <span>Message</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>
+                              <PlusCircle />
+                              <span>More...</span>
+                            </DropdownMenuItem>
+                          </DropdownMenuSubContent>
+                        </DropdownMenuPortal>
+                      </DropdownMenuSub>
+                      {/* sign out */}
+                      <DropdownMenuSeparator />
+
+                      <DropdownMenuItem onClick={() => signOut()}>
+                        <LogOut />
+                        <span>Log out</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </li>
+                {/* <li>
                   <Link href="/profile">
                     <Image
                       height={32}
@@ -110,11 +274,11 @@ export default function Header() {
                   <Button variant="outline" onClick={() => signOut()}>
                     Logout
                   </Button>
-                </li>
+                </li> */}
               </>
             ) : (
               <li>
-                <Button variant="outline" onClick={() => signIn("github")}>
+                <Button variant="secondary" onClick={() => signIn("github")}>
                   Login with GitHub
                 </Button>
               </li>
@@ -146,6 +310,9 @@ export default function Header() {
               </DropdownMenuItem>
               {session ? (
                 <>
+                  <DropdownMenuItem onSelect={() => router.push("/gathering")}>
+                    Gathering
+                  </DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => router.push("/requests")}>
                     Requests
                   </DropdownMenuItem>
