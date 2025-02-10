@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -82,7 +81,7 @@ export function ChatList() {
             <div className="flex-grow min-w-0">
               <div className="flex justify-between items-baseline">
                 <h3 className="font-semibold truncate">{friend.name}</h3>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-muted-foreground hidden sm:inline">
                   {formatDistanceToNow(
                     friend.lastMessage?.timestamp || Date.now(),
                     { addSuffix: true }

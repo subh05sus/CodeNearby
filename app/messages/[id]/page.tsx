@@ -3,16 +3,16 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, Send } from "lucide-react";
+import { Loader2, Send, ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import { ref, push, onChildAdded, off } from "firebase/database";
 import { format } from "date-fns";
-import { Session } from "next-auth";
+import type { Session } from "next-auth";
 import { db as database } from "@/lib/firebase";
 
 interface Message {
@@ -28,6 +28,7 @@ const maximum = (a: string, b: string) => (a > b ? a : b);
 
 export default function MessagePage() {
   const params = useParams();
+  const router = useRouter();
   const { data: session } = useSession() as { data: Session | null };
   const [loading, setLoading] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -45,12 +46,12 @@ export default function MessagePage() {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messagesEndRef]); //Corrected dependency
+  }, [messages]); //Corrected dependency
 
   const fetchMessages = async () => {
     if (!session?.user?.githubId || !params.id) return;
 
-    setMessages([]); // Reset messages when fetching new ones
+    setMessages([]);
 
     const roomId =
       minimum(params.id as string, session.user.githubId) +
@@ -58,7 +59,6 @@ export default function MessagePage() {
 
     const messagesRef = ref(database, `messages/${roomId}`);
 
-    // Remove any existing listeners first
     off(messagesRef);
 
     onChildAdded(messagesRef, (snapshot) => {
@@ -72,7 +72,7 @@ export default function MessagePage() {
           return prevMessages;
         }
         const newMessages = [...prevMessages, message];
-        setTimeout(scrollToBottom, 100); // Delay ensures DOM updates before scrolling
+        setTimeout(scrollToBottom, 100);
         return newMessages;
       });
     });
@@ -120,7 +120,7 @@ export default function MessagePage() {
 
   if (!session) {
     return (
-      <div className="flex flex-col items-center justify-center h-full">
+      <div className="flex flex-col items-center justify-center h-full p-4">
         <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
         <p>You need to be signed in to view messages.</p>
       </div>
@@ -138,6 +138,13 @@ export default function MessagePage() {
   return (
     <>
       <div className="border-b border-gray-200 dark:border-gray-800 p-4 flex items-center">
+        <Button
+          variant="ghost"
+          className="mr-2 md:hidden"
+          onClick={() => router.push("/messages")}
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
         <Image
           src={friend?.image || "/placeholder.svg"}
           alt={friend?.name || ""}
@@ -147,7 +154,7 @@ export default function MessagePage() {
         />
         <h2 className="text-xl font-semibold">{friend?.name || "Chat"}</h2>
       </div>
-      <div className="flex-grow overflow-y-auto p-4">
+      <div className="flex-grow overflow-y-auto portrait:max-h-[65vh] no-scrollbar p-4">
         {messages.map((message) => (
           <div
             key={message.id}
