@@ -11,7 +11,6 @@ import {
 import { Github } from "lucide-react";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
 interface InviteContentProps {
@@ -21,7 +20,6 @@ interface InviteContentProps {
 export default function InviteContent({ referrer }: InviteContentProps) {
   const [referrerData, setReferrerData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     async function fetchReferrer() {
