@@ -32,6 +32,7 @@ import {
 import WhatsappIcon from "./whatsapp-icon";
 import Link from "next/link";
 import { LinkPreview } from "./ui/link-preview";
+import { SharePost } from "./share-post";
 
 interface Comment {
   _id: string;
@@ -352,12 +353,13 @@ export function PostCard({
               <MessageSquare className="h-4 w-4 mr-2" />
               {post.comments?.length ?? 0} Comments
             </Button>
+            <SharePost />
             <DropdownMenu
               open={isShareMenuOpen}
               onOpenChange={setIsShareMenuOpen}
             >
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" onClick={sharePost}>
+                <Button variant="ghost" size="icon" onClick={sharePost}>
                   <Share2 className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
