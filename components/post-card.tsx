@@ -231,10 +231,18 @@ export function PostCard({
                       <span>{" | "}</span>
                     </>
                   )}
-                  <span title={format(new Date(post.createdAt), "PPpp")}>
-                    {formatDistanceToNow(new Date(post.createdAt), {
-                      addSuffix: true,
-                    })}
+                  <span
+                    title={
+                      post.createdAt
+                        ? format(new Date(post.createdAt), "PPpp")
+                        : "Unknown date"
+                    }
+                  >
+                    {post.createdAt
+                      ? formatDistanceToNow(new Date(post.createdAt), {
+                          addSuffix: true,
+                        })
+                      : "Unknown date"}
                   </span>
                 </p>
               </Link>
@@ -243,7 +251,7 @@ export function PostCard({
 
           {/* Post Content */}
           <p className="break-words md:text-lg text-base">
-            {post.content.split(/\b(https?:\/\/\S+)/g).map((part) =>
+            {(post.content || "").split(/\b(https?:\/\/\S+)/g).map((part) =>
               part.match(/^https?:\/\//) ? (
                 <LinkPreview url={part} className="font-medium" key={part}>
                   {part}

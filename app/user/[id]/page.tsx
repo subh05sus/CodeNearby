@@ -207,7 +207,6 @@ export default function UserProfilePage() {
       });
       return;
     }
-
     try {
       const response = await fetch(`/api/posts/${postId}/comments`, {
         method: "POST",
@@ -221,12 +220,46 @@ export default function UserProfilePage() {
 
       const updatedPost = await response.json();
       const newComment = updatedPost.comment;
+      const addCommentToHierarchy = (
+        comments: Comment[],
+        newComment: Comment,
+        parentId?: string
+      ): Comment[] => {
+        if (!parentId) {
+          return [...comments, newComment];
+        }
+
+        return comments.map((comment) => {
+          if (comment._id === parentId) {
+            return {
+              ...comment,
+              replies: [...(comment.replies || []), newComment],
+            };
+          }
+          if (comment.replies && comment.replies.length > 0) {
+            return {
+              ...comment,
+              replies: addCommentToHierarchy(
+                comment.replies,
+                newComment,
+                parentId
+              ),
+            };
+          }
+          return comment;
+        });
+      };
+
       setPosts((prevPosts) =>
         prevPosts.map((post) => {
           if (post._id === postId) {
             return {
               ...post,
-              comments: [...post.comments, newComment],
+              comments: addCommentToHierarchy(
+                post.comments,
+                newComment,
+                parentCommentId
+              ),
             };
           }
           return post;
@@ -314,20 +347,34 @@ export default function UserProfilePage() {
       }
 
       const updatedComment = await response.json();
+      const updateCommentVotes = (
+        comments: Comment[],
+        targetId: string
+      ): Comment[] => {
+        return comments.map((comment) => {
+          if (comment._id === targetId) {
+            return {
+              ...comment,
+              votes: updatedComment.votes,
+              userVotes: updatedComment.userVotes,
+            };
+          }
+          if (comment.replies && comment.replies.length > 0) {
+            return {
+              ...comment,
+              replies: updateCommentVotes(comment.replies, targetId),
+            };
+          }
+          return comment;
+        });
+      };
+
       setPosts((prevPosts) =>
         prevPosts.map((post) => {
           if (post._id === postId) {
             return {
               ...post,
-              comments: post.comments.map((comment) =>
-                comment._id === commentId
-                  ? {
-                      ...comment,
-                      votes: updatedComment.votes,
-                      userVotes: updatedComment.userVotes,
-                    }
-                  : comment
-              ),
+              comments: updateCommentVotes(post.comments, commentId),
             };
           }
           return post;

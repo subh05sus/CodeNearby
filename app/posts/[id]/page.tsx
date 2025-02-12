@@ -99,7 +99,14 @@ export default function FeedPage() {
       }
 
       const updatedPost = await response.json();
-      setPost(updatedPost);
+      setPost((prevPost) => {
+        if (!prevPost || prevPost._id !== postId) return prevPost;
+        return {
+          ...prevPost,
+          votes: updatedPost.votes,
+          userVotes: updatedPost.userVotes,
+        };
+      });
     } catch {
       toast({
         title: "Error",
@@ -122,7 +129,6 @@ export default function FeedPage() {
       });
       return;
     }
-
     try {
       const response = await fetch(`/api/posts/${postId}/comments`, {
         method: "POST",
@@ -135,7 +141,39 @@ export default function FeedPage() {
       }
 
       const updatedPost = await response.json();
-      setPost(updatedPost);
+      const newComment = updatedPost.comment;
+      setPost((prevPost) => {
+        if (!prevPost) return prevPost;
+        if (prevPost._id === postId) {
+          const addComment = (comments: Comment[], newComment: Comment, parentId?: string): Comment[] => {
+        if (!parentId) {
+          return [...comments, newComment];
+        }
+
+        return comments.map(comment => {
+          if (comment._id === parentId) {
+            return {
+          ...comment,
+          replies: [...(comment.replies || []), newComment]
+            };
+          }
+          if (comment.replies && comment.replies.length > 0) {
+            return {
+          ...comment,
+          replies: addComment(comment.replies, newComment, parentId)
+            };
+          }
+          return comment;
+        });
+          };
+
+          return {
+        ...prevPost,
+        comments: addComment(prevPost.comments, newComment, parentCommentId)
+          };
+        }
+        return prevPost;
+      });
 
       toast({
         title: "Success",
@@ -145,6 +183,44 @@ export default function FeedPage() {
       toast({
         title: "Error",
         description: "Failed to add comment",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleVotePoll = async (postId: string, optionIndex: number) => {
+    if (!session) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to vote",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/posts/${postId}/poll-vote`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ optionIndex }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to vote on poll");
+      }
+
+      const updatedPost = await response.json();
+      setPost((prevPost) => {
+        if (!prevPost) return prevPost;
+        if (prevPost._id === postId) {
+          return { ...prevPost, poll: updatedPost.poll };
+        }
+        return prevPost;
+      });
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to vote on poll",
         variant: "destructive",
       });
     }
@@ -181,50 +257,37 @@ export default function FeedPage() {
       const updatedComment = await response.json();
       setPost((prevPost) => {
         if (!prevPost) return prevPost;
-        const updatedComments = prevPost.comments.map((comment) => {
-          if (comment._id === updatedComment._id) {
-            return updatedComment;
+        if (prevPost._id === postId) {
+          const updateCommentVotes = (comments: Comment[]): Comment[] => {
+        return comments.map((comment) => {
+          if (comment._id === commentId) {
+            return {
+          ...comment,
+          votes: updatedComment.votes,
+          userVotes: updatedComment.userVotes,
+            };
+          }
+          if (comment.replies?.length > 0) {
+            return {
+          ...comment,
+          replies: updateCommentVotes(comment.replies),
+            };
           }
           return comment;
         });
-        return { ...prevPost, comments: updatedComments };
+          };
+
+          return {
+        ...prevPost,
+        comments: updateCommentVotes(prevPost.comments),
+          };
+        }
+        return prevPost;
       });
     } catch {
       toast({
         title: "Error",
         description: "Failed to vote on comment",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleVotePoll = async (postId: string, optionIndex: number) => {
-    if (!session) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to vote",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/posts/${postId}/poll-vote`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ optionIndex }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to vote on poll");
-      }
-
-      const updatedPost = await response.json();
-      setPost(updatedPost);
-    } catch {
-      toast({
-        title: "Error",
-        description: "Failed to vote on poll",
         variant: "destructive",
       });
     }

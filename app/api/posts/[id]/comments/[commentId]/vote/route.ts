@@ -1,8 +1,35 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { authOptions } from "@/app/options";
+
+// Function to find comment in nested structure
+function findComment(
+  comments: any[],
+  path: string[] = [],
+  commentId: ObjectId
+): {
+  comment: any;
+  path: string[];
+} | null {
+  for (let i = 0; i < comments.length; i++) {
+    if (comments[i]._id.toString() === commentId.toString()) {
+      return { comment: comments[i], path: [...path, i.toString()] };
+    }
+    if (comments[i].replies) {
+      const found = findComment(
+        comments[i].replies,
+        [...path, i.toString(), "replies"],
+        commentId
+      );
+      if (found) return found;
+    }
+  }
+  return null;
+}
 
 export async function POST(
   request: Request,
@@ -22,20 +49,18 @@ export async function POST(
     const commentId = new ObjectId(params.commentId);
     const userId = session.user.id;
 
-    // Get current comment
-    const post = await db.collection("posts").findOne(
-      {
-        _id: postId,
-        "comments._id": commentId,
-      },
-      { projection: { "comments.$": 1 } }
-    );
+    const post = await db.collection("posts").findOne({ _id: postId });
+    if (!post) {
+      return NextResponse.json({ error: "Post not found" }, { status: 404 });
+    }
 
-    if (!post || !post.comments?.[0]) {
+    const result = findComment(post.comments, [], commentId);
+    if (!result) {
       return NextResponse.json({ error: "Comment not found" }, { status: 404 });
     }
 
-    const comment = post.comments[0];
+    const { comment, path } = result;
+
     // Check user's vote count
     const commentUserVotes = comment.userVotes || {};
     const currentVoteCount = commentUserVotes[userId] || 0;
@@ -47,35 +72,26 @@ export async function POST(
       );
     }
 
+    // Construct the update path
+    const updatePath = `comments.${path.join(".")}`;
+
     // Update the comment's votes
     await db.collection("posts").updateOne(
+      { _id: postId },
       {
-        _id: postId,
-        "comments._id": commentId,
-      },
-      {
-        $inc: { [`comments.$.votes.${voteType}`]: 1 },
-        $set: { [`comments.$.userVotes.${userId}`]: currentVoteCount + 1 },
+        $inc: { [`${updatePath}.votes.${voteType}`]: 1 },
+        $set: { [`${updatePath}.userVotes.${userId}`]: currentVoteCount + 1 },
       }
     );
 
     // Fetch the updated comment
-    const updatedPost = await db.collection("posts").findOne(
-      {
-        _id: postId,
-        "comments._id": commentId,
-      },
-      { projection: { "comments.$": 1 } }
-    );
-
-    if (!updatedPost || !updatedPost.comments?.[0]) {
-      return NextResponse.json(
-        { error: "Failed to fetch updated comment" },
-        { status: 500 }
-      );
+    const updatedPost: any = await db
+      .collection("posts")
+      .findOne({ _id: postId });
+    let updatedComment = updatedPost.comments;
+    for (const index of path) {
+      updatedComment = updatedComment[index];
     }
-
-    const updatedComment = updatedPost.comments[0];
 
     return NextResponse.json({
       _id: updatedComment._id,

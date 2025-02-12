@@ -63,11 +63,14 @@ export function CommentThread({
     }
   };
 
+  const [replyKey, setReplyKey] = useState(0);
+
   const handleReply = async () => {
     if (!replyContent.trim()) return;
     try {
       await onReply(postId, replyContent, comment._id);
-      // Keep the comment data intact, just clear the reply input and hide the reply form
+      // Update the reply key to force re-render
+      setReplyKey((prev) => prev + 1);
       setReplyContent("");
       setIsReplying(false);
     } catch {
@@ -80,7 +83,7 @@ export function CommentThread({
   };
 
   return (
-    <div className="relative mb-4">
+    <div className="relative mb-4 overflow-x-scroll no-scrollbar">
       <div className="flex gap-2">
         {depth > 0 && (
           <div className="absolute left-0 top-0 bottom-0 w-px bg-border -ml-4" />
@@ -103,15 +106,17 @@ export function CommentThread({
               <AvatarImage src={comment.user?.image} />
               <AvatarFallback>{comment.user?.name?.[0]}</AvatarFallback>
             </Avatar>
-            <span className="font-medium text-sm">{comment.user?.name}</span>
-            <span className="text-muted-foreground text-sm">
+            <span className="font-medium text-sm text-nowrap">
+              {comment.user?.name}
+            </span>
+            <span className="text-muted-foreground text-sm text-nowrap">
               {formatDistanceToNow(new Date(comment.createdAt), {
                 addSuffix: true,
               })}
             </span>
           </div>
           <div className="pl-8">
-            <p className="text-sm mb-2">{comment.content}</p>
+            <p className="text-sm mb-2 ">{comment.content}</p>
             <div className="flex items-center gap-4">
               <div className="flex items-center">
                 <Button
