@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Query is required" }, { status: 400 })
     }
 
-    const response = await fetch(`https://api.github.com/search/users?q=${encodeURIComponent(query)}&per_page=100`, {
+    const response = await fetch(`https://api.github.com/search/users?q=${encodeURIComponent(query)}&per_page=20`, {
       headers: {
         Accept: "application/vnd.github.v3+json",
       },

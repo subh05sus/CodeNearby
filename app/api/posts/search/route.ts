@@ -18,10 +18,26 @@ export async function GET(request: Request) {
 
     const posts = await db
       .collection("posts")
-      .find({ $text: { $search: query } })
-      .sort({ score: { $meta: "textScore" } })
-      .skip(skip)
-      .limit(limit)
+      .aggregate([
+      { $match: { $text: { $search: query } } },
+      { $sort: { score: { $meta: "textScore" } } },
+      { $skip: skip },
+      { $limit: limit },
+      {
+        $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "user"
+        }
+      },
+      {
+        $unwind: {
+        path: "$user",
+        preserveNullAndEmptyArrays: true
+        }
+      }
+      ])
       .toArray()
 
     return NextResponse.json(posts)

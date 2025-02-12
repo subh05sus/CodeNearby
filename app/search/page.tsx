@@ -52,7 +52,7 @@ function SearchPage() {
         `/api/search?q=${encodeURIComponent(query)}`
       );
       const data = await response.json();
-      setDevelopers(data.slice(0, 10));
+      setDevelopers(data.slice(0, 20));
     } catch {
       toast({
         title: "Error",
@@ -327,51 +327,55 @@ function SearchPage() {
           <div className="space-y-8">
             <section>
               <h2 className="text-2xl font-semibold mb-4">GitHub Profiles</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {developers.map((dev: any) => (
-                  <Card key={dev.id}>
-                    <CardHeader>
-                      <CardTitle>{dev.login}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <Image
-                        src={dev.avatar_url || "/placeholder.svg"}
-                        alt={dev.login}
-                        width={80}
-                        height={80}
-                        className="rounded-full mb-2"
-                      />
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Name: {dev.name || "N/A"}
-                      </p>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Location: {dev.location || "N/A"}
-                      </p>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        Public Repos: {dev.public_repos || "N/A"}
-                      </p>
-                      <div className="flex space-x-2 mt-4">
-                        <Link
-                          href={dev.html_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <Button variant="outline" size="sm">
-                            View Profile
-                          </Button>
-                        </Link>
-                        {session && (
-                          <Button
-                            variant="default"
-                            size="sm"
-                            onClick={() => sendFriendRequest(dev)}
+                  <Card
+                    key={dev.id}
+                    className="flex items-center space-x-4 p-4  shadow-md rounded-lg hover:shadow-lg transition-all duration-200"
+                  >
+                    <Image
+                      src={dev.avatar_url || "/placeholder.svg"}
+                      alt={dev.login}
+                      width={80}
+                      height={80}
+                      className="rounded-full border border-muted"
+                    />
+
+                    <div className="flex-1">
+                      <CardHeader className="p-0">
+                        <CardTitle className="text-lg font-semibold">
+                          {dev.login}
+                        </CardTitle>
+                      </CardHeader>
+
+                      <CardContent className="p-0 mt-2">
+                        <div className="flex space-x-3">
+                          <Link
+                            href={dev.html_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
                           >
-                            <UserPlus className="h-4 w-4 mr-2" />
-                            Add Friend
-                          </Button>
-                        )}
-                      </div>
-                    </CardContent>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                            >
+                              View Profile
+                            </Button>
+                          </Link>
+
+                          {session && (
+                            <Button
+                              variant="default"
+                              size="sm"
+                              onClick={() => sendFriendRequest(dev)}
+                            >
+                              <UserPlus className="h-4 w-4 mr-2" />
+                              Add Friend
+                            </Button>
+                          )}
+                        </div>
+                      </CardContent>
+                    </div>
                   </Card>
                 ))}
               </div>
