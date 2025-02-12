@@ -4,12 +4,20 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, Send, ImageIcon, Pin } from "lucide-react";
+import {
+  Loader2,
+  Send,
+  ImageIcon,
+  Pin,
+  Calendar,
+  BarChart,
+  MapPin,
+} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { db } from "@/lib/firebase";
 import { ref, onChildAdded, onChildChanged, get } from "firebase/database";
@@ -19,6 +27,7 @@ import Image from "next/image";
 import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
 import { AnonymousSwitch } from "@/components/ui/AnonymousSwitch";
+import { format } from "date-fns";
 
 interface Message {
   id: string;
@@ -48,6 +57,8 @@ interface PollData {
 
 export default function GatheringChatPage() {
   const { data: session } = useSession() as { data: Session | null };
+  const router = useRouter();
+
   const params = useParams();
   const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -367,23 +378,70 @@ export default function GatheringChatPage() {
   };
 
   const renderMessageContent = (content: string) => {
-    const mentionRegex = /@(\w+)/g;
-    const parts = content.split(mentionRegex);
-
-    return parts.map((part, index) => {
-      if (index % 2 === 1) {
+    // Try to parse as JSON first
+    try {
+      const jsonContent = JSON.parse(content);
+      if (jsonContent.type === "post") {
         return (
-          <Link
-            key={index}
-            href={`/u/${part}`}
-            className="font-bold text-primary hover:underline"
+          <div
+            className="text-inherit bg-black p-2 rounded-lg cursor-pointer mt-2"
+            onClick={() => router.push(`/posts/${jsonContent.postId}`)}
           >
-            @{part}
-          </Link>
+            <p className="text-sm mb-2 line-clamp-2">
+              {jsonContent.postContent}
+            </p>
+            {jsonContent.postImage && (
+              <div className="relative w-full aspect-video h-32 ">
+                <Image
+                  src={jsonContent.postImage || "/placeholder.svg"}
+                  alt="Post image"
+                  fill
+                  className="rounded-md object-cover"
+                />
+              </div>
+            )}
+            {jsonContent.postPoll && (
+              <div className="flex items-center text-sm opacity-70">
+                <BarChart className="h-4 w-4 mr-1" />
+                Poll: {jsonContent.postPoll.question}
+              </div>
+            )}
+            {jsonContent.postLocation && (
+              <div className="flex items-center text-sm opacity-70">
+                <MapPin className="h-4 w-4 mr-1" />
+                Location attached
+              </div>
+            )}
+            {jsonContent.postSchedule && (
+              <div className="flex items-center text-sm text-muted-foreground">
+                <Calendar className="h-4 w-4 mr-1" />
+                {jsonContent.postSchedule &&
+                  format(new Date(jsonContent.postSchedule), "PPp")}
+              </div>
+            )}
+          </div>
         );
       }
-      return part;
-    });
+    } catch {
+      // If parsing fails, handle as regular message with mentions
+      const mentionRegex = /@(\w+)/g;
+      const parts = content.split(mentionRegex);
+
+      return parts.map((part, index) => {
+        if (index % 2 === 1) {
+          return (
+            <Link
+              key={index}
+              href={`/u/${part}`}
+              className="font-bold text-primary hover:underline"
+            >
+              @{part}
+            </Link>
+          );
+        }
+        return part;
+      });
+    }
   };
 
   if (!session) {

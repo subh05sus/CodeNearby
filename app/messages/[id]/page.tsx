@@ -8,7 +8,14 @@ import { useSession } from "next-auth/react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, Send, ArrowLeft } from "lucide-react";
+import {
+  Loader2,
+  Send,
+  ArrowLeft,
+  BarChart,
+  MapPin,
+  Calendar,
+} from "lucide-react";
 import Image from "next/image";
 import { ref, push, onChildAdded, off } from "firebase/database";
 import { format } from "date-fns";
@@ -155,29 +162,86 @@ export default function MessagePage() {
         <h2 className="text-xl font-semibold">{friend?.name || "Chat"}</h2>
       </div>
       <div className="flex-grow overflow-y-auto portrait:max-h-[65vh] no-scrollbar p-4">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`mb-4 flex ${
-              message.senderId === session.user.githubId
-                ? "justify-end"
-                : "justify-start"
-            }`}
-          >
+        {messages.map((message) => {
+          return (
             <div
-              className={`max-w-[70%] p-3 rounded-lg ${
+              key={message.id}
+              className={`mb-4 flex ${
                 message.senderId === session.user.githubId
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 dark:bg-zinc-800"
+                  ? "justify-end"
+                  : "justify-start"
               }`}
             >
-              <p>{message.content}</p>
-              <p className="text-xs mt-1 opacity-70">
-                {format(new Date(message.timestamp), "HH:mm")}
-              </p>
+              <div
+                className={`max-w-[70%] p-3 rounded-lg ${
+                  message.senderId === session.user.githubId
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 dark:bg-zinc-800"
+                }`}
+              >
+                {(() => {
+                  try {
+                    const jsonContent = JSON.parse(message.content);
+                    if (jsonContent.type === "post") {
+                      return (
+                        <div
+                          className="text-inherit bg-black p-2 rounded-lg cursor-pointer mb-2"
+                          onClick={() =>
+                            router.push(`/posts/${jsonContent.postId}`)
+                          }
+                        >
+                          <p className="text-sm mb-2 line-clamp-2">
+                            {jsonContent.postContent}
+                          </p>
+                          {jsonContent.postImage && (
+                            <div className="relative w-full aspect-video h-32 ">
+                              <Image
+                                src={
+                                  jsonContent.postImage || "/placeholder.svg"
+                                }
+                                alt="Post image"
+                                fill
+                                className="rounded-md object-cover"
+                              />
+                            </div>
+                          )}
+                          {jsonContent.postPoll && (
+                            <div className="flex items-center text-sm opacity-70">
+                              <BarChart className="h-4 w-4 mr-1" />
+                              Poll: {jsonContent.postPoll.question}
+                            </div>
+                          )}
+                          {jsonContent.postLocation && (
+                            <div className="flex items-center text-sm opacity-70">
+                              <MapPin className="h-4 w-4 mr-1" />
+                              Location attached
+                            </div>
+                          )}
+                          {jsonContent.postSchedule && (
+                            <div className="flex items-center text-sm text-muted-foreground">
+                              <Calendar className="h-4 w-4 mr-1" />
+                              {jsonContent.postSchedule &&
+                                format(
+                                  new Date(jsonContent.postSchedule),
+                                  "PPp"
+                                )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
+                  } catch {
+                    // If parsing fails, treat as regular message
+                    return <p>{message.content}</p>;
+                  }
+                })()}
+                <p className="text-xs mt-1 opacity-70">
+                  {format(new Date(message.timestamp), "HH:mm")}
+                </p>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         <div ref={messagesEndRef} className="h-2" />
       </div>
       <div className="border-t border-gray-200 dark:border-gray-800 p-4 flex">

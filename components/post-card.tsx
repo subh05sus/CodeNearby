@@ -353,7 +353,7 @@ export function PostCard({
               <MessageSquare className="h-4 w-4 mr-2" />
               {post.comments?.length ?? 0} Comments
             </Button>
-            <SharePost />
+            <SharePost post={post} />
             <DropdownMenu
               open={isShareMenuOpen}
               onOpenChange={setIsShareMenuOpen}
