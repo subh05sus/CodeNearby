@@ -330,6 +330,16 @@ export default function FeedPage() {
     }
   };
 
+  if (!session) {
+    return (
+      <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
+        <p className="text-lg text-center">
+          You must be logged in to view the feed
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-6xl mx-auto px-4">
       <div className="relative mb-8">

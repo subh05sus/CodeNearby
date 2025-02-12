@@ -11,6 +11,7 @@ import {
   ChevronDown,
   ChevronUp,
   Command,
+  Globe,
   LogOut,
   Mail,
   MessageSquare,
@@ -18,6 +19,7 @@ import {
   Monitor,
   MoonIcon,
   PlusCircle,
+  RssIcon,
   Search,
   SunMediumIcon,
   User,
@@ -145,49 +147,105 @@ export default function Header() {
         </Link>
         <nav className="hidden md:block">
           <ul className="flex space-x-3 items-center">
-            {/* <li> */}
-            {/* <ThemeToggle /> */}
-            {/* <ThemeSwitch /> */}
-            {/* </li> */}
-            <li>
-              <Button
-                variant="outline"
-                size="sm"
-                className="px-1 py-4 rounded-lg"
-                onClick={() => setShowSearch(true)}
-              >
-                <Search className="h-5 w-5 ml-2" />
-                <span className="mx-4">Search</span>
-                <div className="border rounded-md p-1 flex text-center items-center justify-center gap-1 bg-muted text-muted-foreground">
-                  <Command className="h-5 w-5 inline-block" /> K
-                </div>
-              </Button>
-            </li>
-            <li>
-              <Button variant="ghost" asChild>
-                <Link href="/discover">Discover</Link>
-              </Button>
-            </li>
-            <li>
-              <Button variant="ghost" asChild>
-                <Link href="/feed">Feed</Link>
-              </Button>
-            </li>
             {session ? (
               <>
                 <li>
-                  <Button variant="ghost" asChild>
-                    <Link href="/gathering">Gathering</Link>
+                  <Button variant="ghost" asChild className="xl:block hidden">
+                    <Link href="/discover">
+                      <span>Discover</span>
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    asChild
+                    size="icon"
+                    className="xl:hidden flex items-center"
+                  >
+                    <Link href="/discover">
+                      <Globe />
+                    </Link>
                   </Button>
                 </li>
                 <li>
-                  <Button variant="ghost" asChild>
-                    <Link href="/requests">Requests</Link>
+                  <Button variant="ghost" asChild className="xl:block hidden">
+                    <Link href="/feed">
+                      <span>Feed</span>
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    asChild
+                    size="icon"
+                    className="xl:hidden flex items-center"
+                  >
+                    <Link href="/feed">
+                      <RssIcon />
+                    </Link>
                   </Button>
                 </li>
                 <li>
-                  <Button variant="ghost" asChild>
-                    <Link href="/messages">Messages</Link>
+                  <Button variant="ghost" asChild className="xl:block hidden">
+                    <Link href="/gathering">
+                      <span>Gathering</span>
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    asChild
+                    size="icon"
+                    className="xl:hidden flex items-center"
+                  >
+                    <Link href="/gathering">
+                      <Users />
+                    </Link>
+                  </Button>
+                </li>
+                <li>
+                  <Button variant="ghost" asChild className="xl:block hidden">
+                    <Link href="/requests">
+                      <span>Requests</span>
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    asChild
+                    size="icon"
+                    className="xl:hidden flex items-center"
+                  >
+                    <Link href="/requests">
+                      <Mail />
+                    </Link>
+                  </Button>
+                </li>
+                <li>
+                  <Button variant="ghost" asChild className="xl:block hidden">
+                    <Link href="/messages">
+                      <span>Messages</span>
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    asChild
+                    size="icon"
+                    className="xl:hidden flex items-center"
+                  >
+                    <Link href="/messages">
+                      <MessageSquare />
+                    </Link>
+                  </Button>
+                </li>
+                <li>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="px-1 py-[18px] rounded-lg"
+                    onClick={() => setShowSearch(true)}
+                  >
+                    <Search className="h-5 w-5 ml-2" />
+                    <span className="mx-4">Search</span>
+                    <div className="border rounded-md p-1 flex text-center items-center justify-center gap-1 mr-0.5 bg-muted text-muted-foreground">
+                      <Command className="h-5 w-5 inline-block" /> K
+                    </div>
                   </Button>
                 </li>
                 <li>
@@ -341,11 +399,18 @@ export default function Header() {
                 </li> */}
               </>
             ) : (
-              <li>
-                <Button variant="secondary" onClick={() => signIn("github")}>
-                  Login with GitHub
-                </Button>
-              </li>
+              <>
+                <li>
+                  <Button variant="ghost" asChild>
+                    <Link href="/explore">Explore</Link>
+                  </Button>
+                </li>
+                <li>
+                  <Button variant="secondary" onClick={() => signIn("github")}>
+                    Login with GitHub
+                  </Button>
+                </li>
+              </>
             )}
           </ul>
         </nav>

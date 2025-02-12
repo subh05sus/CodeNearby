@@ -266,13 +266,16 @@ export default function DiscoverPage() {
   return (
     <div className="container mx-auto px-4">
       <h1 className="text-3xl font-bold mb-6">Discover Developers</h1>
-      <form onSubmit={handleLocationSubmit} className="flex space-x-2 mb-6">
+      <form
+        onSubmit={handleLocationSubmit}
+        className="md:flex grid grid-cols-2 gap-2 mb-6"
+      >
         <Input
           type="text"
           placeholder="Enter location"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
-          className="flex-grow"
+          className="flex-grow portrait:col-span-2"
         />
         <Button type="submit" disabled={loading}>
           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

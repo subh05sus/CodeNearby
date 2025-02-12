@@ -48,7 +48,22 @@ export default function ExplorePage() {
         const data = await getLocationByIp();
         setLocation(data.city);
         if (data.city) {
-          handleLocationSubmit({ preventDefault: () => {} });
+          setLoading(true);
+          try {
+            const response = await fetch(
+              `/api/developers?location=${encodeURIComponent(data.city)}`
+            );
+            const responseData = await response.json();
+            setDevelopers(responseData);
+          } catch {
+            toast({
+              title: "Error",
+              description: "Failed to fetch developers. Please try again.",
+              variant: "destructive",
+            });
+          } finally {
+            setLoading(false);
+          }
         }
       } catch {
         toast({
@@ -171,14 +186,16 @@ export default function ExplorePage() {
                   {dev.followers} followers
                 </p>
               )}
-              <Link
-                href={dev.html_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:underline mt-2 inline-block"
-              >
-                View Profile
-              </Link>
+              <Button asChild variant={"secondary"}>
+                <Link
+                  href={dev.html_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-block"
+                >
+                  View Profile
+                </Link>
+              </Button>
             </CardContent>
           </Card>
         ))}
