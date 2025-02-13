@@ -21,6 +21,7 @@ import { ref, push, onChildAdded, off } from "firebase/database";
 import { format } from "date-fns";
 import type { Session } from "next-auth";
 import { db as database } from "@/lib/firebase";
+import LoginButton from "@/components/login-button";
 
 interface Message {
   id: string;
@@ -130,6 +131,7 @@ export default function MessagePage() {
       <div className="flex flex-col items-center justify-center h-full p-4">
         <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
         <p>You need to be signed in to view messages.</p>
+        <LoginButton />
       </div>
     );
   }

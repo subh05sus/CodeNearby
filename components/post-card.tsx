@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -100,7 +100,11 @@ export function PostCard({
   const { toast } = useToast();
 
   const userVoteCount = (post.userVotes ?? {})[session?.user?.id || ""] || 0;
-  const canVote = userVoteCount < 10;
+  const [canVote, setCanVote] = useState(!!session && userVoteCount < 10);
+
+  useEffect(() => {
+    setCanVote(!!session && userVoteCount < 10);
+  }, [session, userVoteCount]);
 
   const handleVote = async (voteType: "up" | "down") => {
     if (!session) {

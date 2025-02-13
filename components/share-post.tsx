@@ -70,10 +70,13 @@ export function SharePost({ post }: SharePostProps) {
   const [sharing, setSharing] = useState(false);
   const { toast } = useToast();
 
+  const [canShare, setCanShare] = useState(false);
+
   useEffect(() => {
     if (session) {
       fetchFriends();
       fetchGatherings();
+      setCanShare(true);
     }
   }, [session]);
 
@@ -191,7 +194,7 @@ export function SharePost({ post }: SharePostProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button size={"icon"} variant={"ghost"}>
+        <Button size={"icon"} variant={"ghost"} disabled={!canShare}>
           <Send className="h-4 w-4" />
         </Button>
       </DialogTrigger>

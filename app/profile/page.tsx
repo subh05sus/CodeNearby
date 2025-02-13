@@ -26,6 +26,7 @@ import { PostCard } from "@/components/post-card";
 import { Session } from "next-auth";
 import { fetchGitHubActivities } from "@/lib/github";
 import { formatDistanceToNow } from "date-fns";
+import LoginButton from "@/components/login-button";
 
 interface Post {
   _id: string;
@@ -412,6 +413,7 @@ export default function ProfilePage() {
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
         <p>You need to be signed in to view your profile.</p>
+        <LoginButton />
       </div>
     );
   }

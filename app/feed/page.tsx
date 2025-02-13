@@ -9,6 +9,7 @@ import { Loader2 } from "lucide-react";
 import { CreatePost } from "@/components/create-post";
 import { PostCard } from "@/components/post-card";
 import { MasonryGrid } from "@/components/masonry-grid";
+import LoginButton from "@/components/login-button";
 
 interface Post {
   _id: string;
@@ -208,35 +209,47 @@ export default function FeedPage() {
 
       const updatedPost = await response.json();
       const newComment = updatedPost.comment;
-      const addCommentToHierarchy = (comments: Comment[], newComment: Comment, parentId?: string): Comment[] => {
+      const addCommentToHierarchy = (
+        comments: Comment[],
+        newComment: Comment,
+        parentId?: string
+      ): Comment[] => {
         if (!parentId) {
           return [...comments, newComment];
         }
 
-        return comments.map(comment => {
+        return comments.map((comment) => {
           if (comment._id === parentId) {
-        return {
-          ...comment,
-          replies: [...(comment.replies || []), newComment]
-        };
+            return {
+              ...comment,
+              replies: [...(comment.replies || []), newComment],
+            };
           }
           if (comment.replies && comment.replies.length > 0) {
-        return {
-          ...comment,
-          replies: addCommentToHierarchy(comment.replies, newComment, parentId)
-        };
+            return {
+              ...comment,
+              replies: addCommentToHierarchy(
+                comment.replies,
+                newComment,
+                parentId
+              ),
+            };
           }
           return comment;
         });
       };
 
-      setPosts(prevPosts =>
-        prevPosts.map(post => {
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => {
           if (post._id === postId) {
-        return {
-          ...post,
-          comments: addCommentToHierarchy(post.comments, newComment, parentCommentId)
-        };
+            return {
+              ...post,
+              comments: addCommentToHierarchy(
+                post.comments,
+                newComment,
+                parentCommentId
+              ),
+            };
           }
           return post;
         })
@@ -323,32 +336,35 @@ export default function FeedPage() {
       }
 
       const updatedComment = await response.json();
-      const updateCommentVotes = (comments: Comment[], targetId: string): Comment[] => {
-        return comments.map(comment => {
+      const updateCommentVotes = (
+        comments: Comment[],
+        targetId: string
+      ): Comment[] => {
+        return comments.map((comment) => {
           if (comment._id === targetId) {
-        return {
-          ...comment,
-          votes: updatedComment.votes,
-          userVotes: updatedComment.userVotes,
-        };
+            return {
+              ...comment,
+              votes: updatedComment.votes,
+              userVotes: updatedComment.userVotes,
+            };
           }
           if (comment.replies && comment.replies.length > 0) {
-        return {
-          ...comment,
-          replies: updateCommentVotes(comment.replies, targetId)
-        };
+            return {
+              ...comment,
+              replies: updateCommentVotes(comment.replies, targetId),
+            };
           }
           return comment;
         });
       };
 
-      setPosts(prevPosts =>
-        prevPosts.map(post => {
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => {
           if (post._id === postId) {
-        return {
-          ...post,
-          comments: updateCommentVotes(post.comments, commentId)
-        };
+            return {
+              ...post,
+              comments: updateCommentVotes(post.comments, commentId),
+            };
           }
           return post;
         })
@@ -364,10 +380,12 @@ export default function FeedPage() {
 
   if (!session) {
     return (
-      <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
+      <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)]">
         <p className="text-lg text-center">
           You must be logged in to view the feed
         </p>
+
+        <LoginButton />
       </div>
     );
   }

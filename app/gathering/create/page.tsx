@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
+import LoginButton from "@/components/login-button";
 
 const expirationOptions = [
   { value: "1h", label: "1 hour" },
@@ -83,6 +84,7 @@ export default function CreateGatheringPage() {
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
         <p>You need to be signed in to create a gathering.</p>
+        <LoginButton />
       </div>
     );
   }

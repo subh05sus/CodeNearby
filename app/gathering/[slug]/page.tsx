@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input";
 import { Ripple } from "@/components/magicui/ripple";
 import { RandomProfileCircles } from "@/components/random-profile-circles";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import LoginButton from "@/components/login-button";
 
 interface User {
   _id: string;
@@ -224,6 +225,7 @@ export default function GatheringRoomPage() {
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
         <p>You need to be signed in to view this gathering.</p>
+        <LoginButton />
       </div>
     );
   }

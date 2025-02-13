@@ -28,6 +28,7 @@ import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
 import { AnonymousSwitch } from "@/components/ui/AnonymousSwitch";
 import { format } from "date-fns";
+import LoginButton from "@/components/login-button";
 
 interface Message {
   id: string;
@@ -449,6 +450,7 @@ export default function GatheringChatPage() {
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
         <p>You need to be signed in to view this chat.</p>
+        <LoginButton />
       </div>
     );
   }

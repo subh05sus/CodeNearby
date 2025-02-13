@@ -13,6 +13,7 @@ import { Loader2, X, Heart, MapPin, GitBranch, Users, SkipForward } from "lucide
 import type { Developer, UserProfile } from "@/types"
 import type { Session } from "next-auth"
 import { fetchGitHubData } from "@/lib/github"
+import LoginButton from "@/components/login-button"
 
 interface ExtendedDeveloper extends Developer {
   distance?: string
@@ -237,6 +238,8 @@ export default function ConnectPage() {
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
         <p>You need to be signed in to connect with developers.</p>
+        <LoginButton />
+
       </div>
     )
   }

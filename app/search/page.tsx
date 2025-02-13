@@ -33,6 +33,14 @@ function SearchPage() {
   const { toast } = useToast();
   const { ref, inView } = useInView();
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    if (session) {
+      setIsLoggedIn(true);
+    }
+  }, [session]);
+
   useEffect(() => {
     if (query) {
       searchDevelopers();
@@ -384,7 +392,7 @@ function SearchPage() {
           <div className="space-y-8">
             <section>
               <h2 className="text-2xl font-semibold mb-4">GitHub Profiles</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
                 {developers.map((dev: any) => (
                   <Card
                     key={dev.id}
@@ -417,7 +425,7 @@ function SearchPage() {
                             </Button>
                           </Link>
 
-                          {session && (
+                          {isLoggedIn && (
                             <Button
                               variant="default"
                               size="sm"

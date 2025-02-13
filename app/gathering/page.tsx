@@ -9,6 +9,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Loader2, Plus } from "lucide-react";
 import Link from "next/link";
 import { GatheringList } from "@/components/gathering-list";
+import LoginButton from "@/components/login-button";
 
 interface Gathering {
   id: string;
@@ -54,6 +55,7 @@ export default function GatheringPage() {
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
         <p>You need to be signed in to view and create gatherings.</p>
+        <LoginButton />
       </div>
     );
   }

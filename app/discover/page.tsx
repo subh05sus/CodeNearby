@@ -15,6 +15,7 @@ import type { Developer, UserProfile } from "@/types";
 import { Session } from "next-auth";
 import { AnimatePresence, motion } from "framer-motion";
 import { getLocationByIp } from "@/lib/location";
+import LoginButton from "@/components/login-button";
 
 interface ExtendedDeveloper extends Developer {
   distance?: string;
@@ -259,6 +260,8 @@ export default function DiscoverPage() {
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
         <p>You need to be signed in to discover developers.</p>
+        <LoginButton />
+
       </div>
     );
   }
