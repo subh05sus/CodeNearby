@@ -45,7 +45,6 @@ export default function MessagePage() {
   const [inputMessage, setInputMessage] = useState("");
   const [friend, setFriend] = useState<any>(null);
   const { toast } = useToast();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (session && params.id) {
