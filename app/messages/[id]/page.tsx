@@ -120,12 +120,11 @@ export default function MessagePage() {
     setInputMessage("");
   };
 
-  const { scrollRef, isAtBottom, scrollToBottom } =
-    useAutoScroll({
-      offset: 20,
-      smooth: true,
-      content: messages.length,
-    });
+  const { scrollRef, isAtBottom, scrollToBottom } = useAutoScroll({
+    offset: 20,
+    smooth: true,
+    content: messages.length,
+  });
 
   if (!session) {
     return (
