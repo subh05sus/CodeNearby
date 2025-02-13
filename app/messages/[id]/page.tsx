@@ -15,6 +15,7 @@ import {
   BarChart,
   MapPin,
   Calendar,
+  ArrowDown,
 } from "lucide-react";
 import Image from "next/image";
 import { ref, push, onChildAdded, off } from "firebase/database";
@@ -22,6 +23,7 @@ import { format } from "date-fns";
 import type { Session } from "next-auth";
 import { db as database } from "@/lib/firebase";
 import LoginButton from "@/components/login-button";
+import { useAutoScroll } from "@/hooks/use-auto-scroll";
 
 interface Message {
   id: string;
@@ -51,10 +53,6 @@ export default function MessagePage() {
       fetchFriend();
     }
   }, [params.id, session]);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]); //Corrected dependency
 
   const fetchMessages = async () => {
     if (!session?.user?.githubId || !params.id) return;
@@ -122,9 +120,12 @@ export default function MessagePage() {
     setInputMessage("");
   };
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const { scrollRef, isAtBottom, scrollToBottom } =
+    useAutoScroll({
+      offset: 20,
+      smooth: true,
+      content: messages.length,
+    });
 
   if (!session) {
     return (
@@ -163,7 +164,10 @@ export default function MessagePage() {
         />
         <h2 className="text-xl font-semibold">{friend?.name || "Chat"}</h2>
       </div>
-      <div className="flex-grow overflow-y-auto portrait:max-h-[65vh] no-scrollbar p-4">
+      <div
+        className="flex-grow overflow-y-auto portrait:max-h-[65vh] no-scrollbar p-4"
+        ref={scrollRef}
+      >
         {messages.map((message) => {
           return (
             <div
@@ -244,9 +248,20 @@ export default function MessagePage() {
             </div>
           );
         })}
-        <div ref={messagesEndRef} className="h-2" />
+
+        {/* <div ref={messagesEndRef} className="h-2" /> */}
       </div>
-      <div className="border-t border-gray-200 dark:border-gray-800 p-4 flex">
+      <div className="border-t border-gray-200 dark:border-gray-800 p-4 flex relative">
+        {!isAtBottom && (
+          <Button
+            size="icon"
+            variant="outline"
+            className="absolute bottom-20 right-4 rounded-full"
+            onClick={scrollToBottom}
+          >
+            <ArrowDown className="h-4 w-4" />
+          </Button>
+        )}
         <Input
           type="text"
           placeholder="Type a message..."
