@@ -63,14 +63,12 @@ export function CommentThread({
     }
   };
 
-  const [replyKey, setReplyKey] = useState(0);
 
   const handleReply = async () => {
     if (!replyContent.trim()) return;
     try {
       await onReply(postId, replyContent, comment._id);
       // Update the reply key to force re-render
-      setReplyKey((prev) => prev + 1);
       setReplyContent("");
       setIsReplying(false);
     } catch {
