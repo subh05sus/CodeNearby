@@ -47,6 +47,7 @@ import {
 import { Menu } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useToast } from "./ui/use-toast";
+import Logo from "./logo";
 
 export default function Header() {
   const router = useRouter();
@@ -87,7 +88,9 @@ export default function Header() {
     // Create a mailto link with pre-filled content
     const subject = encodeURIComponent("Join me on CodeNearby");
     const body = encodeURIComponent(
-      `Hey! I'd like to invite you to join CodeNearby. Check it out!\n\nhttps://codenearby.com/invite${
+      `Hey! I'd like to invite you to join CodeNearby. Check it out!\n\n${
+        window.location.origin
+      }/invite${
         session?.user?.githubUsername
           ? `?ref=${session.user.githubUsername}`
           : ""
@@ -99,7 +102,7 @@ export default function Header() {
   const handleInviteUsersViaWhatsApp = () => {
     // Create a WhatsApp share link
     const text = encodeURIComponent(
-      `Hey! Join me on CodeNearby: https://codenearby.com/invite${
+      `Hey! Join me on CodeNearby: ${window.location.origin}/invite${
         session?.user?.githubUsername
           ? `?ref=${session.user.githubUsername}`
           : ""
@@ -109,7 +112,7 @@ export default function Header() {
   };
 
   const handleInviteUsersViaLink = async () => {
-    const link = `https://codenearby.com/invite${
+    const link = `${window.location.origin}/invite${
       session?.user?.githubUsername ? `?ref=${session.user.githubUsername}` : ""
     }`;
 
@@ -142,8 +145,8 @@ export default function Header() {
   return (
     <header className="border-b bg-background">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold">
-          CodeNearby
+        <Link href="/">
+          <Logo />
         </Link>
         <nav className="hidden md:block">
           <ul className="flex space-x-3 items-center">

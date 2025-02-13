@@ -1,7 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 body {
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -13,6 +12,14 @@ body {
 }
 html {
   scroll-behavior: smooth;
+}
+
+:root {
+  --color-1: 0 100% 63%;
+  --color-2: 270 100% 63%;
+  --color-3: 210 100% 63%;
+  --color-4: 195 100% 63%;
+  --color-5: 90 100% 63%;
 }
 
 @layer base {

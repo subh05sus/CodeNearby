@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/options";
 import Image from "next/image";
+import { BlurFade } from "@/components/magicui/blur-fade";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
@@ -24,7 +25,9 @@ export default async function Home() {
             </h1>
           </div>
         ) : (
-          <h1 className="text-4xl font-bold mb-4">Welcome to CodeNearby</h1>
+          <BlurFade delay={0.01} inView>
+            <h1 className="text-5xl font-bold mb-4">Welcome to CodeNearby</h1>
+          </BlurFade>
         )}
         <p className="text-xl mb-8">
           Connect with developers, share ideas, and collaborate on projects.
