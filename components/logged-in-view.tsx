@@ -11,7 +11,7 @@ import { Spotlight } from "./ui/spotlight-new";
 
 function LoggedInView({ user }: { user: any }) {
   return (
-    <div className="max-w-7xl mx-auto p-4">
+    <div className="max-w-7xl mx-auto">
       <div className="absolute top-0 right-0 w-full -z-50">
         <div className="h-[40rem] w-full rounded-md -z-50 flex md:items-center md:justify-center antialiased dark:bg-transparent bg-dot-black/[0.15] relative overflow-hidden">
           <Spotlight />
