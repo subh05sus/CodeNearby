@@ -6,7 +6,7 @@ import { GitHubEvents } from "./home/github-events";
 import { GitHubReceivedEvents } from "./home/github-received-events";
 import Hello from "./home/hello";
 import { NewPeopleToConnect } from "./home/new-people-to-connect";
-// import { ReceivedFriendRequests } from "./home/received-friend-requests";
+import { ReceivedFriendRequests } from "./home/received-friend-requests";
 import { Spotlight } from "./ui/spotlight-new";
 
 function LoggedInView({ user }: { user: any }) {
@@ -28,9 +28,10 @@ function LoggedInView({ user }: { user: any }) {
         <GitHubEvents username={user.githubUsername} />
         <CurrentGatherings />
       </div>
-      {/* <ReceivedFriendRequests /> */}
-
-      <Details />
+      <ReceivedFriendRequests />
+      <div className="mt-20">
+        <Details />
+      </div>
 
       <FAQSection />
     </div>

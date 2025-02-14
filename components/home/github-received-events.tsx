@@ -87,44 +87,53 @@ export function GitHubReceivedEvents({ username }: { username: string }) {
         <CardTitle>Received Activities</CardTitle>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-[400px] pr-4">
-          {loading
-            ? Array.from({ length: 5 }).map((_, index) => (
-                <div key={index} className="flex items-center space-x-4 mb-4">
-                  <Skeleton className="h-12 w-12 rounded-full" />
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-[250px]" />
-                    <Skeleton className="h-4 w-[200px]" />
-                  </div>
+        <ScrollArea
+          className={`h-[400px] ${
+            events.length < 1 && " portrait:h-fit"
+          } pr-4 relative`}
+        >
+          {loading ? (
+            Array.from({ length: 5 }).map((_, index) => (
+              <div key={index} className="flex items-center space-x-4 mb-4">
+                <Skeleton className="h-12 w-12 rounded-full" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-[250px]" />
+                  <Skeleton className="h-4 w-[200px]" />
                 </div>
-              ))
-            : events.map((event) => (
-                <div key={event.id} className="flex items-start space-x-4 mb-4">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage
-                      src={event.actor.avatar_url}
-                      alt={event.actor.login}
-                    />
-                    <AvatarFallback>
-                      {event.actor.login.slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="text-sm font-medium">
-                      {eventIcons[event.type] && (
-                        <span className="mr-2 inline-block align-text-bottom">
-                          {eventIcons[event.type]}
-                        </span>
-                      )}
-                      <span className="font-semibold">{event.actor.login}</span>{" "}
-                      {getEventDescription(event)}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(event.created_at).toLocaleString()}
-                    </p>
-                  </div>
+              </div>
+            ))
+          ) : events.length > 0 ? (
+            events.map((event) => (
+              <div key={event.id} className="flex items-start space-x-4 mb-4">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage
+                    src={event.actor.avatar_url}
+                    alt={event.actor.login}
+                  />
+                  <AvatarFallback>
+                    {event.actor.login.slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-sm font-medium">
+                    {eventIcons[event.type] && (
+                      <span className="mr-2 inline-block align-text-bottom">
+                        {eventIcons[event.type]}
+                      </span>
+                    )}
+                    <span className="font-semibold">{event.actor.login}</span>{" "}
+                    {getEventDescription(event)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(event.created_at).toLocaleString()}
+                  </p>
                 </div>
-              ))}
+              </div>
+            ))
+          ) : (
+            <p className="text-muted-foreground text-sm">No activities found</p>
+          )}
+          <div className="absolute w-full bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-card to-transparent" />
         </ScrollArea>
       </CardContent>
     </Card>

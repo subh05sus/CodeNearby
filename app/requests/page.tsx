@@ -72,7 +72,6 @@ export default function RequestsPage() {
   };
 
   const handleInvite = (username: string) => {
-    // Implement invitation logic here
     console.log(`Inviting ${username} to CodeNearby`);
     toast({
       title: "Invite Sent",

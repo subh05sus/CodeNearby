@@ -33,7 +33,7 @@ export async function GET() {
             },
           },
         },
-        { $sample: { size: 5 } },
+        { $sample: { size: 8 } },
         { $project: { _id: 1, name: 1, image: 1, githubUsername: 1 } },
       ])
       .toArray();

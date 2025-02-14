@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2, MapPin, X, Heart, SkipForward } from "lucide-react";
 import Image from "next/image";
@@ -88,11 +88,12 @@ export default function DiscoverPage() {
       const declinedIds = new Set(
         declinedData.map((profile: any) => profile.githubId)
       );
-
       const filteredDevelopers = data
         .filter(
           (dev: Developer) =>
             dev.id !== session?.user?.id &&
+            dev.id !== session?.user?.githubId &&
+            dev.login !== session?.user?.githubUsername &&
             !userProfile?.friends.some(
               (friend) => friend.githubId.toString() === dev.id
             ) &&
@@ -261,7 +262,6 @@ export default function DiscoverPage() {
         <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
         <p>You need to be signed in to discover developers.</p>
         <LoginButton />
-
       </div>
     );
   }
@@ -380,11 +380,8 @@ export default function DiscoverPage() {
           <div className="relative">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-[60vh] no-scrollbar overflow-y-scroll">
               {exploreDevelopers.map((dev) => (
-                <Card key={dev.id}>
-                  <CardHeader>
-                    <CardTitle>{dev.login}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
+                <Card key={dev.id} className="p-3">
+                  <CardContent className="flex gap-2 h-full w-full p-2 pt-2 justify-center items-center">
                     <Image
                       src={dev.avatar_url || "/placeholder.svg"}
                       alt={dev.login}
@@ -392,29 +389,29 @@ export default function DiscoverPage() {
                       height={80}
                       className="rounded-full mb-2"
                     />
-                    {dev.name && (
-                      <p className="text-sm text-muted-foreground mb-1">
-                        {dev.name}
-                      </p>
-                    )}
-                    <div className="mt-2 flex gap-2">
-                      <Button
-                        variant={"default"}
-                        size={"sm"}
-                        onClick={() => handleAddFriend(dev)}
-                      >
-                        Add Friend
-                      </Button>
-                      <Button asChild variant={"outline"} size={"sm"}>
-                        <Link
-                          href={dev.html_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className=" inline-block"
-                        >
-                          View GitHub
-                        </Link>
-                      </Button>
+                    <div className="flex-1 ">
+                      <p className="font-bold text-lg ">{dev.login}</p>
+                      <div className="mt-2 flex gap-2">
+                        {dev.id !== session.user.githubId && (
+                          <Button
+                            variant={"default"}
+                            size={"sm"}
+                            onClick={() => handleAddFriend(dev)}
+                          >
+                            Add Friend
+                          </Button>
+                        )}
+                        <Button asChild variant={"outline"} size={"sm"}>
+                          <Link
+                            href={dev.html_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className=" inline-block"
+                          >
+                            View GitHub
+                          </Link>
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

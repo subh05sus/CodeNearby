@@ -41,11 +41,11 @@ export function CurrentGatherings() {
         <CardTitle>Current Gatherings</CardTitle>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-[200px] portrait:h-fit pr-4">
+        <ScrollArea className="h-[160px] portrait:h-fit pr-4">
           {loading ? (
             <div className="space-y-2">
               {[...Array(3)].map((_, i) => (
-                <Skeleton key={i} className="h-12 w-full" />
+                <Skeleton key={i} className="h-10 w-full" />
               ))}
             </div>
           ) : gatherings.length > 0 ? (
@@ -56,22 +56,26 @@ export function CurrentGatherings() {
                   className="flex items-center justify-between"
                 >
                   <div>
-                    <h3 className="font-semibold">{gathering.name}</h3>
-                    <p className="text-sm text-muted-foreground">
+                    <h3 className="font-semibold md:text-base text-sm">
+                      {gathering.name}
+                    </h3>
+                    <p className=" text-xs md:text-sm text-muted-foreground">
                       Expires: {new Date(gathering.expiresAt).toLocaleString()}
                     </p>
                   </div>
                   <Button asChild>
                     <Link href={`/gathering/${gathering.slug}`}>
                       <Users className="h-4 w-4 mr-2" />
-                      Join
+                      View
                     </Link>
                   </Button>
                 </li>
               ))}
             </ul>
           ) : (
-            <p>No current gatherings</p>
+            <p className="text-muted-foreground text-sm">
+              No current gatherings
+            </p>
           )}
         </ScrollArea>
       </CardContent>

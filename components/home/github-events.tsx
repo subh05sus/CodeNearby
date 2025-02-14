@@ -82,7 +82,9 @@ export function GitHubEvents({ username }: { username: string }) {
         <CardTitle>Your GitHub Activity</CardTitle>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-[200px] pr-4">
+        <ScrollArea
+          className={`h-[160px] ${events.length < 1 && " portrait:h-fit"} pr-4`}
+        >
           {loading ? (
             <div className="space-y-2">
               {[...Array(5)].map((_, i) => (
@@ -99,7 +101,9 @@ export function GitHubEvents({ username }: { username: string }) {
               ))}
             </ul>
           ) : (
-            <p>No recent GitHub activity</p>
+            <p className="text-muted-foreground text-sm">
+              No recent GitHub activity
+            </p>
           )}
         </ScrollArea>
       </CardContent>

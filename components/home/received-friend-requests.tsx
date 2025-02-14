@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -6,8 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Check, X } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 interface FriendRequest {
+  sender: any;
   _id: string;
   senderId: string;
   senderName: string;
@@ -17,48 +21,56 @@ interface FriendRequest {
 export function ReceivedFriendRequests() {
   const [requests, setRequests] = useState<FriendRequest[]>([]);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
+  const fetchRequests = async () => {
+    try {
+      const response = await fetch("/api/friends/requests/received");
+      const data = await response.json();
+      setRequests(data);
+    } catch (error) {
+      console.error("Error fetching friend requests:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        const response = await fetch("/api/friends/requests");
-        const data = await response.json();
-        setRequests(data);
-      } catch (error) {
-        console.error("Error fetching friend requests:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchRequests();
   }, []);
 
-  const handleAccept = async (requestId: string) => {
+  const handleRequest = async (
+    requestId: string,
+    action: "accept" | "reject"
+  ) => {
     try {
-      await fetch(`/api/friends/request/${requestId}`, {
-        method: "PUT",
+      const response = await fetch(`/api/friends/request/${requestId}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "accepted" }),
+        body: JSON.stringify({
+          status: action === "accept" ? "accepted" : "rejected",
+        }),
       });
-      setRequests(requests.filter((request) => request._id !== requestId));
-    } catch (error) {
-      console.error("Error accepting friend request:", error);
+
+      if (!response.ok) throw new Error("Failed to update request");
+
+      toast({
+        title: "Success",
+        description: `Request ${action}ed successfully!`,
+      });
+
+      fetchRequests();
+    } catch {
+      toast({
+        title: "Error",
+        description: `Failed to ${action} request.`,
+        variant: "destructive",
+      });
     }
   };
 
-  const handleReject = async (requestId: string) => {
-    try {
-      await fetch(`/api/friends/request/${requestId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "rejected" }),
-      });
-      setRequests(requests.filter((request) => request._id !== requestId));
-    } catch (error) {
-      console.error("Error rejecting friend request:", error);
-    }
-  };
+  if (requests.length === 0) {
+    return;
+  }
 
   return (
     <Card>
@@ -82,31 +94,31 @@ export function ReceivedFriendRequests() {
                 <div className="flex items-center space-x-2">
                   <Avatar>
                     <AvatarImage
-                      src={request.senderImage}
-                      alt={request.senderName}
+                      src={request.sender.image}
+                      alt={request.sender.name}
                     />
                     <AvatarFallback>
-                      {request.senderName ? request.senderName.charAt(0) : ""}
+                      {request.sender.name ? request.sender.name.charAt(0) : ""}
                     </AvatarFallback>
                   </Avatar>
-                  <span>{request.senderName}</span>
+                  <span>{request.sender.name}</span>
                 </div>
                 <div className="space-x-2">
                   <Button
+                    className="rounded-full"
                     variant="outline"
-                    size="sm"
-                    onClick={() => handleAccept(request._id)}
+                    size="icon"
+                    onClick={() => handleRequest(request._id!, "accept")}
                   >
-                    <Check className="h-4 w-4 mr-2" />
-                    Accept
+                    <Check className="h-4 w-4 " />
                   </Button>
                   <Button
+                    className="rounded-full"
                     variant="outline"
-                    size="sm"
-                    onClick={() => handleReject(request._id)}
+                    size="icon"
+                    onClick={() => handleRequest(request._id!, "reject")}
                   >
-                    <X className="h-4 w-4 mr-2" />
-                    Reject
+                    <X className="h-4 w-4 " />
                   </Button>
                 </div>
               </li>

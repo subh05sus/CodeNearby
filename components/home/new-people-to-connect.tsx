@@ -49,7 +49,7 @@ export function NewPeopleToConnect() {
           {loading ? (
             <div className="space-y-2">
               {[...Array(5)].map((_, i) => (
-                <Skeleton key={i} className="h-12 w-full" />
+                <Skeleton key={i} className="h-10 w-full" />
               ))}
             </div>
           ) : users.length > 0 ? (
@@ -74,7 +74,9 @@ export function NewPeopleToConnect() {
               ))}
             </ul>
           ) : (
-            <p>No users available to connect</p>
+            <p className="text-muted-foreground text-sm">
+              No new users available to connect
+            </p>
           )}
         </ScrollArea>
       </CardContent>
