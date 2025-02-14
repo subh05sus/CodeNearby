@@ -16,6 +16,7 @@ interface FriendRequest {
   senderId: string;
   senderName: string;
   senderImage: string;
+  status: string;
 }
 
 export function ReceivedFriendRequests() {
@@ -27,7 +28,9 @@ export function ReceivedFriendRequests() {
     try {
       const response = await fetch("/api/friends/requests/received");
       const data = await response.json();
-      setRequests(data);
+      setRequests(
+        data.filter((request: FriendRequest) => request.status === "pending")
+      );
     } catch (error) {
       console.error("Error fetching friend requests:", error);
     } finally {
@@ -86,43 +89,47 @@ export function ReceivedFriendRequests() {
           </div>
         ) : requests.length > 0 ? (
           <ul className="space-y-2">
-            {requests.map((request) => (
-              <li
-                key={request._id}
-                className="flex items-center justify-between"
-              >
-                <div className="flex items-center space-x-2">
-                  <Avatar>
-                    <AvatarImage
-                      src={request.sender.image}
-                      alt={request.sender.name}
-                    />
-                    <AvatarFallback>
-                      {request.sender.name ? request.sender.name.charAt(0) : ""}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span>{request.sender.name}</span>
-                </div>
-                <div className="space-x-2">
-                  <Button
-                    className="rounded-full"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => handleRequest(request._id!, "accept")}
-                  >
-                    <Check className="h-4 w-4 " />
-                  </Button>
-                  <Button
-                    className="rounded-full"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => handleRequest(request._id!, "reject")}
-                  >
-                    <X className="h-4 w-4 " />
-                  </Button>
-                </div>
-              </li>
-            ))}
+            {requests
+              // .filter((request) => request.status === "pending")
+              .map((request) => (
+                <li
+                  key={request._id}
+                  className="flex items-center justify-between"
+                >
+                  <div className="flex items-center space-x-2">
+                    <Avatar>
+                      <AvatarImage
+                        src={request.sender.image}
+                        alt={request.sender.name}
+                      />
+                      <AvatarFallback>
+                        {request.sender.name
+                          ? request.sender.name.charAt(0)
+                          : ""}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span>{request.sender.name}</span>
+                  </div>
+                  <div className="space-x-2">
+                    <Button
+                      className="rounded-full"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleRequest(request._id!, "accept")}
+                    >
+                      <Check className="h-4 w-4 " />
+                    </Button>
+                    <Button
+                      className="rounded-full"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleRequest(request._id!, "reject")}
+                    >
+                      <X className="h-4 w-4 " />
+                    </Button>
+                  </div>
+                </li>
+              ))}
           </ul>
         ) : (
           <p>No pending friend requests</p>
