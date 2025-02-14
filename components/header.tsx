@@ -155,13 +155,25 @@ export default function Header() {
             {session ? (
               <>
                 <li>
-                  <Button variant="ghost" asChild className="xl:block hidden">
+                  <Button
+                    variant={`${
+                      pathname === "/" && theme === "light"
+                        ? "outline"
+                        : "ghost"
+                    }`}
+                    asChild
+                    className="xl:block hidden"
+                  >
                     <Link href="/discover">
                       <span>Discover</span>
                     </Link>
                   </Button>
                   <Button
-                    variant="ghost"
+                    variant={`${
+                      pathname === "/" && theme === "light"
+                        ? "outline"
+                        : "ghost"
+                    }`}
                     asChild
                     size="icon"
                     className="xl:hidden flex items-center"
@@ -172,13 +184,25 @@ export default function Header() {
                   </Button>
                 </li>
                 <li>
-                  <Button variant="ghost" asChild className="xl:block hidden">
+                  <Button
+                    variant={`${
+                      pathname === "/" && theme === "light"
+                        ? "outline"
+                        : "ghost"
+                    }`}
+                    asChild
+                    className="xl:block hidden"
+                  >
                     <Link href="/feed">
                       <span>Feed</span>
                     </Link>
                   </Button>
                   <Button
-                    variant="ghost"
+                    variant={`${
+                      pathname === "/" && theme === "light"
+                        ? "outline"
+                        : "ghost"
+                    }`}
                     asChild
                     size="icon"
                     className="xl:hidden flex items-center"
@@ -189,13 +213,25 @@ export default function Header() {
                   </Button>
                 </li>
                 <li>
-                  <Button variant="ghost" asChild className="xl:block hidden">
+                  <Button
+                    variant={`${
+                      pathname === "/" && theme === "light"
+                        ? "outline"
+                        : "ghost"
+                    }`}
+                    asChild
+                    className="xl:block hidden"
+                  >
                     <Link href="/gathering">
                       <span>Gathering</span>
                     </Link>
                   </Button>
                   <Button
-                    variant="ghost"
+                    variant={`${
+                      pathname === "/" && theme === "light"
+                        ? "outline"
+                        : "ghost"
+                    }`}
                     asChild
                     size="icon"
                     className="xl:hidden flex items-center"
@@ -206,13 +242,25 @@ export default function Header() {
                   </Button>
                 </li>
                 <li>
-                  <Button variant="ghost" asChild className="xl:block hidden">
+                  <Button
+                    variant={`${
+                      pathname === "/" && theme === "light"
+                        ? "outline"
+                        : "ghost"
+                    }`}
+                    asChild
+                    className="xl:block hidden"
+                  >
                     <Link href="/requests">
                       <span>Requests</span>
                     </Link>
                   </Button>
                   <Button
-                    variant="ghost"
+                    variant={`${
+                      pathname === "/" && theme === "light"
+                        ? "outline"
+                        : "ghost"
+                    }`}
                     asChild
                     size="icon"
                     className="xl:hidden flex items-center"
@@ -223,13 +271,25 @@ export default function Header() {
                   </Button>
                 </li>
                 <li>
-                  <Button variant="ghost" asChild className="xl:block hidden">
+                  <Button
+                    variant={`${
+                      pathname === "/" && theme === "light"
+                        ? "outline"
+                        : "ghost"
+                    }`}
+                    asChild
+                    className="xl:block hidden"
+                  >
                     <Link href="/messages">
                       <span>Messages</span>
                     </Link>
                   </Button>
                   <Button
-                    variant="ghost"
+                    variant={`${
+                      pathname === "/" && theme === "light"
+                        ? "outline"
+                        : "ghost"
+                    }`}
                     asChild
                     size="icon"
                     className="xl:hidden flex items-center"
@@ -408,7 +468,14 @@ export default function Header() {
             ) : (
               <>
                 <li>
-                  <Button variant="ghost" asChild>
+                  <Button
+                    variant={`${
+                      pathname === "/" && theme === "light"
+                        ? "outline"
+                        : "ghost"
+                    }`}
+                    asChild
+                  >
                     <Link href="/explore">Explore</Link>
                   </Button>
                 </li>
