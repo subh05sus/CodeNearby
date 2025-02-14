@@ -6,6 +6,8 @@ const nextConfig = {
       "res.cloudinary.com",
       "api.microlink.io",
       "static-maps.openstreetmap.org",
+      "images.unsplash.com",
+      "assets.aceternity.com",
     ],
   },
 };

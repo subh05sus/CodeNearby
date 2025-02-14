@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   ChevronDown,
   ChevronUp,
@@ -48,9 +48,11 @@ import { Menu } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useToast } from "./ui/use-toast";
 import Logo from "./logo";
+import { RainbowButton } from "./magicui/rainbowbutton";
 
 export default function Header() {
   const router = useRouter();
+  const pathname = usePathname();
   const { data: session } = useSession() as { data: Session | null };
   const [showSearch, setShowSearch] = useState(false);
   const { theme, setTheme } = useTheme();
@@ -143,7 +145,7 @@ export default function Header() {
   };
 
   return (
-    <header className="border-b bg-background">
+    <header className={`${pathname === "/" ? "" : "border-b bg-background"}`}>
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/">
           <Logo />
@@ -411,9 +413,9 @@ export default function Header() {
                   </Button>
                 </li>
                 <li>
-                  <Button variant="secondary" onClick={() => signIn("github")}>
+                  <RainbowButton onClick={() => signIn("github")}>
                     Login with GitHub
-                  </Button>
+                  </RainbowButton>
                 </li>
               </>
             )}
