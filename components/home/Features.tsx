@@ -71,7 +71,7 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <motion.div className="bg-background/20 group border border-primary/5 hover:border-primary/10 text-card-foreground transition-all duration-300 rounded-xl shadow-lg p-6 flex  items-start text-center ">
+    <motion.div className="bg-background group border border-primary/5 hover:border-primary/10 text-card-foreground transition-all duration-300 rounded-xl shadow-lg p-6 flex  items-start text-center ">
       {icon}
       <div className="flex-1 text-left ml-6">
         <h2 className="text-xl font-semibold mb-2 group-hover:ml-3 group-hover:text-primary/80 dark:group-hover:text-blue-200  transition-all duration-300">
