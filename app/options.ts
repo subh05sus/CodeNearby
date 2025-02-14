@@ -1,23 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import GithubProvider from "next-auth/providers/github"
-import { MongoDBAdapter } from "@next-auth/mongodb-adapter"
-import clientPromise from "@/lib/mongodb"
+import GithubProvider from "next-auth/providers/github";
+import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
+import clientPromise from "@/lib/mongodb";
 
 declare module "next-auth" {
   interface Session {
     user: {
-      id: string
-      name: string
-      email: string
-      image: string
-      githubUsername: string
-      githubId: string
-      friends: any[]
-      githubLocation?: string
-      githubBio?: string
-      githubProfileUrl?: string
-      
-    }
+      id: string;
+      name: string;
+      email: string;
+      image: string;
+      githubUsername: string;
+      githubId: string;
+      friends: any[];
+      githubLocation?: string;
+      githubBio?: string;
+      githubProfileUrl?: string;
+    };
   }
 }
 
@@ -27,6 +26,8 @@ export const authOptions = {
     GithubProvider({
       clientId: process.env.GITHUB_ID || "",
       clientSecret: process.env.GITHUB_SECRET || "",
+      allowDangerousEmailAccountLinking: true,
+
       authorization: {
         params: {
           scope: "read:user user:email",
@@ -35,12 +36,22 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }: { user: any; account: any | null; profile?: any }) {
+    async signIn({
+      user,
+      account,
+      profile,
+    }: {
+      user: any;
+      account: any | null;
+      profile?: any;
+    }) {
       if (account?.provider === "github" && profile) {
-        const client = await clientPromise
-        const db = client.db()
+        const client = await clientPromise;
+        const db = client.db();
 
-        const existingUser = await db.collection("users").findOne({ email: user.email })
+        const existingUser = await db
+          .collection("users")
+          .findOne({ email: user.email });
 
         if (existingUser) {
           // Update existing user
@@ -57,8 +68,8 @@ export const authOptions = {
                 githubBio: profile.bio,
                 githubLocation: profile.location,
               },
-            },
-          )
+            }
+          );
         } else {
           // Create new user
           await db.collection("users").insertOne({
@@ -71,25 +82,24 @@ export const authOptions = {
             githubBio: profile.bio,
             githubLocation: profile.location,
             friends: [],
-          })
+          });
         }
       }
-      return true
+      return true;
     },
     async session({ session, user }: { session: any; user: any }) {
       if (session.user) {
-        session.user.id = user.id
-        session.user.githubUsername = user.githubUsername
-        session.user.githubId = user.githubId
-        session.user.friends = user.friends || []
+        session.user.id = user.id;
+        session.user.githubUsername = user.githubUsername;
+        session.user.githubId = user.githubId;
+        session.user.friends = user.friends || [];
       }
-      return session
+      return session;
     },
   },
   pages: {
     signIn: "/auth/signin",
     error: "/auth/error",
   },
-}
-
-
+  secret: process.env.NEXT_AUTH_SECRET,
+};
