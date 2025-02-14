@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -16,11 +17,13 @@ import { useToast } from "@/components/ui/use-toast";
 interface CreatePollProps {
   gatheringSlug: string;
   onPollCreated: (pollMessage: string) => void;
+  canCreatePoll: boolean;
 }
 
 export function CreateGatheringPoll({
   gatheringSlug,
   onPollCreated,
+  canCreatePoll,
 }: CreatePollProps) {
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState(["", ""]);
@@ -95,7 +98,7 @@ export function CreateGatheringPoll({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="secondary">
+        <Button variant="secondary" disabled={canCreatePoll}>
           <BarChart2 className="h-4 w-4" />
         </Button>
       </DialogTrigger>

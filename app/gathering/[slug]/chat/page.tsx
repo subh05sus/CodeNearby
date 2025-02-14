@@ -490,6 +490,15 @@ export default function GatheringChatPage() {
     );
   }
 
+  if (gathering.blockedUsers.includes(session.user.id)) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+        <h1 className="text-2xl font-bold mb-4">You are blocked</h1>
+        <p>You are blocked from this gathering.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <Card>
@@ -654,13 +663,19 @@ export default function GatheringChatPage() {
                   handleMentionSelect(mentionSuggestions[0]);
                 }
               }}
-              disabled={isHostOnly && !isHost}
+              disabled={
+                (isHostOnly && !isHost) ||
+                gathering?.mutedUsers.includes(session.user.id)
+              }
             />
             <div className="flex items-center h-full "></div>
             <div className="flex space-x-2 mt-2 relative">
               <Button
                 onClick={() => handleSendMessage()}
-                disabled={isHostOnly && !isHost}
+                disabled={
+                  (isHostOnly && !isHost) ||
+                  gathering?.mutedUsers.includes(session.user.id)
+                }
               >
                 <Send className="h-4 w-4" />
               </Button>
@@ -676,7 +691,10 @@ export default function GatheringChatPage() {
               <div className="flex space-x-2 mt-2 absolute right-0 -top-full">
                 <Button
                   onClick={() => fileInputRef.current?.click()}
-                  disabled={isHostOnly && !isHost}
+                  disabled={
+                    (isHostOnly && !isHost) ||
+                    gathering?.mutedUsers.includes(session.user.id)
+                  }
                   variant={"secondary"}
                 >
                   <ImageIcon className="h-4 w-4" />
@@ -688,12 +706,24 @@ export default function GatheringChatPage() {
                   accept="image/*"
                   style={{ display: "none" }}
                 />
-                <CreateGatheringPoll
-                  gatheringSlug={params.slug as string}
-                  onPollCreated={(pollMessage) =>
-                    handleSendMessage(pollMessage)
+                <Button
+                  asChild
+                  disabled={
+                    (isHostOnly && !isHost) ||
+                    gathering?.mutedUsers.includes(session.user.id)
                   }
-                />
+                >
+                  <CreateGatheringPoll
+                    gatheringSlug={params.slug as string}
+                    onPollCreated={(pollMessage) =>
+                      handleSendMessage(pollMessage)
+                    }
+                    canCreatePoll={
+                      (isHostOnly && !isHost) ||
+                      gathering?.mutedUsers.includes(session.user.id)
+                    }
+                  />
+                </Button>
 
                 <label htmlFor="anonymous-mode" className="ml-2 hidden">
                   Send anonymously

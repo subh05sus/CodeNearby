@@ -5,9 +5,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
+import Link from "next/link";
 import {
   Loader2,
   MessageSquare,
@@ -16,17 +14,34 @@ import {
   UserCheck2Icon,
   UserPlus2,
   RefreshCcw,
+  Crown,
+  Clock,
+  Users,
+  LinkIcon,
+  Check,
 } from "lucide-react";
-import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { QRCodeDisplay } from "@/components/qr-code-display";
-import type { Session } from "next-auth";
 import { Input } from "@/components/ui/input";
 import { Ripple } from "@/components/magicui/ripple";
 import { RandomProfileCircles } from "@/components/random-profile-circles";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import LoginButton from "@/components/login-button";
+import { Separator } from "@/components/ui/separator";
+import { Session } from "next-auth";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface User {
   _id: string;
@@ -44,6 +59,8 @@ interface Gathering {
   participants: User[];
   blockedUsers: string[];
   mutedUsers: string[];
+  createdAt: string;
+  hostOnly: boolean;
 }
 
 export default function GatheringRoomPage() {
@@ -56,6 +73,7 @@ export default function GatheringRoomPage() {
   const [participantImagesWithIds, setParticipantImagesWithIds] = useState<
     { image: string; id: string }[]
   >([]);
+  const [showCheckIcon, setShowCheckIcon] = useState(false);
 
   useEffect(() => {
     if (session) {
@@ -80,6 +98,7 @@ export default function GatheringRoomPage() {
           (participant: any) => participant.image !== session?.user?.image
         );
       setParticipantImagesWithIds(imagesWithIds);
+      setHostOnlyMode(data.hostOnly);
     } catch {
       toast({
         title: "Error",
@@ -267,186 +286,187 @@ export default function GatheringRoomPage() {
 
   const isHost = session.user.id === gathering.hostId;
 
+  const timeLeft =
+    new Date(gathering.expiresAt).getTime() - new Date().getTime();
+  const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
+  const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">{gathering.name}</h1>
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-1/2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Participants</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Tabs
-                defaultValue="connect"
-                className="w-[-webkit-fill-available]"
-              >
-                <TabsList>
-                  <TabsTrigger value="connect">Connect</TabsTrigger>
-                  <TabsTrigger value="view-all">View All</TabsTrigger>
-                </TabsList>
-                <TabsContent value="connect">
-                  <div className="flex justify-center relative items-center mb-4 flex-col w-[-webkit-fill-available] aspect-square h-auto">
-                    <Ripple mainCircleSize={10} numCircles={10} />
-                    <RandomProfileCircles
-                      profiles={participantImagesWithIds}
-                      OwnProfileImage={session.user.image}
-                      OwnProfileImageSize={80}
-                    />
-                    <Button
-                      variant={"ghost"}
-                      size={"icon"}
-                      onClick={fetchGathering}
-                      className="absolute top-0 right-0 z-30"
-                    >
-                      <RefreshCcw size={24} />
-                    </Button>
-                  </div>
-                </TabsContent>
-                <TabsContent value="view-all">
-                  <div className="space-y-4 mt-4">
+    <div className="container max-w-7xl mx-auto px-4 py-8">
+      <div className="flex flex-col md:flex-row justify-between items-start mb-8 gap-4">
+        <div>
+          <h1 className="text-4xl font-bold">{gathering.name}</h1>
+          <div className="flex items-center gap-2 mt-2 cursor-default">
+            <Badge variant="secondary">
+              <Clock className="w-3 h-3 mr-1" />
+              {hoursLeft}h {minutesLeft}m left
+            </Badge>
+            <Badge variant="secondary">
+              <Users className="w-3 h-3 mr-1" />
+              {gathering.participants.length} participants
+            </Badge>
+            {isHost && (
+              <Badge variant="default">
+                <Crown className="w-3 h-3 mr-1" />
+                Host
+              </Badge>
+            )}
+          </div>
+        </div>
+        <Button asChild size="lg" className="shrink-0">
+          <Link href={`/gathering/${gathering.slug}/chat`}>
+            <MessageSquare className="mr-2 h-5 w-5" />
+            Join Chat Room
+          </Link>
+        </Button>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-8">
+        <Card className="md:order-1">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Participants</CardTitle>
+            {isHost && (
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={hostOnlyMode}
+                  onCheckedChange={handleHostOnlyMode}
+                  id="host-only-mode"
+                />
+                <span className="text-sm text-muted-foreground">Host Only</span>
+              </div>
+            )}
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="connect" className="w-full">
+              <TabsList className="w-full">
+                <TabsTrigger value="connect" className="flex-1">
+                  Connect
+                </TabsTrigger>
+                <TabsTrigger value="view-all" className="flex-1">
+                  View All
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="connect" className="mt-4">
+                <div className="relative aspect-square w-full bg-background/50 rounded-lg">
+                  <Ripple mainCircleSize={10} numCircles={10} />
+                  <RandomProfileCircles
+                    profiles={participantImagesWithIds}
+                    OwnProfileImage={session.user?.image || ""}
+                    OwnProfileImageSize={80}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={fetchGathering}
+                    className="absolute top-4 right-4 z-30"
+                  >
+                    <RefreshCcw size={20} />
+                  </Button>
+                </div>
+              </TabsContent>
+              <TabsContent value="view-all" className="mt-4">
+                <ScrollArea className=" pr-4 h-[400px]">
+                  <div className="space-y-3">
                     {gathering.participants.map((user) => (
                       <div
                         key={user.id}
-                        className="flex items-center justify-between"
+                        className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50"
                       >
-                        <div className="flex items-center space-x-2">
-                          <Avatar className="h-8 w-8">
+                        <div className="flex items-center gap-3">
+                          <Avatar>
                             <AvatarImage src={user.image} alt={user.name} />
                             <AvatarFallback>{user.name[0]}</AvatarFallback>
                           </Avatar>
-                          <span>{user.name}</span>
-                        </div>
-                        {isHost && user._id !== session.user.id && (
-                          <div className="flex space-x-2">
-                            {!gathering.blockedUsers?.includes(user._id) ? (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleBlockUser(user._id)}
-                                disabled={
-                                  gathering.blockedUsers?.includes(user._id) ??
-                                  false
-                                }
-                              >
-                                <UserX className="h-4 w-4" />
-                              </Button>
-                            ) : (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleUnblockUser(user._id)}
-                              >
-                                <UserCheck2Icon className="h-4 w-4" />
-                              </Button>
-                            )}
-
-                            {!gathering.mutedUsers?.includes(user._id) ? (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleMuteUser(user._id)}
-                                disabled={
-                                  gathering.mutedUsers?.includes(user._id) ??
-                                  false
-                                }
-                              >
-                                <VolumeX className="h-4 w-4" />
-                              </Button>
-                            ) : (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleUnmuteUser(user._id)}
-                              >
-                                <UserPlus2 className="h-4 w-4" />
-                              </Button>
+                          <div>
+                            <p className="font-medium">{user.name}</p>
+                            {user._id === gathering.hostId && (
+                              <p className="text-xs text-muted-foreground">
+                                Host
+                              </p>
                             )}
                           </div>
-                        )}
-                        {isHost && user._id === session.user.id && (
-                          <span>Host</span>
+                        </div>
+                        {isHost && user._id !== session.user?.id && (
+                          <div className="flex gap-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() =>
+                                gathering.blockedUsers?.includes(user._id)
+                                  ? handleUnblockUser(user._id)
+                                  : handleBlockUser(user._id)
+                              }
+                            >
+                              {gathering.blockedUsers?.includes(user._id) ? (
+                                <UserCheck2Icon className="h-4 w-4" />
+                              ) : (
+                                <UserX className="h-4 w-4" />
+                              )}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() =>
+                                gathering.mutedUsers?.includes(user._id)
+                                  ? handleUnmuteUser(user._id)
+                                  : handleMuteUser(user._id)
+                              }
+                            >
+                              {gathering.mutedUsers?.includes(user._id) ? (
+                                <UserPlus2 className="h-4 w-4" />
+                              ) : (
+                                <VolumeX className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </div>
                         )}
                       </div>
                     ))}
-                  </div>{" "}
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
-        </div>
-        <div className="w-full md:w-1/2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Invite Others</CardTitle>
-            </CardHeader>
-            <CardContent>
+                  </div>
+                </ScrollArea>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+
+        <Card className="md:order-2">
+          <CardHeader>
+            <CardTitle>Invite Others</CardTitle>
+            <CardDescription>
+              Share this gathering with your friends
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="flex justify-center">
               <QRCodeDisplay slug={gathering.slug} />
-              <div className="mt-4 flex items-center space-x-2">
+            </div>
+            <Separator />
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Invite Link</label>
+              <div className="flex gap-2">
                 <Input
                   readOnly
                   value={`${window.location.origin}/gathering/join/${gathering.slug}`}
                 />
                 <Button
+                  variant="secondary"
+                  size="icon"
                   onClick={() => {
                     copyInviteLink();
-                    const button = document.activeElement as HTMLButtonElement;
-                    button.innerHTML =
-                      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-                    setTimeout(() => {
-                      button.innerHTML =
-                        '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
-                    }, 1000);
+                    setShowCheckIcon(true);
+                    setTimeout(() => setShowCheckIcon(false), 1000);
                   }}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <rect
-                      x="9"
-                      y="9"
-                      width="13"
-                      height="13"
-                      rx="2"
-                      ry="2"
-                    ></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                  </svg>
+                  {showCheckIcon ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    <LinkIcon className="h-4 w-4" />
+                  )}
                 </Button>
               </div>
-            </CardContent>
-          </Card>
-          <Card className="mt-4">
-            <CardContent className="pt-6">
-              <div className="flex justify-between items-center">
-                <Button asChild>
-                  <Link href={`/gathering/${gathering.slug}/chat`}>
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    Join Chat
-                  </Link>
-                </Button>
-                {isHost && (
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      checked={hostOnlyMode}
-                      onCheckedChange={handleHostOnlyMode}
-                      id="host-only-mode"
-                    />
-                    <label htmlFor="host-only-mode">Host-only mode</label>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
