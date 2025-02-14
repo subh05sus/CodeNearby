@@ -327,6 +327,19 @@ export default function DiscoverPage() {
                           <h3 className="text-2xl font-bold text-white">
                             {connectDevelopers[0].login}
                           </h3>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="mt-2"
+                            onClick={() =>
+                              window.open(
+                                connectDevelopers[0].html_url,
+                                "_blank"
+                              )
+                            }
+                          >
+                            View GitHub
+                          </Button>
                         </div>
                       </CardContent>
                     </Card>

@@ -17,6 +17,8 @@ interface Gathering {
   slug: string;
   expiresAt: string;
   hostId: string;
+  participants: string[];
+  createdAt: string;
 }
 
 export default function GatheringPage() {
@@ -72,22 +74,33 @@ export default function GatheringPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Gatherings</h1>
-        <Button asChild>
-          <Link href="/gathering/create">
-            <Plus className="mr-2 h-4 w-4" /> Create Gathering
-          </Link>
-        </Button>
+        {gatherings.length !== 0 && (
+          <Button asChild>
+            <Link href="/gathering/create">
+              <Plus className="mr-2 h-4 w-4" /> Create Gathering
+            </Link>
+          </Button>
+        )}
       </div>
 
       {gatherings.length === 0 ? (
-        <Card>
+        <Card className="bg-background">
           <CardHeader>
-            <CardTitle>No Gatherings</CardTitle>
+            <CardTitle className="text-xl font-semibold text-center">
+              No Gatherings Yet
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <p>
+            <p className="text-center text-muted-foreground">
               You are not part of any gatherings yet. Create one to get started!
             </p>
+            <div className="mt-4 flex justify-center">
+              <Button asChild>
+                <Link href="/gathering/create">
+                  <Plus className="mr-2 h-4 w-4" /> Create Your First Gathering
+                </Link>
+              </Button>
+            </div>
           </CardContent>
         </Card>
       ) : (
