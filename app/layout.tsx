@@ -12,7 +12,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   metadataBase: new URL("https://beta.codenearby.space"),
 
-  title: "CodeNearby - Coming Soon",
+  title: "CodeNearby",
   description:
     "Find developers near you, share ideas, and build something awesome together.",
   authors: {
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   manifest: "/site.webmanifest",
 
   openGraph: {
-    title: "CodeNearby - Coming Soon",
+    title: "CodeNearby",
     description:
       "Find developers near you, share ideas, and build something awesome together.",
     url: "https://beta.codenearby.space",
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "CodeNearby - Coming Soon",
+    title: "CodeNearby",
     description:
       "Find developers near you, share ideas, and build something awesome together.",
     images: "/og.png",
