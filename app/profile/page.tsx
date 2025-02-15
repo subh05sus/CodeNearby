@@ -18,8 +18,13 @@ import {
   Twitter,
   Eye,
   MessageSquare,
+  Building,
+  MapPin,
+  Activity,
+  UserPlus,
+  Trash2,
+  Calendar,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import type { UserProfile } from "@/types";
 import { PostCard } from "@/components/post-card";
@@ -27,6 +32,14 @@ import { Session } from "next-auth";
 import { fetchGitHubActivities } from "@/lib/github";
 import { formatDistanceToNow } from "date-fns";
 import LoginButton from "@/components/login-button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/HoverCard";
+import ProfileHeader from "@/components/home/ProfileHeader";
 
 interface Post {
   _id: string;
@@ -72,7 +85,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [stats, setStats] = useState<any>(null);
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<Post[]>(() => []);
   const { toast } = useToast();
   const [activities, setActivities] = useState<any[]>([]);
 
@@ -427,195 +440,303 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="mb-8">
-        <div className="flex items-center gap-6">
-          <Image
-            src={session.user.image || "/placeholder.svg"}
-            alt={session.user.name || "Profile"}
-            width={96}
-            height={96}
-            className="rounded-full"
-          />
-          <div>
-            <h1 className="text-3xl font-bold">{session.user.name}</h1>
-            <p className="text-muted-foreground">
-              @{session.user.githubUsername}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              GitHub ID: {session.user.githubId}
-            </p>
-            <div className="flex items-center gap-2 mt-2">
-              <Link
-                href={`https://github.com/${session.user.githubUsername}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button variant="outline" size="sm">
-                  <Github className="h-4 w-4 mr-2" />
-                  GitHub Profile
-                </Button>
-              </Link>
-              {stats?.twitter_username && (
+    <div className="w-full px-2 mx-auto max-w-6xl">
+      {/* <div className="h-48 bg-gradient-to-r from-primary/10 via-primary/5 to-background relative">
+        <div className="absolute -bottom-16 left-8">
+          <Avatar className="h-32 w-32 border-4 border-background">
+            <AvatarImage
+              src={session.user.image || "/placeholder.svg"}
+              alt={session.user.name || "Profile"}
+            />
+            <AvatarFallback>{session.user.name?.[0]}</AvatarFallback>
+          </Avatar>
+        </div>
+      </div> */}
+      <ProfileHeader imageUrl={session.user.image || "/placeholder.svg"} />
+
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="pt-20 pb-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold">{session.user.name}</h1>
+              <div className="flex items-center gap-2 text-muted-foreground portrait:text-xs">
+                <span>@{session.user.githubUsername}</span>
+                {stats?.location && (
+                  <>
+                    <span>•</span>
+                    <MapPin className="h-4 w-4" />
+                    <span>{stats.location}</span>
+                  </>
+                )}
+                {stats?.company && (
+                  <>
+                    <span>•</span>
+                    <Building className="h-4 w-4" />
+                    <span>{stats.company}</span>
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" size="sm" asChild>
                 <Link
-                  href={`https://twitter.com/${stats.twitter_username}`}
+                  href={`https://github.com/${session.user.githubUsername}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Button variant="outline" size="sm">
+                  <Github className="h-4 w-4 mr-2" />
+                  GitHub
+                </Link>
+              </Button>
+              {stats?.twitter_username && (
+                <Button variant="outline" size="sm" asChild>
+                  <Link
+                    href={`https://twitter.com/${stats.twitter_username}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <Twitter className="h-4 w-4 mr-2" />
                     Twitter
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               )}
               {stats?.blog && (
-                <Link
-                  href={stats.blog}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" asChild>
+                  <Link
+                    href={stats.blog}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <LinkIcon className="h-4 w-4 mr-2" />
                     Website
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               )}
             </div>
           </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-center">
+                  <Users className="h-5 w-5 mb-2 text-primary" />
+                  <span className="text-2xl font-bold">
+                    {profile?.friends?.length || 0}
+                  </span>
+                  <span className="text-sm text-muted-foreground">Friends</span>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-center">
+                  <GitBranch className="h-5 w-5 mb-2 text-primary" />
+                  <span className="text-2xl font-bold">
+                    {stats?.public_repos || 0}
+                  </span>
+                  <span className="text-sm text-muted-foreground">
+                    Repositories
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-center">
+                  <Star className="h-5 w-5 mb-2 text-primary" />
+                  <span className="text-2xl font-bold">
+                    {stats?.followers || 0}
+                  </span>
+                  <span className="text-sm text-muted-foreground">
+                    Followers
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex flex-col items-center">
+                  <Calendar className="h-5 w-5 mb-2 text-primary" />
+                  <span className="text-2xl font-bold">
+                    {new Date(stats?.created_at || Date.now()).getFullYear()}
+                  </span>
+                  <span className="text-sm text-muted-foreground">
+                    Joined GitHub
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <Card>
-          <CardContent className="flex items-center justify-between p-6">
-            <div className="flex items-center gap-2">
+        <Tabs defaultValue="friends" className="space-y-4">
+          <TabsList className="w-fit justify-start">
+            <TabsTrigger value="friends" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
-              <span>Friends</span>
-            </div>
-            <span className="text-2xl font-bold">
-              {profile?.friends?.length || 0}
-            </span>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center justify-between p-6">
-            <div className="flex items-center gap-2">
-              <GitBranch className="h-4 w-4" />
-              <span>Repositories</span>
-            </div>
-            <span className="text-2xl font-bold">
-              {stats?.public_repos || 0}
-            </span>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center justify-between p-6">
-            <div className="flex items-center gap-2">
-              <Star className="h-4 w-4" />
-              <span>Followers</span>
-            </div>
-            <span className="text-2xl font-bold">{stats?.followers || 0}</span>
-          </CardContent>
-        </Card>
-      </div>
+              Friends
+            </TabsTrigger>
+            <TabsTrigger value="posts" className="flex items-center gap-2">
+              <Activity className="h-4 w-4" />
+              Posts
+            </TabsTrigger>
+            <TabsTrigger value="activity" className="flex items-center gap-2">
+              <Github className="h-4 w-4" />
+              GitHub Activity
+            </TabsTrigger>
+          </TabsList>
 
-      <Tabs defaultValue="friends">
-        <TabsList>
-          <TabsTrigger value="friends">Friends</TabsTrigger>
-          <TabsTrigger value="posts">Posts</TabsTrigger>
-          <TabsTrigger value="activity">Recent Activity</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="friends">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {profile?.friends?.map((friend) => (
-              <Card key={friend.githubId}>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <Link
-                      href={`https://github.com/${friend.githubUsername}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:underline"
-                    >
-                      {friend.githubUsername}
+          <TabsContent value="friends" className="space-y-4">
+            {profile?.friends?.length === 0 ? (
+              <Card>
+                <CardContent className="py-8 text-center">
+                  <Users className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                  <h3 className="text-lg font-medium mb-2">No Friends Yet</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Start connecting with other developers!
+                  </p>
+                  <Button asChild>
+                    <Link href="/discover">
+                      <UserPlus className="h-4 w-4 mr-2" />
+                      Find Friends
                     </Link>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        asChild
-                        className="mr-2"
-                      >
-                        <Link href={`/user/${friend.githubId}`}>
-                          <Eye className="h-4 w-4 mr-2" />
-                          View
-                        </Link>
-                      </Button>
-                      <Button variant="outline" size="sm" asChild>
-                        <Link href={`/messages/${friend.githubId}`}>
-                          <MessageSquare className="h-4 w-4 mr-2" />
-                          Chat
-                        </Link>
-                      </Button>
-                    </div>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => removeFriend(friend.githubId)}
-                    >
-                      Remove
-                    </Button>
-                  </div>
+                  </Button>
                 </CardContent>
               </Card>
-            ))}
-          </div>
-        </TabsContent>
+            ) : (
+              <div className="grid md:grid-cols-2 gap-4">
+                {profile?.friends?.map((friend) => (
+                  <Card key={friend.githubId} className="overflow-hidden">
+                    <CardContent className="p-6">
+                      <div className="flex items-start gap-4">
+                        <Avatar className="h-12 w-12">
+                          <AvatarImage src={friend.image} />
+                          <AvatarFallback>
+                            {friend.githubUsername[0]}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <HoverCard>
+                            <HoverCardTrigger asChild>
+                              <Link
+                                href={`https://github.com/${friend.githubUsername}`}
+                                className="font-medium hover:underline truncate block"
+                                target="_blank"
+                              >
+                                {friend.githubUsername}
+                              </Link>
+                            </HoverCardTrigger>
+                            <HoverCardContent className="w-80">
+                              <div className="flex space-x-4">
+                                <Avatar className="h-12 w-12">
+                                  <AvatarImage src={friend.image} />
+                                  <AvatarFallback>
+                                    {friend.githubUsername[0]}
+                                  </AvatarFallback>
+                                </Avatar>
+                                <div className="flex-1">
+                                  <h4 className="text-sm font-semibold">
+                                    {friend.name}
+                                  </h4>
+                                  <p className="text-xs text-muted-foreground">
+                                    @{friend.githubUsername}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {friend.githubBio}
+                                  </p>
+                                  {friend.githubLocation && (
+                                    <p className="text-xs text-muted-foreground">
+                                      <MapPin className=" h-3 w-3 inline-block mr-2" />
+                                      {friend.githubLocation}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            </HoverCardContent>
+                          </HoverCard>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-4">
+                            <Button variant="secondary" size="sm" asChild>
+                              <Link href={`/user/${friend.githubId}`}>
+                                <Eye className="h-4 w-4 mr-2" />
+                                View Profile
+                              </Link>
+                            </Button>
+                            <Button variant="secondary" size="sm" asChild>
+                              <Link href={`/messages/${friend.githubId}`}>
+                                <MessageSquare className="h-4 w-4 mr-2" />
+                                Message
+                              </Link>
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => removeFriend(friend.githubId)}
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Remove
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
 
-        <TabsContent value="posts">
-          <div className="space-y-6">
-            {posts.map((post) => (
-              <PostCard
-                key={post._id}
-                post={post}
-                onVote={handleVote}
-                onAddComment={handleAddComment}
-                onVotePoll={handleVotePoll}
-                onCommentVote={handleCommentVote}
-              />
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="activity">
-          <Card>
-            <CardContent className="p-6">
-              {(() => {
-                if (activities.length === 0) {
-                  return (
+          <TabsContent value="posts">
+            <div className="space-y-6">
+              {posts.length === 0 ? (
+                <Card>
+                  <CardContent className="py-8 text-center">
+                    <Activity className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                    <h3 className="text-lg font-medium mb-2">No Posts Yet</h3>
                     <p className="text-muted-foreground">
-                      No recent GitHub activity found.
+                      Share your thoughts with the community!
                     </p>
-                  );
-                }
-                return (
-                  <div className="space-y-4">
+                  </CardContent>
+                </Card>
+              ) : (
+                posts.map((post) => (
+                  <PostCard
+                    key={post._id}
+                    post={post}
+                    onVote={handleVote}
+                    onAddComment={handleAddComment}
+                    onVotePoll={handleVotePoll}
+                    onCommentVote={handleCommentVote}
+                  />
+                ))
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="activity">
+            <Card>
+              <CardContent className="p-6">
+                {activities.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Github className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                    <h3 className="text-lg font-medium mb-2">
+                      No Recent Activity
+                    </h3>
+                    <p className="text-muted-foreground">
+                      Your GitHub activity will appear here
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
                     {activities.map((activity) => (
                       <div
                         key={activity.id}
-                        className="flex items-start gap-4 py-3 border-b"
+                        className="flex items-start gap-4 pb-6 border-b last:border-0 last:pb-0"
                       >
                         <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Badge variant="secondary">
                               {activity.type.replace("Event", "")}
-                            </span>
-                            <span className="text-muted-foreground text-sm">
+                            </Badge>
+                            <span className="text-sm text-muted-foreground">
                               {formatDistanceToNow(
                                 new Date(activity.created_at),
                                 { addSuffix: true }
@@ -624,23 +745,25 @@ export default function ProfilePage() {
                           </div>
                           <Link
                             href={`https://github.com/${activity.repo.name}`}
-                            className="text-sm hover:underline text-muted-foreground"
+                            className="text-sm font-medium hover:underline"
                             target="_blank"
                           >
                             {activity.repo.name}
                           </Link>
                           {activity.payload?.commits && (
-                            <div className="mt-2 space-y-1">
+                            <div className="mt-2 space-y-2">
                               {activity.payload.commits.map((commit: any) => (
                                 <div key={commit.sha} className="text-sm">
                                   <Link
                                     href={`https://github.com/${activity.repo.name}/commit/${commit.sha}`}
-                                    className="text-xs font-mono text-muted-foreground hover:underline"
+                                    className="font-mono text-xs text-muted-foreground hover:underline"
                                     target="_blank"
                                   >
                                     {commit.sha.substring(0, 7)}
                                   </Link>
-                                  <span className="ml-2">{commit.message}</span>
+                                  <span className="ml-2 text-muted-foreground">
+                                    {commit.message}
+                                  </span>
                                 </div>
                               ))}
                             </div>
@@ -649,12 +772,12 @@ export default function ProfilePage() {
                       </div>
                     ))}
                   </div>
-                );
-              })()}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }

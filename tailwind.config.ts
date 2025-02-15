@@ -67,11 +67,49 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       animation: {
+        first: "moveVertical 30s ease infinite",
+        second: "moveInCircle 20s reverse infinite",
+        third: "moveInCircle 40s linear infinite",
+        fourth: "moveHorizontal 40s ease infinite",
+        fifth: "moveInCircle 20s ease infinite",
         ripple: "ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite",
         "line-shadow": "line-shadow 15s linear infinite",
         rainbow: "rainbow var(--speed, 2s) infinite linear",
       },
       keyframes: {
+        moveHorizontal: {
+          "0%": {
+            transform: "translateX(-50%) translateY(-10%)",
+          },
+          "50%": {
+            transform: "translateX(50%) translateY(10%)",
+          },
+          "100%": {
+            transform: "translateX(-50%) translateY(-10%)",
+          },
+        },
+        moveInCircle: {
+          "0%": {
+            transform: "rotate(0deg)",
+          },
+          "50%": {
+            transform: "rotate(180deg)",
+          },
+          "100%": {
+            transform: "rotate(360deg)",
+          },
+        },
+        moveVertical: {
+          "0%": {
+            transform: "translateY(-50%)",
+          },
+          "50%": {
+            transform: "translateY(50%)",
+          },
+          "100%": {
+            transform: "translateY(-50%)",
+          },
+        },
         rainbow: {
           "0%": { "background-position": "0%" },
           "100%": { "background-position": "200%" },
