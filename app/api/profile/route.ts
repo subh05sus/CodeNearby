@@ -31,10 +31,10 @@ export async function GET() {
       })
       .toArray();
 
-    const friendIds = user.friends || [];
+    const friendIds = Array.isArray(user.friends) ? user.friends : []; // Ensure it's an array
     const friends = await db
       .collection("users")
-      .find({ githubId: { $in: friendIds } })
+      .find({ githubId: { $in: friendIds.length > 0 ? friendIds : [] } }) // Prevent $in from failing
       .project({
         githubId: 1,
         githubUsername: 1,

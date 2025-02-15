@@ -18,13 +18,13 @@ import {
   Twitter,
   MessageSquare,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import type { UserProfile } from "@/types";
 import { PostCard } from "@/components/post-card";
 import { formatDistanceToNow } from "date-fns";
 import { fetchGitHubActivities } from "@/lib/github";
 import { useSession } from "next-auth/react";
+import ProfileHeader from "@/components/home/ProfileHeader";
 
 interface Post {
   _id: string;
@@ -407,120 +407,104 @@ export default function UserProfilePage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="mb-8">
-        <div className="flex items-center gap-6">
-          <Image
-            src={profile.image || "/placeholder.svg"}
-            alt={profile.name || "Profile"}
-            width={96}
-            height={96}
-            className="rounded-full"
-          />
+    <div className="max-w-7xl mx-auto">
+      <ProfileHeader imageUrl={profile.image || "/placeholder.svg"} />
+      <div className="mt-20 px-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6">
           <div>
             <h1 className="text-3xl font-bold">{profile.name}</h1>
             <p className="text-muted-foreground">@{profile.githubUsername}</p>
-            <p className="text-sm text-muted-foreground">
-              ID: {profile.githubId}
-            </p>
-            <div className="flex items-center gap-2 mt-2">
+          </div>
+          <div className="flex items-center gap-2 mt-4 md:mt-0">
+            <Link
+              href={`https://github.com/${profile.githubUsername}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button variant="outline" size="sm">
+                <Github className="h-4 w-4 mr-2" />
+                GitHub Profile
+              </Button>
+            </Link>
+            {stats?.twitter_username && (
               <Link
-                href={`https://github.com/${profile.githubUsername}`}
+                href={`https://twitter.com/${stats.twitter_username}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <Button variant="outline" size="sm">
-                  <Github className="h-4 w-4 mr-2" />
-                  GitHub Profile
+                  <Twitter className="h-4 w-4 mr-2" />
+                  Twitter
                 </Button>
               </Link>
-              {stats?.twitter_username && (
-                <Link
-                  href={`https://twitter.com/${stats.twitter_username}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Button variant="outline" size="sm">
-                    <Twitter className="h-4 w-4 mr-2" />
-                    Twitter
-                  </Button>
-                </Link>
-              )}
-              {stats?.blog && (
-                <Link
-                  href={stats.blog}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Button variant="outline" size="sm">
-                    <LinkIcon className="h-4 w-4 mr-2" />
-                    Website
-                  </Button>
-                </Link>
-              )}
-              <Link href={`/messages/${profile.githubId}`}>
+            )}
+            {stats?.blog && (
+              <Link href={stats.blog} target="_blank" rel="noopener noreferrer">
                 <Button variant="outline" size="sm">
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  Message
+                  <LinkIcon className="h-4 w-4 mr-2" />
+                  Website
                 </Button>
               </Link>
-            </div>
+            )}
+            <Link href={`/messages/${profile.githubId}`}>
+              <Button variant="outline" size="sm">
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Message
+              </Button>
+            </Link>
           </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <Card>
-          <CardContent className="flex items-center justify-between p-6">
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              <span>Friends</span>
-            </div>
-            <span className="text-2xl font-bold">
-              {profile.friends?.length || 0}
-            </span>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center justify-between p-6">
-            <div className="flex items-center gap-2">
-              <GitBranch className="h-4 w-4" />
-              <span>Repositories</span>
-            </div>
-            <span className="text-2xl font-bold">
-              {stats?.public_repos || 0}
-            </span>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center justify-between p-6">
-            <div className="flex items-center gap-2">
-              <Star className="h-4 w-4" />
-              <span>Followers</span>
-            </div>
-            <span className="text-2xl font-bold">{stats?.followers || 0}</span>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Tabs defaultValue="activity">
-        <TabsList>
-          <TabsTrigger value="activity">Recent Activity</TabsTrigger>
-          <TabsTrigger value="posts">Posts</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="activity">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Card>
-            <CardContent className="p-6">
-              {(() => {
-                if (activities.length === 0) {
-                  return (
-                    <p className="text-muted-foreground">
-                      No recent GitHub activity found.
-                    </p>
-                  );
-                }
-                return (
+            <CardContent className="flex items-center justify-between p-6">
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                <span>Friends</span>
+              </div>
+              <span className="text-2xl font-bold">
+                {profile.friends?.length || 0}
+              </span>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="flex items-center justify-between p-6">
+              <div className="flex items-center gap-2">
+                <GitBranch className="h-4 w-4" />
+                <span>Repositories</span>
+              </div>
+              <span className="text-2xl font-bold">
+                {stats?.public_repos || 0}
+              </span>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="flex items-center justify-between p-6">
+              <div className="flex items-center gap-2">
+                <Star className="h-4 w-4" />
+                <span>Followers</span>
+              </div>
+              <span className="text-2xl font-bold">
+                {stats?.followers || 0}
+              </span>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Tabs defaultValue="activity">
+          <TabsList>
+            <TabsTrigger value="activity">Recent Activity</TabsTrigger>
+            <TabsTrigger value="posts">Posts</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="activity">
+            <Card>
+              <CardContent className="p-6">
+                {activities.length === 0 ? (
+                  <p className="text-muted-foreground">
+                    No recent GitHub activity found.
+                  </p>
+                ) : (
                   <div className="space-y-4">
                     {activities.map((activity) => (
                       <div
@@ -566,26 +550,27 @@ export default function UserProfilePage() {
                       </div>
                     ))}
                   </div>
-                );
-              })()}
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="posts">
-          <div className="space-y-6">
-            {posts.map((post) => (
-              <PostCard
-                key={post._id}
-                post={post}
-                onVote={handleVote}
-                onAddComment={handleAddComment}
-                onVotePoll={handleVotePoll}
-                onCommentVote={handleCommentVote}
-              />
-            ))}
-          </div>
-        </TabsContent>
-      </Tabs>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="posts">
+            <div className="space-y-6">
+              {posts.map((post) => (
+                <PostCard
+                  key={post._id}
+                  post={post}
+                  onVote={handleVote}
+                  onAddComment={handleAddComment}
+                  onVotePoll={handleVotePoll}
+                  onCommentVote={handleCommentVote}
+                />
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 }

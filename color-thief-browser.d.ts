@@ -1,1 +1,1 @@
-declare module "colorthief";
+declare module "react-color-extractor";
