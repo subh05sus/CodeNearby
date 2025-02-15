@@ -29,6 +29,8 @@ import Link from "next/link";
 import { AnonymousSwitch } from "@/components/ui/AnonymousSwitch";
 import { format } from "date-fns";
 import LoginButton from "@/components/login-button";
+import { motion } from "framer-motion";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Message {
   id: string;
@@ -165,7 +167,7 @@ export default function GatheringChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(scrollToBottom, []); // Updated useEffect dependency
+  useEffect(scrollToBottom, [messages]); // Updated useEffect dependency
 
   const handleSendMessage = async (pollMessage?: string) => {
     if ((!inputMessage.trim() && !pollMessage) || !session) return;
@@ -490,7 +492,7 @@ export default function GatheringChatPage() {
     );
   }
 
-  if (gathering.blockedUsers.includes(session.user.id)) {
+  if (gathering.blockedUsers?.includes(session.user.id)) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <h1 className="text-2xl font-bold mb-4">You are blocked</h1>
@@ -517,136 +519,140 @@ export default function GatheringChatPage() {
             )}
           </CardTitle>
         </CardHeader>
-        <CardContent className="relative">
+        <CardContent className="relative pb-10">
           <div className="h-[60vh] overflow-y-auto mb-4 pb-8 space-y-4 no-scrollbar relative">
-            {messages.map((message) => {
-              const isPoll = message.content.startsWith('{"type":"poll"');
-              const pollContent = isPoll ? JSON.parse(message.content) : null;
-              const pollData = pollContent ? polls[pollContent.pollId] : null;
-              return (
-                <div
-                  key={message.id}
-                  id={`message-${message.id}`}
-                  className={`flex items-start space-x-2 ${
-                    message.senderId === session.user.id
-                      ? "justify-end"
-                      : "justify-start"
-                  }`}
-                >
-                  {(!message.isAnonymous ||
-                    (isHost && message.realSenderInfo)) && (
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage
-                        src={
-                          isHost && message.realSenderInfo
-                            ? message.realSenderInfo.image
-                            : message.senderImage
-                        }
-                        alt={
-                          isHost && message.realSenderInfo
-                            ? message.realSenderInfo.name
-                            : message.senderName
-                        }
-                      />
-                      <AvatarFallback>
-                        {isHost && message.realSenderInfo
-                          ? message.realSenderInfo.name[0]
-                          : message.senderName[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                  )}
+            <ScrollArea className="h-full w-full pr-3">
+              {messages.map((message) => {
+                const isPoll = message.content.startsWith('{"type":"poll"');
+                const pollContent = isPoll ? JSON.parse(message.content) : null;
+                const pollData = pollContent ? polls[pollContent.pollId] : null;
+                return (
                   <div
-                    className={`bg-muted max-w-[60vw] md:max-w-[40vw] p-2 rounded-lg ${
-                      message.isPinned ? "border-2 border-yellow-500" : ""
+                    key={message.id}
+                    id={`message-${message.id}`}
+                    className={`flex items-start my-2 space-x-2 ${
+                      message.senderId === session.user.id
+                        ? "justify-end"
+                        : "justify-start"
                     }`}
                   >
-                    {message.isAnonymous ? (
-                      <p className="text-sm font-semibold">
-                        Anonymous
-                        {isHost && message.realSenderInfo && (
-                          <span className="text-xs text-muted-foreground">
-                            {" "}
-                            ({message.realSenderInfo.name})
-                          </span>
-                        )}
-                      </p>
-                    ) : (
-                      <p className="text-sm font-semibold">
-                        {message.senderName}
-                      </p>
-                    )}
-                    {isPoll && pollData ? (
-                      <div className="space-y-2">
-                        <p className="font-semibold">{pollData.question}</p>
-                        {pollData.options.map((option, index) => (
-                          <div key={index} className="space-y-1">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="w-full justify-between"
-                              onClick={() =>
-                                handlePollVote(pollData.pollId, index)
-                              }
-                              disabled={
-                                pollData.votes &&
-                                Object.values(pollData.votes).some((voters) =>
-                                  (voters as any).includes(session.user.id)
-                                )
-                              }
-                            >
-                              <span>{option}</span>
-                              <span>
-                                {(pollData.votes?.[index] || []).length} votes
-                              </span>
-                            </Button>
-                            <Progress
-                              value={
-                                ((pollData.votes?.[index] || []).length /
-                                  (pollData?.totalVotes || 1)) *
-                                100
-                              }
-                              className="h-2"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    ) : message.content.startsWith("[Image](") ? (
-                      <div>
-                        <Image
-                          height={200}
-                          width={200}
+                    {(!message.isAnonymous ||
+                      (isHost && message.realSenderInfo)) && (
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage
                           src={
-                            message.content.match(/\[Image\]$$(.*?)$$/)?.[1] ||
-                            "" ||
-                            "/placeholder.svg"
+                            isHost && message.realSenderInfo
+                              ? message.realSenderInfo.image
+                              : message.senderImage
                           }
-                          alt="Image"
-                          className="max-w-[200px] rounded-lg"
+                          alt={
+                            isHost && message.realSenderInfo
+                              ? message.realSenderInfo.name
+                              : message.senderName
+                          }
                         />
-                      </div>
-                    ) : (
-                      <p>{renderMessageContent(message.content)}</p>
+                        <AvatarFallback>
+                          {isHost && message.realSenderInfo
+                            ? message.realSenderInfo.name[0]
+                            : message.senderName[0]}
+                        </AvatarFallback>
+                      </Avatar>
                     )}
+                    <div
+                      className={`bg-muted max-w-[60vw] md:max-w-[40vw] p-2 rounded-lg ${
+                        message.isPinned ? "border-2 border-yellow-500" : ""
+                      }`}
+                    >
+                      {message.isAnonymous ? (
+                        <p className="text-sm font-semibold">
+                          Anonymous
+                          {isHost && message.realSenderInfo && (
+                            <span className="text-xs text-muted-foreground">
+                              {" "}
+                              ({message.realSenderInfo.name})
+                            </span>
+                          )}
+                        </p>
+                      ) : (
+                        <p className="text-sm font-semibold">
+                          {message.senderName}
+                        </p>
+                      )}
+                      {isPoll && pollData ? (
+                        <div className="space-y-2">
+                          <p className="font-semibold">{pollData.question}</p>
+                          {pollData.options.map((option, index) => (
+                            <div key={index} className="space-y-1">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-full justify-between"
+                                onClick={() =>
+                                  handlePollVote(pollData.pollId, index)
+                                }
+                                disabled={
+                                  pollData.votes &&
+                                  Object.values(pollData.votes).some((voters) =>
+                                    (voters as any).includes(session.user.id)
+                                  )
+                                }
+                              >
+                                <span>{option}</span>
+                                <span>
+                                  {(pollData.votes?.[index] || []).length} votes
+                                </span>
+                              </Button>
+                              <Progress
+                                value={
+                                  ((pollData.votes?.[index] || []).length /
+                                    (pollData?.totalVotes || 1)) *
+                                  100
+                                }
+                                className="h-2"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      ) : message.content.startsWith("[Image](") ? (
+                        <div>
+                          <Image
+                            height={200}
+                            width={200}
+                            src={
+                              message.content.match(
+                                /\[Image\]$$(.*?)$$/
+                              )?.[1] ||
+                              "" ||
+                              "/placeholder.svg"
+                            }
+                            alt="Image"
+                            className="max-w-[200px] rounded-lg"
+                          />
+                        </div>
+                      ) : (
+                        <p>{renderMessageContent(message.content)}</p>
+                      )}
 
-                    {isHost && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() =>
-                          message.isPinned
-                            ? handleUnpinMessage(message.id)
-                            : handlePinMessage(message.id)
-                        }
-                        className="mt-1"
-                      >
-                        {message.isPinned ? "Unpin" : "Pin"}
-                      </Button>
-                    )}
+                      {isHost && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() =>
+                            message.isPinned
+                              ? handleUnpinMessage(message.id)
+                              : handlePinMessage(message.id)
+                          }
+                          className="mt-1"
+                        >
+                          {message.isPinned ? "Unpin" : "Pin"}
+                        </Button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-            <div ref={messagesEndRef} />
+                );
+              })}
+              <div ref={messagesEndRef} />
+            </ScrollArea>
           </div>
 
           <div className="relative flex items-end space-x-2 z-30">
@@ -665,16 +671,16 @@ export default function GatheringChatPage() {
               }}
               disabled={
                 (isHostOnly && !isHost) ||
-                gathering?.mutedUsers.includes(session.user.id)
+                gathering?.mutedUsers?.includes(session.user.id)
               }
             />
-            <div className="flex items-center h-full "></div>
+            {/* <div className="flex items-center h-full "></div> */}
             <div className="flex space-x-2 mt-2 relative">
               <Button
                 onClick={() => handleSendMessage()}
                 disabled={
                   (isHostOnly && !isHost) ||
-                  gathering?.mutedUsers.includes(session.user.id)
+                  gathering?.mutedUsers?.includes(session.user.id)
                 }
               >
                 <Send className="h-4 w-4" />
@@ -693,7 +699,7 @@ export default function GatheringChatPage() {
                   onClick={() => fileInputRef.current?.click()}
                   disabled={
                     (isHostOnly && !isHost) ||
-                    gathering?.mutedUsers.includes(session.user.id)
+                    gathering?.mutedUsers?.includes(session.user.id)
                   }
                   variant={"secondary"}
                 >
@@ -710,7 +716,7 @@ export default function GatheringChatPage() {
                   asChild
                   disabled={
                     (isHostOnly && !isHost) ||
-                    gathering?.mutedUsers.includes(session.user.id)
+                    gathering?.mutedUsers?.includes(session.user.id)
                   }
                 >
                   <CreateGatheringPoll
@@ -720,7 +726,7 @@ export default function GatheringChatPage() {
                     }
                     canCreatePoll={
                       (isHostOnly && !isHost) ||
-                      gathering?.mutedUsers.includes(session.user.id)
+                      gathering?.mutedUsers?.includes(session.user.id)
                     }
                   />
                 </Button>
@@ -755,6 +761,26 @@ export default function GatheringChatPage() {
               </div>
             )}
           </div>
+          {isAnonymous && (
+            <motion.p
+              className="text-xs absolute bottom-4 text-muted-foreground p-1"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
+              You&apos;re anonymous, but the host sees everything.
+            </motion.p>
+          )}
+          {!isAnonymous && (
+            <motion.p
+              className="text-xs absolute bottom-4 text-muted-foreground p-1"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
+              Be respectful… or atleast try to be.
+            </motion.p>
+          )}
           <div className="absolute bottom-20 left-0 w-full h-20 bg-gradient-to-t from-background to-transparent pointer-events-none" />
         </CardContent>
       </Card>

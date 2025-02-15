@@ -19,7 +19,7 @@ interface EmojiPickerProps {
 
 export function EmojiPicker({ onChange }: EmojiPickerProps) {
   const [open, setOpen] = useState(false);
-  const theme = useTheme();
+  const { theme } = useTheme();
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

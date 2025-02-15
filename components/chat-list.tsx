@@ -62,39 +62,53 @@ export function ChatList() {
 
   return (
     <div className="space-y-2 p-2">
-      {friends.map((friend) => (
-        <Link key={friend.id} href={`/messages/${friend.githubId}`}>
-          <div
-            className={`flex items-center p-3 rounded-lg transition-colors duration-200 ${
-              params.id === friend.githubId.toString()
-                ? "bg-gray-200 dark:bg-zinc-800"
-                : "hover:bg-gray-100 dark:hover:bg-zinc-900"
-            }`}
-          >
-            <Image
-              height={48}
-              width={48}
-              src={friend.image || "/placeholder.svg"}
-              alt={friend.name}
-              className="w-12 h-12 rounded-full mr-4"
-            />
-            <div className="flex-grow min-w-0">
-              <div className="flex justify-between items-baseline">
-                <h3 className="font-semibold truncate">{friend.name}</h3>
-                <span className="text-xs text-muted-foreground hidden sm:inline">
-                  {formatDistanceToNow(
-                    friend.lastMessage?.timestamp || Date.now(),
-                    { addSuffix: true }
-                  )}
-                </span>
+      {Array.isArray(friends) && friends.length > 0 ? (
+        friends.map((friend) => (
+          <Link key={friend.id} href={`/messages/${friend.githubId}`}>
+            <div
+              className={`flex items-center p-3 rounded-lg transition-colors duration-200 ${
+                params.id === friend.githubId.toString()
+                  ? "bg-gray-200 dark:bg-zinc-800"
+                  : "hover:bg-gray-100 dark:hover:bg-zinc-900"
+              }`}
+            >
+              <Image
+                height={48}
+                width={48}
+                src={friend.image || "/placeholder.svg"}
+                alt={friend.name}
+                className="w-12 h-12 rounded-full mr-4"
+              />
+              <div className="flex-grow min-w-0">
+                <div className="flex justify-between items-baseline">
+                  <h3 className="font-semibold truncate">{friend.name}</h3>
+                  <span className="text-xs text-muted-foreground hidden sm:inline">
+                    {formatDistanceToNow(
+                      friend.lastMessage?.timestamp || Date.now(),
+                      { addSuffix: true }
+                    )}
+                  </span>
+                </div>
+                <p className="text-sm text-muted-foreground truncate">
+                  {friend.lastMessage?.content}
+                </p>
               </div>
-              <p className="text-sm text-muted-foreground truncate">
-                {friend.lastMessage?.content}
-              </p>
             </div>
-          </div>
-        </Link>
-      ))}
+          </Link>
+        ))
+      ) : (
+        <p className="text-center text-muted-foreground">
+          {
+            [
+              "No friends found. Even your shadow ditched you. 😈🔥",
+              "No friends found. Loneliness just sent you a friend request. 😭🔥",
+              "No friends found. Even WiFi has more connections. 📶🔥",
+              "No friends found. You're the human version of airplane mode. ✈️🔥",
+              "No friends found. Even spam bots stopped messaging you. 📩🔥",
+            ][Math.floor(Math.random() * 5)]
+          }
+        </p>
+      )}
     </div>
   );
 }

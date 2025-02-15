@@ -25,6 +25,7 @@ import { formatDistanceToNow } from "date-fns";
 import { fetchGitHubActivities } from "@/lib/github";
 import { useSession } from "next-auth/react";
 import ProfileHeader from "@/components/home/ProfileHeader";
+import { MasonryGrid } from "@/components/masonry-grid";
 
 interface Post {
   _id: string;
@@ -557,16 +558,18 @@ export default function UserProfilePage() {
 
           <TabsContent value="posts">
             <div className="space-y-6">
-              {posts.map((post) => (
-                <PostCard
-                  key={post._id}
-                  post={post}
-                  onVote={handleVote}
-                  onAddComment={handleAddComment}
-                  onVotePoll={handleVotePoll}
-                  onCommentVote={handleCommentVote}
-                />
-              ))}
+              <MasonryGrid>
+                {posts.map((post) => (
+                  <PostCard
+                    key={post._id}
+                    post={post}
+                    onVote={handleVote}
+                    onAddComment={handleAddComment}
+                    onVotePoll={handleVotePoll}
+                    onCommentVote={handleCommentVote}
+                  />
+                ))}
+              </MasonryGrid>
             </div>
           </TabsContent>
         </Tabs>

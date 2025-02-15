@@ -15,7 +15,7 @@ const ProfileHeader = ({ imageUrl }: { imageUrl: string }) => {
           <AvatarFallback>P</AvatarFallback>
         </Avatar>
       </div>
-      <div className="absolute w-full h-full left-0 overflow-hidden -z-20 rounded-xl">
+      <div className="absolute w-full h-full left-0 overflow-hidden -z-20 rounded-2xl">
         <Image
           src="/bg.webp"
           alt="Background"

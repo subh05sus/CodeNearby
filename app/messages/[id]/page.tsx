@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,6 @@ import {
   BarChart,
   MapPin,
   Calendar,
-  ArrowDown,
 } from "lucide-react";
 import Image from "next/image";
 import { ref, push, onChildAdded, off } from "firebase/database";
@@ -23,7 +22,7 @@ import { format } from "date-fns";
 import type { Session } from "next-auth";
 import { db as database } from "@/lib/firebase";
 import LoginButton from "@/components/login-button";
-import { useAutoScroll } from "@/hooks/use-auto-scroll";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Message {
   id: string;
@@ -45,6 +44,7 @@ export default function MessagePage() {
   const [inputMessage, setInputMessage] = useState("");
   const [friend, setFriend] = useState<any>(null);
   const { toast } = useToast();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (session && params.id) {
@@ -119,11 +119,11 @@ export default function MessagePage() {
     setInputMessage("");
   };
 
-  const { scrollRef, isAtBottom, scrollToBottom } = useAutoScroll({
-    offset: 20,
-    smooth: true,
-    content: messages.length,
-  });
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(scrollToBottom, [messages]); // Updated useEffect dependency
 
   if (!session) {
     return (
@@ -162,104 +162,93 @@ export default function MessagePage() {
         />
         <h2 className="text-xl font-semibold">{friend?.name || "Chat"}</h2>
       </div>
-      <div
-        className="flex-grow overflow-y-auto portrait:max-h-[65vh] no-scrollbar p-4"
-        ref={scrollRef}
-      >
-        {messages.map((message) => {
-          return (
-            <div
-              key={message.id}
-              className={`mb-4 flex ${
-                message.senderId === session.user.githubId
-                  ? "justify-end"
-                  : "justify-start"
-              }`}
-            >
+      <div className="flex-grow overflow-y-auto portrait:max-h-[65vh] no-scrollbar p-4">
+        <ScrollArea className="h-full w-full pr-3">
+          {messages.map((message) => {
+            return (
               <div
-                className={`max-w-[70%] p-3 rounded-lg ${
+                key={message.id}
+                className={`mb-4  flex ${
                   message.senderId === session.user.githubId
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 dark:bg-zinc-800"
+                    ? "justify-end"
+                    : "justify-start"
                 }`}
               >
-                {(() => {
-                  try {
-                    const jsonContent = JSON.parse(message.content);
-                    if (jsonContent.type === "post") {
-                      return (
-                        <div
-                          className="text-inherit bg-black p-2 rounded-lg cursor-pointer mb-2"
-                          onClick={() =>
-                            router.push(`/posts/${jsonContent.postId}`)
-                          }
-                        >
-                          <p className="text-sm mb-2 line-clamp-2">
-                            {jsonContent.postContent}
-                          </p>
-                          {jsonContent.postImage && (
-                            <div className="relative w-full aspect-video h-32 ">
-                              <Image
-                                src={
-                                  jsonContent.postImage || "/placeholder.svg"
-                                }
-                                alt="Post image"
-                                fill
-                                className="rounded-md object-cover"
-                              />
-                            </div>
-                          )}
-                          {jsonContent.postPoll && (
-                            <div className="flex items-center text-sm opacity-70">
-                              <BarChart className="h-4 w-4 mr-1" />
-                              Poll: {jsonContent.postPoll.question}
-                            </div>
-                          )}
-                          {jsonContent.postLocation && (
-                            <div className="flex items-center text-sm opacity-70">
-                              <MapPin className="h-4 w-4 mr-1" />
-                              Location attached
-                            </div>
-                          )}
-                          {jsonContent.postSchedule && (
-                            <div className="flex items-center text-sm text-muted-foreground">
-                              <Calendar className="h-4 w-4 mr-1" />
-                              {jsonContent.postSchedule &&
-                                format(
-                                  new Date(jsonContent.postSchedule),
-                                  "PPp"
-                                )}
-                            </div>
-                          )}
-                        </div>
-                      );
+                <div
+                  className={`max-w-[70%] p-3 rounded-lg ${
+                    message.senderId === session.user.githubId
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 dark:bg-zinc-800"
+                  }`}
+                >
+                  {(() => {
+                    try {
+                      const jsonContent = JSON.parse(message.content);
+                      if (jsonContent.type === "post") {
+                        return (
+                          <div
+                            className="text-inherit bg-black p-2 rounded-lg cursor-pointer mb-2"
+                            onClick={() =>
+                              router.push(`/posts/${jsonContent.postId}`)
+                            }
+                          >
+                            <p className="text-sm mb-2 line-clamp-2">
+                              {jsonContent.postContent}
+                            </p>
+                            {jsonContent.postImage && (
+                              <div className="relative w-full aspect-video h-32 ">
+                                <Image
+                                  src={
+                                    jsonContent.postImage || "/placeholder.svg"
+                                  }
+                                  alt="Post image"
+                                  fill
+                                  className="rounded-md object-cover"
+                                />
+                              </div>
+                            )}
+                            {jsonContent.postPoll && (
+                              <div className="flex items-center text-sm opacity-70">
+                                <BarChart className="h-4 w-4 mr-1" />
+                                Poll: {jsonContent.postPoll.question}
+                              </div>
+                            )}
+                            {jsonContent.postLocation && (
+                              <div className="flex items-center text-sm opacity-70">
+                                <MapPin className="h-4 w-4 mr-1" />
+                                Location attached
+                              </div>
+                            )}
+                            {jsonContent.postSchedule && (
+                              <div className="flex items-center text-sm text-muted-foreground">
+                                <Calendar className="h-4 w-4 mr-1" />
+                                {jsonContent.postSchedule &&
+                                  format(
+                                    new Date(jsonContent.postSchedule),
+                                    "PPp"
+                                  )}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      }
+                    } catch {
+                      // If parsing fails, treat as regular message
+                      return <p>{message.content}</p>;
                     }
-                  } catch {
-                    // If parsing fails, treat as regular message
-                    return <p>{message.content}</p>;
-                  }
-                })()}
-                <p className="text-xs mt-1 opacity-70">
-                  {format(new Date(message.timestamp), "HH:mm")}
-                </p>
+                  })()}
+                  <p className="text-xs mt-1 opacity-70">
+                    {format(new Date(message.timestamp), "HH:mm")}
+                  </p>
+                </div>
               </div>
-            </div>
-          );
-        })}
-
+            );
+          })}
+          <div ref={messagesEndRef} />
+        </ScrollArea>
         {/* <div ref={messagesEndRef} className="h-2" /> */}
       </div>
       <div className="border-t border-gray-200 dark:border-gray-800 p-4 flex relative">
-        {!isAtBottom && (
-          <Button
-            size="icon"
-            variant="outline"
-            className="absolute bottom-20 right-4 rounded-full"
-            onClick={scrollToBottom}
-          >
-            <ArrowDown className="h-4 w-4" />
-          </Button>
-        )}
         <Input
           type="text"
           placeholder="Type a message..."

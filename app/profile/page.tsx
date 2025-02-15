@@ -4,7 +4,7 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -40,6 +40,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/HoverCard";
 import ProfileHeader from "@/components/home/ProfileHeader";
+import { MasonryGrid } from "@/components/masonry-grid";
 
 interface Post {
   _id: string;
@@ -476,6 +477,9 @@ export default function ProfilePage() {
                   </>
                 )}
               </div>
+              <div className="flex items-center gap-2 text-muted-foreground text-sm portrait:text-xs">
+                {profile?.githubBio && <span>{profile?.githubBio}</span>}
+              </div>
             </div>
             <div className="flex flex-wrap gap-2">
               <Button variant="outline" size="sm" asChild>
@@ -697,16 +701,18 @@ export default function ProfilePage() {
                   </CardContent>
                 </Card>
               ) : (
-                posts.map((post) => (
-                  <PostCard
-                    key={post._id}
-                    post={post}
-                    onVote={handleVote}
-                    onAddComment={handleAddComment}
-                    onVotePoll={handleVotePoll}
-                    onCommentVote={handleCommentVote}
-                  />
-                ))
+                <MasonryGrid>
+                  {posts.map((post) => (
+                    <PostCard
+                      key={post._id}
+                      post={post}
+                      onVote={handleVote}
+                      onAddComment={handleAddComment}
+                      onVotePoll={handleVotePoll}
+                      onCommentVote={handleCommentVote}
+                    />
+                  ))}
+                </MasonryGrid>
               )}
             </div>
           </TabsContent>

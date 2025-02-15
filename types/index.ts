@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export interface Developer {
-  public_repos: any
-  followers: any
-  id: string
-  login: string
-  avatar_url: string
-  html_url: string
-  name?: string
-  bio?: string
-  location?: string
-  email?: string
-  githubId?: number
+  public_repos: any;
+  followers: any;
+  id: string;
+  login: string;
+  avatar_url: string;
+  html_url: string;
+  name?: string;
+  bio?: string;
+  location?: string;
+  email?: string;
+  githubId?: number;
 }
 
 export interface FriendRequest {
@@ -47,27 +47,28 @@ export interface FriendRequest {
   otherUserInCodeNearby: boolean;
 }
 
-
 export interface UserProfile extends Developer {
-  _id: any
-  image: string
-  githubId: number
-  githubUsername: string
-  friends:any[]
-  sentRequests: string[]
-  receivedRequests: string[]
+  _id: any;
+  image: string;
+  githubId: number;
+  githubUsername: string;
+  friends: any[];
+  sentRequests: string[];
+  receivedRequests: string[];
+  posts: Post[];
+  githubBio: string;
+  githubLocation: string;
 }
-
 
 export interface Post {
-  _id: string
-  userId: string
-  content: string
-  imageUrl?: string
-  createdAt: string
-  votes: { up: number; down: number }
-  userVotes?: Record<string, number>
-  comments: Comment[]
+  _id: string;
+  userId: string;
+  content: string;
+  imageUrl?: string;
+  createdAt: string;
+  votes: { up: number; down: number };
+  userVotes?: Record<string, number>;
+  comments: Comment[];
 }
 
-export type Comment = {}
+export type Comment = {};
