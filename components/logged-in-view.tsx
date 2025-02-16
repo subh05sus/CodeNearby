@@ -7,6 +7,7 @@ import { GitHubReceivedEvents } from "./home/github-received-events";
 import Hello from "./home/hello";
 import { NewPeopleToConnect } from "./home/new-people-to-connect";
 import { ReceivedFriendRequests } from "./home/received-friend-requests";
+import LatestChangelog from "./latest-changelog";
 import { Spotlight } from "./ui/spotlight-new";
 
 function LoggedInView({ user }: { user: any }) {
@@ -32,7 +33,7 @@ function LoggedInView({ user }: { user: any }) {
       <div className="mt-20">
         <Details />
       </div>
-
+      <LatestChangelog />
       <FAQSection />
     </div>
   );

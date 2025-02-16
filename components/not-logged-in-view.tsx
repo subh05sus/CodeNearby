@@ -4,6 +4,7 @@ import FAQSection from "./home/FAQSection";
 import Features from "./home/Features";
 import { TextRotatePreview } from "./home/TextRotation";
 import { Why } from "./home/Why";
+import LatestChangelog from "./latest-changelog";
 import { Spotlight } from "./ui/spotlight-new";
 
 function NotLoggedInView() {
@@ -29,6 +30,7 @@ function NotLoggedInView() {
       <Why />
 
       <Details />
+      <LatestChangelog />
 
       <FAQSection />
     </div>

@@ -17,22 +17,28 @@ export default function Footer() {
           <div className="flex items-center space-x-6 mt-4 md:mt-0">
             <ThemeSwitch />
             <Link
-              href="#"
+              href="/about"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
               About
             </Link>
             <Link
-              href="#"
+              href="/privacy"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
               Privacy
             </Link>
             <Link
-              href="#"
+              href="/terms"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
               Terms
+            </Link>
+            <Link
+              href="/changelog"
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Changelog
             </Link>
           </div>
         </div>

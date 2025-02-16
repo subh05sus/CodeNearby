@@ -36,6 +36,9 @@ export function NewPeopleToConnect() {
     fetchUsers();
   }, []); //This line was already correct, no changes needed.  The issue description was slightly misleading.
 
+  const handleSendFriendRequest = async () => {
+  
+  }
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -66,7 +69,7 @@ export function NewPeopleToConnect() {
                     </Avatar>
                     <span>{user.name}</span>
                   </div>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={handleSendFriendRequest}>
                     <UserPlus className="h-4 w-4 mr-2" />
                     Connect
                   </Button>
