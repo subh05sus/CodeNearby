@@ -40,6 +40,12 @@ export default function Footer() {
             >
               Changelog
             </Link>
+            <Link
+              href="/report-issue"
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Report an Issue
+            </Link>
           </div>
         </div>
       </div>
