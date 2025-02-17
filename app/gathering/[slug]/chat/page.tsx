@@ -2,6 +2,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
+import type React from "react";
+
 import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
@@ -17,6 +19,8 @@ import {
   Calendar,
   BarChart,
   MapPin,
+  MessageSquare,
+  EyeOff,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { db } from "@/lib/firebase";
@@ -29,8 +33,15 @@ import Link from "next/link";
 import { AnonymousSwitch } from "@/components/ui/AnonymousSwitch";
 import { format } from "date-fns";
 import LoginButton from "@/components/login-button";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface Message {
   id: string;
@@ -167,7 +178,7 @@ export default function GatheringChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(scrollToBottom, [messages]); // Updated useEffect dependency
+  useEffect(scrollToBottom, [messages]); // Updated dependency
 
   const handleSendMessage = async (pollMessage?: string) => {
     if ((!inputMessage.trim() && !pollMessage) || !session) return;
@@ -502,199 +513,354 @@ export default function GatheringChatPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex justify-between items-center">
-            Chat
+    <div className="px-1 w-full mx-auto">
+      <Card className="relative overflow-hidden">
+        <div className="absolute inset-0 " />
+
+        <CardHeader className="relative border-b portrait:p-3 ">
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 portrait:h-4 portrait:w-4 text-primary" />
+              Chat Room
+            </CardTitle>
             {pinnedMessageId && (
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={scrollToPinnedMessage}
+                className="gap-2"
               >
-                <Pin className="h-4 w-4 mr-2" />
-                View Pinned Message
+                <Pin className="h-4 w-4" />
+                View Pinned
               </Button>
             )}
-          </CardTitle>
+          </div>
         </CardHeader>
-        <CardContent className="relative pb-10">
-          <div className="h-[60vh] overflow-y-auto mb-4 pb-8 space-y-4 no-scrollbar relative">
-            <ScrollArea className="h-full w-full pr-3">
-              {messages.map((message) => {
-                const isPoll = message.content.startsWith('{"type":"poll"');
-                const pollContent = isPoll ? JSON.parse(message.content) : null;
-                const pollData = pollContent ? polls[pollContent.pollId] : null;
-                return (
-                  <div
-                    key={message.id}
-                    id={`message-${message.id}`}
-                    className={`flex items-start my-2 space-x-2 ${
-                      message.senderId === session.user.id
-                        ? "justify-end"
-                        : "justify-start"
-                    }`}
-                  >
-                    {(!message.isAnonymous ||
-                      (isHost && message.realSenderInfo)) && (
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage
-                          src={
-                            isHost && message.realSenderInfo
-                              ? message.realSenderInfo.image
-                              : message.senderImage
-                          }
-                          alt={
-                            isHost && message.realSenderInfo
-                              ? message.realSenderInfo.name
-                              : message.senderName
-                          }
-                        />
-                        <AvatarFallback>
-                          {isHost && message.realSenderInfo
-                            ? message.realSenderInfo.name[0]
-                            : message.senderName[0]}
-                        </AvatarFallback>
-                      </Avatar>
-                    )}
-                    <div
-                      className={`bg-muted max-w-[60vw] md:max-w-[40vw] p-2 rounded-lg ${
-                        message.isPinned ? "border-2 border-yellow-500" : ""
+
+        <CardContent className="relative p-0">
+          <ScrollArea className="h-[calc(100vh-20rem)] w-full">
+            <div className="flex flex-col space-y-4 p-4">
+              <AnimatePresence initial={false}>
+                {messages.map((message) => {
+                  const isPoll = message.content.startsWith('{"type":"poll"');
+                  const pollContent = isPoll
+                    ? JSON.parse(message.content)
+                    : null;
+                  const pollData = pollContent
+                    ? polls[pollContent.pollId]
+                    : null;
+                  const isOwnMessage = message.senderId === session?.user?.id;
+
+                  return (
+                    <motion.div
+                      key={message.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      id={`message-${message.id}`}
+                      className={`flex items-start space-x-3 ${
+                        isOwnMessage ? "flex-row-reverse space-x-reverse" : ""
                       }`}
                     >
-                      {message.isAnonymous ? (
-                        <p className="text-sm font-semibold">
-                          Anonymous
-                          {isHost && message.realSenderInfo && (
-                            <span className="text-xs text-muted-foreground">
-                              {" "}
-                              ({message.realSenderInfo.name})
-                            </span>
-                          )}
-                        </p>
-                      ) : (
-                        <p className="text-sm font-semibold">
-                          {message.senderName}
-                        </p>
+                      {(!message.isAnonymous ||
+                        (isHost && message.realSenderInfo)) && (
+                        <Avatar className="h-8 w-8 border-2 border-background">
+                          <AvatarImage
+                            src={
+                              isHost && message.realSenderInfo
+                                ? message.realSenderInfo.image
+                                : message.senderImage
+                            }
+                            alt={
+                              isHost && message.realSenderInfo
+                                ? message.realSenderInfo.name
+                                : message.senderName
+                            }
+                          />
+                          <AvatarFallback>
+                            {(isHost && message.realSenderInfo
+                              ? message.realSenderInfo.name
+                              : message.senderName
+                            ).charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
                       )}
-                      {isPoll && pollData ? (
-                        <div className="space-y-2">
-                          <p className="font-semibold">{pollData.question}</p>
-                          {pollData.options.map((option, index) => (
-                            <div key={index} className="space-y-1">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="w-full justify-between"
-                                onClick={() =>
-                                  handlePollVote(pollData.pollId, index)
+
+                      <div
+                        className={`group relative max-w-[75%] space-y-1 ${
+                          isOwnMessage ? "items-end" : "items-start"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 px-2">
+                          <span
+                            className={`text-sm font-medium ${
+                              message.isAnonymous ? "text-muted-foreground" : ""
+                            }`}
+                          >
+                            {message.isAnonymous ? (
+                              <span className="flex items-center gap-1">
+                                <EyeOff className="h-3 w-3" />
+                                Anonymous
+                                {isHost && message.realSenderInfo && (
+                                  <span className="text-xs opacity-50">
+                                    ({message.realSenderInfo.name})
+                                  </span>
+                                )}
+                              </span>
+                            ) : (
+                              message.senderName
+                            )}
+                          </span>
+                        </div>
+
+                        <div
+                          className={`relative rounded-lg bg-muted p-3 ${
+                            message.isPinned ? "ring-2 ring-yellow-500/50" : ""
+                          }`}
+                        >
+                          {isPoll && pollData ? (
+                            <div className="space-y-3">
+                              <p className="font-medium">{pollData.question}</p>
+                              {pollData.options.map((option, index) => (
+                                <div key={index} className="space-y-1">
+                                  <Button
+                                    variant={
+                                      isOwnMessage ? "secondary" : "outline"
+                                    }
+                                    size="sm"
+                                    className="w-full justify-between"
+                                    onClick={() =>
+                                      handlePollVote(pollData.pollId, index)
+                                    }
+                                    disabled={
+                                      pollData.votes &&
+                                      Object.values(pollData.votes).some(
+                                        (voters) =>
+                                          (voters as any).includes(
+                                            session?.user?.id
+                                          )
+                                      )
+                                    }
+                                  >
+                                    <span>{option}</span>
+                                    <span>
+                                      {(pollData.votes?.[index] || []).length}{" "}
+                                      votes
+                                    </span>
+                                  </Button>
+                                  <Progress
+                                    value={
+                                      ((pollData.votes?.[index] || []).length /
+                                        (pollData?.totalVotes || 1)) *
+                                      100
+                                    }
+                                    className="h-1"
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          ) : message.content.startsWith("[Image](") ? (
+                            <div className="rounded-md overflow-hidden">
+                              <Image
+                                height={200}
+                                width={200}
+                                src={
+                                  message.content.match(
+                                    /\[Image\]\((.*?)\)/
+                                  )?.[1] || "/placeholder.svg"
                                 }
-                                disabled={
-                                  pollData.votes &&
-                                  Object.values(pollData.votes).some((voters) =>
-                                    (voters as any).includes(session.user.id)
-                                  )
-                                }
-                              >
-                                <span>{option}</span>
-                                <span>
-                                  {(pollData.votes?.[index] || []).length} votes
-                                </span>
-                              </Button>
-                              <Progress
-                                value={
-                                  ((pollData.votes?.[index] || []).length /
-                                    (pollData?.totalVotes || 1)) *
-                                  100
-                                }
-                                className="h-2"
+                                alt="Shared image"
+                                className="max-w-[200px] rounded-lg"
                               />
                             </div>
-                          ))}
-                        </div>
-                      ) : message.content.startsWith("[Image](") ? (
-                        <div>
-                          <Image
-                            height={200}
-                            width={200}
-                            src={
-                              message.content.match(
-                                /\[Image\]$$(.*?)$$/
-                              )?.[1] ||
-                              "" ||
-                              "/placeholder.svg"
-                            }
-                            alt="Image"
-                            className="max-w-[200px] rounded-lg"
-                          />
-                        </div>
-                      ) : (
-                        <p>{renderMessageContent(message.content)}</p>
-                      )}
+                          ) : (
+                            <p className="whitespace-pre-wrap break-words">
+                              {renderMessageContent(message.content)}
+                            </p>
+                          )}
 
-                      {isHost && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() =>
-                            message.isPinned
-                              ? handleUnpinMessage(message.id)
-                              : handlePinMessage(message.id)
-                          }
-                          className="mt-1"
-                        >
-                          {message.isPinned ? "Unpin" : "Pin"}
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
+                          {message.isPinned && (
+                            <div className="absolute -top-2 -right-2">
+                              <Badge variant="secondary" className="gap-1">
+                                <Pin className="h-3 w-3" />
+                                Pinned
+                              </Badge>
+                            </div>
+                          )}
+                        </div>
+
+                        {isHost && (
+                          <div
+                            className={`absolute ${
+                              isOwnMessage ? "-left-12" : "-right-12"
+                            } top-8 opacity-0 transition-opacity group-hover:opacity-100`}
+                          >
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-8 w-8 p-0"
+                                    onClick={() =>
+                                      message.isPinned
+                                        ? handleUnpinMessage(message.id)
+                                        : handlePinMessage(message.id)
+                                    }
+                                  >
+                                    <Pin
+                                      className={`h-4 w-4 ${
+                                        message.isPinned
+                                          ? "text-yellow-500"
+                                          : ""
+                                      }`}
+                                    />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  {message.isPinned ? "Unpin" : "Pin"} message
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
               <div ref={messagesEndRef} />
-            </ScrollArea>
-          </div>
-
-          <div className="relative flex items-end space-x-2 z-30">
-            <Input
-              value={inputMessage}
-              onChange={handleInputChange}
-              placeholder="Type your message..."
-              className="pr-16"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleSendMessage();
-                } else if (e.key === "Tab" && mentionSuggestions.length > 0) {
-                  e.preventDefault();
-                  handleMentionSelect(mentionSuggestions[0]);
-                }
-              }}
-              disabled={
-                (isHostOnly && !isHost) ||
-                gathering?.mutedUsers?.includes(session.user.id)
-              }
-            />
-            {/* <div className="flex items-center h-full "></div> */}
-            <div className="flex space-x-2 mt-2 relative">
-              <Button
-                onClick={() => handleSendMessage()}
-                disabled={
-                  (isHostOnly && !isHost) ||
-                  gathering?.mutedUsers?.includes(session.user.id)
-                }
-              >
-                <Send className="h-4 w-4" />
-              </Button>
-              <AnonymousSwitch
-                checked={isAnonymous}
-                onCheckedChange={setIsAnonymous}
-                id="anonymous-mode"
-                className="absolute -left-[160%] top-0 mt-1.5"
-              />
             </div>
+          </ScrollArea>
 
-            {(!isHostOnly || isHost) && (
-              <div className="flex space-x-2 mt-2 absolute right-0 -top-full">
+          <div className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="relative mx-4 my-4 flex flex-col space-y-4">
+              <div className="relative flex items-end space-x-2 z-30">
+                <Input
+                  value={inputMessage}
+                  onChange={handleInputChange}
+                  placeholder="Type your message..."
+                  className="pr-16"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSendMessage();
+                    } else if (
+                      e.key === "Tab" &&
+                      mentionSuggestions.length > 0
+                    ) {
+                      e.preventDefault();
+                      handleMentionSelect(mentionSuggestions[0]);
+                    }
+                  }}
+                  disabled={
+                    (isHostOnly && !isHost) ||
+                    gathering?.mutedUsers?.includes(session.user.id)
+                  }
+                />
+                {/* <div className="flex items-center h-full "></div> */}
+
+                {(!isHostOnly || isHost) && (
+                  <div className=" space-x-2 mt-2  md:flex hidden">
+                    <Button
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={
+                        (isHostOnly && !isHost) ||
+                        gathering?.mutedUsers?.includes(session.user.id)
+                      }
+                      variant={"secondary"}
+                    >
+                      <ImageIcon className="h-4 w-4" />
+                    </Button>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleImageUpload}
+                      accept="image/*"
+                      style={{ display: "none" }}
+                    />
+                    <Button
+                      asChild
+                      disabled={
+                        (isHostOnly && !isHost) ||
+                        gathering?.mutedUsers?.includes(session.user.id)
+                      }
+                    >
+                      <CreateGatheringPoll
+                        gatheringSlug={params.slug as string}
+                        onPollCreated={(pollMessage) =>
+                          handleSendMessage(pollMessage)
+                        }
+                        canCreatePoll={
+                          (isHostOnly && !isHost) ||
+                          gathering?.mutedUsers?.includes(session.user.id)
+                        }
+                      />
+                    </Button>
+                  </div>
+                )}
+                <div className="flex space-x-2 mt-2 relative">
+                  <Button
+                    onClick={() => handleSendMessage()}
+                    disabled={
+                      (isHostOnly && !isHost) ||
+                      gathering?.mutedUsers?.includes(session.user.id)
+                    }
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                  <AnonymousSwitch
+                    checked={isAnonymous}
+                    onCheckedChange={setIsAnonymous}
+                    id="anonymous-mode"
+                    className="absolute -left-[380%] top-0 mt-1.5"
+                  />
+                </div>
+
+                {mentionSuggestions.length > 0 && (
+                  <div className="absolute bottom-full left-0 bg-background border rounded-md shadow-lg">
+                    {Array.from(new Set(mentionSuggestions))
+                      .filter((name) => name.toLowerCase() !== "anonymous")
+                      .map((name, index) => (
+                        <div
+                          key={name}
+                          className={`px-4 py-2 hover:bg-muted cursor-pointer ${
+                            index === 0 ? "bg-muted" : ""
+                          }`}
+                          onClick={() => handleMentionSelect(name)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Tab" && index === 0) {
+                              e.preventDefault();
+                              handleMentionSelect(name);
+                            }
+                          }}
+                        >
+                          {name}
+                        </div>
+                      ))}
+                  </div>
+                )}
+                {isAnonymous && (
+                  <motion.p
+                    className="text-xs absolute bottom-9 text-muted-foreground p-1"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                  >
+                    You&apos;re anonymous, but the host sees everything.
+                  </motion.p>
+                )}
+                {!isAnonymous && (
+                  <motion.p
+                    className="text-xs absolute bottom-9 text-muted-foreground p-1"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                  >
+                    Be respectful… or atleast try to be.
+                  </motion.p>
+                )}
+              </div>
+              <div className="md:hidden gap-2 grid grid-cols-2">
                 <Button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={
@@ -730,58 +896,9 @@ export default function GatheringChatPage() {
                     }
                   />
                 </Button>
-
-                <label htmlFor="anonymous-mode" className="ml-2 hidden">
-                  Send anonymously
-                </label>
               </div>
-            )}
-
-            {mentionSuggestions.length > 0 && (
-              <div className="absolute bottom-full left-0 bg-background border rounded-md shadow-lg">
-                {Array.from(new Set(mentionSuggestions))
-                  .filter((name) => name.toLowerCase() !== "anonymous")
-                  .map((name, index) => (
-                    <div
-                      key={name}
-                      className={`px-4 py-2 hover:bg-muted cursor-pointer ${
-                        index === 0 ? "bg-muted" : ""
-                      }`}
-                      onClick={() => handleMentionSelect(name)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Tab" && index === 0) {
-                          e.preventDefault();
-                          handleMentionSelect(name);
-                        }
-                      }}
-                    >
-                      {name}
-                    </div>
-                  ))}
-              </div>
-            )}
+            </div>
           </div>
-          {isAnonymous && (
-            <motion.p
-              className="text-xs absolute bottom-4 text-muted-foreground p-1"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-            >
-              You&apos;re anonymous, but the host sees everything.
-            </motion.p>
-          )}
-          {!isAnonymous && (
-            <motion.p
-              className="text-xs absolute bottom-4 text-muted-foreground p-1"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-            >
-              Be respectful… or atleast try to be.
-            </motion.p>
-          )}
-          <div className="absolute bottom-20 left-0 w-full h-20 bg-gradient-to-t from-background to-transparent pointer-events-none" />
         </CardContent>
       </Card>
     </div>
