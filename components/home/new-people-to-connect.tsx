@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RefreshCw, UserPlus } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
+import { useToast } from "../ui/use-toast";
 
 interface User {
   _id: string;
@@ -18,7 +20,7 @@ interface User {
 export function NewPeopleToConnect() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const { toast } = useToast();
   const fetchUsers = async () => {
     setLoading(true);
     try {
@@ -36,9 +38,27 @@ export function NewPeopleToConnect() {
     fetchUsers();
   }, []); //This line was already correct, no changes needed.  The issue description was slightly misleading.
 
-  const handleSendFriendRequest = async () => {
-  
-  }
+  const handleSendFriendRequest = async (developer: any) => {
+    try {
+      await fetch("/api/friends/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: developer.githubId,
+          login: developer.githubUsername,
+          avatar_url: developer.image,
+          html_url: `https://github.com/${developer.githubUsername}`,
+        }),
+      });
+      toast({ title: "Success", description: "Friend request sent!" });
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to send request.",
+        variant: "destructive",
+      });
+    }
+  };
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -57,24 +77,30 @@ export function NewPeopleToConnect() {
             </div>
           ) : users.length > 0 ? (
             <ul className="space-y-2">
-              {users.map((user) => (
-                <li
-                  key={user._id}
-                  className="flex items-center justify-between"
-                >
-                  <div className="flex items-center space-x-2">
-                    <Avatar>
-                      <AvatarImage src={user.image} alt={user.name} />
-                      <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <span>{user.name}</span>
-                  </div>
-                  <Button variant="outline" size="sm" onClick={handleSendFriendRequest}>
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    Connect
-                  </Button>
-                </li>
-              ))}
+              {users.map((user) => {
+                return (
+                  <li
+                    key={user._id}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <Avatar>
+                        <AvatarImage src={user.image} alt={user.name} />
+                        <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <span>{user.name}</span>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleSendFriendRequest(user)}
+                    >
+                      <UserPlus className="h-4 w-4 mr-2" />
+                      Connect
+                    </Button>
+                  </li>
+                );
+              })}
             </ul>
           ) : (
             <p className="text-muted-foreground text-sm">

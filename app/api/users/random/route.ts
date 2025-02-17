@@ -34,7 +34,15 @@ export async function GET() {
           },
         },
         { $sample: { size: 8 } },
-        { $project: { _id: 1, name: 1, image: 1, githubUsername: 1 } },
+        {
+          $project: {
+            _id: 1,
+            name: 1,
+            image: 1,
+            githubUsername: 1,
+            githubId: 1,
+          },
+        },
       ])
       .toArray();
 
