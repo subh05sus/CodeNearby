@@ -4,14 +4,13 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function UserProfilePage() {
   const params = useParams();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
   useEffect(() => {
     fetchProfile();
@@ -24,18 +23,12 @@ export default function UserProfilePage() {
       if (response.ok) {
         router.replace(`/user/${data.githubId}`); // Redirect directly
       } else {
-        toast({
-          title: "Error",
+        toast.error("Error", {
           description: data.error || "Failed to fetch profile.",
-          variant: "destructive",
         });
       }
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to fetch profile.",
-        variant: "destructive",
-      });
+      toast.error("Failed to fetch profile.");
     } finally {
       setLoading(false);
     }

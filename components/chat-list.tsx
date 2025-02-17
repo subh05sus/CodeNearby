@@ -4,11 +4,11 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
 
 interface Friend {
   id: string;
@@ -26,7 +26,6 @@ export function ChatList() {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(true);
   const [friends, setFriends] = useState<Friend[]>([]);
-  const { toast } = useToast();
   const params = useParams();
 
   useEffect(() => {
@@ -42,10 +41,8 @@ export function ChatList() {
 
       setFriends(data);
     } catch {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "Failed to fetch friends.",
-        variant: "destructive",
       });
     } finally {
       setLoading(false);

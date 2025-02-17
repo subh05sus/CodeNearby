@@ -7,7 +7,6 @@ import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
 import {
   Loader2,
   Send,
@@ -23,6 +22,7 @@ import type { Session } from "next-auth";
 import { db as database } from "@/lib/firebase";
 import LoginButton from "@/components/login-button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "sonner";
 
 interface Message {
   id: string;
@@ -43,7 +43,6 @@ export default function MessagePage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [friend, setFriend] = useState<any>(null);
-  const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -95,11 +94,7 @@ export default function MessagePage() {
       const data = await response.json();
       setFriend(data);
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to fetch friend details.",
-        variant: "destructive",
-      });
+      toast.error("Failed to fetch friend details. Please try again.");
     }
   };
 

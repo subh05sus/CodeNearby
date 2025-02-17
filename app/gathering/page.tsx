@@ -5,11 +5,11 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
 import { Loader2, Plus } from "lucide-react";
 import Link from "next/link";
 import { GatheringList } from "@/components/gathering-list";
 import LoginButton from "@/components/login-button";
+import { toast } from "sonner";
 
 interface Gathering {
   id: string;
@@ -25,7 +25,6 @@ export default function GatheringPage() {
   const { data: session } = useSession();
   const [gatherings, setGatherings] = useState<Gathering[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
   useEffect(() => {
     if (session) {
@@ -42,11 +41,7 @@ export default function GatheringPage() {
       const data = await response.json();
       setGatherings(data);
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to fetch gatherings. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to fetch gatherings. Please try again.");
     } finally {
       setLoading(false);
     }

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Check, X } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 interface FriendRequest {
   sender: any;
@@ -22,7 +22,6 @@ interface FriendRequest {
 export function ReceivedFriendRequests() {
   const [requests, setRequests] = useState<FriendRequest[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
   const fetchRequests = async () => {
     try {
@@ -56,18 +55,11 @@ export function ReceivedFriendRequests() {
 
       if (!response.ok) throw new Error("Failed to update request");
 
-      toast({
-        title: "Success",
-        description: `Request ${action}ed successfully!`,
-      });
+      toast.success(`Request ${action}ed successfully!`);
 
       fetchRequests();
     } catch {
-      toast({
-        title: "Error",
-        description: `Failed to ${action} request.`,
-        variant: "destructive",
-      });
+      toast.error("Failed to fetch friend requests. Please try again.");
     }
   };
 

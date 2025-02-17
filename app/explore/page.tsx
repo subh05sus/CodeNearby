@@ -8,19 +8,18 @@ import { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
 import { Loader2, MapPin, Search, GithubIcon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import type { Developer } from "@/types";
 import { getLocationByIp } from "@/lib/location";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 export default function ExplorePage() {
   const [location, setLocation] = useState("");
   const [loading, setLoading] = useState(false);
   const [developers, setDevelopers] = useState<Developer[]>([]);
-  const { toast } = useToast();
 
   const handleLocationSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -35,16 +34,12 @@ export default function ExplorePage() {
         console.log(data);
         setDevelopers(data);
       } catch {
-        toast({
-          title: "Error",
-          description: "Failed to fetch developers. Please try again.",
-          variant: "destructive",
-        });
+        toast.error("Failed to fetch developers. Please try again.");
       } finally {
         setLoading(false);
       }
     },
-    [location, toast]
+    [location]
   );
 
   const initialLocationSubmit = async (location: string) => {
@@ -57,11 +52,7 @@ export default function ExplorePage() {
       const data = await response.json();
       setDevelopers(data);
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to fetch developers. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to fetch developers. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -75,19 +66,13 @@ export default function ExplorePage() {
         if (data.city) {
           initialLocationSubmit(data.city);
         }
-      } catch {
-        toast({
-          title: "Error",
-          description: "Failed to get your location automatically.",
-          variant: "destructive",
-        });
-      }
+      } catch {}
     };
 
     if (!location) {
       fetchLocation();
     }
-  }, [toast, handleLocationSubmit]);
+  }, [handleLocationSubmit]);
 
   const handleGeolocation = () => {
     if ("geolocation" in navigator) {
@@ -110,32 +95,22 @@ export default function ExplorePage() {
               preventDefault: () => {},
             } as React.FormEvent);
           } catch {
-            toast({
-              title: "Error",
-              description:
-                "Failed to get your location. Please enter it manually.",
-              variant: "destructive",
-            });
+            toast.error(
+              "Failed to get your location. Please enter it manually."
+            );
             setLoading(false);
           }
         },
         () => {
-          toast({
-            title: "Error",
-            description:
-              "Failed to get your location. Please enter it manually.",
-            variant: "destructive",
-          });
+          toast.error("Failed to get your location. Please enter it manually.");
           setLoading(false);
         }
       );
     } else {
-      toast({
-        title: "Error",
-        description:
-          "Geolocation is not supported by your browser. Please enter your location manually.",
-        variant: "destructive",
-      });
+      toast.error(
+        "Geolocation is not supported by your browser. Please enter your location manually."
+      );
+      setLoading(false);
     }
   };
 

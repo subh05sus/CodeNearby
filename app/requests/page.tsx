@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/components/ui/use-toast";
 import { Loader2, Check, X } from "lucide-react";
 import Image from "next/image";
 import type { FriendRequest } from "@/types";
@@ -13,12 +12,12 @@ import type { Session } from "next-auth";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import Link from "next/link";
+import { toast } from "sonner";
 
 export default function RequestsPage() {
   const { data: session } = useSession() as { data: Session | null };
   const [loading, setLoading] = useState(true);
   const [requests, setRequests] = useState<FriendRequest[]>([]);
-  const { toast } = useToast();
 
   useEffect(() => {
     if (session) {
@@ -33,10 +32,8 @@ export default function RequestsPage() {
       const data = await response.json();
       setRequests(data.reverse());
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to fetch requests.",
-        variant: "destructive",
+      toast.error("Error", {
+        description: "Failed to fetch requests",
       });
     } finally {
       setLoading(false);
@@ -58,17 +55,12 @@ export default function RequestsPage() {
 
       if (!response.ok) throw new Error("Failed to update request");
 
-      toast({
-        title: "Success",
-        description: `Request ${action}ed successfully!`,
-      });
+      toast.success(`Request ${action}ed successfully!`);
 
       fetchRequests();
     } catch {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: `Failed to ${action} request.`,
-        variant: "destructive",
       });
     }
   };

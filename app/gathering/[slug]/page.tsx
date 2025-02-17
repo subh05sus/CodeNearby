@@ -20,6 +20,7 @@ import {
   LinkIcon,
   Check,
 } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +30,6 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { QRCodeDisplay } from "@/components/qr-code-display";
@@ -66,7 +66,6 @@ interface Gathering {
 export default function GatheringRoomPage() {
   const { data: session } = useSession() as { data: Session | null };
   const params = useParams();
-  const { toast } = useToast();
   const [gathering, setGathering] = useState<Gathering | null>(null);
   const [loading, setLoading] = useState(true);
   const [hostOnlyMode, setHostOnlyMode] = useState(false);
@@ -100,11 +99,7 @@ export default function GatheringRoomPage() {
       setParticipantImagesWithIds(imagesWithIds);
       setHostOnlyMode(data.hostOnly);
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to fetch gathering. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to fetch gathering. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -121,16 +116,9 @@ export default function GatheringRoomPage() {
         throw new Error("Failed to block user");
       }
       fetchGathering();
-      toast({
-        title: "Success",
-        description: "User has been blocked from the gathering.",
-      });
+      toast.success("User has been blocked from the gathering.");
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to block user. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to block user. Please try again.");
     }
   };
 
@@ -145,16 +133,10 @@ export default function GatheringRoomPage() {
         throw new Error("Failed to unblock user");
       }
       fetchGathering();
-      toast({
-        title: "Success",
-        description: "User has been unblocked from the gathering.",
-      });
+
+      toast.success("User has been unblocked from the gathering.");
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to unblock user. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to unblock user. Please try again.");
     }
   };
 
@@ -169,16 +151,10 @@ export default function GatheringRoomPage() {
         throw new Error("Failed to mute user");
       }
       fetchGathering();
-      toast({
-        title: "Success",
-        description: "User has been muted in the gathering.",
-      });
+
+      toast.success("User has been muted in the gathering.");
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to mute user. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to mute user. Please try again.");
     }
   };
 
@@ -193,16 +169,10 @@ export default function GatheringRoomPage() {
         throw new Error("Failed to unmute user");
       }
       fetchGathering();
-      toast({
-        title: "Success",
-        description: "User has been unmuted in the gathering.",
-      });
+
+      toast.success("User has been unmuted in the gathering.");
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to unmute user. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to unmute user. Please try again.");
     }
   };
 
@@ -217,26 +187,18 @@ export default function GatheringRoomPage() {
         throw new Error("Failed to toggle host-only mode");
       }
       setHostOnlyMode(!hostOnlyMode);
-      toast({
-        title: "Success",
-        description: `Host-only mode ${hostOnlyMode ? "disabled" : "enabled"}.`,
-      });
+
+      toast.success(`Host-only mode ${hostOnlyMode ? "disabled" : "enabled"}.`);
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to toggle host-only mode. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to toggle host-only mode. Please try again.");
     }
   };
 
   const copyInviteLink = () => {
     const inviteLink = `${window.location.origin}/gathering/join/${gathering?.slug}`;
     navigator.clipboard.writeText(inviteLink);
-    toast({
-      title: "Success",
-      description: "Invite link copied to clipboard.",
-    });
+
+    toast.success("Invite link copied to clipboard.");
   };
 
   if (!session) {

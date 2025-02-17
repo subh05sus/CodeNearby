@@ -8,8 +8,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RefreshCw, UserPlus } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
-import { useToast } from "../ui/use-toast";
 import Link from "next/link";
+import { toast } from "sonner";
 
 interface User {
   githubId: any;
@@ -22,7 +22,6 @@ interface User {
 export function NewPeopleToConnect() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
   const fetchUsers = async () => {
     setLoading(true);
     try {
@@ -52,13 +51,9 @@ export function NewPeopleToConnect() {
           html_url: `https://github.com/${developer.githubUsername}`,
         }),
       });
-      toast({ title: "Success", description: "Friend request sent!" });
+      toast.success("Friend request sent!");
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to send request.",
-        variant: "destructive",
-      });
+      toast.error("Failed to send request.");
     }
   };
   return (

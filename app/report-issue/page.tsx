@@ -2,6 +2,7 @@
 
 import type React from "react";
 
+import Image from "next/image";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Loader2, Upload } from "lucide-react";
 import { Session } from "next-auth";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 export default function ReportIssuePage() {
   const [title, setTitle] = useState("");
@@ -19,15 +20,10 @@ export default function ReportIssuePage() {
   const [images, setImages] = useState<File[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession() as { data: Session | null };
-  const { toast } = useToast();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!session?.user) {
-      toast({
-        title: "Unauthorized",
-        description: "You must be logged in to report an issue.",
-        variant: "destructive",
-      });
+      toast.error("You must be logged in to report an issue.");
       return;
     }
 
@@ -70,10 +66,7 @@ export default function ReportIssuePage() {
       });
 
       if (response.ok) {
-        toast({
-          title: "Success",
-          description: "Issue submitted successfully!",
-        });
+        toast.success("Issue submitted successfully!");
         setTitle("");
         setDescription("");
         setImages([]);
@@ -82,11 +75,8 @@ export default function ReportIssuePage() {
       }
     } catch (error) {
       console.error("Error submitting issue:", error);
-      toast({
-        title: "Error",
-        description: "Failed to submit issue. Please try again.",
-        variant: "destructive",
-      });
+
+      toast.error("Failed to submit issue. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -145,17 +135,19 @@ export default function ReportIssuePage() {
               {images.length > 0 && (
                 <div className="grid grid-cols-4 gap-4">
                   {images.map((image, index) => (
-                    <div key={index} className="relative">
-                      <img
+                    <div className="relative" key={index}>
+                      <Image
                         src={URL.createObjectURL(image)}
                         alt={`Preview ${index + 1}`}
-                        className="w-full h-20 object-cover rounded-md"
+                        width={80}
+                        height={80}
+                        className="w-full h-20 -z-0  object-cover rounded-md"
                       />
                       <Button
                         type="button"
                         variant="destructive"
-                        size="sm"
-                        className="absolute top-2 right-2"
+                        size="icon"
+                        className="absolute scale-75 top-1 z-10  right-1"
                         onClick={() =>
                           setImages(images.filter((_, i) => i !== index))
                         }

@@ -10,7 +10,6 @@ import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
 import {
   Loader2,
   Send,
@@ -42,6 +41,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { toast } from "sonner";
 
 interface Message {
   id: string;
@@ -74,7 +74,6 @@ export default function GatheringChatPage() {
   const router = useRouter();
 
   const params = useParams();
-  const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([]);
   const [polls, setPolls] = useState<{ [key: string]: PollData }>({});
   const [inputMessage, setInputMessage] = useState("");
@@ -200,11 +199,7 @@ export default function GatheringChatPage() {
 
       setInputMessage("");
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to send message. Please try again.");
     }
   };
 
@@ -239,11 +234,7 @@ export default function GatheringChatPage() {
         }),
       });
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to upload image. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to upload image. Please try again.");
     }
   };
 
@@ -259,16 +250,9 @@ export default function GatheringChatPage() {
         throw new Error("Failed to pin message");
       }
 
-      toast({
-        title: "Success",
-        description: "Message pinned successfully.",
-      });
+      toast.success("Message pinned successfully.");
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to pin message. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to pin message. Please try again.");
     }
   };
 
@@ -284,17 +268,10 @@ export default function GatheringChatPage() {
         throw new Error("Failed to unpin message");
       }
 
-      toast({
-        title: "Success",
-        description: "Message unpinned successfully.",
-      });
+      toast.success("Message unpinned successfully.");
       setPinnedMessageId(null);
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to unpin message. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to unpin message. Please try again.");
     }
   };
 
@@ -343,16 +320,9 @@ export default function GatheringChatPage() {
         return { ...prevPolls, [pollId]: updatedPoll };
       });
 
-      toast({
-        title: "Success",
-        description: "Vote recorded successfully",
-      });
+      toast.success("Vote recorded successfully");
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to vote on poll. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to vote on poll. Please try again.");
     }
   };
 

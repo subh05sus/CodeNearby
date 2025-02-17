@@ -14,7 +14,6 @@ import {
   CardDescription,
   CardFooter,
 } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
 import { Loader2, Users, Clock, ArrowRight, Sparkles } from "lucide-react";
 import LoginButton from "@/components/login-button";
 import { motion } from "framer-motion";
@@ -22,6 +21,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 import confetti from "canvas-confetti";
+import { toast } from "sonner";
 
 interface Gathering {
   id: string;
@@ -59,7 +59,6 @@ export default function JoinGatheringPage() {
   const { data: session } = useSession();
   const params = useParams();
   const router = useRouter();
-  const { toast } = useToast();
   const [gathering, setGathering] = useState<Gathering | null>(null);
   const [loading, setLoading] = useState(true);
   const [joining, setJoining] = useState(false);
@@ -79,11 +78,7 @@ export default function JoinGatheringPage() {
       const data = await response.json();
       setGathering(data);
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to fetch gathering. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to fetch gathering. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -102,10 +97,7 @@ export default function JoinGatheringPage() {
         throw new Error("Failed to join gathering");
       }
 
-      toast({
-        title: "Welcome!",
-        description: "You have successfully joined the gathering!",
-      });
+      toast.success("Gathering joined successfully!");
       confetti({
         particleCount: 100,
         spread: 70,
@@ -113,11 +105,7 @@ export default function JoinGatheringPage() {
       });
       router.push(`/gathering/${params.slug}`);
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to join gathering. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to join gathering. Please try again.");
     } finally {
       setJoining(false);
     }

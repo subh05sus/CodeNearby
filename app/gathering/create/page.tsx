@@ -23,11 +23,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/components/ui/use-toast";
 import { Loader2, Users2, Clock, Sparkles } from "lucide-react";
 import LoginButton from "@/components/login-button";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
+import { toast } from "sonner";
 
 const expirationOptions = [
   { value: "1h", label: "1 hour" },
@@ -59,7 +59,6 @@ const item = {
 export default function CreateGatheringPage() {
   const { data: session } = useSession();
   const router = useRouter();
-  const { toast } = useToast();
   const [name, setName] = useState("");
   const [expiration, setExpiration] = useState("4h");
   const [loading, setLoading] = useState(false);
@@ -67,11 +66,7 @@ export default function CreateGatheringPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!session) {
-      toast({
-        title: "Error",
-        description: "You must be signed in to create a gathering.",
-        variant: "destructive",
-      });
+      toast.error("You must be logged in to create a gathering.");
       return;
     }
 
@@ -90,10 +85,8 @@ export default function CreateGatheringPage() {
       }
 
       const data = await response.json();
-      toast({
-        title: "Success",
-        description: "Gathering created successfully!",
-      });
+
+      toast.success("Gathering created successfully!");
       confetti({
         particleCount: 100,
         spread: 70,
@@ -101,11 +94,7 @@ export default function CreateGatheringPage() {
       });
       router.push(`/gathering/${data.slug}`);
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to create gathering. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to create gathering. Please try again.");
     } finally {
       setLoading(false);
     }

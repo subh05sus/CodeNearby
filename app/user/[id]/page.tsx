@@ -7,7 +7,6 @@ import { useParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
 import {
   Loader2,
   Users,
@@ -28,6 +27,7 @@ import { useSession } from "next-auth/react";
 import ProfileHeader from "@/components/home/ProfileHeader";
 import { MasonryGrid } from "@/components/masonry-grid";
 import { Session } from "next-auth";
+import { toast } from "sonner";
 
 interface Post {
   _id: string;
@@ -75,7 +75,6 @@ export default function UserProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [stats, setStats] = useState<any>(null);
   const [posts, setPosts] = useState<Post[]>([]);
-  const { toast } = useToast();
   const [activities, setActivities] = useState<any[]>([]);
 
   const loadActivities = async (username: string) => {
@@ -83,10 +82,8 @@ export default function UserProfilePage() {
       const data = await fetchGitHubActivities(username);
       setActivities(data);
     } catch {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "Failed to fetch GitHub activities.",
-        variant: "destructive",
       });
     }
   };
@@ -109,11 +106,7 @@ export default function UserProfilePage() {
       const data = await response.json();
       setProfile(data);
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to fetch profile.",
-        variant: "destructive",
-      });
+      toast.error("Error", { description: "Failed to fetch profile." });
     } finally {
       setLoading(false);
     }
@@ -128,10 +121,8 @@ export default function UserProfilePage() {
       const data = await response.json();
       setStats(data);
     } catch {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "Failed to fetch GitHub stats.",
-        variant: "destructive",
       });
     }
   };
@@ -146,21 +137,16 @@ export default function UserProfilePage() {
       setPosts(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching posts:", error);
-      toast({
-        title: "Error",
+
+      toast.error("Error", {
         description: "Failed to fetch user posts.",
-        variant: "destructive",
       });
     }
   };
 
   const handleVote = async (postId: string, voteType: "up" | "down") => {
     if (!session) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to vote",
-        variant: "destructive",
-      });
+      toast.error("You must be logged in to vote");
       return;
     }
 
@@ -189,11 +175,7 @@ export default function UserProfilePage() {
         })
       );
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to vote",
-        variant: "destructive",
-      });
+      toast.error("Failed to vote");
     }
   };
 
@@ -203,11 +185,7 @@ export default function UserProfilePage() {
     parentCommentId?: string
   ) => {
     if (!session) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to comment",
-        variant: "destructive",
-      });
+      toast.error("You must be logged in to comment");
       return;
     }
     try {
@@ -269,25 +247,16 @@ export default function UserProfilePage() {
         })
       );
 
-      toast({
-        title: "Success",
-        description: "Comment added successfully",
-      });
+      toast.success("Comment added successfully");
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to add comment",
-        variant: "destructive",
-      });
+      toast.error("Failed to add comment");
     }
   };
 
   const handleVotePoll = async (postId: string, optionIndex: number) => {
     if (!session) {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "You must be logged in to vote",
-        variant: "destructive",
       });
       return;
     }
@@ -313,11 +282,7 @@ export default function UserProfilePage() {
         })
       );
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to vote on poll",
-        variant: "destructive",
-      });
+      toast.error("Failed to vote on poll");
     }
   };
 
@@ -327,11 +292,7 @@ export default function UserProfilePage() {
     voteType: "up" | "down"
   ) => {
     if (!session) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to vote",
-        variant: "destructive",
-      });
+      toast.error("You must be logged in to vote");
       return;
     }
 
@@ -384,11 +345,7 @@ export default function UserProfilePage() {
         })
       );
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to vote on comment",
-        variant: "destructive",
-      });
+      toast.error("Failed to vote on comment");
     }
   };
 
@@ -407,13 +364,9 @@ export default function UserProfilePage() {
           html_url: `https://github.com/${profile.githubUsername}`,
         }),
       });
-      toast({ title: "Success", description: "Friend request sent!" });
+      toast.success("Success", { description: "Friend request sent!" });
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to send request.",
-        variant: "destructive",
-      });
+      toast.error("Error", { description: "Failed to send request." });
     }
   };
 

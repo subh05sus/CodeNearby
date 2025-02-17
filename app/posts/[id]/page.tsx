@@ -3,10 +3,10 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
 import { PostCard } from "@/components/post-card";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
 
 interface Post {
   _id: string;
@@ -53,7 +53,6 @@ export default function FeedPage() {
 
   const [loading, setLoading] = useState(false);
   const [post, setPost] = useState<Post | null>(null);
-  const { toast } = useToast();
 
   const fetchPost = async (id: string) => {
     setLoading(true);
@@ -62,11 +61,7 @@ export default function FeedPage() {
       const data = await response.json();
       setPost(data);
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to fetch post",
-        variant: "destructive",
-      });
+      toast.error("Failed to fetch post. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -79,11 +74,8 @@ export default function FeedPage() {
 
   const handleVote = async (postId: string, voteType: "up" | "down") => {
     if (!session) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to vote",
-        variant: "destructive",
-      });
+      toast.error("You must be logged in to vote");
+
       return;
     }
 
@@ -108,11 +100,7 @@ export default function FeedPage() {
         };
       });
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to vote",
-        variant: "destructive",
-      });
+      toast.error("Failed to vote");
     }
   };
 
@@ -122,11 +110,7 @@ export default function FeedPage() {
     parentCommentId?: string
   ) => {
     if (!session) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to comment",
-        variant: "destructive",
-      });
+      toast.error("You must be logged in to comment");
       return;
     }
     try {
@@ -145,56 +129,53 @@ export default function FeedPage() {
       setPost((prevPost) => {
         if (!prevPost) return prevPost;
         if (prevPost._id === postId) {
-          const addComment = (comments: Comment[], newComment: Comment, parentId?: string): Comment[] => {
-        if (!parentId) {
-          return [...comments, newComment];
-        }
+          const addComment = (
+            comments: Comment[],
+            newComment: Comment,
+            parentId?: string
+          ): Comment[] => {
+            if (!parentId) {
+              return [...comments, newComment];
+            }
 
-        return comments.map(comment => {
-          if (comment._id === parentId) {
-            return {
-          ...comment,
-          replies: [...(comment.replies || []), newComment]
-            };
-          }
-          if (comment.replies && comment.replies.length > 0) {
-            return {
-          ...comment,
-          replies: addComment(comment.replies, newComment, parentId)
-            };
-          }
-          return comment;
-        });
+            return comments.map((comment) => {
+              if (comment._id === parentId) {
+                return {
+                  ...comment,
+                  replies: [...(comment.replies || []), newComment],
+                };
+              }
+              if (comment.replies && comment.replies.length > 0) {
+                return {
+                  ...comment,
+                  replies: addComment(comment.replies, newComment, parentId),
+                };
+              }
+              return comment;
+            });
           };
 
           return {
-        ...prevPost,
-        comments: addComment(prevPost.comments, newComment, parentCommentId)
+            ...prevPost,
+            comments: addComment(
+              prevPost.comments,
+              newComment,
+              parentCommentId
+            ),
           };
         }
         return prevPost;
       });
 
-      toast({
-        title: "Success",
-        description: "Comment added successfully",
-      });
+      toast.success("Comment added successfully");
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to add comment",
-        variant: "destructive",
-      });
+      toast.error("Failed to add comment");
     }
   };
 
   const handleVotePoll = async (postId: string, optionIndex: number) => {
     if (!session) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to vote",
-        variant: "destructive",
-      });
+      toast.error("You must be logged in to vote");
       return;
     }
 
@@ -218,11 +199,7 @@ export default function FeedPage() {
         return prevPost;
       });
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to vote on poll",
-        variant: "destructive",
-      });
+      toast.error("Failed to vote on poll");
     }
   };
 
@@ -232,11 +209,7 @@ export default function FeedPage() {
     voteType: "up" | "down"
   ) => {
     if (!session) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to vote",
-        variant: "destructive",
-      });
+      toast.error("You must be logged in to vote");
       return;
     }
 
@@ -259,37 +232,33 @@ export default function FeedPage() {
         if (!prevPost) return prevPost;
         if (prevPost._id === postId) {
           const updateCommentVotes = (comments: Comment[]): Comment[] => {
-        return comments.map((comment) => {
-          if (comment._id === commentId) {
-            return {
-          ...comment,
-          votes: updatedComment.votes,
-          userVotes: updatedComment.userVotes,
-            };
-          }
-          if (comment.replies?.length > 0) {
-            return {
-          ...comment,
-          replies: updateCommentVotes(comment.replies),
-            };
-          }
-          return comment;
-        });
+            return comments.map((comment) => {
+              if (comment._id === commentId) {
+                return {
+                  ...comment,
+                  votes: updatedComment.votes,
+                  userVotes: updatedComment.userVotes,
+                };
+              }
+              if (comment.replies?.length > 0) {
+                return {
+                  ...comment,
+                  replies: updateCommentVotes(comment.replies),
+                };
+              }
+              return comment;
+            });
           };
 
           return {
-        ...prevPost,
-        comments: updateCommentVotes(prevPost.comments),
+            ...prevPost,
+            comments: updateCommentVotes(prevPost.comments),
           };
         }
         return prevPost;
       });
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to vote on comment",
-        variant: "destructive",
-      });
+      toast.error("Failed to vote on comment");
     }
   };
 

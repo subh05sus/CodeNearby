@@ -3,9 +3,9 @@ import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/header";
 import { NextAuthProvider } from "@/components/providers";
-import { Toaster } from "@/components/ui/toaster";
 import Footer from "@/components/footer";
 import type { Metadata } from "next";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -165,7 +165,7 @@ export default function RootLayout({
               {children}
             </main>
             <Footer />
-            <Toaster />
+            <Toaster richColors position="bottom-right" closeButton />
           </ThemeProvider>
         </NextAuthProvider>
       </body>

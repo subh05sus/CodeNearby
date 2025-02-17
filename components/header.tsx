@@ -29,7 +29,8 @@ import {
 import { SearchOverlay } from "./search-overlay";
 import Image from "next/image";
 import type { Session } from "next-auth";
-// import { ThemeToggle } from "./theme-toggle";
+import { toast } from "sonner";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,7 +47,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Menu } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useToast } from "./ui/use-toast";
 import Logo from "./logo";
 import { RainbowButton } from "./magicui/rainbowbutton";
 
@@ -57,7 +57,6 @@ export default function Header() {
   const [showSearch, setShowSearch] = useState(false);
   const { theme, setTheme } = useTheme();
   const [currentTheme, setCurrentTheme] = useState("system");
-  const { toast } = useToast();
 
   const handleSearch = (query: string) => {
     router.push(`/search?q=${encodeURIComponent(query)}`);
@@ -133,10 +132,7 @@ export default function Header() {
       navigator.clipboard
         .writeText(link)
         .then(() => {
-          toast({
-            title: "Success",
-            description: "Invite link copied to clipboard!",
-          });
+          toast.success("Invite link copied to clipboard!");
         })
         .catch((err) => {
           console.error("Failed to copy link:", err);

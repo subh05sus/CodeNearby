@@ -5,18 +5,17 @@ import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import type { FriendRequest } from "@/types";
 import { Session } from "next-auth";
 import LoginButton from "@/components/login-button";
+import { toast } from "sonner";
 
 export default function RequestsPage() {
   const { data: session } = useSession() as { data: Session | null };
   const [loading, setLoading] = useState(true);
   const [requests, setRequests] = useState<FriendRequest[]>([]);
-  const { toast } = useToast();
 
   useEffect(() => {
     if (session) {
@@ -31,11 +30,7 @@ export default function RequestsPage() {
       const data = await response.json();
       setRequests(data);
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to fetch requests.",
-        variant: "destructive",
-      });
+      toast.error("Failed to fetch requests.");
     } finally {
       setLoading(false);
     }
@@ -56,28 +51,21 @@ export default function RequestsPage() {
 
       if (!response.ok) throw new Error("Failed to update request");
 
-      toast({
-        title: "Success",
-        description: `Request ${action}ed successfully!`,
-      });
+      toast.success(`Request ${action}ed successfully!`);
 
       fetchRequests();
     } catch {
-      toast({
-        title: "Error",
-        description: `Failed to ${action} request.`,
-        variant: "destructive",
-      });
+      toast.error(`Failed to ${action} request.`);
     }
   };
 
-  const handleInvite = (username: string) => {
+  const handleInvite = () => {
     // Implement invitation logic here
-    console.log(`Inviting ${username} to CodeNearby`);
-    toast({
-      title: "Invite Sent",
-      description: `An invitation has been sent to ${username}`,
-    });
+    navigator.clipboard.writeText(
+      `${window.location.origin}/invite/?ref=${session?.user?.githubUsername}`
+    );
+
+    toast.success("Invitation link copied successfully!");
   };
 
   if (!session) {
@@ -203,11 +191,7 @@ export default function RequestsPage() {
                         <p className="text-sm text-muted-foreground mb-2">
                           Not in CodeNearby
                         </p>
-                        <Button
-                          onClick={() =>
-                            handleInvite(request.receiverGithubUsername)
-                          }
-                        >
+                        <Button onClick={handleInvite}>
                           Invite to CodeNearby
                         </Button>
                       </div>

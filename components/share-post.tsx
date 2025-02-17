@@ -16,10 +16,10 @@ import { Loader2, Send, MapPin, BarChart, Calendar } from "lucide-react";
 import type { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { useToast } from "./ui/use-toast";
 import Image from "next/image";
 import { Card, CardContent } from "./ui/card";
 import { format } from "date-fns";
+import { toast } from "sonner";
 
 interface Friend {
   id: string;
@@ -68,7 +68,6 @@ export function SharePost({ post }: SharePostProps) {
   const [friends, setFriends] = useState<Friend[]>([]);
   const [gatherings, setGatherings] = useState<Gathering[]>([]);
   const [sharing, setSharing] = useState(false);
-  const { toast } = useToast();
 
   const [canShare, setCanShare] = useState(false);
 
@@ -91,11 +90,7 @@ export function SharePost({ post }: SharePostProps) {
       const data = await response.json();
       setFriends(data);
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to fetch friends.",
-        variant: "destructive",
-      });
+      toast.error("Error", { description: "Failed to fetch friends." });
     } finally {
       setLoadingFriends(false);
     }
@@ -111,10 +106,8 @@ export function SharePost({ post }: SharePostProps) {
       const data = await response.json();
       setGatherings(data);
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to fetch gatherings. Please try again.",
-        variant: "destructive",
+      toast.error("Error", {
+        description: "Failed to fetch gatherings.",
       });
     } finally {
       setLoadingGatherings(false);
@@ -140,16 +133,11 @@ export function SharePost({ post }: SharePostProps) {
         throw new Error("Failed to share post");
       }
 
-      toast({
-        title: "Success",
-        description: "Post shared successfully",
-      });
+      toast.success("Post shared successfully!");
       setIsOpen(false);
     } catch {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "Failed to share post. Please try again.",
-        variant: "destructive",
       });
     } finally {
       setSharing(false);
@@ -175,16 +163,11 @@ export function SharePost({ post }: SharePostProps) {
         throw new Error("Failed to share post");
       }
 
-      toast({
-        title: "Success",
-        description: "Post shared successfully to the gathering",
-      });
+      toast.success("Post shared successfully!");
       setIsOpen(false);
     } catch {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "Failed to share post to the gathering. Please try again.",
-        variant: "destructive",
       });
     } finally {
       setSharing(false);

@@ -12,7 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { PlusCircle, Minus, BarChart2 } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 interface CreatePollProps {
   gatheringSlug: string;
@@ -28,7 +28,6 @@ export function CreateGatheringPoll({
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState(["", ""]);
   const [isOpen, setIsOpen] = useState(false);
-  const { toast } = useToast();
 
   const addOption = () => {
     if (options.length < 4) {
@@ -50,11 +49,7 @@ export function CreateGatheringPoll({
 
   const handleSubmit = async () => {
     if (!question.trim() || options.some((option) => !option.trim())) {
-      toast({
-        title: "Error",
-        description: "Please fill in all fields",
-        variant: "destructive",
-      });
+      toast.error("Please fill in all fields");
       return;
     }
 
@@ -79,18 +74,13 @@ export function CreateGatheringPoll({
 
       onPollCreated(pollMessage);
 
-      toast({
-        title: "Success",
-        description: "Poll created successfully",
-      });
+      toast.success("Poll created successfully!");
       setIsOpen(false);
       setQuestion("");
       setOptions(["", ""]);
     } catch {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "Failed to create poll. Please try again.",
-        variant: "destructive",
       });
     }
   };

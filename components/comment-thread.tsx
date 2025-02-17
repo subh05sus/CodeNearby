@@ -8,8 +8,8 @@ import { ChevronDown, MessageSquare, ChevronRight, Plus } from "lucide-react";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { formatDistanceToNow } from "date-fns";
-import { toast } from "@/components/ui/use-toast";
 import { Session } from "next-auth";
+import { toast } from "sonner";
 
 interface Comment {
   _id: string;
@@ -63,7 +63,6 @@ export function CommentThread({
     }
   };
 
-
   const handleReply = async () => {
     if (!replyContent.trim()) return;
     try {
@@ -72,11 +71,7 @@ export function CommentThread({
       setReplyContent("");
       setIsReplying(false);
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to add reply",
-        variant: "destructive",
-      });
+      toast.error("Error", { description: "Failed to add reply" });
     }
   };
 

@@ -13,7 +13,6 @@ import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
 import { Loader2, UserPlus } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -21,6 +20,7 @@ import { PostCard } from "@/components/post-card";
 import { MasonryGrid } from "@/components/masonry-grid";
 import { useInView } from "react-intersection-observer";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 function SearchPage() {
   const { data: session } = useSession();
@@ -30,7 +30,6 @@ function SearchPage() {
   const [developers, setDevelopers] = useState([]);
   const [posts, setPosts] = useState<Array<any>>([]);
   const [page, setPage] = useState(1);
-  const { toast } = useToast();
   const { ref, inView } = useInView();
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -68,11 +67,7 @@ function SearchPage() {
       const data = await response.json();
       setDevelopers(data.slice(0, 20));
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to search developers. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to search developers. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -88,11 +83,7 @@ function SearchPage() {
       setPosts(Array.isArray(data) ? data : []);
       setPage(2);
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to search posts. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to search posts. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -112,11 +103,7 @@ function SearchPage() {
       ]);
       setPage((prevPage) => prevPage + 1);
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to load more posts",
-        variant: "destructive",
-      });
+      toast.error("Failed to load more posts. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -132,26 +119,15 @@ function SearchPage() {
 
       if (!response.ok) throw new Error("Failed to send friend request");
 
-      toast({
-        title: "Success",
-        description: "Friend request sent!",
-      });
+      toast.success("Friend request sent!");
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to send friend request.",
-        variant: "destructive",
-      });
+      toast.error("Failed to send friend request.");
     }
   };
 
   const handleVote = async (postId: string, voteType: "up" | "down") => {
     if (!session) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to vote",
-        variant: "destructive",
-      });
+      toast.error("You must be logged in to vote");
       return;
     }
 
@@ -180,11 +156,7 @@ function SearchPage() {
         })
       );
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to vote",
-        variant: "destructive",
-      });
+      toast.error("Failed to vote");
     }
   };
 
@@ -194,11 +166,7 @@ function SearchPage() {
     parentCommentId?: string
   ) => {
     if (!session) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to comment",
-        variant: "destructive",
-      });
+      toast.error("You must be logged in to comment");
       return;
     }
     try {
@@ -260,25 +228,14 @@ function SearchPage() {
         })
       );
 
-      toast({
-        title: "Success",
-        description: "Comment added successfully",
-      });
+      toast.success("Comment added successfully");
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to add comment",
-        variant: "destructive",
-      });
+      toast.error("Failed to add comment");
     }
   };
   const handleVotePoll = async (postId: string, optionIndex: number) => {
     if (!session) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to vote",
-        variant: "destructive",
-      });
+      toast.error("You must be logged in to vote");
       return;
     }
 
@@ -303,11 +260,7 @@ function SearchPage() {
         })
       );
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to vote on poll",
-        variant: "destructive",
-      });
+      toast.error("Failed to vote on poll");
     }
   };
 
@@ -317,11 +270,7 @@ function SearchPage() {
     voteType: "up" | "down"
   ) => {
     if (!session) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to vote",
-        variant: "destructive",
-      });
+      toast.error("You must be logged in to vote");
       return;
     }
 
@@ -374,11 +323,7 @@ function SearchPage() {
         })
       );
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to vote on comment",
-        variant: "destructive",
-      });
+      toast.error("Failed to vote on comment");
     }
   };
   return (

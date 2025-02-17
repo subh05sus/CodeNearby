@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
 import {
   MessageSquare,
   Calendar,
@@ -33,6 +32,7 @@ import WhatsappIcon from "./whatsapp-icon";
 import Link from "next/link";
 import { LinkPreview } from "./ui/link-preview";
 import { SharePost } from "./share-post";
+import { toast } from "sonner";
 
 interface Comment {
   _id: string;
@@ -97,7 +97,6 @@ export function PostCard({
   const [showComments, setShowComments] = useState(false);
   const [isVoting, setIsVoting] = useState(false);
   const [imageExpanded, setImageExpanded] = useState(false);
-  const { toast } = useToast();
 
   const userVoteCount = (post.userVotes ?? {})[session?.user?.id || ""] || 0;
   const [canVote, setCanVote] = useState(!!session && userVoteCount < 10);
@@ -108,10 +107,8 @@ export function PostCard({
 
   const handleVote = async (voteType: "up" | "down") => {
     if (!session) {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "You must be logged in to vote",
-        variant: "destructive",
       });
       return;
     }
@@ -130,10 +127,8 @@ export function PostCard({
 
   const handleAddComment = async (parentCommentId?: string) => {
     if (!session) {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "You must be logged in to comment",
-        variant: "destructive",
       });
       return;
     }
@@ -145,11 +140,7 @@ export function PostCard({
       setCommentContent("");
       setShowComments(true);
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to add comment",
-        variant: "destructive",
-      });
+      toast.error("Error", { description: "Failed to add comment" });
     }
   };
 

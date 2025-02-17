@@ -7,7 +7,6 @@ import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
 import { Loader2, MapPin, X, Heart, SkipForward } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,6 +15,7 @@ import { Session } from "next-auth";
 import { AnimatePresence, motion } from "framer-motion";
 import { getLocationByIp } from "@/lib/location";
 import LoginButton from "@/components/login-button";
+import { toast } from "sonner";
 
 interface ExtendedDeveloper extends Developer {
   distance?: string;
@@ -30,7 +30,6 @@ export default function DiscoverPage() {
   >([]);
   const [exploreDevelopers, setExploreDevelopers] = useState<Developer[]>([]);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const { toast } = useToast();
 
   useEffect(() => {
     const fetchLocation = async () => {
@@ -40,18 +39,14 @@ export default function DiscoverPage() {
         // load the developers based on the location initally
         initialLocationSubmit(data.city);
       } catch {
-        toast({
-          title: "Error",
-          description: "Failed to get your location automatically.",
-          variant: "destructive",
-        });
+        toast.error("Failed to get your location automatically.");
       }
     };
 
     if (!location) {
       fetchLocation();
     }
-  }, [location, toast]);
+  }, [location]);
 
   useEffect(() => {
     if (session) {
@@ -65,11 +60,7 @@ export default function DiscoverPage() {
       const data = await response.json();
       setUserProfile(data);
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to fetch user profile.",
-        variant: "destructive",
-      });
+      toast.error("Failed to fetch user profile.");
     }
   };
 
@@ -109,11 +100,7 @@ export default function DiscoverPage() {
 
       setExploreDevelopers(data);
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to fetch developers. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to fetch developers. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -149,11 +136,7 @@ export default function DiscoverPage() {
       setConnectDevelopers(filteredDevelopers.reverse());
       setExploreDevelopers(data);
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to fetch developers. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("Failed to fetch developers. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -180,22 +163,12 @@ export default function DiscoverPage() {
               preventDefault: () => {},
             } as React.FormEvent);
           } catch {
-            toast({
-              title: "Error",
-              description:
-                "Failed to get your location. Please enter it manually.",
-              variant: "destructive",
-            });
+            toast.error("Failed to get your location.");
             setLoading(false);
           }
         },
         () => {
-          toast({
-            title: "Error",
-            description:
-              "Failed to get your location. Please enter it manually.",
-            variant: "destructive",
-          });
+          toast.error("Failed to get your location.");
           setLoading(false);
         }
       );
@@ -212,13 +185,9 @@ export default function DiscoverPage() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(developer),
         });
-        toast({ title: "Success", description: "Friend request sent!" });
+        toast.success("Friend request sent!");
       } catch {
-        toast({
-          title: "Error",
-          description: "Failed to send request.",
-          variant: "destructive",
-        });
+        toast.error("Failed to send request.");
       }
     } else if (direction === "left") {
       try {
@@ -247,16 +216,9 @@ export default function DiscoverPage() {
 
       if (!response.ok) throw new Error("Failed to send friend request");
 
-      toast({
-        title: "Success",
-        description: "Friend request sent!",
-      });
+      toast.success("Friend request sent!");
     } catch {
-      toast({
-        title: "Error",
-        description: "Failed to send friend request.",
-        variant: "destructive",
-      });
+      toast.error("Failed to send request.");
     }
   };
 
