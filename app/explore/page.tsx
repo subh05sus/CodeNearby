@@ -1,16 +1,20 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+
+import type React from "react";
 
 import { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { Loader2, MapPin, GitBranch, Users } from "lucide-react";
+import { Loader2, MapPin, Search, GithubIcon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { Developer } from "@/types";
+import type { Developer } from "@/types";
 import { getLocationByIp } from "@/lib/location";
+import { motion } from "framer-motion";
 
 export default function ExplorePage() {
   const [location, setLocation] = useState("");
@@ -19,7 +23,7 @@ export default function ExplorePage() {
   const { toast } = useToast();
 
   const handleLocationSubmit = useCallback(
-    async (e: any) => {
+    async (e: React.FormEvent) => {
       e.preventDefault();
       if (!location) return;
       setLoading(true);
@@ -28,6 +32,7 @@ export default function ExplorePage() {
           `/api/developers?location=${encodeURIComponent(location)}`
         );
         const data = await response.json();
+        console.log(data);
         setDevelopers(data);
       } catch {
         toast({
@@ -42,28 +47,33 @@ export default function ExplorePage() {
     [location, toast]
   );
 
+  const initialLocationSubmit = async (location: string) => {
+    if (!location) return;
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `/api/developers?location=${encodeURIComponent(location)}`
+      );
+      const data = await response.json();
+      setDevelopers(data);
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to fetch developers. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const fetchLocation = async () => {
       try {
         const data = await getLocationByIp();
         setLocation(data.city);
         if (data.city) {
-          setLoading(true);
-          try {
-            const response = await fetch(
-              `/api/developers?location=${encodeURIComponent(data.city)}`
-            );
-            const responseData = await response.json();
-            setDevelopers(responseData);
-          } catch {
-            toast({
-              title: "Error",
-              description: "Failed to fetch developers. Please try again.",
-              variant: "destructive",
-            });
-          } finally {
-            setLoading(false);
-          }
+          initialLocationSubmit(data.city);
         }
       } catch {
         toast({
@@ -77,7 +87,7 @@ export default function ExplorePage() {
     if (!location) {
       fetchLocation();
     }
-  }, [location, toast, handleLocationSubmit]);
+  }, [toast, handleLocationSubmit]);
 
   const handleGeolocation = () => {
     if ("geolocation" in navigator) {
@@ -96,7 +106,9 @@ export default function ExplorePage() {
               data.address.village ||
               data.address.county;
             setLocation(locationName);
-            handleLocationSubmit({ preventDefault: () => {} });
+            handleLocationSubmit({
+              preventDefault: () => {},
+            } as React.FormEvent);
           } catch {
             toast({
               title: "Error",
@@ -128,76 +140,83 @@ export default function ExplorePage() {
   };
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6">Explore Nearby Developers</h1>
-      <form onSubmit={handleLocationSubmit} className="flex space-x-2 mb-6">
-        <Input
-          type="text"
-          placeholder="Enter location"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          className="flex-grow"
-        />
-        <Button type="submit" disabled={loading}>
-          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Search
-        </Button>
-        <Button
-          type="button"
-          onClick={handleGeolocation}
-          disabled={loading}
-          variant="outline"
+    <div className="container mx-auto px-4 py-8">
+      <motion.h1
+        className="text-4xl font-bold mb-8 text-center"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        Explore Nearby Developers
+      </motion.h1>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
+      >
+        <form
+          onSubmit={handleLocationSubmit}
+          className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-8"
         >
-          Use My Location
-        </Button>
-      </form>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {developers.map((dev) => (
-          <Card key={dev.id}>
-            <CardHeader>
-              <CardTitle>{dev.login}</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <div className="relative flex-grow">
+            <Input
+              type="text"
+              placeholder="Enter location"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="pl-10"
+            />
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={20}
+            />
+          </div>
+          <Button type="submit" disabled={loading}>
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Search
+          </Button>
+          <Button
+            type="button"
+            onClick={handleGeolocation}
+            disabled={loading}
+            variant="outline"
+          >
+            <MapPin className="mr-2 h-4 w-4" />
+            Use My Location
+          </Button>
+        </form>
+      </motion.div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {developers.map((dev, index) => (
+          <motion.div
+            key={dev.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+          >
+            <Card className="h-full flex gap-4 p-3 items-center">
               <Image
                 src={dev.avatar_url || "/placeholder.svg"}
                 alt={dev.login}
-                className="w-20 h-20 rounded-full mb-2"
-                height={80}
-                width={80}
+                className="w-24 h-24 rounded-full"
+                width={128}
+                height={128}
               />
-              {dev.name && (
-                <p className="text-sm text-muted-foreground mb-1">{dev.name}</p>
-              )}
-              {dev.location && (
-                <p className="text-sm text-muted-foreground mb-1">
-                  <MapPin className="inline-block w-4 h-4 mr-1" />
-                  {dev.location}
-                </p>
-              )}
-              {dev.public_repos && (
-                <p className="text-sm text-muted-foreground mb-1">
-                  <GitBranch className="inline-block w-4 h-4 mr-1" />
-                  {dev.public_repos} public repos
-                </p>
-              )}
-              {dev.followers && (
-                <p className="text-sm text-muted-foreground mb-1">
-                  <Users className="inline-block w-4 h-4 mr-1" />
-                  {dev.followers} followers
-                </p>
-              )}
-              <Button asChild variant={"secondary"}>
-                <Link
-                  href={dev.html_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-2 inline-block"
-                >
-                  View Profile
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
+              <div className="flex-1 flex flex-col gap-2 w-fit">
+                <span>{dev.login}</span>
+                <Button asChild className="w-fit border" variant={"secondary"}>
+                  <Link
+                    href={dev.html_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <GithubIcon className="inline" />
+                    View GitHub Profile
+                  </Link>
+                </Button>
+              </div>
+            </Card>
+          </motion.div>
         ))}
       </div>
     </div>

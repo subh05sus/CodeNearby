@@ -102,7 +102,11 @@ export default function DiscoverPage() {
         )
         .map((dev: Developer) => ({ ...dev }));
 
-      setConnectDevelopers(filteredDevelopers.reverse());
+      const shuffledDevelopers = [...filteredDevelopers].sort(
+        () => Math.random() - 0.5
+      );
+      setConnectDevelopers(shuffledDevelopers);
+
       setExploreDevelopers(data);
     } catch {
       toast({
@@ -409,7 +413,23 @@ export default function DiscoverPage() {
                           <Button
                             variant={"default"}
                             size={"sm"}
-                            onClick={() => handleAddFriend(dev)}
+                            onClick={() => {
+                              handleAddFriend(dev);
+                              const btn = document.getElementById(
+                                `add-friend-${dev.id}`
+                              ) as HTMLButtonElement;
+                              if (btn) {
+                                btn.innerHTML = "Request Sent";
+                                const checkIcon =
+                                  document.createElement("span");
+                                checkIcon.innerHTML =
+                                  '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+                                btn.prepend(checkIcon);
+
+                                btn.disabled = true;
+                              }
+                            }}
+                            id={`add-friend-${dev.id}`}
                           >
                             Add Friend
                           </Button>

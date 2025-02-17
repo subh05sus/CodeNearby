@@ -17,6 +17,7 @@ import {
   Github,
   Twitter,
   MessageSquare,
+  Plus,
 } from "lucide-react";
 import Link from "next/link";
 import type { UserProfile } from "@/types";
@@ -26,6 +27,7 @@ import { fetchGitHubActivities } from "@/lib/github";
 import { useSession } from "next-auth/react";
 import ProfileHeader from "@/components/home/ProfileHeader";
 import { MasonryGrid } from "@/components/masonry-grid";
+import { Session } from "next-auth";
 
 interface Post {
   _id: string;
@@ -67,7 +69,7 @@ interface Poll {
 }
 
 export default function UserProfilePage() {
-  const { data: session } = useSession();
+  const { data: session } = useSession() as { data: Session | null };
   const params = useParams();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -390,6 +392,31 @@ export default function UserProfilePage() {
     }
   };
 
+  const handleAddFriend = async () => {
+    if (!profile) {
+      return;
+    }
+    try {
+      await fetch("/api/friends/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: profile.githubId,
+          login: profile.githubUsername,
+          avatar_url: profile.image,
+          html_url: `https://github.com/${profile.githubUsername}`,
+        }),
+      });
+      toast({ title: "Success", description: "Friend request sent!" });
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to send request.",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
@@ -447,12 +474,35 @@ export default function UserProfilePage() {
                 </Button>
               </Link>
             )}
-            <Link href={`/messages/${profile.githubId}`}>
-              <Button variant="outline" size="sm">
-                <MessageSquare className="h-4 w-4 mr-2" />
-                Message
+            {profile.friends?.includes(
+              session?.user?.githubId ? parseInt(session.user.githubId) : -1
+            ) ? (
+              <Link href={`/messages/${profile.githubId}`}>
+                <Button variant="outline" size="sm">
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Message
+                </Button>
+              </Link>
+            ) : (
+              <Button
+                variant="default"
+                size="sm"
+                onClick={async () => {
+                  await handleAddFriend();
+                  const btn = document.getElementById(
+                    `add-friend-${profile?.githubId}`
+                  );
+                  if (btn) {
+                    btn.textContent = "Request Sent";
+                    (btn as HTMLButtonElement).disabled = true;
+                  }
+                }}
+                id={`add-friend-${profile?.githubId}`}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Friend
               </Button>
-            </Link>
+            )}
           </div>
         </div>
 

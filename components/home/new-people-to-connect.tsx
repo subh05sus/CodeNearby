@@ -9,8 +9,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { RefreshCw, UserPlus } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
 import { useToast } from "../ui/use-toast";
+import Link from "next/link";
 
 interface User {
+  githubId: any;
   _id: string;
   name: string;
   image: string;
@@ -88,12 +90,18 @@ export function NewPeopleToConnect() {
                         <AvatarImage src={user.image} alt={user.name} />
                         <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                       </Avatar>
-                      <span>{user.name}</span>
+                      <Link href={`/user/${user.githubId}`}>{user.name}</Link>
                     </div>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleSendFriendRequest(user)}
+                      onClick={() => {
+                        handleSendFriendRequest(user);
+                        const button =
+                          document.activeElement as HTMLButtonElement;
+                        button.disabled = true;
+                        button.innerHTML = "<span>Request Sent</span>";
+                      }}
                     >
                       <UserPlus className="h-4 w-4 mr-2" />
                       Connect
