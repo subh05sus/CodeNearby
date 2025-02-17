@@ -14,38 +14,40 @@ export default function Footer() {
               © {new Date().getFullYear()} All rights reserved
             </span>
           </div>
-          <div className="flex items-center space-x-6 mt-4 md:mt-0">
+          <div className="flex items-center space-x-6 mt-4 md:mt-0 ">
             <ThemeSwitch />
-            <Link
-              href="/about"
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              About
-            </Link>
-            <Link
-              href="/privacy"
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              Privacy
-            </Link>
-            <Link
-              href="/terms"
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              Terms
-            </Link>
-            <Link
-              href="/changelog"
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              Changelog
-            </Link>
-            <Link
-              href="/report-issue"
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              Report an Issue
-            </Link>
+            <div className="flex items-center portrait:grid portrait:grid-cols-3 portrait:text-left portrait:items-start portrait:text-nowrap portrait:justify-start md:space-x-6 mt-4 md:mt-0">
+              <Link
+                href="/about"
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                About
+              </Link>
+              <Link
+                href="/privacy"
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                Privacy
+              </Link>
+              <Link
+                href="/terms"
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                Terms
+              </Link>
+              <Link
+                href="/changelog"
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                Changelog
+              </Link>
+              <Link
+                href="/report-issue"
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                Report an Issue
+              </Link>
+            </div>
           </div>
         </div>
       </div>
