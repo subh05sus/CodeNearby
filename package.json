@@ -32,6 +32,7 @@
     "@tabler/icons-react": "^3.30.0",
     "@types/ol": "^6.5.3",
     "@types/socket.io-client": "^1.4.36",
+    "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.5.1",
     "clsx": "^2.1.1",
@@ -67,6 +68,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^20",
     "@types/qrcode": "^1.5.5",
     "@types/react": "^18",

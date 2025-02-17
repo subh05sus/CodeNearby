@@ -19,7 +19,19 @@ export async function GET(
 
     const gathering = await db
       .collection("gatherings")
-      .findOne({ slug: params.slug });
+      .aggregate([
+        { $match: { slug: params.slug } },
+        {
+          $lookup: {
+            from: "users",
+            localField: "hostId",
+            foreignField: "_id",
+            as: "host",
+          },
+        },
+        { $unwind: "$host" },
+      ])
+      .next();
 
     if (!gathering) {
       return NextResponse.json(
