@@ -102,7 +102,7 @@ export default function ExploreDeveloperGrid({
                   setDetails(null);
                 }}
               >
-                <X />
+                <X color="#000" size={12} />
               </motion.button>
               <motion.div
                 layoutId={`card-${active.login}-${id}`}
