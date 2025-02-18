@@ -37,7 +37,7 @@ interface Gathering {
   participants: Array<{
     name: string;
     image: string;
-    id: string;
+    _id: string;
   }>;
 }
 
@@ -162,12 +162,12 @@ export default function JoinGatheringPage() {
 
   if (
     gathering.participants?.find(
-      (participant) => participant.id === session?.user?.id
+      (participant) => participant._id === session?.user?.id
     )
   ) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[80vh]">
-        <Card className="w-full max-w-md text-center">
+        <Card className="w-full max-w-md text-center pb-6">
           <CardHeader>
             <CardTitle className="text-2xl">Already Joined</CardTitle>
             <CardDescription>
@@ -175,8 +175,11 @@ export default function JoinGatheringPage() {
             </CardDescription>
           </CardHeader>
           <CardFooter className="justify-center">
-            <Button variant="outline" onClick={() => router.push("/gathering")}>
-              View All Gatherings
+            <Button
+              variant="outline"
+              onClick={() => router.push(`/gathering/${gathering.slug}`)}
+            >
+              View Gathering
             </Button>
           </CardFooter>
         </Card>
