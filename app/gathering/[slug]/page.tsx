@@ -282,12 +282,19 @@ export default function GatheringRoomPage() {
             )}
           </div>
         </div>
-        <Button asChild size="lg" className="shrink-0">
-          <Link href={`/gathering/${gathering.slug}/chat`}>
-            <MessageSquare className="mr-2 h-5 w-5" />
-            Join Chat Room
-          </Link>
-        </Button>
+        {gathering?.blockedUsers?.includes(session?.user?.id) ? (
+          <Button size="lg" className="shrink-0" disabled>
+            <UserX className="mr-2 h-5 w-5" />
+            You are blocked
+          </Button>
+        ) : (
+          <Button asChild size="lg" className="shrink-0">
+            <Link href={`/gathering/${gathering.slug}/chat`}>
+              <MessageSquare className="mr-2 h-5 w-5" />
+              Join Chat Room
+            </Link>
+          </Button>
+        )}
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
