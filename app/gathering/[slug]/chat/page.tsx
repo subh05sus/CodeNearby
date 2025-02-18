@@ -782,7 +782,7 @@ export default function GatheringChatPage() {
                     checked={isAnonymous}
                     onCheckedChange={setIsAnonymous}
                     id="anonymous-mode"
-                    className="absolute -left-[380%] top-0 mt-1.5"
+                    className="absolute md:-left-[380%] -left-[150%] top-0 mt-1.5"
                   />
                 </div>
 

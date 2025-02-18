@@ -401,13 +401,13 @@ export default function UserProfilePage() {
             <h1 className="text-3xl font-bold">{profile.name}</h1>
             <p className="text-muted-foreground">@{profile.githubUsername}</p>
           </div>
-          <div className="flex items-center gap-2 mt-4 md:mt-0">
+          <div className="md:flex flex-wrap grid grid-cols-2 w-full md:w-auto items-center gap-2 mt-4 md:mt-0">
             <Link
               href={`https://github.com/${profile.githubUsername}`}
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" className="w-full md:w-auto">
                 <Github className="h-4 w-4 mr-2" />
                 GitHub Profile
               </Button>
@@ -418,7 +418,11 @@ export default function UserProfilePage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Button variant="outline" size="sm">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full md:w-auto"
+                >
                   <Twitter className="h-4 w-4 mr-2" />
                   Twitter
                 </Button>
@@ -426,7 +430,11 @@ export default function UserProfilePage() {
             )}
             {stats?.blog && (
               <Link href={stats.blog} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" size="sm">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full md:w-auto"
+                >
                   <LinkIcon className="h-4 w-4 mr-2" />
                   Website
                 </Button>
@@ -436,7 +444,11 @@ export default function UserProfilePage() {
               session?.user?.githubId ? parseInt(session.user.githubId) : -1
             ) ? (
               <Link href={`/messages/${profile.githubId}`}>
-                <Button variant="outline" size="sm">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full md:w-auto"
+                >
                   <MessageSquare className="h-4 w-4 mr-2" />
                   Message
                 </Button>
@@ -445,6 +457,7 @@ export default function UserProfilePage() {
               <Button
                 variant="default"
                 size="sm"
+                className="w-full md:w-auto"
                 onClick={async () => {
                   await handleAddFriend();
                   const btn = document.getElementById(
