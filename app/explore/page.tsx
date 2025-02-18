@@ -7,14 +7,12 @@ import type React from "react";
 import { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { Loader2, MapPin, Search, GithubIcon } from "lucide-react";
-import Link from "next/link";
-import Image from "next/image";
+import { Loader2, MapPin, Search } from "lucide-react";
 import type { Developer } from "@/types";
 import { getLocationByIp } from "@/lib/location";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import ExploreDeveloperGrid from "@/components/exploreDeveloperGrid";
 
 export default function ExplorePage() {
   const [location, setLocation] = useState("");
@@ -161,7 +159,7 @@ export default function ExplorePage() {
           </Button>
         </form>
       </motion.div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {developers.map((dev, index) => (
           <motion.div
             key={dev.id}
@@ -193,7 +191,8 @@ export default function ExplorePage() {
             </Card>
           </motion.div>
         ))}
-      </div>
+      </div> */}
+      <ExploreDeveloperGrid developers={developers} />
     </div>
   );
 }
