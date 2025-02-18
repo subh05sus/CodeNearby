@@ -349,7 +349,6 @@ export default function GatheringRoomPage() {
                     >
                       <div className="grid gap-4 p-2">
                         {(() => {
-                          console.log(participantImagesWithIds);
                           const items = participantImagesWithIds.map(
                             (user) => ({
                               image: user.image,

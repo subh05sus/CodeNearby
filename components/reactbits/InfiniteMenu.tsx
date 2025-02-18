@@ -1268,9 +1268,9 @@ class InfiniteGridMenu {
 const defaultItems: MenuItem[] = [
   {
     image: "https://picsum.photos/900/900?grayscale",
-    link: "https://google.com/",
+    link: "#",
     title: "",
-    description: "",
+    description: "NOTHING TO SEE HERE",
   },
 ];
 
@@ -1278,9 +1278,13 @@ const defaultItems: MenuItem[] = [
 
 interface InfiniteMenuProps {
   items?: MenuItem[];
+  openLinkExternally?: boolean;
 }
 
-const InfiniteMenu: FC<InfiniteMenuProps> = ({ items = [] }) => {
+const InfiniteMenu: FC<InfiniteMenuProps> = ({
+  items = [],
+  openLinkExternally = false,
+}) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(
     null
   ) as MutableRefObject<HTMLCanvasElement | null>;
@@ -1380,6 +1384,8 @@ const InfiniteMenu: FC<InfiniteMenuProps> = ({ items = [] }) => {
           <Link
             href={`${activeItem.link}`}
             // onClick={handleButtonClick}
+            target={openLinkExternally ? "_blank" : "_self"}
+            rel="noopener noreferrer"
             className={`
           absolute
           left-1/2
