@@ -3,7 +3,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -76,6 +76,7 @@ export default function UserProfilePage() {
   const [stats, setStats] = useState<any>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [activities, setActivities] = useState<any[]>([]);
+  const router = useRouter();
 
   const loadActivities = async (username: string) => {
     try {
@@ -111,6 +112,10 @@ export default function UserProfilePage() {
       setLoading(false);
     }
   };
+
+  if (parseInt(session?.user?.githubId || "") === profile?.githubId) {
+    router.push("/profile");
+  }
 
   const fetchGitHubStats = async () => {
     if (!profile?.githubUsername) return;
