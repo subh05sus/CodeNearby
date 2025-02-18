@@ -19,6 +19,10 @@ import {
   Users,
   LinkIcon,
   Check,
+  ArrowDownIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  ArrowUpIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -42,6 +46,9 @@ import LoginButton from "@/components/login-button";
 import { Separator } from "@/components/ui/separator";
 import { Session } from "next-auth";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { AnimatePresence, motion } from "framer-motion";
+import { IconArrowsExchange2 } from "@tabler/icons-react";
+import InfiniteMenu from "@/components/reactbits/InfiniteMenu";
 
 interface User {
   _id: string;
@@ -73,7 +80,7 @@ export default function GatheringRoomPage() {
     { image: string; id: string }[]
   >([]);
   const [showCheckIcon, setShowCheckIcon] = useState(false);
-
+  const [showConnectView, setShowConnectView] = useState(true);
   useEffect(() => {
     if (session) {
       fetchGathering();
@@ -308,21 +315,90 @@ export default function GatheringRoomPage() {
                   View All
                 </TabsTrigger>
               </TabsList>
-              <TabsContent value="connect" className="mt-4">
-                <div className="relative aspect-square w-full bg-background/50 rounded-lg">
-                  <Ripple mainCircleSize={10} numCircles={10} />
-                  <RandomProfileCircles
-                    profiles={participantImagesWithIds}
-                    OwnProfileImage={session.user?.image || ""}
-                    OwnProfileImageSize={80}
-                  />
+              <TabsContent value="connect" className="mt-4 relative">
+                <AnimatePresence mode="wait">
+                  {showConnectView ? (
+                    <motion.div
+                      key="connect"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      className="relative aspect-square w-full bg-background/50 rounded-lg"
+                    >
+                      <Ripple mainCircleSize={10} numCircles={10} />
+                      <RandomProfileCircles
+                        profiles={participantImagesWithIds}
+                        OwnProfileImage={session.user?.image || ""}
+                        OwnProfileImageSize={80}
+                      />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="sphere"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      className="relative aspect-square w-full bg-background/50 rounded-lg"
+                    >
+                      <div className="grid gap-4 p-2">
+                        {(() => {
+                          console.log(participantImagesWithIds);
+                          const items = participantImagesWithIds.map(
+                            (user) => ({
+                              image: user.image,
+                              link: `/u/${user.id}`,
+                              title: user.id,
+                              description: "",
+                            })
+                          );
+                          return (
+                            <>
+                              <div className="max-h-[600px] w-full aspect-square relative rounded-xl overflow-hidden">
+                                <InfiniteMenu items={items} />
+                                <motion.div
+                                  initial={{ opacity: 1 }}
+                                  animate={{
+                                    opacity: items.length === 0 ? 1 : 0,
+                                  }}
+                                  onTapStart={() => ({
+                                    opacity: 0,
+                                    transition: { duration: 0.5 },
+                                  })}
+                                  transition={{ delay: 3, duration: 0.5 }}
+                                  className=" pointer-events-none absolute inset-0 bg-background/50 z-40 flex items-center justify-center"
+                                >
+                                  <div className="text-center relative w-full h-full">
+                                    <p className="text-xl text-foreground absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-40">
+                                      Move it around!
+                                    </p>
+                                    <ArrowUpIcon className="w-8 h-8 absolute top-10 left-1/2 -translate-x-1/2 text-foreground z-40" />
+                                    <ArrowDownIcon className="w-8 h-8 absolute bottom-10 left-1/2 -translate-x-1/2 text-foreground z-40" />
+                                    <ArrowLeftIcon className="w-8 h-8 absolute left-10 top-1/2 -translate-y-1/2 text-foreground z-40" />
+                                    <ArrowRightIcon className="w-8 h-8 absolute right-10 top-1/2 -translate-y-1/2 text-foreground z-40" />
+                                  </div>
+                                </motion.div>
+                              </div>
+                            </>
+                          );
+                        })()}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                <div className="absolute top-4 right-4 z-50 flex gap-2">
                   <Button
-                    variant="ghost"
+                    variant={showConnectView ? "default" : "secondary"}
                     size="icon"
                     onClick={fetchGathering}
-                    className="absolute top-4 right-4 z-30"
                   >
                     <RefreshCcw size={20} />
+                  </Button>
+                  <Button
+                    variant={showConnectView ? "default" : "secondary"}
+                    size="icon"
+                    onClick={() => setShowConnectView(!showConnectView)}
+                  >
+                    <IconArrowsExchange2 size={20} />
                   </Button>
                 </div>
               </TabsContent>
