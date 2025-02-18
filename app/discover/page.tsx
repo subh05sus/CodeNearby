@@ -9,13 +9,13 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, MapPin, X, Heart, SkipForward } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import type { Developer, UserProfile } from "@/types";
 import { Session } from "next-auth";
 import { AnimatePresence, motion } from "framer-motion";
 import { getLocationByIp } from "@/lib/location";
 import LoginButton from "@/components/login-button";
 import { toast } from "sonner";
+import DeveloperGrid from "@/components/developer-grid";
 
 interface ExtendedDeveloper extends Developer {
   distance?: string;
@@ -357,7 +357,7 @@ export default function DiscoverPage() {
         <div className="space-y-6">
           <h2 className="text-2xl font-semibold">Explore</h2>
           <div className="relative">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-[60vh] no-scrollbar overflow-y-scroll">
+            {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-[60vh] no-scrollbar overflow-y-scroll">
               {exploreDevelopers.map((dev) => (
                 <Card key={dev.id} className="p-3">
                   <CardContent className="flex gap-2 h-full w-full p-2 pt-2 justify-center items-center">
@@ -411,7 +411,12 @@ export default function DiscoverPage() {
                   </CardContent>
                 </Card>
               ))}
-            </div>
+            </div> */}
+            <DeveloperGrid
+              session={session}
+              handleAddFriend={handleAddFriend}
+              developers={exploreDevelopers}
+            />
             <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-background to-transparent pointer-events-none" />
           </div>
         </div>
