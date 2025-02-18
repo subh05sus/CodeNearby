@@ -33,6 +33,7 @@
     "@tabler/icons-react": "^3.30.0",
     "@types/ol": "^6.5.3",
     "@types/socket.io-client": "^1.4.36",
+    "@vercel/analytics": "^1.5.0",
     "canvas-confetti": "^1.9.3",
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.5.1",

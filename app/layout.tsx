@@ -6,6 +6,7 @@ import { NextAuthProvider } from "@/components/providers";
 import Footer from "@/components/footer";
 import type { Metadata } from "next";
 import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -165,6 +166,8 @@ export default function RootLayout({
               {children}
             </main>
             <Footer />
+            <Analytics />
+
             <Toaster richColors position="bottom-right" closeButton />
           </ThemeProvider>
         </NextAuthProvider>
