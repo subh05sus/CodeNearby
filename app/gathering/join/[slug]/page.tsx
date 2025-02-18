@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatDistanceToNow } from "date-fns";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
+import { Session } from "next-auth";
 
 interface Gathering {
   id: string;
@@ -36,6 +37,7 @@ interface Gathering {
   participants: Array<{
     name: string;
     image: string;
+    id: string;
   }>;
 }
 
@@ -56,7 +58,7 @@ const item = {
 };
 
 export default function JoinGatheringPage() {
-  const { data: session } = useSession();
+  const { data: session } = useSession() as { data: Session | null };
   const params = useParams();
   const router = useRouter();
   const [gathering, setGathering] = useState<Gathering | null>(null);
@@ -146,6 +148,30 @@ export default function JoinGatheringPage() {
             <CardDescription>
               The gathering you&apos;re looking for doesn&apos;t exist or has
               expired
+            </CardDescription>
+          </CardHeader>
+          <CardFooter className="justify-center">
+            <Button variant="outline" onClick={() => router.push("/gathering")}>
+              View All Gatherings
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
+
+  if (
+    gathering.participants?.find(
+      (participant) => participant.id === session?.user?.id
+    )
+  ) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[80vh]">
+        <Card className="w-full max-w-md text-center">
+          <CardHeader>
+            <CardTitle className="text-2xl">Already Joined</CardTitle>
+            <CardDescription>
+              You have already joined this gathering
             </CardDescription>
           </CardHeader>
           <CardFooter className="justify-center">
