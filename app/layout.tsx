@@ -53,6 +53,12 @@ export const metadata: Metadata = {
         height: 630,
         alt: "CodeNearby - Discover Developers Near You",
       },
+      {
+        url: "/logo.png",
+        width: 500,
+        height: 500,
+        alt: "CodeNearby Logo",
+      },
     ],
     type: "website",
   },
