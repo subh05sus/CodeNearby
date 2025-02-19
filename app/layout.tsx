@@ -9,9 +9,8 @@ import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
-  metadataBase: new URL("https://beta.codenearby.space"),
+  metadataBase: new URL("https://codenearby.space"),
 
   title: "CodeNearby",
   description:
@@ -45,7 +44,7 @@ export const metadata: Metadata = {
     title: "CodeNearby",
     description:
       "Find developers near you, share ideas, and build something awesome together.",
-    url: "https://beta.codenearby.space",
+    url: "https://codenearby.space",
     siteName: "CodeNearby",
     images: [
       {
@@ -123,15 +122,15 @@ export const metadata: Metadata = {
   ],
 
   alternates: {
-    canonical: "https://beta.codenearby.space",
+    canonical: "https://codenearby.space",
   },
   other: {
     "application/ld+json": JSON.stringify({
       "@context": "https://schema.org",
       "@type": "Product",
       name: "CodeNearby",
-      url: "https://beta.codenearby.space",
-      image: "https://beta.codenearby.space/logo.png",
+      url: "https://codenearby.space",
+      image: "https://codenearby.space/logo.png",
       description:
         "Find and connect with developers nearby. Network and grow your career with CodeNearby.",
       author: {
