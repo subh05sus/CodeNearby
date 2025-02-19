@@ -29,7 +29,6 @@ export default function ExplorePage() {
           `/api/developers?location=${encodeURIComponent(location)}`
         );
         const data = await response.json();
-        console.log(data);
         setDevelopers(data);
       } catch {
         toast.error("Failed to fetch developers. Please try again.");

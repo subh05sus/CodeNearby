@@ -40,7 +40,6 @@ export function ChatList() {
       const data = await response.json();
 
       setFriends(data);
-      console.log(data);
     } catch {
       toast.error("Error", {
         description: "Failed to fetch friends.",
