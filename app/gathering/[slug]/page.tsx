@@ -23,6 +23,8 @@ import {
   ArrowLeftIcon,
   ArrowRightIcon,
   ArrowUpIcon,
+  Edit3,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -81,6 +83,31 @@ export default function GatheringRoomPage() {
   >([]);
   const [showCheckIcon, setShowCheckIcon] = useState(false);
   const [showConnectView, setShowConnectView] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedName, setEditedName] = useState(gathering?.name || "");
+  const [filteredParticipants, setFilteredParticipants] = useState({
+    participants: gathering?.participants || [],
+  });
+
+  const handleSaveName = async () => {
+    if (!isHost) return;
+    try {
+      const response = await fetch(`/api/gathering/${params.slug}/moderate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "rename", newName: editedName }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to update name");
+      }
+      setIsEditing(false);
+      fetchGathering();
+      toast.success("Gathering name updated successfully.");
+    } catch {
+      toast.error("Failed to update gathering name. Please try again.");
+    }
+  };
+
   useEffect(() => {
     if (session) {
       fetchGathering();
@@ -95,6 +122,7 @@ export default function GatheringRoomPage() {
       }
       const data = await response.json();
       setGathering(data);
+      setFilteredParticipants({ participants: data.participants });
       const imagesWithIds = data.participants
         .map((participant: any) => ({
           image: participant.image,
@@ -264,7 +292,44 @@ export default function GatheringRoomPage() {
     <div className="container max-w-7xl mx-auto px-4 py-8">
       <div className="flex flex-col md:flex-row justify-between items-start mb-8 gap-4">
         <div>
-          <h1 className="text-4xl font-bold">{gathering.name}</h1>
+          <div className="flex gap-3 items-center">
+            {isEditing ? (
+              <>
+                <input
+                  type="text"
+                  value={editedName}
+                  onChange={(e) => setEditedName(e.target.value)}
+                  className="text-4xl font-bold bg-transparent border-b-2 border-primary outline-none"
+                />
+                <div className="flex gap-2">
+                  <Check
+                    className="h-5 w-5 text-primary/60 hover:text-primary cursor-pointer"
+                    onClick={handleSaveName}
+                  />
+                  <X
+                    className="h-5 w-5 text-primary/60 hover:text-primary cursor-pointer"
+                    onClick={() => {
+                      setIsEditing(false);
+                      setEditedName(gathering.name);
+                    }}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <h1 className="text-4xl font-bold">{gathering.name}</h1>
+                {isHost && (
+                  <Edit3
+                    className="h-5 w-5 text-primary/60 hover:text-primary cursor-pointer"
+                    onClick={() => {
+                      setIsEditing(true);
+                      setEditedName(gathering.name);
+                    }}
+                  />
+                )}
+              </>
+            )}
+          </div>
           <div className="flex items-center gap-2 mt-2 cursor-default">
             <Badge variant="secondary">
               <Clock className="w-3 h-3 mr-1" />
@@ -411,7 +476,21 @@ export default function GatheringRoomPage() {
               <TabsContent value="view-all" className="mt-4">
                 <ScrollArea className=" pr-4 h-[400px]">
                   <div className="space-y-3">
-                    {gathering.participants.map((user) => (
+                    <div className="mb-4">
+                      <Input
+                        type="text"
+                        placeholder="Filter participants..."
+                        onChange={(e) => {
+                          const filter = e.target.value.toLowerCase();
+                          const filtered = gathering.participants.filter(
+                            (user) => user.name.toLowerCase().includes(filter)
+                          );
+                          setFilteredParticipants({ participants: filtered });
+                        }}
+                        className="m-1 w-[-webkit-fill-available]"
+                      />
+                    </div>
+                    {filteredParticipants.participants.map((user) => (
                       <div
                         key={user.id}
                         className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50"

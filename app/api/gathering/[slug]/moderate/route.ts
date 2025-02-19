@@ -15,7 +15,7 @@ export async function POST(
   }
 
   try {
-    const { action, userId, enabled } = await request.json();
+    const { action, userId, enabled, newName } = await request.json();
     const client = await clientPromise;
     const db = client.db();
 
@@ -85,6 +85,11 @@ export async function POST(
           },
           { $set: { hostOnly: enabled } }
         );
+        break;
+      case "rename":
+        await db
+          .collection("gatherings")
+          .updateOne({ _id: gathering._id }, { $set: { name: newName } });
         break;
       default:
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });

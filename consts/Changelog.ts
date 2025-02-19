@@ -1,7 +1,7 @@
 export const CHANGELOG = [
   {
     version: "1.0.0",
-    date: "2025-02-16",
+    date: "2025-02-20",
     beta: false,
     changes: [
       "Introduced Gathering Rooms feature for video and text-based interactions",
