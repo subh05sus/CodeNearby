@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/options";
+import { Filter } from "mongodb";
 
 export async function DELETE(
   request: Request,
@@ -25,18 +27,10 @@ export async function DELETE(
     const client = await clientPromise;
     const db = client.db();
 
-    // Remove friend from user's friends list
     await db.collection("users").updateOne(
       { githubId: userGithubId },
       {
-        $set: {
-          friends: {
-            $filter: {
-              input: "$friends",
-              cond: { $ne: ["$$this", friendId] },
-            },
-          },
-        },
+        $pull: { friends: { $eq: friendId } } as Filter<any>,
       }
     );
 
@@ -44,14 +38,7 @@ export async function DELETE(
     await db.collection("users").updateOne(
       { githubId: friendId },
       {
-        $set: {
-          friends: {
-            $filter: {
-              input: "$friends",
-              cond: { $ne: ["$$this", userGithubId] },
-            },
-          },
-        },
+        $pull: { friends: { $eq: userGithubId } } as Filter<any>,
       }
     );
 
