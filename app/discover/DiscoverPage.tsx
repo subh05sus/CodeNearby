@@ -46,7 +46,7 @@ export default function DiscoverPage() {
     if (!location) {
       fetchLocation();
     }
-  }, [location]);
+  }, []);
 
   useEffect(() => {
     if (session) {
@@ -145,33 +145,32 @@ export default function DiscoverPage() {
   const handleGeolocation = () => {
     if ("geolocation" in navigator) {
       setLoading(true);
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          try {
-            const { latitude, longitude } = position.coords;
-            const response = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-            );
-            const data = await response.json();
-            const locationName =
-              data.address.city ||
-              data.address.town ||
-              data.address.village ||
-              data.address.county;
-            setLocation(locationName);
-            handleLocationSubmit({
-              preventDefault: () => {},
-            } as React.FormEvent);
-          } catch {
-            toast.error("Failed to get your location.");
-            setLoading(false);
-          }
-        },
-        () => {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+          );
+          const data = await response.json();
+          const locationName =
+            data.address.city ||
+            data.address.town ||
+            data.address.village ||
+            data.address.county;
+          setLocation(locationName);
+          initialLocationSubmit(
+            location
+              ? locationName
+              : data.address.city ||
+                  data.address.town ||
+                  data.address.village ||
+                  data.address.county
+          );
+        } catch {
           toast.error("Failed to get your location.");
           setLoading(false);
         }
-      );
+      });
     }
   };
 
@@ -357,61 +356,6 @@ export default function DiscoverPage() {
         <div className="space-y-6">
           <h2 className="text-2xl font-semibold">Explore</h2>
           <div className="relative">
-            {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-[60vh] no-scrollbar overflow-y-scroll">
-              {exploreDevelopers.map((dev) => (
-                <Card key={dev.id} className="p-3">
-                  <CardContent className="flex gap-2 h-full w-full p-2 pt-2 justify-center items-center">
-                    <Image
-                      src={dev.avatar_url || "/placeholder.svg"}
-                      alt={dev.login}
-                      width={80}
-                      height={80}
-                      className="rounded-full mb-2"
-                    />
-                    <div className="flex-1 ">
-                      <p className="font-bold text-lg ">{dev.login}</p>
-                      <div className="mt-2 flex gap-2">
-                        {dev.id !== session.user.githubId && (
-                          <Button
-                            variant={"default"}
-                            size={"sm"}
-                            onClick={() => {
-                              handleAddFriend(dev);
-                              const btn = document.getElementById(
-                                `add-friend-${dev.id}`
-                              ) as HTMLButtonElement;
-                              if (btn) {
-                                btn.innerHTML = "Request Sent";
-                                const checkIcon =
-                                  document.createElement("span");
-                                checkIcon.innerHTML =
-                                  '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
-                                btn.prepend(checkIcon);
-
-                                btn.disabled = true;
-                              }
-                            }}
-                            id={`add-friend-${dev.id}`}
-                          >
-                            Add Friend
-                          </Button>
-                        )}
-                        <Button asChild variant={"outline"} size={"sm"}>
-                          <Link
-                            href={dev.html_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className=" inline-block"
-                          >
-                            View GitHub
-                          </Link>
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div> */}
             <DeveloperGrid
               session={session}
               handleAddFriend={handleAddFriend}
