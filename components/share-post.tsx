@@ -222,10 +222,10 @@ export function SharePost({ post }: SharePostProps) {
             )}
           </CardContent>
         </Card>
-        <div className="space-y-4">
+        <div className="space-y-4 overflow-x-scroll">
           <div>
             <h4 className="mb-2 text-sm font-medium">Friends</h4>
-            <div className="flex space-x-2 overflow-x-auto pb-2">
+            <div className="flex space-x-2 overflow-x-scroll w pb-2">
               {friends.length > 0 ? (
                 friends.map((friend) => (
                   <div
