@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import Features from "@/components/home/Features";
 import { AuroraText } from "@/components/magicui/aurora-text";
 import { Jersey_10 } from "next/font/google";
+import ProductHunt from "@/components/ProductHunt";
 
 const jersey = Jersey_10({
   subsets: ["latin"],
@@ -12,9 +13,9 @@ const jersey = Jersey_10({
 export default function AboutPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="text-5xl font-bold mb-6">
+      <h1 className="md:text-5xl text-2xl font-bold mb-6">
         👋 Welcome to{" "}
-        <span className={` tracking-wide text-6xl ${jersey.className}`}>
+        <span className={` tracking-wide md:text-6xl text-3xl ${jersey.className}`}>
           Code<AuroraText>Nearby</AuroraText>
         </span>
       </h1>
@@ -23,6 +24,7 @@ export default function AboutPage() {
         developers. Our mission is to help developers connect, share ideas,
         collaborate on projects, and stay updated with the coding community.
       </p>
+      <ProductHunt />
       <div className="text-center my-20">
         <h2 className="text-3xl font-bold text-primary relative">
           Features

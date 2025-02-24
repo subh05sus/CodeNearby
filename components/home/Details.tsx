@@ -1,5 +1,4 @@
 import { Badge } from "../ui/badge";
-import { Quote } from "./Quote";
 
 function Details() {
   return (
@@ -21,7 +20,6 @@ function Details() {
             </p>
           </div>
         </div>
-          <Quote/>
       </div>
     </div>
   );
