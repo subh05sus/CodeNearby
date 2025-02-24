@@ -1,24 +1,47 @@
-"use client"
+"use client";
 
-import { useEffect, useRef } from "react"
-import { Button } from "@/components/ui/button"
-import { MapPin } from "lucide-react"
-import "ol/ol.css"
-import { Map, View } from "ol"
-import TileLayer from "ol/layer/Tile"
-import OSM from "ol/source/OSM"
+import { useEffect, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { MapPin } from "lucide-react";
+import "ol/ol.css";
+import { Map, View } from "ol";
+import TileLayer from "ol/layer/Tile";
+import OSM from "ol/source/OSM";
+import Feature from "ol/Feature";
+import Point from "ol/geom/Point";
+import { Vector as VectorLayer } from "ol/layer";
+import { Vector as VectorSource } from "ol/source";
+import { Style, Icon } from "ol/style";
 
 interface LocationPreviewProps {
-  lat: number
-  lng: number
+  lat: number;
+  lng: number;
 }
 
 export function LocationPreview({ lat, lng }: LocationPreviewProps) {
-  const mapRef = useRef<HTMLDivElement>(null)
-  const mapInstance = useRef<Map | null>(null)
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstance = useRef<Map | null>(null);
 
   useEffect(() => {
-    if (!mapRef.current || mapInstance.current) return
+    if (!mapRef.current || mapInstance.current) return;
+
+    // Create marker feature
+    const marker = new Feature({
+      geometry: new Point([lng, lat]),
+    });
+
+    // Create vector layer with marker
+    const vectorLayer = new VectorLayer({
+      source: new VectorSource({
+        features: [marker],
+      }),
+      style: new Style({
+        image: new Icon({
+          anchor: [0.5, 0.5],
+          src: "https://cdn0.iconfinder.com/data/icons/essentials-solid-glyphs-vol-1/100/Location-Pin-Map-24.png",
+        }),
+      }),
+    });
 
     mapInstance.current = new Map({
       target: mapRef.current,
@@ -26,18 +49,19 @@ export function LocationPreview({ lat, lng }: LocationPreviewProps) {
         new TileLayer({
           source: new OSM(),
         }),
+        vectorLayer, // Add the vector layer with marker
       ],
       view: new View({
-        center: [lng, lat], // Longitude first in OpenLayers
+        center: [lng, lat],
         zoom: 13,
-        projection: "EPSG:4326", // Use lat/lng coordinates
+        projection: "EPSG:4326",
       }),
-    })
-  }, [lat, lng])
+    });
+  }, [lat, lng]);
 
   const openInMaps = () => {
-    window.open(`https://www.google.com/maps?q=${lat},${lng}`, "_blank")
-  }
+    window.open(`https://www.google.com/maps?q=${lat},${lng}`, "_blank");
+  };
 
   return (
     <div className="rounded-lg overflow-hidden border bg-card">
@@ -54,5 +78,5 @@ export function LocationPreview({ lat, lng }: LocationPreviewProps) {
         </Button>
       </div>
     </div>
-  )
+  );
 }

@@ -89,7 +89,7 @@ export function CreatePost({ onSubmit }: CreatePostProps) {
             placeholder="What is happening?!"
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="min-h-[100px] border-none focus-visible:ring-0 text-lg resize-none"
+            className="min-h-[100px] border-none focus-visible:ring-0 text-lg resize-none "
           />
           <div className="flex items-center portrait:flex-col portrait:items-start  portrait:w-full justify-between mt-4 border-t pt-4">
             <div className="flex gap-2">
