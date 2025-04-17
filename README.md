@@ -135,4 +135,4 @@ Let’s make the developer community stronger, more collaborative, and accessibl
 
 ---
 
-> Built with ❤️ by [Subhadip](https://github.com/subh123456) and contributors.
+> Built with ❤️ by [Subhadip](https://subhadip.me) and contributors.
