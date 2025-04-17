@@ -2,7 +2,7 @@
 name: Performance Issue
 about: Report performance or speed issues
 title: "[Perf] <short description>"
-labels: ''
+labels: 'performace'
 assignees: ''
 
 ---
