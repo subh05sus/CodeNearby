@@ -2,7 +2,7 @@
 name: UI Suggestion
 about: Suggest a UI/UX improvement
 title: "[UI] <suggestion>"
-labels: ''
+labels: 'design'
 assignees: ''
 
 ---
