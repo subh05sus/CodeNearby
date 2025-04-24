@@ -21,6 +21,7 @@ import {
   PlusCircle,
   RssIcon,
   Search,
+  Sparkles,
   SunMediumIcon,
   User,
   UserPlus,
@@ -49,6 +50,7 @@ import { Menu } from "lucide-react";
 import { useTheme } from "next-themes";
 import Logo from "./logo";
 import { RainbowButton } from "./magicui/rainbowbutton";
+import { Badge } from "./ui/badge";
 
 export default function Header() {
   const router = useRouter();
@@ -160,6 +162,40 @@ export default function Header() {
                     asChild
                     className="xl:block hidden"
                   >
+                    <Link href="/ai-connect">
+                      <span>
+                        AI Connect{" "}
+                        <span className="text-[0.65rem] mb-4 px-1 py-0.5 bg-orange-600 rounded-md text-white font-semibold">
+                          NEW
+                        </span>
+                      </span>
+                    </Link>
+                  </Button>
+                  <Button
+                    variant={`${
+                      pathname === "/" && theme === "light"
+                        ? "outline"
+                        : "ghost"
+                    }`}
+                    asChild
+                    size="icon"
+                    className="xl:hidden flex items-center"
+                  >
+                    <Link href="/ai-connect">
+                      <Sparkles />
+                    </Link>
+                  </Button>
+                </li>
+                <li>
+                  <Button
+                    variant={`${
+                      pathname === "/" && theme === "light"
+                        ? "outline"
+                        : "ghost"
+                    }`}
+                    asChild
+                    className="xl:block hidden"
+                  >
                     <Link href="/discover">
                       <span>Discover</span>
                     </Link>
@@ -237,6 +273,7 @@ export default function Header() {
                     </Link>
                   </Button>
                 </li>
+
                 <li>
                   <Button
                     variant={`${
@@ -509,6 +546,12 @@ export default function Header() {
               </DropdownMenuItem>
               {session ? (
                 <>
+                  <DropdownMenuItem onSelect={() => router.push("/ai-connect")}>
+                    AI Connect{" "}
+                    <span className="text-[0.6rem] px-1  bg-orange-600 rounded-md text-white font-semibold">
+                      NEW
+                    </span>
+                  </DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => router.push("/gathering")}>
                     Gathering
                   </DropdownMenuItem>

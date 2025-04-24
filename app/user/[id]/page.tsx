@@ -28,6 +28,7 @@ import ProfileHeader from "@/components/home/ProfileHeader";
 import { MasonryGrid } from "@/components/masonry-grid";
 import { Session } from "next-auth";
 import { toast } from "sonner";
+import GithubCard from "@/components/github-card";
 
 interface Post {
   _id: string;
@@ -105,7 +106,12 @@ export default function UserProfilePage() {
     try {
       const response = await fetch(`/api/user/${params.id}`);
       const data = await response.json();
-      setProfile(data);
+      if (data.status === 200) {
+        setProfile(data);
+      }
+      if (data.status === 404) {
+        toast.error("Error", { description: "User not found." });
+      }
     } catch {
       toast.error("Error", { description: "Failed to fetch profile." });
     } finally {
@@ -384,12 +390,7 @@ export default function UserProfilePage() {
   }
 
   if (!profile) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
-        <h1 className="text-2xl font-bold mb-4">User Not Found</h1>
-        <p>The requested user profile could not be found.</p>
-      </div>
-    );
+    return <GithubCard userId={params.id as string} />;
   }
 
   return (
