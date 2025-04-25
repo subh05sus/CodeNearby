@@ -683,6 +683,15 @@ ${existingDev.followers ? `Followers: ${existingDev.followers}` : ""}`,
       });
 
       if (!response.ok) {
+        if (response.status === 429) {
+          const rateLimitInfo = await response.json().catch(() => ({}));
+          throw new Error(
+            `Rate limit exceeded. Please try again in a few minutes. ${
+              rateLimitInfo.error ||
+              "You can make more requests in about 10 minutes."
+            }`
+          );
+        }
         throw new Error("Failed to get response");
       }
 
@@ -706,7 +715,9 @@ ${existingDev.followers ? `Followers: ${existingDev.followers}` : ""}`,
         id: Date.now().toString() + "-error",
         role: "assistant",
         content:
-          "Sorry, I encountered an error while processing your request. Please try again.",
+          error instanceof Error
+            ? error.message
+            : "Sorry, I encountered an error while processing your request. Please try again.",
         timestamp: new Date(),
         suggestions: [
           "Try a different search",

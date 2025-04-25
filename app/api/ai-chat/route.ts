@@ -9,6 +9,14 @@ import { generateText } from "ai"
 import { google } from '@ai-sdk/google';
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/app/options"
+import { rateLimit, getRateLimitInfo } from "@/lib/utils"
+
+// Rate limit configuration
+const RATE_LIMIT_CONFIG = {
+    limit: 10,                // 10 requests
+    windowMs: 10 * 60 * 1000, // per 10 minutes
+    message: "You've reached the AI-Connect request limit. Please try again in 10 minutes."
+}
 
 export async function POST(req: NextRequest) {
     try {
@@ -18,6 +26,18 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "You must be signed in to use this feature" }, { status: 401 })
         }
 
+        // Apply rate limiting based on user ID
+        const userId = session.user.id
+        const rateLimited = await rateLimit(req, `ai-connect-${userId}`, RATE_LIMIT_CONFIG)
+
+        // If rate limited, return the rate limit response
+        if (rateLimited) {
+            return rateLimited
+        }
+
+        // Get rate limit info for headers
+        const rateLimitInfo = getRateLimitInfo(`ai-connect-${userId}`, RATE_LIMIT_CONFIG.limit)
+        console.log(rateLimitInfo)
         const {
             message,
             history,
@@ -68,10 +88,18 @@ export async function POST(req: NextRequest) {
                 `,
             })
 
-            return NextResponse.json({
+            const response = NextResponse.json({
                 text: aiResponse,
                 developers: [developerDetails],
+                rateLimitInfo
             })
+
+            // Add rate limit headers
+            response.headers.set('X-RateLimit-Limit', RATE_LIMIT_CONFIG.limit.toString())
+            response.headers.set('X-RateLimit-Remaining', rateLimitInfo.remaining.toString())
+            response.headers.set('X-RateLimit-Reset', rateLimitInfo.resetAt)
+
+            return response
         }
 
         // Check if the message contains a direct @username mention
@@ -117,10 +145,18 @@ export async function POST(req: NextRequest) {
                 `,
             })
 
-            return NextResponse.json({
+            const response = NextResponse.json({
                 text: aiResponse,
                 developers: [developerDetails],
+                rateLimitInfo
             })
+
+            // Add rate limit headers
+            response.headers.set('X-RateLimit-Limit', RATE_LIMIT_CONFIG.limit.toString())
+            response.headers.set('X-RateLimit-Remaining', rateLimitInfo.remaining.toString())
+            response.headers.set('X-RateLimit-Reset', rateLimitInfo.resetAt)
+
+            return response
         }
 
         // If we're searching for a specific person by name
@@ -159,10 +195,18 @@ export async function POST(req: NextRequest) {
           `,
             })
 
-            return NextResponse.json({
+            const response = NextResponse.json({
                 text: aiResponse,
                 developers: developers,
+                rateLimitInfo
             })
+
+            // Add rate limit headers
+            response.headers.set('X-RateLimit-Limit', RATE_LIMIT_CONFIG.limit.toString())
+            response.headers.set('X-RateLimit-Remaining', rateLimitInfo.remaining.toString())
+            response.headers.set('X-RateLimit-Reset', rateLimitInfo.resetAt)
+
+            return response
         }
         // Use different prompt paths based on whether we need to search for developers
         else if (searchDevelopers) {
@@ -240,10 +284,18 @@ export async function POST(req: NextRequest) {
           `,
             })
 
-            return NextResponse.json({
+            const response = NextResponse.json({
                 text: aiResponse,
                 developers: developers,
+                rateLimitInfo
             })
+
+            // Add rate limit headers
+            response.headers.set('X-RateLimit-Limit', RATE_LIMIT_CONFIG.limit.toString())
+            response.headers.set('X-RateLimit-Remaining', rateLimitInfo.remaining.toString())
+            response.headers.set('X-RateLimit-Reset', rateLimitInfo.resetAt)
+
+            return response
         } else {
             // For conversational messages without developer search
             const { text: aiResponse } = await generateText({
@@ -264,10 +316,18 @@ export async function POST(req: NextRequest) {
           `,
             })
 
-            return NextResponse.json({
+            const response = NextResponse.json({
                 text: aiResponse,
                 developers: [],
+                rateLimitInfo
             })
+
+            // Add rate limit headers
+            response.headers.set('X-RateLimit-Limit', RATE_LIMIT_CONFIG.limit.toString())
+            response.headers.set('X-RateLimit-Remaining', rateLimitInfo.remaining.toString())
+            response.headers.set('X-RateLimit-Reset', rateLimitInfo.resetAt)
+
+            return response
         }
     } catch (error) {
         console.error("Error in AI chat:", error)
