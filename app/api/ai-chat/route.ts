@@ -35,7 +35,7 @@ type DeveloperType = {
 
 // Rate limit configuration
 const RATE_LIMIT_CONFIG = {
-    limit: 10,                // 10 requests
+    limit: 20,                // 10 requests
     windowMs: 10 * 60 * 1000, // per 10 minutes
     message: "You've reached the AI-Connect request limit. Please try again in 10 minutes."
 }
