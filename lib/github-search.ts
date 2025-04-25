@@ -1,5 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Developer } from "@/types"
+import { cacheData, getCachedData } from "./redis"
+
+// Cache expiration times (in seconds)
+const CACHE_EXPIRY = {
+    SEARCH_RESULTS: 60 * 10, // 10 minutes for search results
+    USER_DETAILS: 60 * 60,   // 1 hour for user details
+    BULK_SEARCH: 60 * 5      // 5 minutes for bulk searches
+};
 
 /**
  * Search for GitHub users with basic information only
@@ -22,7 +30,17 @@ export async function searchGitHubUsersBasic(location: string | null, skills: st
             query += ` ${skillsQuery}`
         }
 
-        // Make the GitHub API request
+        // Generate cache key based on search parameters
+        const cacheKey = `github:search:basic:${encodeURIComponent(query)}`
+
+        // Try to get results from cache first
+        const cachedResults = await getCachedData<Developer[]>(cacheKey)
+        if (cachedResults) {
+            console.log('Retrieved GitHub search results from cache')
+            return cachedResults
+        }
+
+        // If not in cache, make the GitHub API request
         const response = await fetch(`https://api.github.com/search/users?q=${encodeURIComponent(query)}&per_page=10`, {
             headers: {
                 Accept: "application/vnd.github.v3+json",
@@ -35,8 +53,8 @@ export async function searchGitHubUsersBasic(location: string | null, skills: st
 
         const data = await response.json()
 
-        // Return basic user information without fetching detailed profiles
-        return data.items.map((user: any) => ({
+        // Process results
+        const results = data.items.map((user: any) => ({
             id: user.id.toString(),
             login: user.login,
             avatar_url: user.avatar_url,
@@ -44,6 +62,11 @@ export async function searchGitHubUsersBasic(location: string | null, skills: st
             // Add a flag to indicate this is basic information
             isBasicInfo: true
         }));
+
+        // Cache the results
+        await cacheData(cacheKey, results, CACHE_EXPIRY.SEARCH_RESULTS)
+
+        return results;
     } catch (error) {
         console.error("Error searching GitHub users:", error)
         return []
@@ -57,7 +80,16 @@ export async function searchGitHubUsersBasic(location: string | null, skills: st
  */
 export async function getGitHubUserDetails(username: string) {
     try {
-        // Fetch user data
+        // Check cache first
+        const cacheKey = `github:user:${username}`
+        const cachedUser = await getCachedData(cacheKey)
+
+        if (cachedUser) {
+            console.log(`Retrieved GitHub user ${username} details from cache`)
+            return cachedUser
+        }
+
+        // Fetch user data from GitHub if not in cache
         const userResponse = await fetch(`https://api.github.com/users/${username}`, {
             headers: {
                 Accept: "application/vnd.github.v3+json",
@@ -90,7 +122,8 @@ export async function getGitHubUserDetails(username: string) {
             url: repo.html_url
         }));
 
-        return {
+        // Construct user details object
+        const userDetails = {
             id: userData.id.toString(),
             login: userData.login,
             avatar_url: userData.avatar_url,
@@ -111,6 +144,11 @@ export async function getGitHubUserDetails(username: string) {
                 html_url: follower.html_url
             }))
         };
+
+        // Cache the user details
+        await cacheData(cacheKey, userDetails, CACHE_EXPIRY.USER_DETAILS)
+
+        return userDetails;
     } catch (error) {
         console.error(`Error getting details for GitHub user ${username}:`, error)
         return null
@@ -136,7 +174,17 @@ export async function searchGitHubUsers(location: string | null, skills: string[
             query += ` ${skillsQuery}`
         }
 
-        // Make the GitHub API request
+        // Generate cache key for this search
+        const cacheKey = `github:search:full:${encodeURIComponent(query)}`
+
+        // Try to get from cache first
+        const cachedResults = await getCachedData<Developer[]>(cacheKey)
+        if (cachedResults) {
+            console.log('Retrieved full GitHub search results from cache')
+            return cachedResults
+        }
+
+        // Make the GitHub API request if not in cache
         const response = await fetch(`https://api.github.com/search/users?q=${encodeURIComponent(query)}&per_page=10`, {
             headers: {
                 Accept: "application/vnd.github.v3+json",
@@ -152,6 +200,15 @@ export async function searchGitHubUsers(location: string | null, skills: string[
         // Fetch detailed information for each user
         const detailedUsers = await Promise.all(
             data.items.map(async (user: any) => {
+                // Check if we have this user in cache first
+                const userCacheKey = `github:user:${user.login}`
+                const cachedUser = await getCachedData(userCacheKey)
+
+                if (cachedUser) {
+                    return cachedUser
+                }
+
+                // If not in cache, fetch from API
                 const userResponse = await fetch(user.url, {
                     headers: {
                         Accept: "application/vnd.github.v3+json",
@@ -175,7 +232,7 @@ export async function searchGitHubUsers(location: string | null, skills: string[
                     }
                 }
 
-                return {
+                const userDetails = {
                     id: userData.id.toString(),
                     login: userData.login,
                     avatar_url: userData.avatar_url,
@@ -187,11 +244,21 @@ export async function searchGitHubUsers(location: string | null, skills: string[
                     public_repos: userData.public_repos,
                     followers: userData.followers,
                 }
+
+                // Cache individual user details
+                await cacheData(userCacheKey, userDetails, CACHE_EXPIRY.USER_DETAILS)
+
+                return userDetails
             }),
         )
 
-        // Filter out null values and return the results
-        return detailedUsers.filter(Boolean) as Developer[]
+        // Filter out null values
+        const results = detailedUsers.filter(Boolean) as Developer[]
+
+        // Cache the entire search results
+        await cacheData(cacheKey, results, CACHE_EXPIRY.BULK_SEARCH)
+
+        return results
     } catch (error) {
         console.error("Error searching GitHub users:", error)
         return []
@@ -213,7 +280,17 @@ export async function searchGitHubUserByNameBasic(name: string): Promise<Develop
         // Search in both the name and username fields
         const query = `${name} in:name OR ${name} in:login type:user`;
 
-        // Make the GitHub API request
+        // Generate cache key
+        const cacheKey = `github:search:name:basic:${encodeURIComponent(name)}`
+
+        // Try to get from cache first
+        const cachedResults = await getCachedData<Developer[]>(cacheKey)
+        if (cachedResults) {
+            console.log(`Retrieved GitHub user search for "${name}" from cache`)
+            return cachedResults
+        }
+
+        // Make the GitHub API request if not in cache
         const response = await fetch(`https://api.github.com/search/users?q=${encodeURIComponent(query)}&per_page=5`, {
             headers: {
                 Accept: "application/vnd.github.v3+json",
@@ -226,8 +303,8 @@ export async function searchGitHubUserByNameBasic(name: string): Promise<Develop
 
         const data = await response.json()
 
-        // Return basic information without fetching details
-        return data.items.map((user: any) => ({
+        // Process results
+        const results = data.items.map((user: any) => ({
             id: user.id.toString(),
             login: user.login,
             avatar_url: user.avatar_url,
@@ -236,6 +313,10 @@ export async function searchGitHubUserByNameBasic(name: string): Promise<Develop
             isBasicInfo: true
         }));
 
+        // Cache the results
+        await cacheData(cacheKey, results, CACHE_EXPIRY.SEARCH_RESULTS)
+
+        return results;
     } catch (error) {
         console.error("Error searching GitHub user by name:", error)
         return []
@@ -257,7 +338,17 @@ export async function searchGitHubUserByName(name: string): Promise<Developer[]>
         // Search in both the name and username fields
         const query = `${name} in:name OR ${name} in:login type:user`;
 
-        // Make the GitHub API request
+        // Generate cache key
+        const cacheKey = `github:search:name:detailed:${encodeURIComponent(name)}`
+
+        // Try to get from cache first
+        const cachedResults = await getCachedData<Developer[]>(cacheKey)
+        if (cachedResults) {
+            console.log(`Retrieved detailed GitHub user search for "${name}" from cache`)
+            return cachedResults
+        }
+
+        // Make the GitHub API request if not in cache
         const response = await fetch(`https://api.github.com/search/users?q=${encodeURIComponent(query)}&per_page=5`, {
             headers: {
                 Accept: "application/vnd.github.v3+json",
@@ -273,6 +364,15 @@ export async function searchGitHubUserByName(name: string): Promise<Developer[]>
         // Fetch detailed information for each user
         const detailedUsers = await Promise.all(
             data.items.map(async (user: any) => {
+                // Check if we have this user in cache first
+                const userCacheKey = `github:user:${user.login}`
+                const cachedUser = await getCachedData(userCacheKey)
+
+                if (cachedUser) {
+                    return cachedUser
+                }
+
+                // If not in cache, fetch from GitHub API
                 const userResponse = await fetch(user.url, {
                     headers: {
                         Accept: "application/vnd.github.v3+json",
@@ -305,7 +405,8 @@ export async function searchGitHubUserByName(name: string): Promise<Developer[]>
                     url: repo.html_url
                 }));
 
-                return {
+                // Construct user details
+                const userDetails = {
                     id: userData.id.toString(),
                     login: userData.login,
                     avatar_url: userData.avatar_url,
@@ -326,11 +427,21 @@ export async function searchGitHubUserByName(name: string): Promise<Developer[]>
                         html_url: follower.html_url
                     }))
                 }
+
+                // Cache individual user details
+                await cacheData(userCacheKey, userDetails, CACHE_EXPIRY.USER_DETAILS)
+
+                return userDetails
             }),
         )
 
-        // Filter out null values and return the results
-        return detailedUsers.filter(Boolean) as Developer[]
+        // Filter out null values
+        const results = detailedUsers.filter(Boolean) as Developer[]
+
+        // Cache the entire search results
+        await cacheData(cacheKey, results, CACHE_EXPIRY.SEARCH_RESULTS)
+
+        return results
     } catch (error) {
         console.error("Error searching GitHub user by name:", error)
         return []

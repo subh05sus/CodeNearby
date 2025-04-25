@@ -10,12 +10,40 @@ import { google } from '@ai-sdk/google';
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/app/options"
 import { rateLimit, getRateLimitInfo } from "@/lib/utils"
+import { cacheData, getCachedData } from "@/lib/redis"
+
+type DeveloperType = {
+    login: string;
+    name: string | null;
+    bio: string | null;
+    location: string | null;
+    company: string | null;
+    public_repos: number;
+    followers: number;
+    topRepositories: Array<{
+        name: string;
+        description: string | null;
+        language: string | null;
+        stars: number;
+        forks: number;
+        createdAt: string;
+        updatedAt: string;
+    }>
+
+    [key: string]: any;
+}
 
 // Rate limit configuration
 const RATE_LIMIT_CONFIG = {
     limit: 10,                // 10 requests
     windowMs: 10 * 60 * 1000, // per 10 minutes
     message: "You've reached the AI-Connect request limit. Please try again in 10 minutes."
+}
+
+// Cache expiration times (in seconds)
+const CACHE_EXPIRY = {
+    AI_RESPONSE: 60 * 60,     // 1 hour for AI responses
+    PROFILE_ANALYSIS: 60 * 30 // 30 minutes for profile analysis
 }
 
 export async function POST(req: NextRequest) {
@@ -36,7 +64,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Get rate limit info for headers
-        const rateLimitInfo = getRateLimitInfo(`ai-connect-${userId}`, RATE_LIMIT_CONFIG.limit)
+        const rateLimitInfo = await getRateLimitInfo(`ai-connect-${userId}`, RATE_LIMIT_CONFIG.limit)
         console.log(rateLimitInfo)
         const {
             message,
@@ -51,7 +79,29 @@ export async function POST(req: NextRequest) {
             const username = fetchDetailedProfile;
             console.log(`Fetching detailed profile for ${username}`)
 
-            const developerDetails = await getGitHubUserDetails(username);
+            // Create a cache key for this profile analysis
+            const cacheKey = `ai:profile-analysis:${username}`
+
+            // Try to get from cache first
+            const cachedResponse = await getCachedData<{ text: string, developers: any[] }>(cacheKey)
+            if (cachedResponse) {
+                console.log(`Retrieved profile analysis for ${username} from cache`)
+
+                const response = NextResponse.json({
+                    ...cachedResponse,
+                    rateLimitInfo,
+                    fromCache: true
+                })
+
+                // Add rate limit headers
+                response.headers.set('X-RateLimit-Limit', RATE_LIMIT_CONFIG.limit.toString())
+                response.headers.set('X-RateLimit-Remaining', rateLimitInfo.remaining.toString())
+                response.headers.set('X-RateLimit-Reset', rateLimitInfo.resetAt)
+
+                return response
+            }
+
+            const developerDetails = await getGitHubUserDetails(username) as DeveloperType | null;
 
             if (!developerDetails) {
                 return NextResponse.json({
@@ -59,6 +109,7 @@ export async function POST(req: NextRequest) {
                     developers: []
                 })
             }
+
 
             // Generate a response about the detailed profile
             const { text: aiResponse } = await generateText({
@@ -88,9 +139,17 @@ export async function POST(req: NextRequest) {
                 `,
             })
 
-            const response = NextResponse.json({
+            // Prepare the response data
+            const responseData = {
                 text: aiResponse,
-                developers: [developerDetails],
+                developers: [developerDetails]
+            }
+
+            // Cache the AI response
+            await cacheData(cacheKey, responseData, CACHE_EXPIRY.PROFILE_ANALYSIS)
+
+            const response = NextResponse.json({
+                ...responseData,
                 rateLimitInfo
             })
 
@@ -108,7 +167,29 @@ export async function POST(req: NextRequest) {
             const username = directUsernameMatch[1];
             console.log(`Direct username mention found: ${username}`);
 
-            const developerDetails = await getGitHubUserDetails(username);
+            // Create a cache key for this profile mention
+            const cacheKey = `ai:profile-mention:${username}`
+
+            // Try to get from cache first
+            const cachedResponse = await getCachedData<{ text: string, developers: any[] }>(cacheKey)
+            if (cachedResponse) {
+                console.log(`Retrieved profile mention response for ${username} from cache`)
+
+                const response = NextResponse.json({
+                    ...cachedResponse,
+                    rateLimitInfo,
+                    fromCache: true
+                })
+
+                // Add rate limit headers
+                response.headers.set('X-RateLimit-Limit', RATE_LIMIT_CONFIG.limit.toString())
+                response.headers.set('X-RateLimit-Remaining', rateLimitInfo.remaining.toString())
+                response.headers.set('X-RateLimit-Reset', rateLimitInfo.resetAt)
+
+                return response
+            }
+
+            const developerDetails = await getGitHubUserDetails(username) as DeveloperType | null;
 
             if (!developerDetails) {
                 return NextResponse.json({
@@ -145,9 +226,17 @@ export async function POST(req: NextRequest) {
                 `,
             })
 
-            const response = NextResponse.json({
+            // Prepare the response data
+            const responseData = {
                 text: aiResponse,
-                developers: [developerDetails],
+                developers: [developerDetails]
+            }
+
+            // Cache the AI response
+            await cacheData(cacheKey, responseData, CACHE_EXPIRY.PROFILE_ANALYSIS)
+
+            const response = NextResponse.json({
+                ...responseData,
                 rateLimitInfo
             })
 
@@ -161,6 +250,28 @@ export async function POST(req: NextRequest) {
 
         // If we're searching for a specific person by name
         if (searchPerson) {
+            // Create a cache key for this person search
+            const cacheKey = `ai:person-search:${searchPerson}`
+
+            // Try to get from cache first
+            const cachedResponse = await getCachedData<{ text: string, developers: any[] }>(cacheKey)
+            if (cachedResponse) {
+                console.log(`Retrieved person search for "${searchPerson}" from cache`)
+
+                const response = NextResponse.json({
+                    ...cachedResponse,
+                    rateLimitInfo,
+                    fromCache: true
+                })
+
+                // Add rate limit headers
+                response.headers.set('X-RateLimit-Limit', RATE_LIMIT_CONFIG.limit.toString())
+                response.headers.set('X-RateLimit-Remaining', rateLimitInfo.remaining.toString())
+                response.headers.set('X-RateLimit-Reset', rateLimitInfo.resetAt)
+
+                return response
+            }
+
             // Search for GitHub users with basic information only
             const developers = await searchGitHubUserByNameBasic(searchPerson);
 
@@ -195,9 +306,17 @@ export async function POST(req: NextRequest) {
           `,
             })
 
-            const response = NextResponse.json({
+            // Prepare the response data
+            const responseData = {
                 text: aiResponse,
-                developers: developers,
+                developers: developers
+            }
+
+            // Cache the AI response
+            await cacheData(cacheKey, responseData, CACHE_EXPIRY.AI_RESPONSE)
+
+            const response = NextResponse.json({
+                ...responseData,
                 rateLimitInfo
             })
 
@@ -210,6 +329,28 @@ export async function POST(req: NextRequest) {
         }
         // Use different prompt paths based on whether we need to search for developers
         else if (searchDevelopers) {
+            // Create a cache key for this developer search query
+            const cacheKey = `ai:dev-search:${encodeURIComponent(message)}`
+
+            // Try to get from cache first
+            const cachedResponse = await getCachedData<{ text: string, developers: any[] }>(cacheKey)
+            if (cachedResponse) {
+                console.log(`Retrieved developer search for "${message}" from cache`)
+
+                const response = NextResponse.json({
+                    ...cachedResponse,
+                    rateLimitInfo,
+                    fromCache: true
+                })
+
+                // Add rate limit headers
+                response.headers.set('X-RateLimit-Limit', RATE_LIMIT_CONFIG.limit.toString())
+                response.headers.set('X-RateLimit-Remaining', rateLimitInfo.remaining.toString())
+                response.headers.set('X-RateLimit-Reset', rateLimitInfo.resetAt)
+
+                return response
+            }
+
             // First, use Gemini to understand the user's query
             const { text: aiAnalysis } = await generateText({
                 model: google("models/gemini-2.0-flash-exp"),
@@ -284,9 +425,17 @@ export async function POST(req: NextRequest) {
           `,
             })
 
-            const response = NextResponse.json({
+            // Prepare the response data
+            const responseData = {
                 text: aiResponse,
-                developers: developers,
+                developers: developers
+            }
+
+            // Cache the AI response
+            await cacheData(cacheKey, responseData, CACHE_EXPIRY.AI_RESPONSE)
+
+            const response = NextResponse.json({
+                ...responseData,
                 rateLimitInfo
             })
 
@@ -298,6 +447,36 @@ export async function POST(req: NextRequest) {
             return response
         } else {
             // For conversational messages without developer search
+            // Create a cache key based on the message content and history length
+            // Note: For privacy reasons, we don't cache the entire conversation history
+            const historyHash = history.length.toString();
+            const messageHash = message.slice(0, 100); // Use first 100 chars to avoid too-long keys
+            const cacheKey = `ai:conversation:${historyHash}:${encodeURIComponent(messageHash)}`;
+
+            // Try to get from cache first (only for common/general questions)
+            // For privacy, we don't cache very specific conversations
+            if (history.length < 3 && message.length < 200) {
+                const cachedResponse = await getCachedData<{ text: string }>(cacheKey)
+                if (cachedResponse) {
+                    console.log(`Retrieved conversation response from cache`)
+
+                    const response = NextResponse.json({
+                        ...cachedResponse,
+                        developers: [],
+                        rateLimitInfo,
+                        fromCache: true
+                    })
+
+                    // Add rate limit headers
+                    response.headers.set('X-RateLimit-Limit', RATE_LIMIT_CONFIG.limit.toString())
+                    response.headers.set('X-RateLimit-Remaining', rateLimitInfo.remaining.toString())
+                    response.headers.set('X-RateLimit-Reset', rateLimitInfo.resetAt)
+
+                    return response
+                }
+            }
+
+            // Generate AI response if not in cache
             const { text: aiResponse } = await generateText({
                 model: google("models/gemini-2.0-flash-exp"),
                 prompt: `
@@ -316,8 +495,18 @@ export async function POST(req: NextRequest) {
           `,
             })
 
+            // Prepare the response data
+            const responseData = {
+                text: aiResponse
+            }
+
+            // Cache the AI response (only for common/general questions to protect privacy)
+            if (history.length < 3 && message.length < 200) {
+                await cacheData(cacheKey, responseData, CACHE_EXPIRY.AI_RESPONSE)
+            }
+
             const response = NextResponse.json({
-                text: aiResponse,
+                ...responseData,
                 developers: [],
                 rateLimitInfo
             })

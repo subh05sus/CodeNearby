@@ -19,6 +19,7 @@
 - 🎭 **Virtual Gatherings**: Host anonymous polls, events & discussions
 - 🐙 **GitHub Integration**: Auto-fetch your profile and GitHub activity
 - 🌐 **Global Meets Local**: Interact worldwide, focus locally
+- ⚡ **Redis Caching**: Fast responses with Upstash Redis caching for GitHub searches and AI interactions
 
 ---
 
@@ -30,6 +31,7 @@
 - **Storage**: Cloudinary
 - **Realtime + Notifications**: Firebase
 - **AI**: Gemini AI for intelligent developer search
+- **Caching**: Upstash Redis for efficient API and AI caching
 
 ---
 
@@ -61,6 +63,10 @@ NEXT_PUBLIC_FIREBASE_APP_ID=
 NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=
 
 GOOGLE_GENERATIVE_AI_API_KEY=your_gemini_api_key
+
+# Upstash Redis configuration for caching
+UPSTASH_REDIS_REST_URL=your_upstash_redis_url
+UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_token
 ```
 
 ### 🔑 How to Get the Required Credentials
@@ -83,6 +89,10 @@ GOOGLE_GENERATIVE_AI_API_KEY=your_gemini_api_key
 
 - **Gemini API Key**
   → [Google AI Studio](https://makersuite.google.com/app/apikey) → Get API Key for Gemini AI
+
+- **Upstash Redis**
+  → [Sign Up for Upstash](https://console.upstash.com/login) → Create a new Redis database
+  → Copy the REST URL and REST Token into `.env.local`
 
 ---
 

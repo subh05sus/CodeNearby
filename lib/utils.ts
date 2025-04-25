@@ -1,34 +1,10 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { type NextRequest, NextResponse } from "next/server"
-// import { getServerSession } from "next-auth/next"
-// import { authOptions } from "@/app/options"
+import { getRateLimit, setRateLimit } from "./redis"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
-}
-
-// Simple in-memory store for rate limiting
-// In production, this should be replaced with Redis or another distributed store
-interface RateLimitStore {
-  [key: string]: {
-    count: number;
-    resetAt: number;
-  }
-}
-
-const rateLimitStore: RateLimitStore = {}
-
-// Clean up expired rate limit records every hour
-if (typeof window === 'undefined') { // Only run on server
-  setInterval(() => {
-    const now = Date.now()
-    Object.keys(rateLimitStore).forEach(key => {
-      if (rateLimitStore[key].resetAt < now) {
-        delete rateLimitStore[key]
-      }
-    })
-  }, 60 * 60 * 1000) // 1 hour
 }
 
 export interface RateLimitConfig {
@@ -38,7 +14,7 @@ export interface RateLimitConfig {
 }
 
 /**
- * Rate limiting middleware for API routes
+ * Rate limiting middleware for API routes using Redis
  * 
  * @param req NextRequest object
  * @param identifier Function to extract a unique identifier from the request (usually user ID or IP)
@@ -60,41 +36,53 @@ export async function rateLimit(
   // Get the current timestamp
   const now = Date.now()
 
-  // Initialize or get the rate limit record
-  if (!rateLimitStore[key] || rateLimitStore[key].resetAt < now) {
-    rateLimitStore[key] = {
-      count: 0,
-      resetAt: now + windowMs
-    }
-  }
+  try {
+    // Get rate limit data from Redis
+    let rateLimitData = await getRateLimit(key)
 
-  // Increment the count
-  rateLimitStore[key].count++
-
-  // Check if the rate limit has been exceeded
-  if (rateLimitStore[key].count > limit) {
-    const resetAt = new Date(rateLimitStore[key].resetAt)
-
-    // Return a 429 Too Many Requests response
-    return NextResponse.json(
-      {
-        error: message,
-        rateLimitReset: resetAt.toISOString()
-      },
-      {
-        status: 429,
-        headers: {
-          'X-RateLimit-Limit': limit.toString(),
-          'X-RateLimit-Remaining': '0',
-          'X-RateLimit-Reset': Math.ceil(resetAt.getTime() / 1000).toString(),
-          'Retry-After': Math.ceil((resetAt.getTime() - now) / 1000).toString()
-        }
+    // Initialize or reset rate limit record if needed
+    if (!rateLimitData || rateLimitData.resetAt < now) {
+      rateLimitData = {
+        count: 0,
+        resetAt: now + windowMs
       }
-    )
-  }
+    }
 
-  // Not rate limited, continue processing the request
-  return null
+    // Increment the count
+    rateLimitData.count++
+
+    // Save updated rate limit data to Redis
+    await setRateLimit(key, rateLimitData.count, rateLimitData.resetAt, windowMs)
+
+    // Check if the rate limit has been exceeded
+    if (rateLimitData.count > limit) {
+      const resetAt = new Date(rateLimitData.resetAt)
+
+      // Return a 429 Too Many Requests response
+      return NextResponse.json(
+        {
+          error: message,
+          rateLimitReset: resetAt.toISOString()
+        },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': limit.toString(),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': Math.ceil(resetAt.getTime() / 1000).toString(),
+            'Retry-After': Math.ceil((resetAt.getTime() - now) / 1000).toString()
+          }
+        }
+      )
+    }
+
+    // Not rate limited, continue processing the request
+    return null
+  } catch (error) {
+    // Log the error but allow the request to proceed in case of Redis errors
+    console.error("Rate limiting error:", error);
+    return null;
+  }
 }
 
 /**
@@ -104,22 +92,34 @@ export async function rateLimit(
  * @param limit Maximum number of requests allowed
  * @returns Object with rate limit information
  */
-export function getRateLimitInfo(identifier: string, limit: number) {
-  const now = Date.now()
+export async function getRateLimitInfo(identifier: string, limit: number) {
+  try {
+    const now = Date.now()
+    const rateLimitData = await getRateLimit(identifier)
 
-  if (!rateLimitStore[identifier] || rateLimitStore[identifier].resetAt < now) {
+    if (!rateLimitData || rateLimitData.resetAt < now) {
+      return {
+        used: 0,
+        remaining: limit,
+        resetAt: new Date(now).toISOString()
+      }
+    }
+
+    const remaining = Math.max(0, limit - rateLimitData.count)
+
+    return {
+      used: rateLimitData.count,
+      remaining,
+      resetAt: new Date(rateLimitData.resetAt).toISOString()
+    }
+  } catch (error) {
+    console.error("Error getting rate limit info:", error);
+    // Return default values in case of error
     return {
       used: 0,
       remaining: limit,
-      resetAt: new Date(now).toISOString()
+      resetAt: new Date().toISOString(),
+      error: "Failed to retrieve rate limit info"
     }
-  }
-
-  const remaining = Math.max(0, limit - rateLimitStore[identifier].count)
-
-  return {
-    used: rateLimitStore[identifier].count,
-    remaining,
-    resetAt: new Date(rateLimitStore[identifier].resetAt).toISOString()
   }
 }

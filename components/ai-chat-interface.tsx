@@ -1014,7 +1014,7 @@ ${existingDev.followers ? `Followers: ${existingDev.followers}` : ""}`,
         <Button
           type="submit"
           disabled={isLoading || !input.trim()}
-          className="rounded-xl px-3 sm:px-4 md:px-5"
+          className="rounded-xl px-3 sm:px-4 md:px-5 h-full"
         >
           {isLoading ? (
             <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
