@@ -13,6 +13,7 @@
 ## 🌟 Features
 
 - 🔍 **Discover Developers**: Search by skills, interests, and location
+- 🤖 **AI-Connect**: Find GitHub developers through natural conversation using Gemini AI
 - 💬 **Chat**: Real-time conversations and collaboration
 - 📢 **Developer Feed**: Share updates, snippets, and thoughts
 - 🎭 **Virtual Gatherings**: Host anonymous polls, events & discussions
@@ -28,6 +29,7 @@
 - **Auth**: NextAuth.js (GitHub provider)
 - **Storage**: Cloudinary
 - **Realtime + Notifications**: Firebase
+- **AI**: Gemini AI for intelligent developer search
 
 ---
 
@@ -57,6 +59,8 @@ NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
 NEXT_PUBLIC_FIREBASE_MESSENGER_ID=
 NEXT_PUBLIC_FIREBASE_APP_ID=
 NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=
+
+GOOGLE_GENERATIVE_AI_API_KEY=your_gemini_api_key
 ```
 
 ### 🔑 How to Get the Required Credentials
@@ -77,11 +81,15 @@ NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=
   → [Firebase Console](https://console.firebase.google.com/) → Create project  
   → Go to Project Settings → Web App → Copy config variables into `.env.local`
 
+- **Gemini API Key**
+  → [Google AI Studio](https://makersuite.google.com/app/apikey) → Get API Key for Gemini AI
+
 ---
 
 ## 🧠 Why CodeNearby?
 
 - Find devs who **share your stack & mindset**
+- Use **AI-powered search** to discover the perfect collaborators
 - Connect with people around you, virtually or IRL
 - Build real **technical relationships**
 - Share your **coding journey**
@@ -121,7 +129,7 @@ Whether you're looking for a mentor, co-founder, or hackathon buddy, **CodeNearb
 
 ## 🌍 Join the Movement
 
-Let’s make the developer community stronger, more collaborative, and accessible — together.
+Let's make the developer community stronger, more collaborative, and accessible — together.
 
 **⭐ Star this repo | 🍴 Fork it | 🤝 Contribute**
 
