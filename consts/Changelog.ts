@@ -1,19 +1,24 @@
 export const CHANGELOG = [
   {
-    version: "1.0.5",
+    version: "1.1.0",
     date: "2025-04-25",
     beta: false,
-    changes: [
+    changes:[
       "Launched AI-Connect: AI-powered developer search using Gemini AI",
-      "Created AI-Connect conversation interface for finding developers by skills and location",
-      "Added GitHub query search methods for intelligent developer recommendations",
       "Added GitHub card component for non-CodeNearby users with profile previews",
       "Created dedicated AI-Connect about page with feature documentation",
-      "Enhanced homepage with AI-Connect featured section",
-      "Improved about page with AI-Connect feature showcase",
-      "Added AI-Connect to main features section and FAQ",
-      "Added GitHub repository URL for project contributions",
       "Fixed theme switcher in footer for better dark mode toggling"
+    ]
+  },
+  {
+    version: "1.0.5",
+    date: "2025-04-20",
+    beta: true,
+    changes:[
+      "Created AI-Connect conversation interface for finding developers by skills and location",
+      "Added GitHub query search methods for intelligent developer recommendations",
+      "Improved about page with AI-Connect feature showcase",
+      "Added GitHub repository URL for project contributions",
     ]
   },
   {
