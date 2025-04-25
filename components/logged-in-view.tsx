@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import FeatureBigPreview from "./FeatureBigPreview";
 import { CurrentGatherings } from "./home/current-gatherings";
 import Details from "./home/Details";
 import FAQSection from "./home/FAQSection";
@@ -32,6 +33,9 @@ function LoggedInView({ user }: { user: any }) {
         <CurrentGatherings />
       </div>
       <ReceivedFriendRequests />
+      <div className="mt-4">
+        <FeatureBigPreview />
+      </div>
       <div className="mt-20">
         <Details />
         <div className="w-fit">
