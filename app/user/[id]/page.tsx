@@ -106,11 +106,13 @@ export default function UserProfilePage() {
     try {
       const response = await fetch(`/api/user/${params.id}`);
       const data = await response.json();
-      if (data.status === 200) {
+      // if (data.status === 200) {
+      // }
+      if (response.ok) {
         setProfile(data);
-      }
-      if (data.status === 404) {
-        toast.error("Error", { description: "User not found." });
+      } else {
+        setProfile(null);
+        toast.error("Error", { description: "Failed to fetch profile." });
       }
     } catch {
       toast.error("Error", { description: "Failed to fetch profile." });
