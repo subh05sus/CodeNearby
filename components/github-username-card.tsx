@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { fetchGitHubData } from "@/lib/github";
 import { Loader2, Plus, Github } from "lucide-react";
 import React, { useEffect, useState } from "react";
