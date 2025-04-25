@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ThemeSwitch } from "./ThemeSwitch";
+import { githubUrl } from "@/consts/BASIC";
 
 export default function Footer() {
   return (
@@ -46,6 +47,17 @@ export default function Footer() {
                 className="text-sm text-muted-foreground hover:text-foreground"
               >
                 Report an Issue
+              </Link>
+              <Link
+                href={githubUrl}
+                target="_blank"
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                <img
+                  src="/github.svg"
+                  alt="GitHub"
+                  className="h-5 w-5 dark:invert invert-0"
+                />
               </Link>
             </div>
           </div>

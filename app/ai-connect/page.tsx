@@ -3,16 +3,26 @@ import AIChatInterface from "@/components/ai-chat-interface";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { Session } from "next-auth";
+import { InfoIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function FindYourPairPage() {
   const { data: session } = useSession() as { data: Session | null };
   const user = session?.user;
+  const router = useRouter();
+  const handleInfoClick = () => {
+    router.push("/about/ai-connect");
+  };
 
   return (
     <main className="container mx-auto px-0 sm:px-6 md:px-8 py-0 max-w-5xl">
       <div className="mb-4  text-center space-y-2 sm:space-y-3">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">
-          Find Your Perfect Developer Match
+          Find Your Perfect Developer Match{" "}
+          <InfoIcon
+            className="inline h-6 w-6 cursor-pointer hover:text-muted-foreground transition-all duration-200"
+            onClick={handleInfoClick}
+          />
         </h1>
         <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto">
           Chat with our AI assistant to discover developers that match your

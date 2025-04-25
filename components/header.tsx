@@ -51,6 +51,7 @@ import { useTheme } from "next-themes";
 import Logo from "./logo";
 import { RainbowButton } from "./magicui/rainbowbutton";
 import { Badge } from "./ui/badge";
+import { AuroraText } from "./magicui/aurora-text";
 
 export default function Header() {
   const router = useRouter();
@@ -164,7 +165,7 @@ export default function Header() {
                   >
                     <Link href="/ai-connect">
                       <span>
-                        AI Connect{" "}
+                        <AuroraText>AI Connect</AuroraText>{" "}
                         <span className="text-[0.65rem] mb-4 px-1 py-0.5 bg-orange-600 rounded-md text-white font-semibold">
                           NEW
                         </span>
@@ -500,6 +501,18 @@ export default function Header() {
               </>
             ) : (
               <>
+                <li>
+                  <Button
+                    variant={`${
+                      pathname === "/" && theme === "light"
+                        ? "outline"
+                        : "ghost"
+                    }`}
+                    asChild
+                  >
+                    <Link href="/about">About</Link>
+                  </Button>
+                </li>
                 <li>
                   <Button
                     variant={`${

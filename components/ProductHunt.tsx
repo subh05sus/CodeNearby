@@ -1,18 +1,27 @@
 "use client";
 import Image from "next/image";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 function ProductHunt() {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
+  const [currentTheme, setCurrentTheme] = useState("light");
+
+  useEffect(() => {
+    // Use resolvedTheme which gives the actual applied theme
+    setCurrentTheme(resolvedTheme === "dark" ? "dark" : "light");
+  }, [resolvedTheme]);
+
   return (
     <div className="mt-4 flex justify-center">
       <a
-        href="https://www.producthunt.com/posts/codenearby?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-codenearby"
+        href="https://www.producthunt.com/posts/codenearby?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-codenearby"
         target="_blank"
+        rel="noopener noreferrer"
       >
         <Image
-          src={`https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=909199&theme=${theme}&t=1740385272040`}
-          alt="CodeNearby - Find&#0032;coding&#0032;partners&#0032;&#0038;&#0032;build&#0032;together—Tinder&#0032;for&#0032;developers&#0033; | Product Hunt"
+          src={`https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=909199&theme=${currentTheme}&t=1740385272040`}
+          alt="CodeNearby - Find coding partners & build together—Tinder for developers!"
           width={200}
           height={40}
         />

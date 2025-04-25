@@ -19,6 +19,16 @@ export const faqs: FAQItem[] = [
       "Yes! Codenearby is completely free for developers to network, chat, collaborate, and join community discussions. Additional premium features may be introduced in the future.",
   },
   {
+    question: "What is AI-Connect?",
+    answer:
+      "AI-Connect is our intelligent assistant that helps you find GitHub developers based on skills, location, or specific requirements. It uses Gemini AI to analyze GitHub profiles and provide personalized developer recommendations through a conversational interface.",
+  },
+  {
+    question: "How accurate are the AI-Connect search results?",
+    answer:
+      "AI-Connect uses real-time data from GitHub to provide accurate developer information. Results quality depends on the specificity of your query and the public information available on developer profiles. You can refine your search by asking follow-up questions.",
+  },
+  {
     question: "What kind of discussions happen in the feed?",
     answer:
       "The feed is where developers share insights, code snippets, troubleshooting tips, tech news, and even fun programming memes.",
@@ -33,4 +43,5 @@ export const faqs: FAQItem[] = [
     answer:
       "Codenearby fetches your public GitHub profile data, including your bio, repositories, and contributions, to auto-fill your profile. This makes it easier for others to find and connect with developers based on their expertise.",
   },
+
 ];

@@ -7,7 +7,7 @@ import {
   Github,
   Globe,
   MessagesSquareIcon,
-  MessageCircleCodeIcon,
+  Bot,
 } from "lucide-react";
 
 function Features() {
@@ -22,10 +22,10 @@ function Features() {
       />
       <FeatureCard
         icon={
-          <MessageCircleCodeIcon className="w-8 h-8 mb-4 text-primary  transition-all duration-300 group-hover:text-primary/80 dark:group-hover:text-blue-200" />
+          <Bot className="w-8 h-8 mb-4 text-primary  transition-all duration-300 group-hover:text-primary/80 dark:group-hover:text-blue-200" />
         }
-        title="Share Your Thoughts"
-        description="Post updates about your coding journey, share technical insights, and engage with the developer community through meaningful content."
+        title="AI-Connect"
+        description="Use our intelligent assistant powered by Gemini AI to find GitHub developers based on skills, location, or specific requirements through natural conversations."
       />
       <FeatureCard
         icon={
