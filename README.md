@@ -110,7 +110,7 @@ UPSTASH_REDIS_REST_TOKEN=your_upstash_redis_token
 ## 🛠️ Getting Started (Local Development)
 
 ```bash
-git clone https://github.com/yourusername/codenearby.git
+git clone https://github.com/subh05sus/codenearby.git
 cd codenearby
 npm install
 cp .env.example .env.local # then fill it with your credentials
