@@ -153,4 +153,6 @@ Let's make the developer community stronger, more collaborative, and accessible 
 
 ---
 
-> Built with ❤️ by [Subhadip](https://subhadip.me) and contributors.
+> Built with ❤️ by [Subhadip](https://subhadip.me) and the awesome [contributors](https://github.com/subh05sus/codenearby/graphs/contributors).
+
+
