@@ -347,13 +347,20 @@ export default function EditProfilePage() {
           <div className="relative w-full h-[180px] overflow-hidden rounded-t-lg">
             {croppedBannerImage || profile?.bannerImage ? (
               <>
-                <motion.div 
+                <motion.div
                   layoutId="banner"
                   className="w-full h-full cursor-pointer"
-                  onClick={() => handleOpenPreview(croppedBannerImage || profile?.bannerImage || "/bg.webp", "banner")}
+                  onClick={() =>
+                    handleOpenPreview(
+                      croppedBannerImage || profile?.bannerImage || "/bg.webp",
+                      "banner"
+                    )
+                  }
                 >
                   <Image
-                    src={croppedBannerImage || profile?.bannerImage || "/bg.webp"}
+                    src={
+                      croppedBannerImage || profile?.bannerImage || "/bg.webp"
+                    }
                     alt="Banner"
                     fill
                     className="object-cover"
@@ -408,9 +415,16 @@ export default function EditProfilePage() {
           <CardContent className="pt-6">
             <div className="flex items-center space-x-4">
               <div className="relative">
-                <div 
+                <div
                   className="h-24 w-24 rounded-full overflow-hidden border-4 border-background shadow-lg cursor-pointer"
-                  onClick={() => handleOpenPreview(croppedProfileImage || profile?.image || "/placeholder.svg", "profile")}
+                  onClick={() =>
+                    handleOpenPreview(
+                      croppedProfileImage ||
+                        profile?.image ||
+                        "/placeholder.svg",
+                      "profile"
+                    )
+                  }
                 >
                   <motion.div layoutId="profile">
                     <img
@@ -934,7 +948,11 @@ export default function EditProfilePage() {
               >
                 <Image
                   src={previewImage}
-                  alt={previewId === "banner" ? "Banner Preview" : "Profile Preview"}
+                  alt={
+                    previewId === "banner"
+                      ? "Banner Preview"
+                      : "Profile Preview"
+                  }
                   width={previewId === "banner" ? 1920 : 1000}
                   height={previewId === "banner" ? 1080 : 1000}
                   className="object-contain"
