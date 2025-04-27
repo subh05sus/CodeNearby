@@ -397,7 +397,7 @@ export default function UserProfilePage() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <ProfileHeader imageUrl={profile.image || "/placeholder.svg"} />
+      <ProfileHeader imageUrl={profile.image || "/placeholder.svg"} bannerUrl={profile.bannerImage || "/bg.webp"} />
       <div className="mt-20 px-4">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6">
           <div>

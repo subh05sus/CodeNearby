@@ -23,6 +23,8 @@ import {
   UserPlus,
   Trash2,
   Calendar,
+  Pin,
+  GitFork,
 } from "lucide-react";
 import Link from "next/link";
 import type { UserProfile } from "@/types";
@@ -411,18 +413,11 @@ export default function ProfilePage() {
 
   return (
     <div className="w-full px-2 mx-auto max-w-6xl">
-      {/* <div className="h-48 bg-gradient-to-r from-primary/10 via-primary/5 to-background relative">
-        <div className="absolute -bottom-16 left-8">
-          <Avatar className="h-32 w-32 border-4 border-background">
-            <AvatarImage
-              src={session.user.image || "/placeholder.svg"}
-              alt={session.user.name || "Profile"}
-            />
-            <AvatarFallback>{session.user.name?.[0]}</AvatarFallback>
-          </Avatar>
-        </div>
-      </div> */}
-      <ProfileHeader imageUrl={session.user.image || "/placeholder.svg"} />
+      <ProfileHeader
+        imageUrl={session.user.image || "/placeholder.svg"}
+        bannerUrl={profile?.bannerImage || "/bg.webp"}
+        editable={true}
+      />
 
       <div className="max-w-6xl mx-auto px-4">
         <div className="pt-20 pb-8">
@@ -540,6 +535,64 @@ export default function ProfilePage() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Pinned Repositories Section */}
+          {profile?.pinnedRepos && profile.pinnedRepos.length > 0 && (
+            <div className="mt-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold">Pinned Repositories</h2>
+                <Button variant="outline" size="sm" asChild>
+                  <Link href="/profile/edit?tab=repositories">
+                    <Pin className="h-4 w-4 mr-2" />
+                    Edit Pins
+                  </Link>
+                </Button>
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                {profile.pinnedRepos.map((repo) => (
+                  <Card key={repo.id}>
+                    <CardContent className="p-5">
+                      <div className="flex flex-col h-full">
+                        <div className="flex items-start gap-3 mb-3">
+                          <div>
+                            <h3 className="font-medium hover:underline">
+                              <Link
+                                href={repo.html_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:text-primary transition-colors"
+                              >
+                                {repo.name}
+                              </Link>
+                            </h3>
+                            <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                              {repo.description || "No description available"}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3 text-sm mt-auto">
+                          {repo.language && (
+                            <div className="flex items-center">
+                              <span className="h-3 w-3 rounded-full bg-primary/70 mr-1.5"></span>
+                              <span>{repo.language}</span>
+                            </div>
+                          )}
+                          <div className="flex items-center">
+                            <Star className="h-4 w-4 mr-1" />
+                            <span>{repo.stargazers_count}</span>
+                          </div>
+                          <div className="flex items-center">
+                            <GitFork className="h-4 w-4 mr-1" />
+                            <span>{repo.forks_count}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <Tabs defaultValue="friends" className="space-y-4">

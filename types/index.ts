@@ -50,6 +50,7 @@ export interface FriendRequest {
 export interface UserProfile extends Developer {
   _id: any;
   image: string;
+  bannerImage?: string;
   githubId: number;
   githubUsername: string;
   friends: any[];
@@ -58,6 +59,7 @@ export interface UserProfile extends Developer {
   posts: Post[];
   githubBio: string;
   githubLocation: string;
+  pinnedRepos?: PinnedRepo[];
 }
 
 export interface Post {
@@ -72,3 +74,14 @@ export interface Post {
 }
 
 export type Comment = {};
+
+export interface PinnedRepo {
+  id: number;
+  name: string;
+  full_name: string;
+  html_url: string;
+  description: string;
+  language: string;
+  stargazers_count: number;
+  forks_count: number;
+}
