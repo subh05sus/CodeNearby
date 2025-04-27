@@ -65,6 +65,7 @@ export interface UserProfile extends Developer {
     showActivity: boolean;
     compactPosts: boolean;
     highlightCode: boolean;
+    showSpotlight: boolean;
   };
 }
 

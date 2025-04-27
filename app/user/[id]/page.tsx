@@ -31,6 +31,7 @@ import { MasonryGrid } from "@/components/masonry-grid";
 import { Session } from "next-auth";
 import { toast } from "sonner";
 import GithubCard from "@/components/github-card";
+import { Spotlight } from "@/components/ui/spotlight-new";
 
 interface Post {
   _id: string;
@@ -81,8 +82,25 @@ export default function UserProfilePage() {
   const [activities, setActivities] = useState<any[]>([]);
   const router = useRouter();
 
+  const [appearance, setAppearance] = useState<{
+    theme: "default" | "blue" | "green" | "purple" | "orange";
+    showActivity: boolean;
+    compactPosts: boolean;
+    highlightCode: boolean;
+    showSpotlight: boolean;
+  }>({
+    theme: "default",
+    showActivity: false,
+    compactPosts: false,
+    highlightCode: false,
+    showSpotlight: false,
+  });
+
   const loadActivities = async (username: string) => {
+    if (!username) return;
+
     try {
+      if (appearance?.showActivity) return;
       const data = await fetchGitHubActivities(username);
       setActivities(data);
     } catch {
@@ -112,6 +130,15 @@ export default function UserProfilePage() {
       // }
       if (response.ok) {
         setProfile(data);
+        setAppearance(
+          data.appearance || {
+            theme: "default",
+            showActivity: false,
+            compactPosts: false,
+            highlightCode: false,
+            showSpotlight: false,
+          }
+        );
       } else {
         setProfile(null);
         toast.error("Error", { description: "Failed to fetch profile." });
@@ -399,10 +426,17 @@ export default function UserProfilePage() {
 
   return (
     <div className="max-w-7xl mx-auto">
+      {appearance?.showSpotlight && (
+        <div className="absolute top-0 right-0 w-full -z-50">
+          <div className="w-full rounded-md -z-50 flex md:items-center md:justify-center antialiased dark:bg-transparent  relative overflow-hidden h-[calc(100vh-10rem)]">
+            <Spotlight themeColor={appearance?.theme} />
+          </div>
+        </div>
+      )}
       <ProfileHeader
         imageUrl={profile.image || "/placeholder.svg"}
         bannerUrl={profile.bannerImage || "/bg.webp"}
-        appearance={profile.appearance}
+        appearance={appearance}
       />
       <div className="mt-20 px-4">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6">
@@ -416,7 +450,17 @@ export default function UserProfilePage() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Button variant="outline" size="sm" className="w-full md:w-auto">
+              <Button
+                variant={
+                  appearance?.theme !== "default" ? "default" : "outline"
+                }
+                className={` w-full md:w-auto ${
+                  appearance?.theme !== "default"
+                    ? `bg-${appearance?.theme}-900 text-white hover:bg-${appearance?.theme}-950 transition-all duration-200`
+                    : ""
+                }`}
+                size="sm"
+              >
                 <Github className="h-4 w-4 mr-2" />
                 GitHub Profile
               </Button>
@@ -428,9 +472,15 @@ export default function UserProfilePage() {
                 rel="noopener noreferrer"
               >
                 <Button
-                  variant="outline"
+                  variant={
+                    appearance?.theme !== "default" ? "default" : "outline"
+                  }
+                  className={` w-full md:w-auto ${
+                    appearance?.theme !== "default"
+                      ? `bg-${appearance?.theme}-900 text-white hover:bg-${appearance?.theme}-950 transition-all duration-200`
+                      : ""
+                  }`}
                   size="sm"
-                  className="w-full md:w-auto"
                 >
                   <Twitter className="h-4 w-4 mr-2" />
                   Twitter
@@ -440,9 +490,15 @@ export default function UserProfilePage() {
             {stats?.blog && (
               <Link href={stats.blog} target="_blank" rel="noopener noreferrer">
                 <Button
-                  variant="outline"
+                  variant={
+                    appearance?.theme !== "default" ? "default" : "outline"
+                  }
+                  className={` w-full md:w-auto ${
+                    appearance?.theme !== "default"
+                      ? `bg-${appearance?.theme}-900 text-white hover:bg-${appearance?.theme}-950 transition-all duration-200`
+                      : ""
+                  }`}
                   size="sm"
-                  className="w-full md:w-auto"
                 >
                   <LinkIcon className="h-4 w-4 mr-2" />
                   Website
@@ -454,9 +510,15 @@ export default function UserProfilePage() {
             ) ? (
               <Link href={`/messages/${profile.githubId}`}>
                 <Button
-                  variant="outline"
+                  variant={
+                    appearance?.theme !== "default" ? "default" : "outline"
+                  }
+                  className={` w-full md:w-auto ${
+                    appearance?.theme !== "default"
+                      ? `bg-${appearance?.theme}-900 text-white hover:bg-${appearance?.theme}-950 transition-all duration-200`
+                      : ""
+                  }`}
                   size="sm"
-                  className="w-full md:w-auto"
                 >
                   <MessageSquare className="h-4 w-4 mr-2" />
                   Message
@@ -487,22 +549,44 @@ export default function UserProfilePage() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <Card>
+          <Card
+            className={
+              appearance?.theme !== "default"
+                ? `bg-${appearance?.theme}-500  bg-opacity-10 hover:bg-opacity-20 transition-all duration-200`
+                : ""
+            }
+          >
             <CardContent className="pt-6">
               <div className="flex flex-col items-center">
-                <Users className="h-5 w-5 mb-2 text-primary" />
-                <span className="text-2xl font-bold">
-                  {profile.friends?.length || 0}
+                <Users
+                  className={`h-5 w-5 mb-2 text-primary  ${
+                    appearance?.theme !== "default" &&
+                    `text-${appearance?.theme}-500`
+                  }`}
+                />
+                <span className={`text-2xl font-bold`}>
+                  {profile?.friends?.length || 0}
                 </span>
                 <span className="text-sm text-muted-foreground">Friends</span>
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card
+            className={
+              appearance?.theme !== "default"
+                ? `bg-${appearance?.theme}-500  bg-opacity-10 hover:bg-opacity-20 transition-all duration-200`
+                : ""
+            }
+          >
             <CardContent className="pt-6">
               <div className="flex flex-col items-center">
-                <GitBranch className="h-5 w-5 mb-2 text-primary" />
-                <span className="text-2xl font-bold">
+                <GitBranch
+                  className={`h-5 w-5 mb-2 text-primary  ${
+                    appearance?.theme !== "default" &&
+                    `text-${appearance?.theme}-500`
+                  }`}
+                />
+                <span className={`text-2xl font-bold`}>
                   {stats?.public_repos || 0}
                 </span>
                 <span className="text-sm text-muted-foreground">
@@ -511,22 +595,44 @@ export default function UserProfilePage() {
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card
+            className={
+              appearance?.theme !== "default"
+                ? `bg-${appearance?.theme}-500  bg-opacity-10 hover:bg-opacity-20 transition-all duration-200 `
+                : ""
+            }
+          >
             <CardContent className="pt-6">
               <div className="flex flex-col items-center">
-                <Star className="h-5 w-5 mb-2 text-primary" />
-                <span className="text-2xl font-bold">
+                <Star
+                  className={`h-5 w-5 mb-2 text-primary  ${
+                    appearance?.theme !== "default" &&
+                    `text-${appearance?.theme}-500`
+                  }`}
+                />
+                <span className={`text-2xl font-bold`}>
                   {stats?.followers || 0}
                 </span>
                 <span className="text-sm text-muted-foreground">Followers</span>
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card
+            className={
+              appearance?.theme !== "default"
+                ? `bg-${appearance?.theme}-500  bg-opacity-10 hover:bg-opacity-20 transition-all duration-200`
+                : ""
+            }
+          >
             <CardContent className="pt-6">
               <div className="flex flex-col items-center">
-                <Calendar className="h-5 w-5 mb-2 text-primary" />
-                <span className="text-2xl font-bold">
+                <Calendar
+                  className={`h-5 w-5 mb-2 text-primary  ${
+                    appearance?.theme !== "default" &&
+                    `text-${appearance?.theme}-500`
+                  }`}
+                />
+                <span className={`text-2xl font-bold`}>
                   {new Date(stats?.created_at || Date.now()).getFullYear()}
                 </span>
                 <span className="text-sm text-muted-foreground">
@@ -547,7 +653,6 @@ export default function UserProfilePage() {
                   <CardContent className="p-5">
                     <div className="flex flex-col h-full">
                       <div className="flex items-start gap-3 mb-3">
-                        <Github className="h-5 w-5 text-primary mt-1" />
                         <div>
                           <h3 className="font-medium">
                             <Link
@@ -570,13 +675,13 @@ export default function UserProfilePage() {
                             <span
                               className={`h-3 w-3 rounded-full mr-1.5 
                               ${
-                                profile.appearance?.theme === "blue"
+                                appearance?.theme === "blue"
                                   ? "bg-blue-500/70"
-                                  : profile.appearance?.theme === "green"
+                                  : appearance?.theme === "green"
                                   ? "bg-green-500/70"
-                                  : profile.appearance?.theme === "purple"
+                                  : appearance?.theme === "purple"
                                   ? "bg-purple-500/70"
-                                  : profile.appearance?.theme === "orange"
+                                  : appearance?.theme === "orange"
                                   ? "bg-orange-500/70"
                                   : "bg-primary/70"
                               }`}
@@ -601,10 +706,12 @@ export default function UserProfilePage() {
           </div>
         )}
 
-        <Tabs defaultValue="activity">
+        <Tabs defaultValue="posts">
           <TabsList>
-            <TabsTrigger value="activity">Recent Activity</TabsTrigger>
             <TabsTrigger value="posts">Posts</TabsTrigger>
+            {appearance?.showActivity && (
+              <TabsTrigger value="activity">Recent Activity</TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="activity">
@@ -667,18 +774,25 @@ export default function UserProfilePage() {
 
           <TabsContent value="posts">
             <div className="space-y-6">
-              <MasonryGrid>
-                {posts.map((post) => (
-                  <PostCard
-                    key={post._id}
-                    post={post}
-                    onVote={handleVote}
-                    onAddComment={handleAddComment}
-                    onVotePoll={handleVotePoll}
-                    onCommentVote={handleCommentVote}
-                  />
-                ))}
-              </MasonryGrid>
+              {posts.length > 0 ? (
+                <MasonryGrid>
+                  {posts.map((post) => (
+                    <PostCard
+                      key={post._id}
+                      post={post}
+                      onVote={handleVote}
+                      onAddComment={handleAddComment}
+                      onVotePoll={handleVotePoll}
+                      onCommentVote={handleCommentVote}
+                      compactView={appearance?.compactPosts}
+                    />
+                  ))}
+                </MasonryGrid>
+              ) : (
+                <p className="text-muted-foreground w-full text-center">
+                  No posts found.
+                </p>
+              )}
             </div>
           </TabsContent>
         </Tabs>

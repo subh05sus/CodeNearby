@@ -91,9 +91,17 @@ export default function ProfilePage() {
   const [stats, setStats] = useState<any>(null);
   const [posts, setPosts] = useState<Post[]>(() => []);
   const [activities, setActivities] = useState<any[]>([]);
+  const [appearance, setAppearance] = useState<{
+    theme: "default" | "blue" | "green" | "purple" | "orange";
+    showActivity: boolean;
+    compactPosts: boolean;
+    highlightCode: boolean;
+    showSpotlight: boolean;
+  } | null>(null);
 
   const loadActivities = async () => {
     if (!session?.user?.githubUsername) return;
+    if (appearance?.showActivity === false) return;
     try {
       const data = await fetchGitHubActivities(session.user.githubUsername);
       setActivities(data);
@@ -107,15 +115,29 @@ export default function ProfilePage() {
       fetchProfile();
       fetchGitHubStats();
       fetchUserPosts();
-      loadActivities();
     }
   }, [session]);
+
+  useEffect(() => {
+    if (session && appearance) {
+      loadActivities();
+    }
+  }, [session, appearance?.showActivity]);
 
   const fetchProfile = async () => {
     try {
       const response = await fetch("/api/profile");
       const data = await response.json();
       setProfile(data);
+      setAppearance(
+        data.appearance || {
+          theme: "default",
+          showActivity: true,
+          compactPosts: false,
+          highlightCode: false,
+          showSpotlight: true,
+        }
+      );
     } catch {
       toast.error("Error", {
         description: "Failed to fetch profile.",
@@ -414,11 +436,13 @@ export default function ProfilePage() {
 
   return (
     <div className="w-full px-2 mx-auto max-w-6xl">
-      <div className="absolute top-0 right-0 w-full -z-50">
-        <div className="w-full rounded-md -z-50 flex md:items-center md:justify-center antialiased dark:bg-transparent  relative overflow-hidden h-[calc(100vh-10rem)]">
-          <Spotlight themeColor={profile?.appearance?.theme} />
+      {appearance?.showSpotlight && (
+        <div className="absolute top-0 right-0 w-full -z-50">
+          <div className="w-full rounded-md -z-50 flex md:items-center md:justify-center antialiased dark:bg-transparent  relative overflow-hidden h-[calc(100vh-10rem)]">
+            <Spotlight themeColor={appearance?.theme} />
+          </div>
         </div>
-      </div>
+      )}
       <ProfileHeader
         imageUrl={session.user.image || "/placeholder.svg"}
         editable={true}
@@ -453,7 +477,18 @@ export default function ProfilePage() {
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Button variant="outline" size="sm" asChild>
+              <Button
+                variant={
+                  appearance?.theme !== "default" ? "default" : "outline"
+                }
+                className={
+                  appearance?.theme !== "default"
+                    ? `bg-${appearance?.theme}-900 text-white hover:bg-${appearance?.theme}-950 transition-all duration-200`
+                    : ""
+                }
+                size="sm"
+                asChild
+              >
                 <Link
                   href={`https://github.com/${session.user.githubUsername}`}
                   target="_blank"
@@ -464,7 +499,18 @@ export default function ProfilePage() {
                 </Link>
               </Button>
               {stats?.twitter_username && (
-                <Button variant="outline" size="sm" asChild>
+                <Button
+                  variant={
+                    appearance?.theme !== "default" ? "default" : "outline"
+                  }
+                  className={
+                    appearance?.theme !== "default"
+                      ? `bg-${appearance?.theme}-900 text-white hover:bg-${appearance?.theme}-950 transition-all duration-200`
+                      : ""
+                  }
+                  size="sm"
+                  asChild
+                >
                   <Link
                     href={`https://twitter.com/${stats.twitter_username}`}
                     target="_blank"
@@ -476,7 +522,18 @@ export default function ProfilePage() {
                 </Button>
               )}
               {stats?.blog && (
-                <Button variant="outline" size="sm" asChild>
+                <Button
+                  variant={
+                    appearance?.theme !== "default" ? "default" : "outline"
+                  }
+                  className={
+                    appearance?.theme !== "default"
+                      ? `bg-${appearance?.theme}-900 text-white hover:bg-${appearance?.theme}-950 transition-all duration-200`
+                      : ""
+                  }
+                  size="sm"
+                  asChild
+                >
                   <Link
                     href={stats.blog}
                     target="_blank"
@@ -491,22 +548,44 @@ export default function ProfilePage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-            <Card>
+            <Card
+              className={
+                appearance?.theme !== "default"
+                  ? `bg-${appearance?.theme}-500  bg-opacity-10 hover:bg-opacity-20 transition-all duration-200`
+                  : ""
+              }
+            >
               <CardContent className="pt-6">
                 <div className="flex flex-col items-center">
-                  <Users className="h-5 w-5 mb-2 text-primary" />
-                  <span className="text-2xl font-bold">
+                  <Users
+                    className={`h-5 w-5 mb-2 text-primary  ${
+                      appearance?.theme !== "default" &&
+                      `text-${appearance?.theme}-500`
+                    }`}
+                  />
+                  <span className={`text-2xl font-bold`}>
                     {profile?.friends?.length || 0}
                   </span>
                   <span className="text-sm text-muted-foreground">Friends</span>
                 </div>
               </CardContent>
             </Card>
-            <Card>
+            <Card
+              className={
+                appearance?.theme !== "default"
+                  ? `bg-${appearance?.theme}-500  bg-opacity-10 hover:bg-opacity-20 transition-all duration-200`
+                  : ""
+              }
+            >
               <CardContent className="pt-6">
                 <div className="flex flex-col items-center">
-                  <GitBranch className="h-5 w-5 mb-2 text-primary" />
-                  <span className="text-2xl font-bold">
+                  <GitBranch
+                    className={`h-5 w-5 mb-2 text-primary  ${
+                      appearance?.theme !== "default" &&
+                      `text-${appearance?.theme}-500`
+                    }`}
+                  />
+                  <span className={`text-2xl font-bold`}>
                     {stats?.public_repos || 0}
                   </span>
                   <span className="text-sm text-muted-foreground">
@@ -515,11 +594,22 @@ export default function ProfilePage() {
                 </div>
               </CardContent>
             </Card>
-            <Card>
+            <Card
+              className={
+                appearance?.theme !== "default"
+                  ? `bg-${appearance?.theme}-500  bg-opacity-10 hover:bg-opacity-20 transition-all duration-200 `
+                  : ""
+              }
+            >
               <CardContent className="pt-6">
                 <div className="flex flex-col items-center">
-                  <Star className="h-5 w-5 mb-2 text-primary" />
-                  <span className="text-2xl font-bold">
+                  <Star
+                    className={`h-5 w-5 mb-2 text-primary  ${
+                      appearance?.theme !== "default" &&
+                      `text-${appearance?.theme}-500`
+                    }`}
+                  />
+                  <span className={`text-2xl font-bold`}>
                     {stats?.followers || 0}
                   </span>
                   <span className="text-sm text-muted-foreground">
@@ -528,11 +618,22 @@ export default function ProfilePage() {
                 </div>
               </CardContent>
             </Card>
-            <Card>
+            <Card
+              className={
+                appearance?.theme !== "default"
+                  ? `bg-${appearance?.theme}-500  bg-opacity-10 hover:bg-opacity-20 transition-all duration-200`
+                  : ""
+              }
+            >
               <CardContent className="pt-6">
                 <div className="flex flex-col items-center">
-                  <Calendar className="h-5 w-5 mb-2 text-primary" />
-                  <span className="text-2xl font-bold">
+                  <Calendar
+                    className={`h-5 w-5 mb-2 text-primary  ${
+                      appearance?.theme !== "default" &&
+                      `text-${appearance?.theme}-500`
+                    }`}
+                  />
+                  <span className={`text-2xl font-bold`}>
                     {new Date(stats?.created_at || Date.now()).getFullYear()}
                   </span>
                   <span className="text-sm text-muted-foreground">
@@ -580,7 +681,9 @@ export default function ProfilePage() {
                         <div className="flex items-center gap-3 text-sm mt-auto">
                           {repo.language && (
                             <div className="flex items-center">
-                              <span className="h-3 w-3 rounded-full bg-primary/70 mr-1.5"></span>
+                              <span
+                                className={`h-3 w-3 rounded-full bg-${appearance?.theme}-500/70 mr-1.5`}
+                              ></span>
                               <span>{repo.language}</span>
                             </div>
                           )}
@@ -612,10 +715,12 @@ export default function ProfilePage() {
               <Activity className="h-4 w-4" />
               Posts
             </TabsTrigger>
-            <TabsTrigger value="activity" className="flex items-center gap-2">
-              <Github className="h-4 w-4" />
-              GitHub Activity
-            </TabsTrigger>
+            {appearance?.showActivity && (
+              <TabsTrigger value="activity" className="flex items-center gap-2">
+                <Github className="h-4 w-4" />
+                GitHub Activity
+              </TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="friends" className="space-y-4">
@@ -739,6 +844,7 @@ export default function ProfilePage() {
                       onAddComment={handleAddComment}
                       onVotePoll={handleVotePoll}
                       onCommentVote={handleCommentVote}
+                      compactView={appearance?.compactPosts}
                     />
                   ))}
                 </MasonryGrid>

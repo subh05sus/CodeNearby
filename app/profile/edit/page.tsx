@@ -87,6 +87,7 @@ export default function EditProfilePage() {
     showActivity: true,
     compactPosts: false,
     highlightCode: true,
+    showSpotlight: true,
   });
 
   useEffect(() => {
@@ -803,6 +804,29 @@ export default function EditProfilePage() {
                             setAppearance((prev) => ({
                               ...prev,
                               highlightCode: checked,
+                            }));
+                          }}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label
+                            htmlFor="showSpotlight"
+                            className="font-medium"
+                          >
+                            Show Animated Spotlight
+                          </Label>
+                          <p className="text-xs text-muted-foreground">
+                            Show an animated spotlight on your profile
+                          </p>
+                        </div>
+                        <Switch
+                          id="showSpotlight"
+                          checked={appearance.showSpotlight}
+                          onCheckedChange={(checked) => {
+                            setAppearance((prev) => ({
+                              ...prev,
+                              showSpotlight: checked,
                             }));
                           }}
                         />

@@ -70,14 +70,21 @@ export function SharePost({ post }: SharePostProps) {
   const [sharing, setSharing] = useState(false);
 
   const [canShare, setCanShare] = useState(false);
-
   useEffect(() => {
-    if (session) {
-      fetchFriends();
-      fetchGatherings();
+    if (session && isOpen) {
+      // Only fetch when the dialog is actually opened
+      if (friends.length === 0) {
+        fetchFriends();
+      }
+      if (gatherings.length === 0) {
+        fetchGatherings();
+      }
+      setCanShare(true);
+    } else if (session) {
+      // Just set canShare to true when session exists but dialog is closed
       setCanShare(true);
     }
-  }, [session]);
+  }, [session, isOpen, friends.length, gatherings.length]);
 
   if (!session) {
     return null;

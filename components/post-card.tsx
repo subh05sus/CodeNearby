@@ -71,6 +71,7 @@ interface Poll {
 
 interface PostCardProps {
   post: Post;
+  compactView?: boolean;
   onVote: (postId: string, voteType: "up" | "down") => Promise<void>;
   onAddComment: (
     postId: string,
@@ -91,6 +92,7 @@ export function PostCard({
   onAddComment,
   onVotePoll,
   onCommentVote,
+  compactView = false,
 }: PostCardProps) {
   const { data: session } = useSession() as { data: Session | null };
   const [commentContent, setCommentContent] = useState("");
@@ -201,85 +203,231 @@ export function PostCard({
         <div className="space-y-4">
           {/* user details */}
           {/* User Avatar and Name */}
-          <div className="flex items-center gap-2">
-            <Link href={`/user/${post.user?.githubId ?? post.userId}`}>
-              <div className="relative h-10 w-10">
-                {post.user?.image ? (
+          {!compactView ? (
+            <>
+              <div className="flex items-center gap-2">
+                <Link href={`/user/${post.user?.githubId ?? post.userId}`}>
+                  <div className="relative h-10 w-10">
+                    {post.user?.image ? (
+                      <Image
+                        src={post.user.image}
+                        alt={post.user?.name || "User"}
+                        fill
+                        className="rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-muted  rounded-full" />
+                    )}
+                  </div>
+                </Link>
+                <div>
+                  <Link href={`/user/${post.user?.githubId ?? post.userId}`}>
+                    <p className="font-medium">
+                      {post.user?.name || "Anonymous"}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {post.user?.githubUsername && (
+                        <>
+                          <span>@{post.user.githubUsername}</span>
+                          <span>{" | "}</span>
+                        </>
+                      )}
+                      <span
+                        title={
+                          post.createdAt
+                            ? format(new Date(post.createdAt), "PPpp")
+                            : "Unknown date"
+                        }
+                      >
+                        {post.createdAt
+                          ? formatDistanceToNow(new Date(post.createdAt), {
+                              addSuffix: true,
+                            })
+                          : "Unknown date"}
+                      </span>
+                    </p>
+                  </Link>
+                </div>
+              </div>
+              <p className="break-words md:text-lg text-base">
+                {(post.content || "").split(/\b(https?:\/\/\S+)/g).map((part) =>
+                  part.match(/^https?:\/\//) ? (
+                    <LinkPreview url={part} className="font-medium" key={part}>
+                      {part}
+                    </LinkPreview>
+                  ) : (
+                    part
+                  )
+                )}
+              </p>
+              {/* Image */}
+              {post.imageUrl && (
+                <motion.div
+                  className="relative w-full h-auto aspect-[4/3]"
+                  onClick={() => setImageExpanded(!imageExpanded)}
+                  layout
+                >
+                  <motion.div className="relative w-full h-full" layout>
+                    <Image
+                      src={post.imageUrl || "/placeholder.svg"}
+                      alt="Post image"
+                      fill
+                      className={`rounded-lg cursor-pointer transition-all duration-300 ${
+                        imageExpanded ? "object-contain" : "object-cover"
+                      }`}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      priority={false}
+                    />
+                  </motion.div>
+                </motion.div>
+              )}
+            </>
+          ) : (
+            <div className="">
+              <div className="flex gap-2 h-fit">
+                <div className="flex-1 space-y-2">
+                  <div className="flex items-start justify-between w-full gap-2 ">
+                    <div className="flex items-center gap-2 ">
+                      <Link
+                        href={`/user/${post.user?.githubId ?? post.userId}`}
+                      >
+                        <div className="relative h-10 w-10">
+                          {post.user?.image ? (
+                            <Image
+                              src={post.user.image}
+                              alt={post.user?.name || "User"}
+                              fill
+                              className="rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="h-full w-full bg-muted  rounded-full" />
+                          )}
+                        </div>
+                      </Link>
+                      <div>
+                        <Link
+                          href={`/user/${post.user?.githubId ?? post.userId}`}
+                        >
+                          <p className="font-medium">
+                            {post.user?.name || "Anonymous"}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {post.user?.githubUsername && (
+                              <>
+                                <span>@{post.user.githubUsername}</span>
+                                <span>{" | "}</span>
+                              </>
+                            )}
+                            <span
+                              title={
+                                post.createdAt
+                                  ? format(new Date(post.createdAt), "PPpp")
+                                  : "Unknown date"
+                              }
+                            >
+                              {post.createdAt
+                                ? formatDistanceToNow(
+                                    new Date(post.createdAt),
+                                    {
+                                      addSuffix: true,
+                                    }
+                                  )
+                                : "Unknown date"}
+                            </span>
+                          </p>
+                        </Link>
+                      </div>
+                    </div>
+                    <Button
+                      asChild
+                      variant="ghost"
+                      className="w-fit h-full"
+                    >
+                      <Link
+                        href={`/posts/${post._id}`}
+                        className="w-fit h-full"
+                      >
+                        View Post
+                      </Link>
+                    </Button>
+                  </div>
+
+                  <p className="break-words md:text-base text-sm">
+                    {(() => {
+                      // First split content into parts (text and links)
+                      const parts = (post.content || "").split(
+                        /\b(https?:\/\/\S+)/g
+                      );
+
+                      // If content is too long, truncate it while preserving links
+                      let displayContent = post.content;
+                      if (post.content.length > 150) {
+                        // Get the first 150 characters, making sure to not cut in the middle of a link
+                        let charCount = 0;
+                        let truncatedParts = [];
+
+                        for (let i = 0; i < parts.length; i++) {
+                          const part = parts[i];
+                          // If adding this part exceeds our limit and it's not a link
+                          if (
+                            charCount + part.length > 147 &&
+                            !part.match(/^https?:\/\//)
+                          ) {
+                            // Add truncated text part
+                            truncatedParts.push(
+                              part.substring(0, 147 - charCount) + "..."
+                            );
+                            break;
+                          } else {
+                            // Add the whole part (text or link)
+                            truncatedParts.push(part);
+                            charCount += part.length;
+                            if (charCount >= 147) break;
+                          }
+                        }
+
+                        displayContent = truncatedParts.join("");
+                      }
+
+                      // Now render with the properly truncated content
+                      const remainingChars = 147 - displayContent.length;
+                      return displayContent
+                        .split(/\b(https?:\/\/\S+)/g)
+                        .map((part, index) =>
+                          part.match(/^https?:\/\//) ? (
+                            <LinkPreview
+                              url={part}
+                              className="font-medium"
+                              key={`${part}-${index}`}
+                            >
+                              {part.length > Math.max(10, remainingChars)
+                                ? part.substring(
+                                    0,
+                                    Math.max(10, remainingChars)
+                                  ) + "..."
+                                : part}
+                            </LinkPreview>
+                          ) : (
+                            part
+                          )
+                        );
+                    })()}
+                  </p>
+                </div>
+                {post.imageUrl && (
                   <Image
-                    src={post.user.image}
-                    alt={post.user?.name || "User"}
-                    fill
-                    className="rounded-full object-cover"
+                    src={post.imageUrl || "/placeholder.svg"}
+                    alt="Post image"
+                    className={`rounded-lg cursor-pointer aspect-square h-28 w-auto transition-all duration-300 object-cover`}
+                    height={100}
+                    width={100}
+                    priority={false}
                   />
-                ) : (
-                  <div className="h-full w-full bg-muted  rounded-full" />
                 )}
               </div>
-            </Link>
-            <div>
-              <Link href={`/user/${post.user?.githubId ?? post.userId}`}>
-                <p className="font-medium">{post.user?.name || "Anonymous"}</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {post.user?.githubUsername && (
-                    <>
-                      <span>@{post.user.githubUsername}</span>
-                      <span>{" | "}</span>
-                    </>
-                  )}
-                  <span
-                    title={
-                      post.createdAt
-                        ? format(new Date(post.createdAt), "PPpp")
-                        : "Unknown date"
-                    }
-                  >
-                    {post.createdAt
-                      ? formatDistanceToNow(new Date(post.createdAt), {
-                          addSuffix: true,
-                        })
-                      : "Unknown date"}
-                  </span>
-                </p>
-              </Link>
             </div>
-          </div>
-
-          {/* Post Content */}
-          <p className="break-words md:text-lg text-base">
-            {(post.content || "").split(/\b(https?:\/\/\S+)/g).map((part) =>
-              part.match(/^https?:\/\//) ? (
-                <LinkPreview url={part} className="font-medium" key={part}>
-                  {part}
-                </LinkPreview>
-              ) : (
-                part
-              )
-            )}
-          </p>
-
-          {/* Image */}
-          {post.imageUrl && (
-            <motion.div
-              className="relative w-full h-auto aspect-[4/3]"
-              onClick={() => setImageExpanded(!imageExpanded)}
-              layout
-            >
-              <motion.div className="relative w-full h-full" layout>
-                <Image
-                  src={post.imageUrl || "/placeholder.svg"}
-                  alt="Post image"
-                  fill
-                  className={`rounded-lg cursor-pointer transition-all duration-300 ${
-                    imageExpanded ? "object-contain" : "object-cover"
-                  }`}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  priority={false}
-                />
-              </motion.div>
-            </motion.div>
           )}
 
-          {/* Poll */}
           {post.poll && (
             <PollDisplay
               poll={post.poll}
