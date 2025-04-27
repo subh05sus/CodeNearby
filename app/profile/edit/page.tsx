@@ -788,29 +788,6 @@ export default function EditProfilePage() {
                       <div className="flex items-center justify-between">
                         <div>
                           <Label
-                            htmlFor="highlightCode"
-                            className="font-medium"
-                          >
-                            Highlight Code Snippets
-                          </Label>
-                          <p className="text-xs text-muted-foreground">
-                            Automatically highlight code in your posts
-                          </p>
-                        </div>
-                        <Switch
-                          id="highlightCode"
-                          checked={appearance.highlightCode}
-                          onCheckedChange={(checked) => {
-                            setAppearance((prev) => ({
-                              ...prev,
-                              highlightCode: checked,
-                            }));
-                          }}
-                        />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <Label
                             htmlFor="showSpotlight"
                             className="font-medium"
                           >

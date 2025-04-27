@@ -130,15 +130,7 @@ export default function UserProfilePage() {
       // }
       if (response.ok) {
         setProfile(data);
-        setAppearance(
-          data.appearance || {
-            theme: "default",
-            showActivity: false,
-            compactPosts: false,
-            highlightCode: false,
-            showSpotlight: false,
-          }
-        );
+        setAppearance(data.appearance);
       } else {
         setProfile(null);
         toast.error("Error", { description: "Failed to fetch profile." });
@@ -454,11 +446,17 @@ export default function UserProfilePage() {
                 variant={
                   appearance?.theme !== "default" ? "default" : "outline"
                 }
-                className={` w-full md:w-auto ${
-                  appearance?.theme !== "default"
-                    ? `bg-${appearance?.theme}-900 text-white hover:bg-${appearance?.theme}-950 transition-all duration-200`
+                className={`w-full md:w-auto ${
+                  appearance?.theme === "blue"
+                    ? "bg-blue-900 text-white hover:bg-blue-950"
+                    : appearance?.theme === "green"
+                    ? "bg-green-900 text-white hover:bg-green-950"
+                    : appearance?.theme === "purple"
+                    ? "bg-purple-900 text-white hover:bg-purple-950"
+                    : appearance?.theme === "orange"
+                    ? "bg-orange-900 text-white hover:bg-orange-950"
                     : ""
-                }`}
+                } transition-all duration-200`}
                 size="sm"
               >
                 <Github className="h-4 w-4 mr-2" />
@@ -475,11 +473,17 @@ export default function UserProfilePage() {
                   variant={
                     appearance?.theme !== "default" ? "default" : "outline"
                   }
-                  className={` w-full md:w-auto ${
-                    appearance?.theme !== "default"
-                      ? `bg-${appearance?.theme}-900 text-white hover:bg-${appearance?.theme}-950 transition-all duration-200`
+                  className={`w-full md:w-auto ${
+                    appearance?.theme === "blue"
+                      ? "bg-blue-900 text-white hover:bg-blue-950"
+                      : appearance?.theme === "green"
+                      ? "bg-green-900 text-white hover:bg-green-950"
+                      : appearance?.theme === "purple"
+                      ? "bg-purple-900 text-white hover:bg-purple-950"
+                      : appearance?.theme === "orange"
+                      ? "bg-orange-900 text-white hover:bg-orange-950"
                       : ""
-                  }`}
+                  } transition-all duration-200`}
                   size="sm"
                 >
                   <Twitter className="h-4 w-4 mr-2" />
@@ -493,11 +497,17 @@ export default function UserProfilePage() {
                   variant={
                     appearance?.theme !== "default" ? "default" : "outline"
                   }
-                  className={` w-full md:w-auto ${
-                    appearance?.theme !== "default"
-                      ? `bg-${appearance?.theme}-900 text-white hover:bg-${appearance?.theme}-950 transition-all duration-200`
+                  className={`w-full md:w-auto ${
+                    appearance?.theme === "blue"
+                      ? "bg-blue-900 text-white hover:bg-blue-950"
+                      : appearance?.theme === "green"
+                      ? "bg-green-900 text-white hover:bg-green-950"
+                      : appearance?.theme === "purple"
+                      ? "bg-purple-900 text-white hover:bg-purple-950"
+                      : appearance?.theme === "orange"
+                      ? "bg-orange-900 text-white hover:bg-orange-950"
                       : ""
-                  }`}
+                  } transition-all duration-200`}
                   size="sm"
                 >
                   <LinkIcon className="h-4 w-4 mr-2" />
@@ -513,11 +523,17 @@ export default function UserProfilePage() {
                   variant={
                     appearance?.theme !== "default" ? "default" : "outline"
                   }
-                  className={` w-full md:w-auto ${
-                    appearance?.theme !== "default"
-                      ? `bg-${appearance?.theme}-900 text-white hover:bg-${appearance?.theme}-950 transition-all duration-200`
+                  className={`w-full md:w-auto ${
+                    appearance?.theme === "blue"
+                      ? "bg-blue-900 text-white hover:bg-blue-950"
+                      : appearance?.theme === "green"
+                      ? "bg-green-900 text-white hover:bg-green-950"
+                      : appearance?.theme === "purple"
+                      ? "bg-purple-900 text-white hover:bg-purple-950"
+                      : appearance?.theme === "orange"
+                      ? "bg-orange-900 text-white hover:bg-orange-950"
                       : ""
-                  }`}
+                  } transition-all duration-200`}
                   size="sm"
                 >
                   <MessageSquare className="h-4 w-4 mr-2" />
@@ -552,44 +568,80 @@ export default function UserProfilePage() {
           <Card
             className={
               appearance?.theme !== "default"
-                ? `bg-${appearance?.theme}-500  bg-opacity-10 hover:bg-opacity-20 transition-all duration-200`
+                ? `${
+                    appearance?.theme === "blue"
+                      ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                      : appearance?.theme === "green"
+                      ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                      : appearance?.theme === "purple"
+                      ? "dark:bg-purple-500 bg-purple-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                      : appearance?.theme === "orange"
+                      ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                      : ""
+                  } transition-all duration-200`
                 : ""
             }
           >
             <CardContent className="pt-6">
               <div className="flex flex-col items-center">
                 <Users
-                  className={`h-5 w-5 mb-2 text-primary  ${
-                    appearance?.theme !== "default" &&
-                    `text-${appearance?.theme}-500`
+                  className={`h-5 w-5 mb-2 text-primary ${
+                    appearance?.theme === "blue"
+                      ? "text-blue-500"
+                      : appearance?.theme === "green"
+                      ? "text-green-500"
+                      : appearance?.theme === "purple"
+                      ? "text-purple-500"
+                      : appearance?.theme === "orange"
+                      ? "text-orange-500"
+                      : ""
                   }`}
                 />
-                <span className={`text-2xl font-bold`}>
+                <span className="text-2xl font-bold">
                   {profile?.friends?.length || 0}
                 </span>
-                <span className="text-sm text-muted-foreground">Friends</span>
+                <span className="text-sm dark:text-muted-foreground">
+                  Friends
+                </span>
               </div>
             </CardContent>
           </Card>
           <Card
             className={
               appearance?.theme !== "default"
-                ? `bg-${appearance?.theme}-500  bg-opacity-10 hover:bg-opacity-20 transition-all duration-200`
+                ? `${
+                    appearance?.theme === "blue"
+                      ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                      : appearance?.theme === "green"
+                      ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                      : appearance?.theme === "purple"
+                      ? "dark:bg-purple-500 bg-purple-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                      : appearance?.theme === "orange"
+                      ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                      : ""
+                  } transition-all duration-200`
                 : ""
             }
           >
             <CardContent className="pt-6">
               <div className="flex flex-col items-center">
                 <GitBranch
-                  className={`h-5 w-5 mb-2 text-primary  ${
-                    appearance?.theme !== "default" &&
-                    `text-${appearance?.theme}-500`
+                  className={`h-5 w-5 mb-2 text-primary ${
+                    appearance?.theme === "blue"
+                      ? "text-blue-500"
+                      : appearance?.theme === "green"
+                      ? "text-green-500"
+                      : appearance?.theme === "purple"
+                      ? "text-purple-500"
+                      : appearance?.theme === "orange"
+                      ? "text-orange-500"
+                      : ""
                   }`}
                 />
-                <span className={`text-2xl font-bold`}>
+                <span className="text-2xl font-bold">
                   {stats?.public_repos || 0}
                 </span>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm dark:text-muted-foreground">
                   Repositories
                 </span>
               </div>
@@ -598,44 +650,80 @@ export default function UserProfilePage() {
           <Card
             className={
               appearance?.theme !== "default"
-                ? `bg-${appearance?.theme}-500  bg-opacity-10 hover:bg-opacity-20 transition-all duration-200 `
+                ? `${
+                    appearance?.theme === "blue"
+                      ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                      : appearance?.theme === "green"
+                      ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                      : appearance?.theme === "purple"
+                      ? "dark:bg-purple-500 bg-purple-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                      : appearance?.theme === "orange"
+                      ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                      : ""
+                  } transition-all duration-200`
                 : ""
             }
           >
             <CardContent className="pt-6">
               <div className="flex flex-col items-center">
                 <Star
-                  className={`h-5 w-5 mb-2 text-primary  ${
-                    appearance?.theme !== "default" &&
-                    `text-${appearance?.theme}-500`
+                  className={`h-5 w-5 mb-2 text-primary ${
+                    appearance?.theme === "blue"
+                      ? "text-blue-500"
+                      : appearance?.theme === "green"
+                      ? "text-green-500"
+                      : appearance?.theme === "purple"
+                      ? "text-purple-500"
+                      : appearance?.theme === "orange"
+                      ? "text-orange-500"
+                      : ""
                   }`}
                 />
-                <span className={`text-2xl font-bold`}>
+                <span className="text-2xl font-bold">
                   {stats?.followers || 0}
                 </span>
-                <span className="text-sm text-muted-foreground">Followers</span>
+                <span className="text-sm dark:text-muted-foreground">
+                  Followers
+                </span>
               </div>
             </CardContent>
           </Card>
           <Card
             className={
               appearance?.theme !== "default"
-                ? `bg-${appearance?.theme}-500  bg-opacity-10 hover:bg-opacity-20 transition-all duration-200`
+                ? `${
+                    appearance?.theme === "blue"
+                      ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                      : appearance?.theme === "green"
+                      ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                      : appearance?.theme === "purple"
+                      ? "dark:bg-purple-500 bg-purple-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                      : appearance?.theme === "orange"
+                      ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                      : ""
+                  } transition-all duration-200`
                 : ""
             }
           >
             <CardContent className="pt-6">
               <div className="flex flex-col items-center">
                 <Calendar
-                  className={`h-5 w-5 mb-2 text-primary  ${
-                    appearance?.theme !== "default" &&
-                    `text-${appearance?.theme}-500`
+                  className={`h-5 w-5 mb-2 text-primary ${
+                    appearance?.theme === "blue"
+                      ? "text-blue-500"
+                      : appearance?.theme === "green"
+                      ? "text-green-500"
+                      : appearance?.theme === "purple"
+                      ? "text-purple-500"
+                      : appearance?.theme === "orange"
+                      ? "text-orange-500"
+                      : ""
                   }`}
                 />
-                <span className={`text-2xl font-bold`}>
+                <span className="text-2xl font-bold">
                   {new Date(stats?.created_at || Date.now()).getFullYear()}
                 </span>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-sm dark:text-muted-foreground">
                   Joined GitHub
                 </span>
               </div>
