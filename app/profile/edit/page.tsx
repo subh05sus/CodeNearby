@@ -77,6 +77,8 @@ export default function EditProfilePage() {
   const imageRef = useRef<HTMLImageElement | null>(null);
   const profileInputRef = useRef<HTMLInputElement | null>(null);
   const bannerInputRef = useRef<HTMLInputElement | null>(null);
+  const searchParams = new URLSearchParams(window.location.search);
+  const tabParam = searchParams.get("tab");
 
   useEffect(() => {
     if (!session) {
@@ -404,7 +406,7 @@ export default function EditProfilePage() {
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="information" className="space-y-4">
+        <Tabs defaultValue={tabParam || "information"} className="space-y-4">
           <TabsList className="w-full">
             <TabsTrigger value="information" className="flex-1">
               Profile Information
