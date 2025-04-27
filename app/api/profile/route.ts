@@ -5,9 +5,14 @@ import { getServerSession } from "next-auth/next";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { authOptions } from "@/app/options";
+import { cookies } from "next/headers";
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
+    cookies();
+
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

@@ -2,6 +2,7 @@
 import GithubProvider from "next-auth/providers/github";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import clientPromise from "@/lib/mongodb";
+import { ObjectId } from "mongodb";
 
 declare module "next-auth" {
   interface Session {
@@ -72,7 +73,7 @@ export const authOptions = {
           );
         } else {
           // Create new user
-          await db.collection("users").insertOne({
+          const result = await db.collection("users").insertOne({
             name: user.name,
             email: user.email,
             image: user.image,
@@ -83,6 +84,17 @@ export const authOptions = {
             githubLocation: profile.location,
             friends: [],
           });
+          // Add the user to a specific gathering
+          const userId = result.insertedId;
+          const gatheringId = process.env.ALL_GATHERING_ID!; // Specific gathering ID
+
+          // Update the gathering to add the user to participants
+          if (gatheringId) {
+            await db.collection("gatherings").updateOne(
+              { _id: new ObjectId(gatheringId) },
+              { $addToSet: { participants: userId } }
+            );
+          }
         }
       }
       return true;

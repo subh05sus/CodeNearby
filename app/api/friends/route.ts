@@ -6,12 +6,18 @@ import { ObjectId } from "mongodb";
 import { authOptions } from "@/app/options";
 import { db as firebaseDb } from "@/lib/firebase";
 import { ref, get } from "firebase/database";
+import { cookies } from "next/headers";
 
 const minimum = (a: string, b: string) => (a < b ? a : b);
 const maximum = (a: string, b: string) => (a > b ? a : b);
 
+export const dynamic = 'force-dynamic';
+
+
 export async function GET() {
   try {
+    cookies();
+    
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
