@@ -7,16 +7,7 @@ export const CHANGELOG = [
       "Added Edit Profile feature for users to update their information",
       "Themed the profile page for better user experience",
       "Implemented PFP preview feature for profile images",
-    ]
-  },
-  {
-    version: "1.1.5",
-    date: "2025-05-01",
-    beta: true,
-    changes: [
-      "Added AI-Connect feature for personalized developer recommendations",
-      "Improved GitHub integration for better activity tracking",
-      "Fixed bugs related to user authentication and messaging system"
+      "Improved AI-Connect with better search algorithms for developer recommendations",
     ]
   },
   {
