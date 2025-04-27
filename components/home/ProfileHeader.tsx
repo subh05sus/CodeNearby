@@ -84,19 +84,20 @@ const ProfileHeader = ({
             </motion.div>
           </Avatar>
         </div>
-        <div className="absolute w-full h-full left-0 overflow-hidden -z-20 rounded-2xl">
+        <div
+          className="absolute w-full h-full left-0 overflow-hidden -z-20 rounded-2xl"
+          onClick={() => bannerUrl && handleOpenPreview(bannerUrl, "banner")}
+          style={{ cursor: bannerUrl ? "pointer" : "default" }}
+        >
           {bannerUrl ? (
-            <motion.div
-              layoutId="banner"
-              className="w-full h-full cursor-pointer"
-              onClick={() => handleOpenPreview(bannerUrl, "banner")}
-            >
+            <motion.div layoutId="banner" className="w-full h-full">
               <Image
                 src={bannerUrl}
                 alt="Background"
                 fill
                 className="object-cover object-center"
                 priority
+                style={{ pointerEvents: "none" }}
               />
             </motion.div>
           ) : (
