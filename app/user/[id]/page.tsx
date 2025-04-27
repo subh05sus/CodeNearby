@@ -18,6 +18,7 @@ import {
   MessageSquare,
   Plus,
   GitFork,
+  Calendar,
 } from "lucide-react";
 import Link from "next/link";
 import type { UserProfile } from "@/types";
@@ -485,38 +486,53 @@ export default function UserProfilePage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <Card>
-            <CardContent className="flex items-center justify-between p-6">
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                <span>Friends</span>
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center">
+                <Users className="h-5 w-5 mb-2 text-primary" />
+                <span className="text-2xl font-bold">
+                  {profile.friends?.length || 0}
+                </span>
+                <span className="text-sm text-muted-foreground">Friends</span>
               </div>
-              <span className="text-2xl font-bold">
-                {profile.friends?.length || 0}
-              </span>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="flex items-center justify-between p-6">
-              <div className="flex items-center gap-2">
-                <GitBranch className="h-4 w-4" />
-                <span>Repositories</span>
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center">
+                <GitBranch className="h-5 w-5 mb-2 text-primary" />
+                <span className="text-2xl font-bold">
+                  {stats?.public_repos || 0}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  Repositories
+                </span>
               </div>
-              <span className="text-2xl font-bold">
-                {stats?.public_repos || 0}
-              </span>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="flex items-center justify-between p-6">
-              <div className="flex items-center gap-2">
-                <Star className="h-4 w-4" />
-                <span>Followers</span>
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center">
+                <Star className="h-5 w-5 mb-2 text-primary" />
+                <span className="text-2xl font-bold">
+                  {stats?.followers || 0}
+                </span>
+                <span className="text-sm text-muted-foreground">Followers</span>
               </div>
-              <span className="text-2xl font-bold">
-                {stats?.followers || 0}
-              </span>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-center">
+                <Calendar className="h-5 w-5 mb-2 text-primary" />
+                <span className="text-2xl font-bold">
+                  {new Date(stats?.created_at || Date.now()).getFullYear()}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  Joined GitHub
+                </span>
+              </div>
             </CardContent>
           </Card>
         </div>
