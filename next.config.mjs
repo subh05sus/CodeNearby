@@ -19,5 +19,16 @@ const nextConfig = {
       { protocol: "https", hostname: "assets.aceternity.com" },
     ],
   },
+  webpack: (config, { isServer }) => {
+    // Ignore the critical dependency warning from web-worker
+    config.ignoreWarnings = [
+      {
+        message:
+          /Critical dependency: the request of a dependency is an expression/,
+      },
+    ];
+
+    return config;
+  },
 };
 export default nextConfig;

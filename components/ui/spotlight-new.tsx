@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { motion } from "motion/react";
+import { useTheme } from "next-themes";
 
 type SpotlightProps = {
   gradientFirst?: string;
@@ -27,6 +28,7 @@ export const Spotlight = ({
   xOffset = 100,
   themeColor = "default",
 }: SpotlightProps = {}) => {
+  const { resolvedTheme } = useTheme();
   // Determine the theme color to use (from prop or system)
   const getThemeColor = () => {
     if (themeColor) return themeColor;
@@ -41,97 +43,101 @@ export const Spotlight = ({
 
     const gradients = {
       default: {
-      first:
-        gradientFirst ||
-        "radial-gradient(68.54% 68.72% at 55.02% 31.46%, hsla(210, 100%, 35%, .08) 0, hsla(210, 100%, 25%, .02) 50%, hsla(210, 100%, 15%, 0) 80%)",
-      second:
-        gradientSecond ||
-        "radial-gradient(50% 50% at 50% 50%, hsla(210, 100%, 35%, .06) 0, hsla(210, 100%, 25%, .02) 80%, transparent 100%)",
-      third:
-        gradientThird ||
-        "radial-gradient(50% 50% at 50% 50%, hsla(210, 100%, 35%, .04) 0, hsla(210, 100%, 15%, .02) 80%, transparent 100%)",
+        first:
+          gradientFirst ||
+          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, hsla(210, 100%, 35%, .08) 0, hsla(210, 100%, 25%, .02) 50%, hsla(210, 100%, 15%, 0) 80%)",
+        second:
+          gradientSecond ||
+          "radial-gradient(50% 50% at 50% 50%, hsla(210, 100%, 35%, .06) 0, hsla(210, 100%, 25%, .02) 80%, transparent 100%)",
+        third:
+          gradientThird ||
+          "radial-gradient(50% 50% at 50% 50%, hsla(210, 100%, 35%, .04) 0, hsla(210, 100%, 15%, .02) 80%, transparent 100%)",
       },
       blue: {
-      first:
-        "radial-gradient(68.54% 68.72% at 55.02% 31.46%, hsla(210, 100%, 35%, .12) 0, hsla(210, 100%, 30%, .05) 50%, hsla(210, 100%, 25%, 0) 80%)",
-      second:
-        "radial-gradient(50% 50% at 50% 50%, hsla(210, 100%, 35%, .1) 0, hsla(210, 100%, 30%, .05) 80%, transparent 100%)",
-      third:
-        "radial-gradient(50% 50% at 50% 50%, hsla(210, 100%, 35%, .08) 0, hsla(210, 100%, 25%, .03) 80%, transparent 100%)",
+        first:
+          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, hsla(210, 100%, 35%, .12) 0, hsla(210, 100%, 30%, .05) 50%, hsla(210, 100%, 25%, 0) 80%)",
+        second:
+          "radial-gradient(50% 50% at 50% 50%, hsla(210, 100%, 35%, .1) 0, hsla(210, 100%, 30%, .05) 80%, transparent 100%)",
+        third:
+          "radial-gradient(50% 50% at 50% 50%, hsla(210, 100%, 35%, .08) 0, hsla(210, 100%, 25%, .03) 80%, transparent 100%)",
       },
       green: {
-      first:
-        "radial-gradient(68.54% 68.72% at 55.02% 31.46%, hsla(142, 90%, 35%, .12) 0, hsla(142, 90%, 30%, .05) 50%, hsla(142, 90%, 25%, 0) 80%)",
-      second:
-        "radial-gradient(50% 50% at 50% 50%, hsla(142, 90%, 35%, .1) 0, hsla(142, 90%, 30%, .05) 80%, transparent 100%)",
-      third:
-        "radial-gradient(50% 50% at 50% 50%, hsla(142, 90%, 35%, .08) 0, hsla(142, 90%, 25%, .03) 80%, transparent 100%)",
+        first:
+          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, hsla(142, 90%, 35%, .12) 0, hsla(142, 90%, 30%, .05) 50%, hsla(142, 90%, 25%, 0) 80%)",
+        second:
+          "radial-gradient(50% 50% at 50% 50%, hsla(142, 90%, 35%, .1) 0, hsla(142, 90%, 30%, .05) 80%, transparent 100%)",
+        third:
+          "radial-gradient(50% 50% at 50% 50%, hsla(142, 90%, 35%, .08) 0, hsla(142, 90%, 25%, .03) 80%, transparent 100%)",
       },
       purple: {
-      first:
-        "radial-gradient(68.54% 68.72% at 55.02% 31.46%, hsla(270, 90%, 45%, .12) 0, hsla(270, 90%, 40%, .05) 50%, hsla(270, 90%, 35%, 0) 80%)",
-      second:
-        "radial-gradient(50% 50% at 50% 50%, hsla(270, 90%, 45%, .1) 0, hsla(270, 90%, 40%, .05) 80%, transparent 100%)",
-      third:
-        "radial-gradient(50% 50% at 50% 50%, hsla(270, 90%, 45%, .08) 0, hsla(270, 90%, 35%, .03) 80%, transparent 100%)",
+        first:
+          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, hsla(270, 90%, 45%, .12) 0, hsla(270, 90%, 40%, .05) 50%, hsla(270, 90%, 35%, 0) 80%)",
+        second:
+          "radial-gradient(50% 50% at 50% 50%, hsla(270, 90%, 45%, .1) 0, hsla(270, 90%, 40%, .05) 80%, transparent 100%)",
+        third:
+          "radial-gradient(50% 50% at 50% 50%, hsla(270, 90%, 45%, .08) 0, hsla(270, 90%, 35%, .03) 80%, transparent 100%)",
       },
       orange: {
-      first:
-        "radial-gradient(68.54% 68.72% at 55.02% 31.46%, hsla(30, 100%, 45%, .12) 0, hsla(30, 100%, 40%, .05) 50%, hsla(30, 100%, 35%, 0) 80%)",
-      second:
-        "radial-gradient(50% 50% at 50% 50%, hsla(30, 100%, 45%, .1) 0, hsla(30, 100%, 40%, .05) 80%, transparent 100%)",
-      third:
-        "radial-gradient(50% 50% at 50% 50%, hsla(30, 100%, 45%, .08) 0, hsla(30, 100%, 35%, .03) 80%, transparent 100%)",
+        first:
+          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, hsla(30, 100%, 45%, .12) 0, hsla(30, 100%, 40%, .05) 50%, hsla(30, 100%, 35%, 0) 80%)",
+        second:
+          "radial-gradient(50% 50% at 50% 50%, hsla(30, 100%, 45%, .1) 0, hsla(30, 100%, 40%, .05) 80%, transparent 100%)",
+        third:
+          "radial-gradient(50% 50% at 50% 50%, hsla(30, 100%, 45%, .08) 0, hsla(30, 100%, 35%, .03) 80%, transparent 100%)",
       },
     };
 
     // Check if we're in dark mode
-    const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDarkMode =
+      resolvedTheme === "dark" ||
+      (resolvedTheme === "system" &&
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches);
 
     // Light mode gradients
     const lightGradients = {
       default: {
-      first:
-        gradientFirst ||
-        "radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.02) 50%, rgba(0, 0, 0, 0) 80%)",
-      second:
-        gradientSecond ||
-        "radial-gradient(50% 50% at 50% 50%, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.02) 80%, transparent 100%)",
-      third:
-        gradientThird ||
-        "radial-gradient(50% 50% at 50% 50%, rgba(0, 0, 0, 0.02) 0%, rgba(0, 0, 0, 0.01) 80%, transparent 100%)",
+        first:
+          gradientFirst ||
+          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.02) 50%, rgba(0, 0, 0, 0) 80%)",
+        second:
+          gradientSecond ||
+          "radial-gradient(50% 50% at 50% 50%, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.02) 80%, transparent 100%)",
+        third:
+          gradientThird ||
+          "radial-gradient(50% 50% at 50% 50%, rgba(0, 0, 0, 0.02) 0%, rgba(0, 0, 0, 0.01) 80%, transparent 100%)",
       },
       blue: {
-      first:
-        "radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(28, 100, 242, 0.08) 0%, rgba(28, 100, 242, 0.04) 50%, rgba(28, 100, 242, 0) 80%)",
-      second:
-        "radial-gradient(50% 50% at 50% 50%, rgba(28, 100, 242, 0.06) 0%, rgba(28, 100, 242, 0.03) 80%, transparent 100%)",
-      third:
-        "radial-gradient(50% 50% at 50% 50%, rgba(28, 100, 242, 0.04) 0%, rgba(28, 100, 242, 0.02) 80%, transparent 100%)",
+        first:
+          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(28, 100, 242, 0.08) 0%, rgba(28, 100, 242, 0.04) 50%, rgba(28, 100, 242, 0) 80%)",
+        second:
+          "radial-gradient(50% 50% at 50% 50%, rgba(28, 100, 242, 0.06) 0%, rgba(28, 100, 242, 0.03) 80%, transparent 100%)",
+        third:
+          "radial-gradient(50% 50% at 50% 50%, rgba(28, 100, 242, 0.04) 0%, rgba(28, 100, 242, 0.02) 80%, transparent 100%)",
       },
       green: {
-      first:
-        "radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(22, 163, 74, 0.08) 0%, rgba(22, 163, 74, 0.04) 50%, rgba(22, 163, 74, 0) 80%)",
-      second:
-        "radial-gradient(50% 50% at 50% 50%, rgba(22, 163, 74, 0.06) 0%, rgba(22, 163, 74, 0.03) 80%, transparent 100%)",
-      third:
-        "radial-gradient(50% 50% at 50% 50%, rgba(22, 163, 74, 0.04) 0%, rgba(22, 163, 74, 0.02) 80%, transparent 100%)",
+        first:
+          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(22, 163, 74, 0.08) 0%, rgba(22, 163, 74, 0.04) 50%, rgba(22, 163, 74, 0) 80%)",
+        second:
+          "radial-gradient(50% 50% at 50% 50%, rgba(22, 163, 74, 0.06) 0%, rgba(22, 163, 74, 0.03) 80%, transparent 100%)",
+        third:
+          "radial-gradient(50% 50% at 50% 50%, rgba(22, 163, 74, 0.04) 0%, rgba(22, 163, 74, 0.02) 80%, transparent 100%)",
       },
       purple: {
-      first:
-        "radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(147, 51, 234, 0.08) 0%, rgba(147, 51, 234, 0.04) 50%, rgba(147, 51, 234, 0) 80%)",
-      second:
-        "radial-gradient(50% 50% at 50% 50%, rgba(147, 51, 234, 0.06) 0%, rgba(147, 51, 234, 0.03) 80%, transparent 100%)",
-      third:
-        "radial-gradient(50% 50% at 50% 50%, rgba(147, 51, 234, 0.04) 0%, rgba(147, 51, 234, 0.02) 80%, transparent 100%)",
+        first:
+          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(147, 51, 234, 0.08) 0%, rgba(147, 51, 234, 0.04) 50%, rgba(147, 51, 234, 0) 80%)",
+        second:
+          "radial-gradient(50% 50% at 50% 50%, rgba(147, 51, 234, 0.06) 0%, rgba(147, 51, 234, 0.03) 80%, transparent 100%)",
+        third:
+          "radial-gradient(50% 50% at 50% 50%, rgba(147, 51, 234, 0.04) 0%, rgba(147, 51, 234, 0.02) 80%, transparent 100%)",
       },
       orange: {
-      first:
-        "radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(234, 88, 12, 0.08) 0%, rgba(234, 88, 12, 0.04) 50%, rgba(234, 88, 12, 0) 80%)",
-      second:
-        "radial-gradient(50% 50% at 50% 50%, rgba(234, 88, 12, 0.06) 0%, rgba(234, 88, 12, 0.03) 80%, transparent 100%)",
-      third:
-        "radial-gradient(50% 50% at 50% 50%, rgba(234, 88, 12, 0.04) 0%, rgba(234, 88, 12, 0.02) 80%, transparent 100%)",
+        first:
+          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(234, 88, 12, 0.08) 0%, rgba(234, 88, 12, 0.04) 50%, rgba(234, 88, 12, 0) 80%)",
+        second:
+          "radial-gradient(50% 50% at 50% 50%, rgba(234, 88, 12, 0.06) 0%, rgba(234, 88, 12, 0.03) 80%, transparent 100%)",
+        third:
+          "radial-gradient(50% 50% at 50% 50%, rgba(234, 88, 12, 0.04) 0%, rgba(234, 88, 12, 0.02) 80%, transparent 100%)",
       },
     };
 

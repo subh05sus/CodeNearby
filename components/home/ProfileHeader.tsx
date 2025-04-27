@@ -84,20 +84,20 @@ const ProfileHeader = ({
             </motion.div>
           </Avatar>
         </div>
-        <div
-          className="absolute w-full h-full left-0 overflow-hidden -z-20 rounded-2xl"
-          onClick={() => bannerUrl && handleOpenPreview(bannerUrl, "banner")}
-          style={{ cursor: bannerUrl ? "pointer" : "default" }}
-        >
+        <div className="absolute w-full h-full left-0 overflow-hidden -z-20 rounded-2xl">
           {bannerUrl ? (
-            <motion.div layoutId="banner" className="w-full h-full">
+            <motion.div
+              layoutId="banner"
+              className="w-full h-full"
+              onClick={() => handleOpenPreview(bannerUrl, "banner")}
+              style={{ cursor: "pointer" }}
+            >
               <Image
                 src={bannerUrl}
                 alt="Background"
-                fill
-                className="object-cover object-center"
-                priority
-                style={{ pointerEvents: "none" }}
+                layout="fill"
+                objectFit="cover"
+                objectPosition="center"
               />
             </motion.div>
           ) : (
@@ -136,82 +136,51 @@ const ProfileHeader = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
             onClick={handleClosePreview}
           >
-            {previewId === "banner" ? (
+            <motion.div
+              layoutId={previewId || undefined}
+              className="relative max-w-[90vw] max-h-[90vh]"
+              onClick={(e) => e.stopPropagation()}
+            >
               <motion.div
-                layoutId="banner"
-                className="relative w-auto max-w-[90vw] max-h-[90vh]"
-                onClick={(e) => e.stopPropagation()}
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                className="relative w-full h-full overflow-hidden rounded-lg"
               >
                 <Image
                   src={previewImage}
-                  alt="Banner Preview"
-                  width={1920}
-                  height={1080}
-                  className="object-contain rounded-lg"
-                  priority
-                />
-                <motion.button
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1, transition: { delay: 0.2 } }}
-                  className="absolute top-4 right-4 p-2 bg-black/60 rounded-full text-white"
-                  onClick={handleClosePreview}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                  </svg>
-                </motion.button>
-              </motion.div>
-            ) : (
-              <motion.div
-                layoutId="avatar"
-                className="relative max-w-[90vw] max-h-[90vh]"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Image
-                  src={previewImage}
-                  alt="Avatar Preview"
+                  alt="Preview"
                   width={1000}
                   height={1000}
-                  className="object-contain rounded-lg"
-                  priority
+                  className="object-contain"
+                  style={{ maxHeight: "90vh", width: "auto" }}
                 />
-                <motion.button
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1, transition: { delay: 0.2 } }}
-                  className="absolute top-4 right-4 p-2 bg-black/60 rounded-full text-white"
-                  onClick={handleClosePreview}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                  </svg>
-                </motion.button>
               </motion.div>
-            )}
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1, transition: { delay: 0.2 } }}
+                className="absolute top-4 right-4 p-2 bg-black/60 rounded-full text-white"
+                onClick={handleClosePreview}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </motion.button>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

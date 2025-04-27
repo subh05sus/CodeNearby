@@ -338,11 +338,7 @@ export function PostCard({
                         </Link>
                       </div>
                     </div>
-                    <Button
-                      asChild
-                      variant="ghost"
-                      className="w-fit h-full"
-                    >
+                    <Button asChild variant="ghost" className="w-fit h-full">
                       <Link
                         href={`/posts/${post._id}`}
                         className="w-fit h-full"
@@ -364,7 +360,7 @@ export function PostCard({
                       if (post.content.length > 150) {
                         // Get the first 150 characters, making sure to not cut in the middle of a link
                         let charCount = 0;
-                        let truncatedParts = [];
+                        const truncatedParts = [];
 
                         for (let i = 0; i < parts.length; i++) {
                           const part = parts[i];
