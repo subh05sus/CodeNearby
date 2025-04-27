@@ -416,7 +416,7 @@ export default function ProfilePage() {
     <div className="w-full px-2 mx-auto max-w-6xl">
       <div className="absolute top-0 right-0 w-full -z-50">
         <div className="w-full rounded-md -z-50 flex md:items-center md:justify-center antialiased dark:bg-transparent  relative overflow-hidden h-[calc(100vh-10rem)]">
-          <Spotlight gradientFirst="" gradientSecond="" gradientThird="" />
+          <Spotlight themeColor={profile?.appearance?.theme} />
           {/* <div className="absolute bottom-0 left-0 w-full right-0 h-96 bg-gradient-to-t from-white to-transparent dark:bg-transparent dark:hidden" /> */}
         </div>
       </div>
