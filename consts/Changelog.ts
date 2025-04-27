@@ -1,9 +1,29 @@
 export const CHANGELOG = [
   {
+    version: "1.2.0",
+    date: "2025-04-29",
+    beta: false,
+    changes: [
+      "Added Edit Profile feature for users to update their information",
+      "Themed the profile page for better user experience",
+      "Implemented PFP preview feature for profile images",
+    ]
+  },
+  {
+    version: "1.1.5",
+    date: "2025-05-01",
+    beta: true,
+    changes: [
+      "Added AI-Connect feature for personalized developer recommendations",
+      "Improved GitHub integration for better activity tracking",
+      "Fixed bugs related to user authentication and messaging system"
+    ]
+  },
+  {
     version: "1.1.0",
     date: "2025-04-25",
     beta: false,
-    changes:[
+    changes: [
       "Launched AI-Connect: AI-powered developer search using Gemini AI",
       "Added GitHub card component for non-CodeNearby users with profile previews",
       "Created dedicated AI-Connect about page with feature documentation",
@@ -14,7 +34,7 @@ export const CHANGELOG = [
     version: "1.0.5",
     date: "2025-04-20",
     beta: true,
-    changes:[
+    changes: [
       "Created AI-Connect conversation interface for finding developers by skills and location",
       "Added GitHub query search methods for intelligent developer recommendations",
       "Improved about page with AI-Connect feature showcase",

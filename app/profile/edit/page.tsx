@@ -40,6 +40,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 import { fetchUserRepositories } from "@/lib/github";
 import { Switch } from "@/components/ui/switch";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function EditProfilePage() {
   const { data: session } = useSession();
@@ -75,6 +76,11 @@ export default function EditProfilePage() {
   const [croppedBannerImage, setCroppedBannerImage] = useState<string | null>(
     null
   );
+
+  // For image preview modal
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [previewId, setPreviewId] = useState<string | null>(null);
+
   const imageRef = useRef<HTMLImageElement | null>(null);
   const profileInputRef = useRef<HTMLInputElement | null>(null);
   const bannerInputRef = useRef<HTMLInputElement | null>(null);
@@ -304,6 +310,16 @@ export default function EditProfilePage() {
     setCroppedBannerImage(null);
   };
 
+  const handleOpenPreview = (image: string, id: string) => {
+    setPreviewImage(image);
+    setPreviewId(id);
+  };
+
+  const handleClosePreview = () => {
+    setPreviewImage(null);
+    setPreviewId(null);
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
@@ -331,13 +347,20 @@ export default function EditProfilePage() {
           <div className="relative w-full h-[180px] overflow-hidden rounded-t-lg">
             {croppedBannerImage || profile?.bannerImage ? (
               <>
-                <Image
-                  src={croppedBannerImage || profile?.bannerImage || "/bg.webp"}
-                  alt="Banner"
-                  layout="fill"
-                  objectFit="cover"
-                  className="w-full h-full"
-                />
+                <motion.div 
+                  layoutId="banner"
+                  className="w-full h-full cursor-pointer"
+                  onClick={() => handleOpenPreview(croppedBannerImage || profile?.bannerImage || "/bg.webp", "banner")}
+                >
+                  <Image
+                    src={croppedBannerImage || profile?.bannerImage || "/bg.webp"}
+                    alt="Banner"
+                    fill
+                    className="object-cover"
+                    style={{ pointerEvents: "none" }}
+                    priority
+                  />
+                </motion.div>
                 <div className="absolute bottom-4 right-4 flex gap-2">
                   <Button
                     size="sm"
@@ -385,16 +408,22 @@ export default function EditProfilePage() {
           <CardContent className="pt-6">
             <div className="flex items-center space-x-4">
               <div className="relative">
-                <div className="h-24 w-24 rounded-full overflow-hidden border-4 border-background shadow-lg">
-                  <img
-                    src={
-                      croppedProfileImage ||
-                      profile?.image ||
-                      "/placeholder.svg"
-                    }
-                    alt="Profile"
-                    className="h-full w-full object-cover"
-                  />
+                <div 
+                  className="h-24 w-24 rounded-full overflow-hidden border-4 border-background shadow-lg cursor-pointer"
+                  onClick={() => handleOpenPreview(croppedProfileImage || profile?.image || "/placeholder.svg", "profile")}
+                >
+                  <motion.div layoutId="profile">
+                    <img
+                      src={
+                        croppedProfileImage ||
+                        profile?.image ||
+                        "/placeholder.svg"
+                      }
+                      alt="Profile"
+                      className="h-full w-full object-cover"
+                      style={{ pointerEvents: "none" }}
+                    />
+                  </motion.div>
                 </div>
                 <Button
                   size="icon"
@@ -881,6 +910,50 @@ export default function EditProfilePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Image Preview Modal */}
+      <AnimatePresence>
+        {previewImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80"
+            onClick={handleClosePreview}
+          >
+            <motion.div
+              layoutId={previewId || undefined}
+              className="relative max-w-[90vw] max-h-[90vh]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <motion.div
+                initial={{ scale: 0.8 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                className="relative w-full h-full overflow-hidden rounded-lg"
+              >
+                <Image
+                  src={previewImage}
+                  alt={previewId === "banner" ? "Banner Preview" : "Profile Preview"}
+                  width={previewId === "banner" ? 1920 : 1000}
+                  height={previewId === "banner" ? 1080 : 1000}
+                  className="object-contain"
+                  style={{ maxHeight: "90vh", width: "auto" }}
+                  priority
+                />
+              </motion.div>
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1, transition: { delay: 0.2 } }}
+                className="absolute top-4 right-4 p-2 bg-black/60 rounded-full text-white"
+                onClick={handleClosePreview}
+              >
+                <X className="h-6 w-6" />
+              </motion.button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
