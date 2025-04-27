@@ -60,6 +60,12 @@ export interface UserProfile extends Developer {
   githubBio: string;
   githubLocation: string;
   pinnedRepos?: PinnedRepo[];
+  appearance?: {
+    theme: 'default' | 'blue' | 'green' | 'purple' | 'orange';
+    showActivity: boolean;
+    compactPosts: boolean;
+    highlightCode: boolean;
+  };
 }
 
 export interface Post {

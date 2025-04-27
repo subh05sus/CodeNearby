@@ -17,6 +17,7 @@ import {
   Twitter,
   MessageSquare,
   Plus,
+  GitFork,
 } from "lucide-react";
 import Link from "next/link";
 import type { UserProfile } from "@/types";
@@ -397,7 +398,11 @@ export default function UserProfilePage() {
 
   return (
     <div className="max-w-7xl mx-auto">
-      <ProfileHeader imageUrl={profile.image || "/placeholder.svg"} bannerUrl={profile.bannerImage || "/bg.webp"} />
+      <ProfileHeader
+        imageUrl={profile.image || "/placeholder.svg"}
+        bannerUrl={profile.bannerImage || "/bg.webp"}
+        appearance={profile.appearance}
+      />
       <div className="mt-20 px-4">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6">
           <div>
@@ -515,6 +520,70 @@ export default function UserProfilePage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Pinned Repositories Section */}
+        {profile.pinnedRepos && profile.pinnedRepos.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">Pinned Repositories</h2>
+            <div className="grid md:grid-cols-2 gap-4">
+              {profile.pinnedRepos.map((repo) => (
+                <Card key={repo.id}>
+                  <CardContent className="p-5">
+                    <div className="flex flex-col h-full">
+                      <div className="flex items-start gap-3 mb-3">
+                        <Github className="h-5 w-5 text-primary mt-1" />
+                        <div>
+                          <h3 className="font-medium">
+                            <Link
+                              href={repo.html_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="hover:text-primary transition-colors hover:underline"
+                            >
+                              {repo.name}
+                            </Link>
+                          </h3>
+                          <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                            {repo.description || "No description available"}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 text-sm mt-auto">
+                        {repo.language && (
+                          <div className="flex items-center">
+                            <span
+                              className={`h-3 w-3 rounded-full mr-1.5 
+                              ${
+                                profile.appearance?.theme === "blue"
+                                  ? "bg-blue-500/70"
+                                  : profile.appearance?.theme === "green"
+                                  ? "bg-green-500/70"
+                                  : profile.appearance?.theme === "purple"
+                                  ? "bg-purple-500/70"
+                                  : profile.appearance?.theme === "orange"
+                                  ? "bg-orange-500/70"
+                                  : "bg-primary/70"
+                              }`}
+                            />
+                            <span>{repo.language}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center">
+                          <Star className="h-4 w-4 mr-1" />
+                          <span>{repo.stargazers_count}</span>
+                        </div>
+                        <div className="flex items-center">
+                          <GitFork className="h-4 w-4 mr-1" />
+                          <span>{repo.forks_count}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
 
         <Tabs defaultValue="activity">
           <TabsList>

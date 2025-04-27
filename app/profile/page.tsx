@@ -43,6 +43,7 @@ import {
 import ProfileHeader from "@/components/home/ProfileHeader";
 import { MasonryGrid } from "@/components/masonry-grid";
 import { toast } from "sonner";
+import { Spotlight } from "@/components/ui/spotlight-new";
 
 interface Post {
   _id: string;
@@ -413,10 +414,17 @@ export default function ProfilePage() {
 
   return (
     <div className="w-full px-2 mx-auto max-w-6xl">
+      <div className="absolute top-0 right-0 w-full -z-50">
+        <div className="w-full rounded-md -z-50 flex md:items-center md:justify-center antialiased dark:bg-transparent  relative overflow-hidden h-[calc(100vh-10rem)]">
+          <Spotlight gradientFirst="" gradientSecond="" gradientThird="" />
+          {/* <div className="absolute bottom-0 left-0 w-full right-0 h-96 bg-gradient-to-t from-white to-transparent dark:bg-transparent dark:hidden" /> */}
+        </div>
+      </div>
       <ProfileHeader
         imageUrl={session.user.image || "/placeholder.svg"}
-        bannerUrl={profile?.bannerImage || "/bg.webp"}
         editable={true}
+        bannerUrl={profile?.bannerImage || "/bg.webp"}
+        appearance={profile?.appearance}
       />
 
       <div className="max-w-6xl mx-auto px-4">

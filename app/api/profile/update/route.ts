@@ -22,7 +22,8 @@ export async function PUT(request: Request) {
             githubLocation: data.githubLocation,
             image: data.image,
             bannerImage: data.bannerImage,
-            pinnedRepos: data.pinnedRepos, // Add support for pinned repositories
+            pinnedRepos: data.pinnedRepos,
+            appearance: data.appearance, // Add support for appearance settings
         };
 
         // Filter out undefined values

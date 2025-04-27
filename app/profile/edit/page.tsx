@@ -39,6 +39,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 import { fetchUserRepositories } from "@/lib/github";
+import { Switch } from "@/components/ui/switch";
 
 export default function EditProfilePage() {
   const { data: session } = useSession();
@@ -80,6 +81,14 @@ export default function EditProfilePage() {
   const searchParams = new URLSearchParams(window.location.search);
   const tabParam = searchParams.get("tab");
 
+  // Appearance settings
+  const [appearance, setAppearance] = useState({
+    theme: "default",
+    showActivity: true,
+    compactPosts: false,
+    highlightCode: true,
+  });
+
   useEffect(() => {
     if (!session) {
       router.push("/profile");
@@ -108,6 +117,11 @@ export default function EditProfilePage() {
       // Initialize pinned repos if they exist
       if (data.pinnedRepos && data.pinnedRepos.length > 0) {
         setPinnedRepos(data.pinnedRepos);
+      }
+
+      // Initialize appearance settings if they exist
+      if (data.appearance) {
+        setAppearance(data.appearance);
       }
     } catch {
       toast.error("Failed to fetch profile.");
@@ -158,6 +172,7 @@ export default function EditProfilePage() {
           image: profileImageUrl,
           bannerImage: bannerImageUrl,
           pinnedRepos,
+          appearance,
         }),
       });
 
@@ -654,18 +669,146 @@ export default function EditProfilePage() {
               <CardHeader>
                 <CardTitle>Theme & Visual Preferences</CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground mb-4">
-                  Customize how your profile looks. More appearance options
-                  coming soon!
-                </p>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-sm font-medium mb-3">Profile Theme</h3>
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+                      {["default", "blue", "green", "purple", "orange"].map(
+                        (color) => (
+                          <div
+                            key={color}
+                            className={`
+                            relative cursor-pointer rounded-md overflow-hidden border-2 h-20
+                            ${
+                              appearance.theme === color
+                                ? "border-primary ring-2 ring-primary/20"
+                                : "border-border hover:border-primary/50"
+                            }
+                          `}
+                            onClick={() => {
+                              setAppearance((prev) => ({
+                                ...prev,
+                                theme: color as any,
+                              }));
+                            }}
+                          >
+                            <div
+                              className={`
+                            absolute inset-0 
+                            ${
+                              color === "default"
+                                ? "bg-gradient-to-br from-primary/30 to-primary/10"
+                                : ""
+                            }
+                            ${
+                              color === "blue"
+                                ? "bg-gradient-to-br from-blue-500/30 to-blue-600/10"
+                                : ""
+                            }
+                            ${
+                              color === "green"
+                                ? "bg-gradient-to-br from-green-500/30 to-green-600/10"
+                                : ""
+                            }
+                            ${
+                              color === "purple"
+                                ? "bg-gradient-to-br from-purple-500/30 to-purple-600/10"
+                                : ""
+                            }
+                            ${
+                              color === "orange"
+                                ? "bg-gradient-to-br from-orange-500/30 to-orange-600/10"
+                                : ""
+                            }
+                          `}
+                            />
+                            <div className="absolute bottom-1 left-0 right-0 text-center text-xs font-medium">
+                              {color.charAt(0).toUpperCase() + color.slice(1)}
+                            </div>
+                            {appearance.theme === color && (
+                              <div className="absolute top-1 right-1">
+                                <Check className="h-4 w-4 text-primary" />
+                              </div>
+                            )}
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
 
-                {/* Placeholder for future theme settings */}
-                <div className="bg-muted/50 rounded-lg p-6 text-center">
-                  <p className="text-sm">
-                    Additional appearance settings will be available in a future
-                    update.
-                  </p>
+                  <div className="pt-4">
+                    <h3 className="text-sm font-medium mb-3">
+                      Display Options
+                    </h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label htmlFor="showActivity" className="font-medium">
+                            Show GitHub Activity
+                          </Label>
+                          <p className="text-xs text-muted-foreground">
+                            Display your recent GitHub activity on your profile
+                          </p>
+                        </div>
+                        <Switch
+                          id="showActivity"
+                          checked={appearance.showActivity}
+                          onCheckedChange={(checked) => {
+                            setAppearance((prev) => ({
+                              ...prev,
+                              showActivity: checked,
+                            }));
+                          }}
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label htmlFor="compactPosts" className="font-medium">
+                            Compact Posts
+                          </Label>
+                          <p className="text-xs text-muted-foreground">
+                            Display posts in a more compact layout
+                          </p>
+                        </div>
+                        <Switch
+                          id="compactPosts"
+                          checked={appearance.compactPosts}
+                          onCheckedChange={(checked) => {
+                            setAppearance((prev) => ({
+                              ...prev,
+                              compactPosts: checked,
+                            }));
+                          }}
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <Label
+                            htmlFor="highlightCode"
+                            className="font-medium"
+                          >
+                            Highlight Code Snippets
+                          </Label>
+                          <p className="text-xs text-muted-foreground">
+                            Automatically highlight code in your posts
+                          </p>
+                        </div>
+                        <Switch
+                          id="highlightCode"
+                          checked={appearance.highlightCode}
+                          onCheckedChange={(checked) => {
+                            setAppearance((prev) => ({
+                              ...prev,
+                              highlightCode: checked,
+                            }));
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
