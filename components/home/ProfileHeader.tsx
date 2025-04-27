@@ -7,6 +7,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { Pencil } from "lucide-react";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+
 interface ProfileHeaderProps {
   imageUrl: string;
   bannerUrl?: string;
@@ -25,6 +28,9 @@ const ProfileHeader = ({
   editable = false,
   appearance,
 }: ProfileHeaderProps) => {
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [previewId, setPreviewId] = useState<string | null>(null);
+
   const getThemeGradient = () => {
     switch (appearance?.theme) {
       case "blue":
@@ -40,65 +46,175 @@ const ProfileHeader = ({
     }
   };
 
+  const handleOpenPreview = (image: string, id: string) => {
+    setPreviewImage(image);
+    setPreviewId(id);
+  };
+
+  const handleClosePreview = () => {
+    setPreviewImage(null);
+    setPreviewId(null);
+  };
+
   return (
-    <div className={`h-48 rounded-xl relative`}>
-      {editable && (
-        <Button
-          variant="outline"
-          size="icon"
-          asChild
-          className="absolute top-4 right-4 z-10 rounded-full bg-background/70 backdrop-blur-md hover:bg-background/100 transition-all duration-300 ease-in-out"
-        >
-          <Link href="/profile/edit">
-            <Pencil className="h-4 w-4" />
-          </Link>
-        </Button>
-      )}
-      <div className="absolute -bottom-16 left-8">
-        <Avatar className="h-32 w-32 border-4 border-background">
-          <AvatarImage src={imageUrl || "/placeholder.svg"} alt="Profile" />
-          <AvatarFallback>P</AvatarFallback>
-        </Avatar>
-      </div>
-      <div className="absolute w-full h-full left-0 overflow-hidden -z-20 rounded-2xl">
-        {bannerUrl ? (
-          <Image
-            src={bannerUrl}
-            alt="Background"
-            layout="fill"
-            objectFit="cover"
-            objectPosition="center"
-            // className="filter blur-md duration-300 transition-all ease-in-out scale-110 animate-pulse"
-            // style={{ animation: "blurAnimation 10s infinite" }}
-          />
-        ) : (
-          <div
-            className={`w-full h-full bg-gradient-to-br ${getThemeGradient()}`}
-          ></div>
+    <>
+      <div className={`h-48 rounded-xl relative`}>
+        {editable && (
+          <Button
+            variant="outline"
+            size="icon"
+            asChild
+            className="absolute top-4 right-4 z-10 rounded-full bg-background/70 backdrop-blur-md hover:bg-background/100 transition-all duration-300 ease-in-out"
+          >
+            <Link href="/profile/edit">
+              <Pencil className="h-4 w-4" />
+            </Link>
+          </Button>
         )}
+        <div className="absolute -bottom-16 left-8">
+          <Avatar
+            className="h-32 w-32 border-4 border-background cursor-pointer"
+            onClick={() =>
+              handleOpenPreview(imageUrl || "/placeholder.svg", "avatar")
+            }
+          >
+            <motion.div layoutId="avatar">
+              <AvatarImage src={imageUrl || "/placeholder.svg"} alt="Profile" />
+              <AvatarFallback>P</AvatarFallback>
+            </motion.div>
+          </Avatar>
+        </div>
+        <div className="absolute w-full h-full left-0 overflow-hidden -z-20 rounded-2xl">
+          {bannerUrl ? (
+            <motion.div
+              layoutId="banner"
+              className="w-full h-full cursor-pointer"
+              onClick={() => handleOpenPreview(bannerUrl, "banner")}
+            >
+              <Image
+                src={bannerUrl}
+                alt="Background"
+                fill
+                className="object-cover object-center"
+                priority
+              />
+            </motion.div>
+          ) : (
+            <div
+              className={`w-full h-full bg-gradient-to-br ${getThemeGradient()}`}
+            ></div>
+          )}
+        </div>
+        <style jsx>
+          {`
+            @keyframes blurAnimation {
+              0% {
+                filter: blur(15px);
+              }
+              25% {
+                filter: blur(10px);
+              }
+              50% {
+                filter: blur(6px);
+              }
+              75% {
+                filter: blur(10px);
+              }
+              100% {
+                filter: blur(15px);
+              }
+            }
+          `}
+        </style>
       </div>
-      <style jsx>
-        {`
-          @keyframes blurAnimation {
-            0% {
-              filter: blur(15px);
-            }
-            25% {
-              filter: blur(10px);
-            }
-            50% {
-              filter: blur(6px);
-            }
-            75% {
-              filter: blur(10px);
-            }
-            100% {
-              filter: blur(15px);
-            }
-          }
-        `}
-      </style>
-    </div>
+
+      {/* Image Preview Modal */}
+      <AnimatePresence>
+        {previewImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80"
+            onClick={handleClosePreview}
+          >
+            {previewId === "banner" ? (
+              <motion.div
+                layoutId="banner"
+                className="relative w-auto max-w-[90vw] max-h-[90vh]"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Image
+                  src={previewImage}
+                  alt="Banner Preview"
+                  width={1920}
+                  height={1080}
+                  className="object-contain rounded-lg"
+                  priority
+                />
+                <motion.button
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1, transition: { delay: 0.2 } }}
+                  className="absolute top-4 right-4 p-2 bg-black/60 rounded-full text-white"
+                  onClick={handleClosePreview}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </motion.button>
+              </motion.div>
+            ) : (
+              <motion.div
+                layoutId="avatar"
+                className="relative max-w-[90vw] max-h-[90vh]"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Image
+                  src={previewImage}
+                  alt="Avatar Preview"
+                  width={1000}
+                  height={1000}
+                  className="object-contain rounded-lg"
+                  priority
+                />
+                <motion.button
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1, transition: { delay: 0.2 } }}
+                  className="absolute top-4 right-4 p-2 bg-black/60 rounded-full text-white"
+                  onClick={handleClosePreview}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </motion.button>
+              </motion.div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 
