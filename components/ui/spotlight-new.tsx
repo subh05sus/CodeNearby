@@ -53,35 +53,35 @@ export const Spotlight = ({
       },
       blue: {
         first:
-          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, hsla(210, 100%, 85%, .09y) 0, hsla(210, 100%, 55%, .03) 50%, hsla(210, 100%, 45%, 0) 80%)",
+          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, hsla(210, 100%, 85%, .08) 0, hsla(210, 100%, 55%, .03) 50%, hsla(210, 100%, 45%, 0) 80%)",
         second:
-          "radial-gradient(50% 50% at 50% 50%, hsla(210, 100%, 85%, .08) 0, hsla(210, 100%, 55%, .03) 80%, transparent 100%)",
+          "radial-gradient(50% 50% at 50% 50%, hsla(210, 100%, 85%, .06) 0, hsla(210, 100%, 55%, .03) 80%, transparent 100%)",
         third:
-          "radial-gradient(50% 50% at 50% 50%, hsla(210, 100%, 85%, .07) 0, hsla(210, 100%, 45%, .06) 80%, transparent 100%)",
+          "radial-gradient(50% 50% at 50% 50%, hsla(210, 100%, 85%, .04) 0, hsla(210, 100%, 45%, .02) 80%, transparent 100%)",
       },
       green: {
         first:
-          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, hsla(142, 90%, 85%, .09y) 0, hsla(142, 90%, 55%, .03) 50%, hsla(142, 90%, 45%, 0) 80%)",
+          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, hsla(142, 90%, 85%, .08) 0, hsla(142, 90%, 55%, .03) 50%, hsla(142, 90%, 45%, 0) 80%)",
         second:
-          "radial-gradient(50% 50% at 50% 50%, hsla(142, 90%, 85%, .08) 0, hsla(142, 90%, 55%, .03) 80%, transparent 100%)",
+          "radial-gradient(50% 50% at 50% 50%, hsla(142, 90%, 85%, .06) 0, hsla(142, 90%, 55%, .03) 80%, transparent 100%)",
         third:
-          "radial-gradient(50% 50% at 50% 50%, hsla(142, 90%, 85%, .07) 0, hsla(142, 90%, 45%, .06) 80%, transparent 100%)",
+          "radial-gradient(50% 50% at 50% 50%, hsla(142, 90%, 85%, .04) 0, hsla(142, 90%, 45%, .02) 80%, transparent 100%)",
       },
       purple: {
         first:
-          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, hsla(270, 90%, 85%, .09y) 0, hsla(270, 90%, 55%, .03) 50%, hsla(270, 90%, 45%, 0) 80%)",
+          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, hsla(270, 90%, 85%, .08) 0, hsla(270, 90%, 55%, .03) 50%, hsla(270, 90%, 45%, 0) 80%)",
         second:
-          "radial-gradient(50% 50% at 50% 50%, hsla(270, 90%, 85%, .08) 0, hsla(270, 90%, 55%, .03) 80%, transparent 100%)",
+          "radial-gradient(50% 50% at 50% 50%, hsla(270, 90%, 85%, .06) 0, hsla(270, 90%, 55%, .03) 80%, transparent 100%)",
         third:
-          "radial-gradient(50% 50% at 50% 50%, hsla(270, 90%, 85%, .07) 0, hsla(270, 90%, 45%, .06) 80%, transparent 100%)",
+          "radial-gradient(50% 50% at 50% 50%, hsla(270, 90%, 85%, .04) 0, hsla(270, 90%, 45%, .02) 80%, transparent 100%)",
       },
       orange: {
         first:
-          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, hsla(30, 100%, 85%, .09y) 0, hsla(30, 100%, 55%, .03) 50%, hsla(30, 100%, 45%, 0) 80%)",
+          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, hsla(30, 100%, 85%, .08) 0, hsla(30, 100%, 55%, .03) 50%, hsla(30, 100%, 45%, 0) 80%)",
         second:
-          "radial-gradient(50% 50% at 50% 50%, hsla(30, 100%, 85%, .08) 0, hsla(30, 100%, 55%, .03) 80%, transparent 100%)",
+          "radial-gradient(50% 50% at 50% 50%, hsla(30, 100%, 85%, .06) 0, hsla(30, 100%, 55%, .03) 80%, transparent 100%)",
         third:
-          "radial-gradient(50% 50% at 50% 50%, hsla(30, 100%, 85%, .07) 0, hsla(30, 100%, 45%, .06) 80%, transparent 100%)",
+          "radial-gradient(50% 50% at 50% 50%, hsla(30, 100%, 85%, .04) 0, hsla(30, 100%, 45%, .02) 80%, transparent 100%)",
       },
     };
 
