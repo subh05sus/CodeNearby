@@ -406,7 +406,12 @@ export default function Header() {
                       <DropdownMenuSeparator />
                       <DropdownMenuSub>
                         <DropdownMenuSubTrigger>
-                          <UserPlus />
+                          {/* Dynamically changing the icon based on the theme */}
+                          {currentTheme === "light" && <MoonIcon size={16} />}
+                          {currentTheme === "dark" && (
+                            <SunMediumIcon size={16} />
+                          )}
+                          {currentTheme === "system" && <Monitor size={16} />}
                           <span>Appearance</span>
                         </DropdownMenuSubTrigger>
                         <DropdownMenuPortal>
@@ -420,7 +425,7 @@ export default function Header() {
                                 className="flex items-center gap-2"
                               >
                                 <Monitor size={16} />
-                                <span>Systen</span>
+                                <span>System</span>
                               </DropdownMenuRadioItem>
                               <DropdownMenuRadioItem
                                 value="light"
