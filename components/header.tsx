@@ -407,8 +407,8 @@ export default function Header() {
                       <DropdownMenuSub>
                         <DropdownMenuSubTrigger>
                           {/* Dynamically changing the icon based on the theme */}
-                          {currentTheme === "light" && <MoonIcon size={16} />}
-                          {currentTheme === "dark" && (
+                          {currentTheme === "dark" && <MoonIcon size={16} />}
+                          {currentTheme === "light" && (
                             <SunMediumIcon size={16} />
                           )}
                           {currentTheme === "system" && <Monitor size={16} />}
