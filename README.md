@@ -13,7 +13,7 @@
 ## 🌟 Features
 
 - 🔍 **Discover Developers**: Search by skills, interests, and location
-- 🤖 **AI-Connect**: Find GitHub developers through natural conversation using Gemini AI
+- 🤖 **AI-Connect**: Find GitHub developers through natural conversation using Meta: Llama 4 Maverick AI
 - 💬 **Chat**: Real-time conversations and collaboration
 - 📢 **Developer Feed**: Share updates, snippets, and thoughts
 - 🎭 **Virtual Gatherings**: Host anonymous polls, events & discussions
@@ -30,7 +30,7 @@
 - **Auth**: NextAuth.js (GitHub provider)
 - **Storage**: Cloudinary
 - **Realtime + Notifications**: Firebase
-- **AI**: Gemini AI for intelligent developer search
+- **AI**: Meta: Llama 4 Maverick AI for intelligent developer search
 - **Caching**: Upstash Redis for efficient API and AI caching
 
 ---
@@ -62,7 +62,8 @@ NEXT_PUBLIC_FIREBASE_MESSENGER_ID=
 NEXT_PUBLIC_FIREBASE_APP_ID=
 NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=
 
-GOOGLE_GENERATIVE_AI_API_KEY=your_gemini_api_key
+# Openrouter API key for Meta AI
+OPENROUTER_API_KEY=your_openrouter_api_key
 
 # Upstash Redis configuration for caching
 UPSTASH_REDIS_REST_URL=your_upstash_redis_url

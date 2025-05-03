@@ -17,7 +17,7 @@ function FeatureBigPreview() {
               <h3 className="text-2xl font-bold">Meet AI-Connect</h3>
             </div>
             <p className="text-lg mb-6">
-              Our newest feature uses Gemini AI to help you find the perfect
+              Our newest feature uses Meta Llama AI to help you find the perfect
               developers for your projects. Search by skills, location, or
               specific requirements through a conversational interface.
             </p>

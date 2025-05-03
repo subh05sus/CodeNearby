@@ -20,7 +20,7 @@ Welcome to the **CodeNearby** troubleshooting guide! Here you'll find common iss
   - Ensure the `NEXTAUTH_URL` in the `.env.local` file matches your local development or production URL.
 
 ### 3. **AI-Connect Not Returning Results**
-- **Possible Cause**: Missing or invalid Gemini API key.
+- **Possible Cause**: Missing or invalid Meta: Llama 4 Maverick API key.
 - **Solution**:
   - Ensure the `GOOGLE_GENERATIVE_AI_API_KEY` in your `.env.local` file is valid. You can get it from the [Google AI Studio](https://makersuite.google.com/app/apikey).
   - Check if the API key has sufficient permissions.

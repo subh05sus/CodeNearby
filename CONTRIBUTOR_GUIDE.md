@@ -10,7 +10,7 @@ We’re building a world where developers can connect and grow together — and 
 **CodeNearby** is a social networking platform built with **Next.js 14**, designed specifically for developers to:
 
 - Find coding partners based on skills, interests, and location
-- Connect using **AI-powered search** (Gemini AI)
+- Connect using **AI-powered search** (Meta: Llama 4 Maverick AI)
 - Chat, collaborate, and host virtual events
 - Integrate their GitHub activities seamlessly
 - Build local and global developer communities
@@ -39,7 +39,7 @@ Learn more: [CodeNearby Space](https://codenearby.space)
    - **MongoDB URI** — via [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
    - **Cloudinary Keys** — via [Cloudinary Dashboard](https://cloudinary.com)
    - **Firebase Config** — via [Firebase Console](https://console.firebase.google.com/)
-   - **Gemini API Key** — via [Google AI Studio](https://makersuite.google.com/app/apikey)
+   - **Meta Llama API Key** — via [Openrouter](https://openrouter.ai/meta-llama/llama-4-maverick:free/api)
    - **Upstash Redis URL and Token** — via [Upstash Console](https://console.upstash.com/login)
 
 3. **Run the Development Server**:
@@ -82,8 +82,8 @@ When you create an issue, please use one of these templates:
 | Database | MongoDB |
 | Auth | NextAuth.js (GitHub Provider) |
 | Storage | Cloudinary |
-| Realtime + Notifications | Firebase |
-| AI Search | Gemini AI |
+| Realtime | Firebase |
+| AI Search | Meta Llama |
 | Caching | Upstash Redis |
 
 ---

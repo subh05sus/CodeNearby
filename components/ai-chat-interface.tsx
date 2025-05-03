@@ -58,7 +58,7 @@ export default function AIChatInterface() {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState("Searching...");
+  const [loadingMessage, setLoadingMessage] = useState("Processing...");
   const [lastFoundDevelopers, setLastFoundDevelopers] = useState<any[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { data: session } = useSession();
@@ -349,7 +349,7 @@ export default function AIChatInterface() {
           setLoadingMessage("Searching for developers");
         }
       } else {
-        setLoadingMessage("Searching...");
+        setLoadingMessage("Processing...");
       }
 
       const { isReference, index, username } =
@@ -980,13 +980,11 @@ ${existingDev.followers ? `Followers: ${existingDev.followers}` : ""}`,
                 </Avatar>
                 <div className="rounded-2xl px-3 py-2 sm:px-4 sm:py-3 md:px-5 md:py-3 bg-muted flex items-center">
                   <span className="inline-flex mr-2 sm:mr-3 md:mr-4">
-                    <span className="animate-bounce inline-block">.</span>
-                    <span className="animate-bounce inline-block delay-150">
-                      .
-                    </span>
-                    <span className="animate-bounce inline-block delay-300">
-                      .
-                    </span>
+                    <div className="flex items-center space-x-1">
+                      <span className="inline-block bg-primary/50 rounded-full h-2 w-2 animate-[bounce_1s_infinite]"></span>
+                      <span className="inline-block bg-primary/50 rounded-full h-2 w-2 animate-[bounce_1s_infinite] [animation-delay:0.3s]"></span>
+                      <span className="inline-block bg-primary/50 rounded-full h-2 w-2 animate-[bounce_1s_infinite] [animation-delay:0.6s]"></span>
+                    </div>
                   </span>
                   <span className="ml-2 text-xs sm:text-sm">
                     {loadingMessage}

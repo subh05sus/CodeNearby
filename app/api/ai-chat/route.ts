@@ -5,12 +5,11 @@ import {
     searchGitHubUserByNameBasic,
     getGitHubUserDetails
 } from "@/lib/github-search"
-import { generateText } from "ai"
-import { google } from '@ai-sdk/google';
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/app/options"
 import { rateLimit, getRateLimitInfo } from "@/lib/utils"
 import { cacheData, getCachedData } from "@/lib/redis"
+import { generateMessage } from "@/lib/ai"
 
 type DeveloperType = {
     login: string;
@@ -35,7 +34,7 @@ type DeveloperType = {
 
 // Rate limit configuration
 const RATE_LIMIT_CONFIG = {
-    limit: 20,                // 10 requests
+    limit: 100,                // 100 requests
     windowMs: 10 * 60 * 1000, // per 10 minutes
     message: "You've reached the AI-Connect request limit. Please try again in 10 minutes."
 }
@@ -112,9 +111,8 @@ export async function POST(req: NextRequest) {
 
 
             // Generate a response about the detailed profile
-            const { text: aiResponse } = await generateText({
-                model: google("models/gemini-2.0-flash-exp"),
-                prompt: `
+            const aiResponse = await generateMessage(
+                `
                 You are an AI assistant helping users find developers on GitHub.
                 The user asked for more details about GitHub user @${username}.
                 
@@ -129,15 +127,15 @@ export async function POST(req: NextRequest) {
                 Followers: ${developerDetails.followers}
                 
                 ${developerDetails.topRepositories && developerDetails.topRepositories.length > 0
-                        ? `Top repositories: 
+                    ? `Top repositories: 
                     ${developerDetails.topRepositories.map((repo: any, i: number) =>
-                            `${i + 1}. ${repo.name}${repo.description ? ` - ${repo.description}` : ''}${repo.language ? ` (${repo.language})` : ''} - ${repo.stars} stars`
-                        ).join('\n')}`
-                        : 'No repository information available.'}
+                        `${i + 1}. ${repo.name}${repo.description ? ` - ${repo.description}` : ''}${repo.language ? ` (${repo.language})` : ''} - ${repo.stars} stars`
+                    ).join('\n')}`
+                    : 'No repository information available.'}
                 
                 Provide a helpful, conversational response summarizing this user's GitHub profile. Mention their key projects, expertise areas (based on repositories), and any other interesting information. Keep your response friendly and helpful.
-                `,
-            })
+                `
+            )
 
             // Prepare the response data
             const responseData = {
@@ -199,9 +197,8 @@ export async function POST(req: NextRequest) {
             }
 
             // Generate a response about the user
-            const { text: aiResponse } = await generateText({
-                model: google("models/gemini-2.0-flash-exp"),
-                prompt: `
+            const aiResponse = await generateMessage(
+                `
                 You are an AI assistant helping users find developers on GitHub.
                 The user asked about GitHub user @${username}.
                 
@@ -216,15 +213,15 @@ export async function POST(req: NextRequest) {
                 Followers: ${developerDetails.followers}
                 
                 ${developerDetails.topRepositories && developerDetails.topRepositories.length > 0
-                        ? `Top repositories: 
+                    ? `Top repositories: 
                 ${developerDetails.topRepositories.map((repo: any, i: number) =>
-                            `${i + 1}. ${repo.name}${repo.description ? ` - ${repo.description}` : ''}${repo.language ? ` (${repo.language})` : ''} - ${repo.stars} stars`
-                        ).join('\n')}`
-                        : 'No repository information available.'}
+                        `${i + 1}. ${repo.name}${repo.description ? ` - ${repo.description}` : ''}${repo.language ? ` (${repo.language})` : ''} - ${repo.stars} stars`
+                    ).join('\n')}`
+                    : 'No repository information available.'}
                 
                 Provide a helpful, conversational response summarizing this user's GitHub profile. Mention their key projects, expertise areas (based on repositories), and any other interesting information. Keep your response friendly and helpful.
-                `,
-            })
+                `
+            )
 
             // Prepare the response data
             const responseData = {
@@ -276,35 +273,34 @@ export async function POST(req: NextRequest) {
             const developers = await searchGitHubUserByNameBasic(searchPerson);
 
             // Generate a response based on the search results
-            const { text: aiResponse } = await generateText({
-                model: google("models/gemini-2.0-flash-exp"),
-                prompt: `
+            const aiResponse = await generateMessage(
+                `
             You are an AI assistant helping users find developers on GitHub.
             Based on the user's query: "${message}"
             The user is looking for information about a person named "${searchPerson}".
             
             ${developers.length > 0
-                        ? `I found ${developers.length} GitHub profiles that might match this person.`
-                        : "I couldn't find any GitHub profiles matching this person's name."
-                    }
+                    ? `I found ${developers.length} GitHub profiles that might match this person.`
+                    : "I couldn't find any GitHub profiles matching this person's name."
+                }
             
             ${developers.length > 0 ? "Here's a summary of the profiles I found:" : ""}
             
             ${developers.length > 0
-                        ? developers
-                            .map(
-                                (dev: any, i: number) =>
-                                    `${i + 1}. ${dev.name || dev.login} (${dev.login})`
-                            )
-                            .join("\n")
-                        : ""
-                    }
+                    ? developers
+                        .map(
+                            (dev: any, i: number) =>
+                                `${i + 1}. ${dev.name || dev.login} (${dev.login})`
+                        )
+                        .join("\n")
+                    : ""
+                }
             
             Provide a helpful, conversational response to the user. If matching profiles were found, explain that you've found basic profile information and they can ask for more details about a specific profile by saying "Tell me more about @username" or "Show me details for the 3rd one". If no profiles were found, suggest they try a different name or spelling. Keep your response friendly and helpful.
             
             Include numbers before each profile (1., 2., etc.) so the user can ask for more details about a specific profile by referring to their number.
-          `,
-            })
+          `
+            )
 
             // Prepare the response data
             const responseData = {
@@ -351,10 +347,8 @@ export async function POST(req: NextRequest) {
                 return response
             }
 
-            // First, use Gemini to understand the user's query
-            const { text: aiAnalysis } = await generateText({
-                model: google("models/gemini-2.0-flash-exp"),
-                prompt: `
+            const aiAnalysis = await generateMessage(
+                `
             You are an AI assistant helping users find developers on GitHub.
             Analyze this query and extract the following information:
             1. Skills or technologies mentioned (e.g., Android, React, Python)
@@ -371,12 +365,15 @@ export async function POST(req: NextRequest) {
             
             User query: ${message}
           `,
-            })
+            )
 
+            if (!aiAnalysis) {
+                console.error("Failed to parse AI analysis:", aiAnalysis)
+                return NextResponse.json({ error: "Failed to parse AI analysis" }, { status: 500 })
+            }
             // Parse the AI's analysis
             const analysisMatch = aiAnalysis.match(/```json\n([\s\S]*?)\n```/) || aiAnalysis.match(/{[\s\S]*?}/)
-
-            let parsedAnalysis
+            let parsedAnalysis;
             try {
                 parsedAnalysis = analysisMatch
                     ? JSON.parse(analysisMatch[1] || analysisMatch[0])
@@ -395,35 +392,33 @@ export async function POST(req: NextRequest) {
             }
 
             // Generate a response based on the search results
-            const { text: aiResponse } = await generateText({
-                model: google("models/gemini-2.0-flash-exp"),
-                prompt: `
+            const aiResponse = await generateMessage(
+                `
             You are an AI assistant helping users find developers on GitHub.
             Based on the user's query: "${message}"
             
             ${developers.length > 0
-                        ? `I found ${developers.length} developers that might match your criteria.`
-                        : "I couldn't find any developers matching your specific criteria."
-                    }
+                    ? `I found ${developers.length} developers that might match your criteria.`
+                    : "I couldn't find any developers matching your specific criteria."
+                }
             
             ${developers.length > 0 ? "Here's a summary of the developers I found:" : ""}
             
             ${developers.length > 0
-                        ? developers
-                            .slice(0, 5)
-                            .map(
-                                (dev: any, i: number) =>
-                                    `${i + 1}. ${dev.name || 'User'} (@${dev.login})`
-                            )
-                            .join("\n")
-                        : ""
-                    }
+                    ? developers
+                        .slice(0, 5)
+                        .map(
+                            (dev: any, i: number) =>
+                                `${i + 1}. ${dev.name || 'User'} (@${dev.login})`
+                        )
+                        .join("\n")
+                    : ""
+                }
             
             Provide a helpful, conversational response to the user. If developers were found, explain that these are basic profile results and the user can ask for more details about a specific developer by saying "Tell me more about @username" or "Show me details for the 3rd one". If no developers were found, suggest ways to broaden the search. Keep your response friendly and helpful.
             
             Include numbers before each developer (1., 2., etc.) so the user can ask for more details about a specific developer by referring to their number.
-          `,
-            })
+          `)
 
             // Prepare the response data
             const responseData = {
@@ -477,9 +472,8 @@ export async function POST(req: NextRequest) {
             }
 
             // Generate AI response if not in cache
-            const { text: aiResponse } = await generateText({
-                model: google("models/gemini-2.0-flash-exp"),
-                prompt: `
+            const aiResponse = await generateMessage(
+                `
             You are an AI assistant helping users find developers on GitHub.
             
             Chat history:
@@ -492,8 +486,8 @@ export async function POST(req: NextRequest) {
             If they want more specific information, remind them they can ask you to search for developers with phrases like "find React developers" or "search for programmers in London". They can also search for specific people by name using phrases like "Do you know John Smith?" or "Who is Jane Doe?".
             
             Keep your response friendly, helpful, and focused on helping the user find the right developers.
-          `,
-            })
+          `
+            )
 
             // Prepare the response data
             const responseData = {

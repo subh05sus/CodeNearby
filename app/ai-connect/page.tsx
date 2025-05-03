@@ -1,10 +1,10 @@
 "use client";
 import AIChatInterface from "@/components/ai-chat-interface";
-import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { Session } from "next-auth";
 import { InfoIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import MetaLogo from "@/components/MetaLogo";
 
 export default function FindYourPairPage() {
   const { data: session } = useSession() as { data: Session | null };
@@ -30,13 +30,8 @@ export default function FindYourPairPage() {
         </p>
         <div className="flex items-center justify-center space-x-2">
           <span className="text-sm text-muted-foreground">Powered by</span>
-          <Image
-            src="/gemini-logo.svg"
-            alt="Gemini AI"
-            width={80}
-            height={24}
-            className="h-5 mb-1.5 w-auto"
-          />
+
+          <MetaLogo />
         </div>
       </div>
 
