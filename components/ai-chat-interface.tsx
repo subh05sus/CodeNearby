@@ -110,16 +110,22 @@ export default function AIChatInterface() {
   };
 
   const isDeveloperSearchRequest = (message: string): boolean => {
-    const searchTerms = [
-      "find",
-      "search",
-      "locate",
-      "look for",
-      "discover",
-      "developers",
-      "programmers",
-      "coders",
-      "engineers",
+    const developerSearchTerms = [
+      "find developers",
+      "search developers",
+      "search for developers",
+      "locate developers",
+      "find programmers",
+      "search programmers",
+      "find coders",
+      "search coders",
+      "find engineers",
+      "search engineers",
+      "look for developers",
+      "discover developers"
+    ];
+
+    const skillTerms = [
       "who knows",
       "who can",
       "expert in",
@@ -129,7 +135,35 @@ export default function AIChatInterface() {
 
     message = message.toLowerCase();
 
-    return searchTerms.some((term) => message.includes(term.toLowerCase()));
+    // First check if it's explicitly a developer search
+    if (developerSearchTerms.some(term => message.includes(term.toLowerCase()))) {
+      return true;
+    }
+
+    // Check if it could be a repository search first
+    if (isRepositorySearchRequest(message)) {
+      return false;
+    }
+
+    // If it's not specifically a repository search, check for skill terms
+    if (skillTerms.some(term => message.includes(term.toLowerCase()))) {
+      return true;
+    }
+
+    // Generic "find" or "search" without specifying repositories is ambiguous
+    // Let's check if there are technology terms that indicate developer search
+    const genericSearchTerms = ["find", "search", "locate", "look for", "discover"];
+    
+    if (genericSearchTerms.some(term => message.includes(term.toLowerCase()))) {
+      // If it's a generic search term like "find React developers" or "search React",
+      // let's check the context - if it includes words like "developers", "programmers", etc.
+      const developerContextTerms = ["developers", "programmers", "coders", "engineers", "people", "users"];
+      if (developerContextTerms.some(term => message.includes(term.toLowerCase()))) {
+        return true;
+      }
+    }
+
+    return false;
   };
 
   const isLocationBasedSearch = (message: string): boolean => {
