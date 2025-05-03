@@ -448,5 +448,317 @@ export async function searchGitHubUserByName(name: string): Promise<Developer[]>
     }
 }
 
+/**
+ * Search for GitHub repositories with basic information
+ * @param query The search query for repositories
+ * @returns Array of repositories with basic information
+ */
+export async function searchGitHubReposBasic(query: string): Promise<any[]> {
+    try {
+        if (!query || query.trim() === "") {
+            return [];
+        }
+
+        // Build the search query for repositories
+        let searchQuery = `${query} in:name,description,readme`;
+
+        // Generate cache key
+        const cacheKey = `github:search:repos:basic:${encodeURIComponent(searchQuery)}`
+
+        // Try to get from cache first
+        const cachedResults = await getCachedData<any[]>(cacheKey)
+        if (cachedResults) {
+            console.log(`Retrieved GitHub repo search for "${query}" from cache`)
+            return cachedResults
+        }
+
+        // Make the GitHub API request if not in cache
+        const response = await fetch(`https://api.github.com/search/repositories?q=${encodeURIComponent(searchQuery)}&per_page=10&sort=stars&order=desc`, {
+            headers: {
+                Accept: "application/vnd.github.v3+json",
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`GitHub API error: ${response.status}`)
+        }
+
+        const data = await response.json()
+
+        // Process results
+        const results = data.items.map((repo: any) => ({
+            id: repo.id.toString(),
+            name: repo.name,
+            full_name: repo.full_name,
+            html_url: repo.html_url,
+            description: repo.description,
+            language: repo.language,
+            stargazers_count: repo.stargazers_count,
+            forks_count: repo.forks_count,
+            watchers_count: repo.watchers_count,
+            owner: {
+                login: repo.owner.login,
+                avatar_url: repo.owner.avatar_url,
+                html_url: repo.owner.html_url,
+            },
+            created_at: repo.created_at,
+            updated_at: repo.updated_at,
+            topics: repo.topics || [],
+            is_template: repo.is_template,
+            license: repo.license ? repo.license.name : null,
+        }));
+
+        // Cache the results
+        await cacheData(cacheKey, results, CACHE_EXPIRY.SEARCH_RESULTS)
+
+        return results;
+    } catch (error) {
+        console.error("Error searching GitHub repositories:", error)
+        return []
+    }
+}
+
+/**
+ * Search for similar repositories based on a reference repository
+ * @param repoName The name of the repository to find similar ones for
+ * @returns Array of similar repositories
+ */
+export async function searchSimilarRepositories(repoName: string): Promise<any[]> {
+    try {
+        if (!repoName || repoName.trim() === "") {
+            return [];
+        }
+
+        // First, try to get some information about the repository
+        const baseRepoInfo = await getRepositoryInfo(repoName);
+        
+        if (!baseRepoInfo) {
+            // If we couldn't find the repository, just do a basic search with the name
+            return searchGitHubReposBasic(repoName);
+        }
+
+        // Build a search query based on the repository's topics, language, and description
+        let searchTerms = [];
+        
+        // Add topics from the base repository
+        if (baseRepoInfo.topics && baseRepoInfo.topics.length > 0) {
+            searchTerms.push(...baseRepoInfo.topics.slice(0, 3));
+        }
+        
+        // Add language if available
+        if (baseRepoInfo.language) {
+            searchTerms.push(`language:${baseRepoInfo.language}`);
+        }
+        
+        // Extract keywords from description
+        if (baseRepoInfo.description) {
+            const descriptionWords = baseRepoInfo.description
+                .split(/\s+/)
+                .filter((word: string) => word.length > 4)
+                .slice(0, 3);
+            searchTerms.push(...descriptionWords);
+        }
+        
+        // If we still don't have enough search terms, use the repository name
+        if (searchTerms.length < 2) {
+            searchTerms.push(repoName.replace(/[-_]/g, ' '));
+        }
+        
+        // Join terms and exclude the original repository
+        const searchQuery = `${searchTerms.join(' ')} -repo:${baseRepoInfo.full_name}`;
+        
+        // Generate cache key
+        const cacheKey = `github:search:repos:similar:${encodeURIComponent(repoName)}`
+
+        // Try to get from cache first
+        const cachedResults = await getCachedData<any[]>(cacheKey)
+        if (cachedResults) {
+            console.log(`Retrieved similar repos for "${repoName}" from cache`)
+            return cachedResults
+        }
+
+        // Make the GitHub API request if not in cache
+        const response = await fetch(`https://api.github.com/search/repositories?q=${encodeURIComponent(searchQuery)}&per_page=10&sort=stars&order=desc`, {
+            headers: {
+                Accept: "application/vnd.github.v3+json",
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`GitHub API error: ${response.status}`)
+        }
+
+        const data = await response.json()
+
+        // Process results
+        const results = data.items.map((repo: any) => ({
+            id: repo.id.toString(),
+            name: repo.name,
+            full_name: repo.full_name,
+            html_url: repo.html_url,
+            description: repo.description,
+            language: repo.language,
+            stargazers_count: repo.stargazers_count,
+            forks_count: repo.forks_count,
+            watchers_count: repo.watchers_count,
+            owner: {
+                login: repo.owner.login,
+                avatar_url: repo.owner.avatar_url,
+                html_url: repo.owner.html_url,
+            },
+            created_at: repo.created_at,
+            updated_at: repo.updated_at,
+            topics: repo.topics || [],
+            is_template: repo.is_template,
+            license: repo.license ? repo.license.name : null,
+        }));
+
+        // Cache the results
+        await cacheData(cacheKey, results, CACHE_EXPIRY.SEARCH_RESULTS)
+
+        return results;
+    } catch (error) {
+        console.error("Error searching similar GitHub repositories:", error)
+        return []
+    }
+}
+
+/**
+ * Get detailed information about a GitHub repository
+ * @param repoName Repository name (owner/repo format)
+ * @returns Detailed repository information
+ */
+export async function getRepositoryInfo(repoName: string): Promise<any | null> {
+    try {
+        if (!repoName || repoName.trim() === "") {
+            return null;
+        }
+
+        // Support both formats: "owner/repo" or just "repo"
+        let fullRepoName = repoName;
+        if (!repoName.includes('/')) {
+            // This is just a repo name without owner, we can't fetch it directly
+            // We'll try to search for it instead
+            const searchResults = await searchGitHubReposBasic(repoName);
+            if (searchResults.length === 0) {
+                return null;
+            }
+            // Use the first result that exactly matches the name
+            const exactMatch = searchResults.find(repo => 
+                repo.name.toLowerCase() === repoName.toLowerCase()
+            );
+            fullRepoName = exactMatch ? exactMatch.full_name : searchResults[0].full_name;
+        }
+
+        // Generate cache key
+        const cacheKey = `github:repo:${encodeURIComponent(fullRepoName)}`
+
+        // Try to get from cache first
+        const cachedRepo = await getCachedData(cacheKey)
+        if (cachedRepo) {
+            console.log(`Retrieved repository info for "${fullRepoName}" from cache`)
+            return cachedRepo
+        }
+
+        // Make the GitHub API request if not in cache
+        const response = await fetch(`https://api.github.com/repos/${encodeURIComponent(fullRepoName)}`, {
+            headers: {
+                Accept: "application/vnd.github.v3+json",
+            },
+        });
+
+        if (!response.ok) {
+            if (response.status === 404) {
+                console.error(`Repository ${fullRepoName} not found`)
+                return null;
+            }
+            throw new Error(`GitHub API error: ${response.status}`)
+        }
+
+        const data = await response.json()
+
+        // Get additional data: contributors and languages
+        const [contributorsData, languagesData, readmeData] = await Promise.all([
+            fetch(`${data.contributors_url}?per_page=5`, {
+                headers: { Accept: "application/vnd.github.v3+json" }
+            }).then(res => res.ok ? res.json() : []),
+            fetch(`${data.languages_url}`, {
+                headers: { Accept: "application/vnd.github.v3+json" }
+            }).then(res => res.ok ? res.json() : {}),
+            fetch(`https://api.github.com/repos/${encodeURIComponent(fullRepoName)}/readme`, {
+                headers: { Accept: "application/vnd.github.v3+json" }
+            }).then(res => res.ok ? res.json() : null).catch(() => null)
+        ]);
+
+        // Process language data
+        const languages = Object.keys(languagesData);
+        const totalBytes = Object.values(languagesData).reduce((sum: number, bytes: any) => sum + bytes, 0) as number;
+        const languagePercentages = Object.entries(languagesData).map(([lang, bytes]: [string, any]) => ({
+            language: lang,
+            percentage: Math.round((bytes / totalBytes) * 100)
+        }));
+
+        // Process contributors data
+        const contributors = contributorsData.map((contributor: any) => ({
+            login: contributor.login,
+            avatar_url: contributor.avatar_url,
+            html_url: contributor.html_url,
+            contributions: contributor.contributions
+        }));
+
+        // Process readme data
+        const readme = readmeData ? {
+            content: readmeData.content ? 
+                Buffer.from(readmeData.content, 'base64').toString('utf-8').substring(0, 1000) : 
+                null,
+            html_url: readmeData.html_url
+        } : null;
+
+        // Construct repository details
+        const repoDetails = {
+            id: data.id.toString(),
+            name: data.name,
+            full_name: data.full_name,
+            html_url: data.html_url,
+            description: data.description,
+            owner: {
+                login: data.owner.login,
+                avatar_url: data.owner.avatar_url,
+                html_url: data.owner.html_url,
+            },
+            created_at: data.created_at,
+            updated_at: data.updated_at,
+            pushed_at: data.pushed_at,
+            stargazers_count: data.stargazers_count,
+            watchers_count: data.watchers_count,
+            forks_count: data.forks_count,
+            open_issues_count: data.open_issues_count,
+            license: data.license ? data.license.name : null,
+            language: data.language,
+            languages: languages,
+            language_percentages: languagePercentages,
+            topics: data.topics || [],
+            default_branch: data.default_branch,
+            contributors: contributors,
+            readme: readme,
+            is_template: data.is_template,
+            has_wiki: data.has_wiki,
+            has_pages: data.has_pages,
+            has_projects: data.has_projects,
+            has_discussions: data.has_discussions,
+            archived: data.archived,
+            disabled: data.disabled,
+        };
+
+        // Cache the repository details
+        await cacheData(cacheKey, repoDetails, CACHE_EXPIRY.USER_DETAILS)
+
+        return repoDetails;
+    } catch (error) {
+        console.error(`Error getting details for repository ${repoName}:`, error)
+        return null
+    }
+}
+
 
 

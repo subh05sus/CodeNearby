@@ -3,7 +3,10 @@ import { type NextRequest, NextResponse } from "next/server"
 import {
     searchGitHubUsersBasic,
     searchGitHubUserByNameBasic,
-    getGitHubUserDetails
+    getGitHubUserDetails,
+    searchGitHubReposBasic,
+    searchSimilarRepositories,
+    getRepositoryInfo
 } from "@/lib/github-search"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/app/options"
@@ -70,8 +73,277 @@ export async function POST(req: NextRequest) {
             history,
             searchDevelopers = false,
             searchPerson = null,
-            fetchDetailedProfile = null
+            fetchDetailedProfile = null,
+            searchRepositories = null,
+            searchSimilarRepos = null,
+            getRepoDetails = null
         } = await req.json()
+
+        // If we need to fetch repository details
+        if (getRepoDetails) {
+            const repoName = getRepoDetails;
+            console.log(`Fetching detailed repository info for ${repoName}`)
+
+            // Create a cache key for this repository analysis
+            const cacheKey = `ai:repo-analysis:${repoName}`
+
+            // Try to get from cache first
+            const cachedResponse = await getCachedData<{ text: string, repositories: any[] }>(cacheKey)
+            if (cachedResponse) {
+                console.log(`Retrieved repository analysis for ${repoName} from cache`)
+
+                const response = NextResponse.json({
+                    ...cachedResponse,
+                    rateLimitInfo,
+                    fromCache: true
+                })
+
+                // Add rate limit headers
+                response.headers.set('X-RateLimit-Limit', RATE_LIMIT_CONFIG.limit.toString())
+                response.headers.set('X-RateLimit-Remaining', rateLimitInfo.remaining.toString())
+                response.headers.set('X-RateLimit-Reset', rateLimitInfo.resetAt)
+
+                return response
+            }
+
+            const repoDetails = await getRepositoryInfo(repoName);
+
+            if (!repoDetails) {
+                return NextResponse.json({
+                    text: `I couldn't fetch detailed information for repository ${repoName}. This might be due to API rate limits or the repository doesn't exist.`,
+                    repositories: []
+                })
+            }
+
+            // Generate a response about the detailed repository
+            const aiResponse = await generateMessage(
+                `
+                You are an AI assistant helping users find repositories on GitHub.
+                The user asked for more details about GitHub repository: ${repoName}.
+                
+                Here's the detailed information I found:
+                
+                Name: ${repoDetails.name}
+                Full name: ${repoDetails.full_name}
+                Owner: ${repoDetails.owner.login}
+                Description: ${repoDetails.description || 'No description provided'}
+                Stars: ${repoDetails.stargazers_count}
+                Forks: ${repoDetails.forks_count}
+                Watchers: ${repoDetails.watchers_count}
+                Main language: ${repoDetails.language || 'Not specified'}
+                Topics: ${repoDetails.topics.length > 0 ? repoDetails.topics.join(', ') : 'None'}
+                License: ${repoDetails.license || 'Not specified'}
+                Created: ${new Date(repoDetails.created_at).toLocaleDateString()}
+                Last updated: ${new Date(repoDetails.updated_at).toLocaleDateString()}
+                ${repoDetails.readme && repoDetails.readme.content ? `README snippet: ${repoDetails.readme.content.substring(0, 500)}...` : ''}
+                
+                ${repoDetails.language_percentages && repoDetails.language_percentages.length > 0 ?
+                    `Language breakdown:
+                ${repoDetails.language_percentages.map((lang: any) => `${lang.language}: ${lang.percentage}%`).join('\n')}`
+                    : ''}
+                
+                ${repoDetails.contributors && repoDetails.contributors.length > 0 ?
+                    `Top contributors:
+                ${repoDetails.contributors.map((contributor: any) => `- ${contributor.login} (${contributor.contributions} contributions)`).join('\n')}`
+                    : ''}
+                
+                Provide a helpful, conversational response summarizing this repository. Mention its purpose, key features, programming languages used, contributors, and any other interesting aspects. Keep your response friendly and helpful.
+                `
+            )
+
+            // Prepare the response data
+            const responseData = {
+                text: aiResponse,
+                repositories: [repoDetails]
+            }
+
+            // Cache the AI response
+            await cacheData(cacheKey, responseData, CACHE_EXPIRY.PROFILE_ANALYSIS)
+
+            const response = NextResponse.json({
+                ...responseData,
+                rateLimitInfo
+            })
+
+            // Add rate limit headers
+            response.headers.set('X-RateLimit-Limit', RATE_LIMIT_CONFIG.limit.toString())
+            response.headers.set('X-RateLimit-Remaining', rateLimitInfo.remaining.toString())
+            response.headers.set('X-RateLimit-Reset', rateLimitInfo.resetAt)
+
+            return response
+        }
+
+        // If we're searching for similar repositories
+        if (searchSimilarRepos) {
+            const repoName = searchSimilarRepos;
+            console.log(`Searching for repositories similar to ${repoName}`)
+
+            // Create a cache key for this similar repos search
+            const cacheKey = `ai:similar-repos:${repoName}`
+
+            // Try to get from cache first
+            const cachedResponse = await getCachedData<{ text: string, repositories: any[] }>(cacheKey)
+            if (cachedResponse) {
+                console.log(`Retrieved similar repos for "${repoName}" from cache`)
+
+                const response = NextResponse.json({
+                    ...cachedResponse,
+                    rateLimitInfo,
+                    fromCache: true
+                })
+
+                // Add rate limit headers
+                response.headers.set('X-RateLimit-Limit', RATE_LIMIT_CONFIG.limit.toString())
+                response.headers.set('X-RateLimit-Remaining', rateLimitInfo.remaining.toString())
+                response.headers.set('X-RateLimit-Reset', rateLimitInfo.resetAt)
+
+                return response
+            }
+
+            // Get base repository info first to extract relevant information
+            const baseRepoInfo = await getRepositoryInfo(repoName);
+
+            // Search for similar repositories
+            const repositories = await searchSimilarRepositories(repoName);
+
+            // Generate a response based on the search results
+            const aiResponse = await generateMessage(
+                `
+                You are an AI assistant helping users find repositories on GitHub.
+                The user asked for repositories similar to ${repoName}.
+                
+                ${baseRepoInfo ?
+                    `The repository ${repoName} is a ${baseRepoInfo.language || ''} project with ${baseRepoInfo.stargazers_count} stars and ${baseRepoInfo.forks_count} forks.
+                ${baseRepoInfo.description ? `It is described as: "${baseRepoInfo.description}"` : ''}
+                ${baseRepoInfo.topics.length > 0 ? `It has the following topics: ${baseRepoInfo.topics.join(', ')}` : ''}`
+                    :
+                    `I couldn't find detailed information about ${repoName}, but I searched for similar repositories based on the name.`}
+                
+                ${repositories.length > 0
+                    ? `I found ${repositories.length} similar repositories.`
+                    : "I couldn't find any similar repositories."
+                }
+                
+                ${repositories.length > 0 ? "Here's a summary of the repositories I found:" : ""}
+                
+                ${repositories.length > 0
+                    ? repositories
+                        .map(
+                            (repo: any, i: number) =>
+                                `${i + 1}. ${repo.full_name} - ${repo.description || 'No description'} (${repo.language || 'Multiple languages'}, ${repo.stargazers_count} stars)`
+                        )
+                        .join("\n")
+                    : ""
+                }
+                
+                Provide a helpful, conversational response to the user. If similar repositories were found, explain why they are similar (e.g., similar technology stack, purpose, etc.). If no repositories were found, suggest they try a different search approach. Keep your response friendly and helpful.
+                
+                Include numbers before each repository (1., 2., etc.) so the user can ask for more details about a specific repository by referring to its number.
+                `
+            )
+
+            // Prepare the response data
+            const responseData = {
+                text: aiResponse,
+                repositories: repositories
+            }
+
+            // Cache the AI response
+            await cacheData(cacheKey, responseData, CACHE_EXPIRY.AI_RESPONSE)
+
+            const response = NextResponse.json({
+                ...responseData,
+                rateLimitInfo
+            })
+
+            // Add rate limit headers
+            response.headers.set('X-RateLimit-Limit', RATE_LIMIT_CONFIG.limit.toString())
+            response.headers.set('X-RateLimit-Remaining', rateLimitInfo.remaining.toString())
+            response.headers.set('X-RateLimit-Reset', rateLimitInfo.resetAt)
+
+            return response
+        }
+
+        // If we're searching for repositories
+        if (searchRepositories) {
+            const query = searchRepositories;
+            console.log(`Searching for repositories with query: ${query}`)
+
+            // Create a cache key for this repo search
+            const cacheKey = `ai:repo-search:${encodeURIComponent(query)}`
+
+            // Try to get from cache first
+            const cachedResponse = await getCachedData<{ text: string, repositories: any[] }>(cacheKey)
+            if (cachedResponse) {
+                console.log(`Retrieved repository search for "${query}" from cache`)
+
+                const response = NextResponse.json({
+                    ...cachedResponse,
+                    rateLimitInfo,
+                    fromCache: true
+                })
+
+                // Add rate limit headers
+                response.headers.set('X-RateLimit-Limit', RATE_LIMIT_CONFIG.limit.toString())
+                response.headers.set('X-RateLimit-Remaining', rateLimitInfo.remaining.toString())
+                response.headers.set('X-RateLimit-Reset', rateLimitInfo.resetAt)
+
+                return response
+            }
+
+            // Search for GitHub repositories
+            const repositories = await searchGitHubReposBasic(query);
+
+            // Generate a response based on the search results
+            const aiResponse = await generateMessage(
+                `
+                You are an AI assistant helping users find repositories on GitHub.
+                Based on the user's query: "${message}"
+                
+                ${repositories.length > 0
+                    ? `I found ${repositories.length} GitHub repositories that match your query.`
+                    : "I couldn't find any repositories matching your search terms."
+                }
+                
+                ${repositories.length > 0 ? "Here's a summary of the repositories I found:" : ""}
+                
+                ${repositories.length > 0
+                    ? repositories
+                        .map(
+                            (repo: any, i: number) =>
+                                `${i + 1}. ${repo.full_name} - ${repo.description || 'No description'} (${repo.language || 'Multiple languages'}, ${repo.stargazers_count} stars)`
+                        )
+                        .join("\n")
+                    : ""
+                }
+                
+                Provide a helpful, conversational response to the user. If repositories were found, explain that you've found repositories matching their query and they can ask for more details about a specific repository by saying "Tell me more about [repo name]" or "Show me details for the 3rd repository". If no repositories were found, suggest they try different search terms. Keep your response friendly and helpful.
+                
+                Include numbers before each repository (1., 2., etc.) so the user can ask for more details about a specific repository by referring to its number.
+                `
+            )
+
+            // Prepare the response data
+            const responseData = {
+                text: aiResponse,
+                repositories: repositories
+            }
+
+            // Cache the AI response
+            await cacheData(cacheKey, responseData, CACHE_EXPIRY.AI_RESPONSE)
+
+            const response = NextResponse.json({
+                ...responseData,
+                rateLimitInfo
+            })
+
+            // Add rate limit headers
+            response.headers.set('X-RateLimit-Limit', RATE_LIMIT_CONFIG.limit.toString())
+            response.headers.set('X-RateLimit-Remaining', rateLimitInfo.remaining.toString())
+            response.headers.set('X-RateLimit-Reset', rateLimitInfo.resetAt)
+
+            return response
+        }
 
         // If we need to fetch detailed profile for a specific user
         if (fetchDetailedProfile) {

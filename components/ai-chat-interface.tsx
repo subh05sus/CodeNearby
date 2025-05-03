@@ -30,6 +30,7 @@ type Message = {
   content: string;
   timestamp: Date;
   developers?: any[];
+  repositories?: any[];
   suggestions?: string[];
 };
 
@@ -47,12 +48,12 @@ export default function AIChatInterface() {
       id: "1",
       role: "assistant",
       content:
-        "Hello! I can help you find developers based on location, skills, or interests. Just ask me anything!",
+        "Hello! I can help you find developers based on location, skills, or interests. I can also search for GitHub repositories. Just ask me anything!",
       timestamp: new Date(),
       suggestions: [
         "Find React developers in New York",
         "Who are the top Python developers?",
-        "Do you know Subhadip Saha?",
+        "Search for repositories about machine learning",
       ],
     },
   ]);
@@ -208,11 +209,86 @@ export default function AIChatInterface() {
     for (const pattern of usernamePatterns) {
       const match = message.match(pattern);
       if (match && match[1]) {
-        return { isReference: true, index: -1, username: match[1] };
+        return { isReference: true, index: -1, username: null };
       }
     }
 
     return { isReference: false, index: -1, username: null };
+  };
+
+  const isRepositorySearchRequest = (message: string): boolean => {
+    const searchTerms = [
+      "search for repositories",
+      "search repositories",
+      "find repositories",
+      "search repos",
+      "find repos",
+      "search projects",
+      "find projects",
+      "look for repositories",
+      "search library",
+      "search package",
+      "search for repo",
+      "search framework"
+    ];
+
+    message = message.toLowerCase();
+
+    return searchTerms.some((term) => message.includes(term.toLowerCase()));
+  };
+
+  const isSimilarRepositoriesRequest = (message: string): string | null => {
+    const patterns = [
+      /similar (?:to|as) ([\w\s\-\/]+)(?:\s|$)/i,
+      /repositories like ([\w\s\-\/]+)(?:\s|$)/i,
+      /repos similar to ([\w\s\-\/]+)(?:\s|$)/i,
+      /projects like ([\w\s\-\/]+)(?:\s|$)/i,
+      /find (?:repos|repositories) like ([\w\s\-\/]+)(?:\s|$)/i,
+      /similar repositories to ([\w\s\-\/]+)(?:\s|$)/i,
+      /similar projects to ([\w\s\-\/]+)(?:\s|$)/i,
+    ];
+
+    for (const pattern of patterns) {
+      const match = message.match(pattern);
+      if (match && match[1]) {
+        return match[1].trim();
+      }
+    }
+
+    return null;
+  };
+
+  const isReferenceToFoundRepository = (
+    message: string
+  ): { isReference: boolean; index: number; repoName: string | null } => {
+    const indexPatterns = [
+      /(?:the|show|about|more about)\s+(\d+)(?:st|nd|rd|th)\s+(?:one|repository|repo)/i,
+      /(?:more about|details of|info on)\s+(?:repository|repo)?\s*#?\s*(\d+)/i,
+      /(?:repository|repo)\s+(?:number)?\s*#?\s*(\d+)/i,
+      /(\d+)(?:st|nd|rd|th)\s+(?:repository|repo)/i,
+    ];
+
+    const namePatterns = [
+      /(?:tell me more about|more about|details of|info on)\s+(?:repository|repo)?\s+([a-zA-Z0-9_\-\/]+)/i,
+      /(?:show|get|fetch)\s+(?:repository|repo|details|info)?\s+(?:for|about)?\s+([a-zA-Z0-9_\-\/]+)/i,
+    ];
+
+    for (const pattern of indexPatterns) {
+      const match = message.match(pattern);
+      if (match && match[1]) {
+        const index = parseInt(match[1], 10);
+        return { isReference: true, index: index, repoName: null };
+      }
+    }
+
+    for (const pattern of namePatterns) {
+      const match = message.match(pattern);
+      if (match && match[1]) {
+        return { isReference: true, index: -1, repoName: match[1] };
+      }
+    }
+
+    return { isReference: false, index: -1, repoName: null };
   };
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -323,7 +399,12 @@ export default function AIChatInterface() {
 
     try {
       // Set the appropriate loading message based on the query type
-      if (messageText.includes("@")) {
+      if (isRepositorySearchRequest(messageText)) {
+        setLoadingMessage("Searching for repositories");
+      } else if (isSimilarRepositoriesRequest(messageText)) {
+        const repoName = isSimilarRepositoriesRequest(messageText);
+        setLoadingMessage(`Finding repositories similar to ${repoName}`);
+      } else if (messageText.includes("@")) {
         const usernameMatch = messageText.match(/@([a-zA-Z0-9_-]+)/);
         if (usernameMatch && usernameMatch[1]) {
           setLoadingMessage(`Searching for @${usernameMatch[1]}`);
@@ -352,6 +433,215 @@ export default function AIChatInterface() {
         setLoadingMessage("Processing...");
       }
 
+      // Check if this is a reference to a repository from previous results
+      const { isReference: isRepoReference, index: repoIndex, repoName } = isReferenceToFoundRepository(messageText);
+
+      if (isRepoReference) {
+        const lastMessage = messages[messages.length - 2]; // Get the last assistant message with repos
+        const lastRepos = lastMessage?.repositories || [];
+
+        if (repoIndex > 0 && lastRepos.length > 0) {
+          const repoIdx = repoIndex - 1;
+          if (repoIdx >= 0 && repoIdx < lastRepos.length) {
+            const selectedRepo = lastRepos[repoIdx];
+            
+            // Get detailed info for this repository
+            const response = await fetch("/api/ai-chat", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                message: `Tell me more about ${selectedRepo.full_name}`,
+                history: messages.map((msg) => ({
+                  role: msg.role,
+                  content: msg.content,
+                })),
+                getRepoDetails: selectedRepo.full_name,
+              }),
+            });
+
+            if (!response.ok) {
+              throw new Error("Failed to get repository details");
+            }
+
+            const data = await response.json();
+            
+            const aiMessage: Message = {
+              id: Date.now().toString() + "-ai",
+              role: "assistant",
+              content: data.text,
+              timestamp: new Date(),
+              repositories: data.repositories || [],
+              suggestions: [
+                "Find similar repositories",
+                "Search for another repository",
+                "Find developers who contribute to this"
+              ],
+            };
+
+            setMessages((prev) => [...prev, aiMessage]);
+            setIsLoading(false);
+            return;
+          }
+        } else if (repoName) {
+          // Handle repository name reference
+          const response = await fetch("/api/ai-chat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              message: `Tell me more about ${repoName}`,
+              history: messages.map((msg) => ({
+                role: msg.role,
+                content: msg.content,
+              })),
+              getRepoDetails: repoName,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to get repository details");
+          }
+
+          const data = await response.json();
+          
+          const aiMessage: Message = {
+            id: Date.now().toString() + "-ai",
+            role: "assistant",
+            content: data.text,
+            timestamp: new Date(),
+            repositories: data.repositories || [],
+            suggestions: [
+              "Find similar repositories",
+              "Search for another repository",
+              "Find developers who contribute to this"
+            ],
+          };
+
+          setMessages((prev) => [...prev, aiMessage]);
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      // Check for similar repositories request
+      const similarRepos = isSimilarRepositoriesRequest(messageText);
+      if (similarRepos) {
+        const response = await fetch("/api/ai-chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: messageText,
+            history: messages.map((msg) => ({
+              role: msg.role,
+              content: msg.content,
+            })),
+            searchSimilarRepos: similarRepos,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to find similar repositories");
+        }
+
+        const data = await response.json();
+        
+        const aiMessage: Message = {
+          id: Date.now().toString() + "-ai",
+          role: "assistant",
+          content: data.text,
+          timestamp: new Date(),
+          repositories: data.repositories || [],
+          suggestions: [
+            "Tell me more about the 1st repository",
+            "Search for another repository",
+            "Find a specific repository"
+          ],
+        };
+
+        setMessages((prev) => [...prev, aiMessage]);
+        setIsLoading(false);
+        return;
+      }
+
+      // Check for repository search request
+      if (isRepositorySearchRequest(messageText)) {
+        // Extract the repository search query
+        const searchTerms = [
+          "search for repositories",
+          "search repositories",
+          "find repositories",
+          "search repos",
+          "find repos",
+          "search projects",
+          "find projects",
+          "look for repositories",
+          "search library",
+          "search package",
+          "search for repo",
+          "search framework"
+        ];
+        
+        let searchQuery = messageText.toLowerCase();
+        for (const term of searchTerms) {
+          if (searchQuery.includes(term.toLowerCase())) {
+            searchQuery = searchQuery.replace(term.toLowerCase(), "").trim();
+            break;
+          }
+        }
+
+        // If the query contains "about" or "related to", clean it up
+        searchQuery = searchQuery.replace(/about|related to|for|on|with/gi, "").trim();
+        
+        if (!searchQuery) {
+          // Fallback to using the whole message if we couldn't extract a clean query
+          searchQuery = messageText;
+        }
+        
+        const response = await fetch("/api/ai-chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: messageText,
+            history: messages.map((msg) => ({
+              role: msg.role,
+              content: msg.content,
+            })),
+            searchRepositories: searchQuery,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to search repositories");
+        }
+
+        const data = await response.json();
+        
+        const aiMessage: Message = {
+          id: Date.now().toString() + "-ai",
+          role: "assistant",
+          content: data.text,
+          timestamp: new Date(),
+          repositories: data.repositories || [],
+          suggestions: [
+            "Tell me more about the 1st repository",
+            "Find similar repositories",
+            "Search for another repository"
+          ],
+        };
+
+        setMessages((prev) => [...prev, aiMessage]);
+        setIsLoading(false);
+        return;
+      }
+
+      // Check if this is a reference to a found developer
       const { isReference, index, username } =
         isReferenceToFoundDeveloper(messageText);
 
@@ -943,6 +1233,202 @@ ${existingDev.followers ? `Followers: ${existingDev.followers}` : ""}`,
                               )}
                           </div>
                         ))}
+                      </div>
+                    )}
+
+                    {message.repositories && message.repositories.length > 0 && (
+                      <div className="mt-3 sm:mt-4 md:mt-5 space-y-3 sm:space-y-4">
+                        <h4 className="font-semibold text-xs sm:text-sm flex items-center gap-1 sm:gap-2">
+                          <Github className="h-3 w-3 sm:h-4 sm:w-4" />
+                          Repositories Found:
+                        </h4>
+                        <div className="grid grid-cols-1 gap-3 sm:gap-4">
+                          {message.repositories.map((repo, index) => (
+                            <div
+                              key={repo.id}
+                              className="p-3 sm:p-4 bg-background rounded-xl flex flex-col items-start gap-2 sm:gap-3 border border-primary/10 shadow-sm hover:shadow-md transition-all group relative overflow-hidden"
+                            >
+                              {/* Background gradient effect */}
+                              <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                              
+                              {/* Repository number badge */}
+                              <div className="absolute top-2 right-2 bg-primary/10 text-primary rounded-full h-5 w-5 sm:h-6 sm:w-6 flex items-center justify-center text-[10px] sm:text-xs font-medium">
+                                {index + 1}
+                              </div>
+                              
+                              <div className="w-full flex flex-col sm:flex-row items-start gap-2 sm:gap-3 z-10">
+                                {/* Owner avatar */}
+                                <div className="flex items-center gap-2 sm:gap-3">
+                                  <Avatar className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg border-2 border-primary/20 flex-shrink-0">
+                                    <AvatarImage
+                                      src={repo.owner?.avatar_url || "/placeholder.svg"}
+                                      alt={repo.owner?.login || "Owner"}
+                                      className="rounded-lg"
+                                    />
+                                    <AvatarFallback className="rounded-lg text-xs sm:text-sm">
+                                      {repo.owner?.login?.substring(0, 2).toUpperCase() || "GH"}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                </div>
+                                
+                                {/* Repository main info */}
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex flex-col space-y-1">
+                                    <div className="flex items-center flex-wrap gap-1 sm:gap-2">
+                                      <p className="font-semibold text-base sm:text-lg truncate">
+                                        {repo.name}
+                                      </p>
+                                      {repo.language && (
+                                        <Badge
+                                          variant="outline"
+                                          className="text-[10px] sm:text-xs bg-primary/5"
+                                        >
+                                          {repo.language}
+                                        </Badge>
+                                      )}
+                                      {repo.license && (
+                                        <Badge
+                                          variant="outline"
+                                          className="text-[10px] sm:text-xs"
+                                        >
+                                          {repo.license}
+                                        </Badge>
+                                      )}
+                                    </div>
+                                    
+                                    <p className="text-xs sm:text-sm text-muted-foreground truncate">
+                                      {repo.full_name}
+                                    </p>
+                                    
+                                    {repo.description && (
+                                      <p className="text-xs sm:text-sm my-1 sm:my-2 line-clamp-2">
+                                        {repo.description}
+                                      </p>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* Repository stats */}
+                              <div className="flex flex-wrap gap-2 sm:gap-3 z-10 w-full">
+                                <div className="flex items-center text-xs text-muted-foreground gap-1">
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3 sm:w-4 sm:h-4">
+                                    <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z" />
+                                  </svg>
+                                  <span>{repo.stargazers_count || 0}</span>
+                                </div>
+                                <div className="flex items-center text-xs text-muted-foreground gap-1">
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3 sm:w-4 sm:h-4">
+                                    <path d="M8.75 1.75a.75.75 0 0 0-1.5 0v2.5a.75.75 0 0 0 1.5 0v-2.5Z" />
+                                    <path d="M8 7a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0-1.5A1.5 1.5 0 1 1 8 2.5 1.5 1.5 0 0 1 8 5.5Z" />
+                                    <path d="M7.75 8.766a.997.997 0 0 1 .496-.124.997.997 0 0 1 .496.124c.177.09.348.196.505.32a8.004 8.004 0 0 1 4.308 2.71c.538.684.93 1.485 1.153 2.347a.75.75 0 0 1-.722.943H2.014a.75.75 0 0 1-.722-.943 8.001 8.001 0 0 1 5.46-5.057 3 3 0 0 0 .505-.32.997.997 0 0 1 .496-.124H7.75Z" />
+                                  </svg>
+                                  <span>{repo.watchers_count || 0}</span>
+                                </div>
+                                <div className="flex items-center text-xs text-muted-foreground gap-1">
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3 sm:w-4 sm:h-4">
+                                    <path d="M3.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm0 9.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm8.25-9.5a.75.75 0 0 0 0 1.5.75.75 0 0 0 0-1.5Zm-8.25 6a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM3 6a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 3 6Zm9 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z" />
+                                  </svg>
+                                  <span>{repo.forks_count || 0}</span>
+                                </div>
+                                {repo.created_at && (
+                                  <div className="flex items-center text-xs text-muted-foreground gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3 sm:w-4 sm:h-4">
+                                      <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm7-3.25v2.992l2.028.812a.75.75 0 0 1-.557 1.392l-2.5-1A.751.751 0 0 1 7 8.25v-3.5a.75.75 0 0 1 1.5 0Z" />
+                                    </svg>
+                                    <span>{new Date(repo.created_at).toLocaleDateString()}</span>
+                                  </div>
+                                )}
+                              </div>
+                              
+                              {/* Topics */}
+                              {repo.topics && repo.topics.length > 0 && (
+                                <div className="flex flex-wrap gap-1 sm:gap-2 z-10 mt-1">
+                                  {repo.topics.slice(0, 5).map((topic: string) => (
+                                    <Badge 
+                                      key={topic} 
+                                      variant="secondary"
+                                      className="text-[9px] sm:text-[10px] bg-secondary/50 hover:bg-secondary/60 transition-colors"
+                                    >
+                                      {topic}
+                                    </Badge>
+                                  ))}
+                                  {repo.topics.length > 5 && (
+                                    <Badge variant="outline" className="text-[9px] sm:text-[10px]">
+                                      +{repo.topics.length - 5} more
+                                    </Badge>
+                                  )}
+                                </div>
+                              )}
+                              
+                              {/* Language percentages */}
+                              {repo.language_percentages && repo.language_percentages.length > 0 && (
+                                <div className="w-full z-10 mt-1">
+                                  <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden flex">
+                                    {repo.language_percentages.map((lang: any, i: number) => {
+                                      // Generate a color based on language name
+                                      const colors = ["bg-red-400", "bg-blue-400", "bg-green-400", "bg-yellow-400", "bg-purple-400", "bg-pink-400", "bg-indigo-400"];
+                                      const colorIndex = lang.language.charCodeAt(0) % colors.length;
+                                      return (
+                                        <div 
+                                          key={`${lang.language}-${i}`}
+                                          className={`h-full ${colors[colorIndex]}`}
+                                          style={{ width: `${lang.percentage}%` }}
+                                          title={`${lang.language}: ${lang.percentage}%`}
+                                        />
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Links and actions */}
+                              <div className="flex flex-wrap gap-1 sm:gap-2 z-10 mt-1 sm:mt-2">
+                                <Link
+                                  href={repo.html_url}
+                                  target="_blank"
+                                  className="text-[10px] sm:text-xs bg-primary/5 hover:bg-primary/10 px-2 sm:px-3 py-1 rounded-md flex items-center gap-1 transition-colors"
+                                >
+                                  <Github className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                                  View Repository
+                                </Link>
+                                <Link
+                                  href={`${repo.html_url}/issues`}
+                                  target="_blank"
+                                  className="text-[10px] sm:text-xs bg-muted hover:bg-muted/80 px-2 sm:px-3 py-1 rounded-md flex items-center gap-1 transition-colors"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3 sm:w-3.5 sm:h-3.5">
+                                    <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM1.5 8a6.5 6.5 0 1 0 13 0 6.5 6.5 0 0 0-13 0Zm5.75-2.75a.75.75 0 0 1 1.5 0v2.708l1.72 1.72a.75.75 0 0 1-1.06 1.062l-2-1.999a.75.75 0 0 1-.22-.53V5.25Z" />
+                                  </svg>
+                                  Issues
+                                </Link>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="text-[10px] sm:text-xs h-6 sm:h-7 px-2 sm:px-3 py-0 sm:py-1 rounded-md flex items-center gap-1"
+                                  onClick={() => handleSuggestionClick(`Find repositories similar to ${repo.name}`)}
+                                  disabled={isLoading}
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3 sm:w-3.5 sm:h-3.5">
+                                    <path d="M3.75 1.5a.25.25 0 0 0-.25.25v11.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25v-4a.75.75 0 0 1 1.5 0v4A1.75 1.75 0 0 1 12.25 15h-8.5A1.75 1.75 0 0 1 2 13.25V1.75C2 .784 2.784 0 3.75 0h8.5C13.216 0 14 .784 14 1.75v.5a.75.75 0 0 1-1.5 0v-.5a.25.25 0 0 0-.25-.25h-8.5Z" />
+                                    <path d="m9.018 3.5 1.359-1.359a.75.75 0 0 1 1.06 1.061L10.079 4.56l1.359 1.359a.75.75 0 0 1-1.06 1.06l-1.36-1.358-1.358 1.359a.75.75 0 0 1-1.061-1.06l1.359-1.36-1.359-1.359a.75.75 0 0 1 1.06-1.06L9.018 3.5Z" />
+                                  </svg>
+                                  Find Similar
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="text-[10px] sm:text-xs h-6 sm:h-7 px-2 sm:px-3 py-0 sm:py-1 rounded-md flex items-center gap-1"
+                                  onClick={() => handleSuggestionClick(`Tell me more about ${repo.full_name}`)}
+                                  disabled={isLoading}
+                                >
+                                  <Info className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                                  More Details
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
