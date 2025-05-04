@@ -50,7 +50,6 @@ import { Menu } from "lucide-react";
 import { useTheme } from "next-themes";
 import Logo from "./logo";
 import { RainbowButton } from "./magicui/rainbowbutton";
-import { Badge } from "./ui/badge";
 import { AuroraText } from "./magicui/aurora-text";
 
 export default function Header() {
@@ -62,7 +61,7 @@ export default function Header() {
   const [currentTheme, setCurrentTheme] = useState("system");
 
   const handleSearch = (query: string) => {
-    router.push(`/search?q=${encodeURIComponent(query)}`);
+    router.push(/search?q=${encodeURIComponent(query)});
     setShowSearch(false);
   };
 
@@ -96,11 +95,11 @@ export default function Header() {
         window.location.origin
       }/invite${
         session?.user?.githubUsername
-          ? `?ref=${session.user.githubUsername}`
+          ? ?ref=${session.user.githubUsername}
           : ""
       }`
     );
-    window.open(`mailto:?subject=${subject}&body=${body}`);
+    window.open(mailto:?subject=${subject}&body=${body});
   };
 
   const handleInviteUsersViaWhatsApp = () => {
@@ -108,16 +107,16 @@ export default function Header() {
     const text = encodeURIComponent(
       `Hey! Join me on CodeNearby: ${window.location.origin}/invite${
         session?.user?.githubUsername
-          ? `?ref=${session.user.githubUsername}`
+          ? ?ref=${session.user.githubUsername}
           : ""
       }`
     );
-    window.open(`https://wa.me/?text=${text}`);
+    window.open(https://wa.me/?text=${text});
   };
 
   const handleInviteUsersViaLink = async () => {
     const link = `${window.location.origin}/invite${
-      session?.user?.githubUsername ? `?ref=${session.user.githubUsername}` : ""
+      session?.user?.githubUsername ? ?ref=${session.user.githubUsername} : ""
     }`;
 
     if (navigator.share) {
@@ -144,13 +143,13 @@ export default function Header() {
   };
 
   return (
-    <header className={`${pathname === "/" ? "" : "border-b bg-background"}`}>
+    <header className={${pathname === "/" ? "" : "border-b bg-background"}}>
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         <Link href="/">
           <Logo />
         </Link>
-        <nav className="hidden md:block">
-          <ul className="flex space-x-3 items-center">
+        <nav className="hidden lg:block">
+          <ul className="flex space-x-2 items-center">
             {session ? (
               <>
                 <li>
@@ -539,7 +538,7 @@ export default function Header() {
             )}
           </ul>
         </nav>
-        <div className="md:hidden flex items-center space-x-2">
+        <div className="lg:hidden flex items-center space-x-2">
           {/* <ThemeToggle /> */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
