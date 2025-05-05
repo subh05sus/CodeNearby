@@ -39,7 +39,7 @@ Learn more: [CodeNearby Space](https://codenearby.space)
    - **MongoDB URI** — via [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
    - **Cloudinary Keys** — via [Cloudinary Dashboard](https://cloudinary.com)
    - **Firebase Config** — via [Firebase Console](https://console.firebase.google.com/)
-   - **Meta Llama API Key** — via [Openrouter](https://openrouter.ai/meta-llama/llama-4-maverick:free/api)
+   - **Google Generative AI API Key** — via [Google AI Studio API Key](https://aistudio.google.com/app/apikey)
    - **Upstash Redis URL and Token** — via [Upstash Console](https://console.upstash.com/login)
 
 3. **Run the Development Server**:
@@ -83,7 +83,7 @@ When you create an issue, please use one of these templates:
 | Auth | NextAuth.js (GitHub Provider) |
 | Storage | Cloudinary |
 | Realtime | Firebase |
-| AI Search | Meta Llama |
+| AI Search | Google Gemini AI |
 | Caching | Upstash Redis |
 
 ---

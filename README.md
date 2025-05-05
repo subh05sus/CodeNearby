@@ -62,8 +62,8 @@ NEXT_PUBLIC_FIREBASE_MESSENGER_ID=
 NEXT_PUBLIC_FIREBASE_APP_ID=
 NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=
 
-# Openrouter API key for Meta AI
-OPENROUTER_API_KEY=your_openrouter_api_key
+# Google Gemini API
+GOOGLE_GENERATIVE_AI_API_KEY=your_gemini_key
 
 # Upstash Redis configuration for caching
 UPSTASH_REDIS_REST_URL=your_upstash_redis_url

@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { AnimatePresence, motion } from "framer-motion";
-import MetaLogo from "@/components/MetaLogo";
 
 export default function AIConnectAboutPage() {
   const { resolvedTheme } = useTheme();
@@ -227,14 +226,20 @@ export default function AIConnectAboutPage() {
       <div className="flex flex-col md:flex-row gap-8 items-center mb-12">
         <div className="md:w-1/3 flex justify-center">
           <div className="relative h-40 w-40">
-            <MetaLogo/>
+            <Image
+              src={`/gemini-logo.svg`}
+              alt="Gemini AI"
+              fill
+              className="object-contain"
+              priority
+            />
           </div>
         </div>
         <div className="md:w-2/3">
           <Card className="bg-card/50 border border-primary/10">
             <CardContent className="pt-6">
               <p className="text-lg">
-                AI-Connect leverages Meta Llama AI, Google&apos;s state-of-the-art
+                AI-Connect leverages Gemini AI, Google&apos;s state-of-the-art
                 large language model, to provide intelligent and contextual
                 responses to your developer search queries. The AI analyzes
                 GitHub profiles, repositories, and user data to match you with

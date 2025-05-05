@@ -4,7 +4,6 @@ import { useSession } from "next-auth/react";
 import { Session } from "next-auth";
 import { InfoIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import MetaLogo from "@/components/MetaLogo";
 
 export default function FindYourPairPage() {
   const { data: session } = useSession() as { data: Session | null };
@@ -30,8 +29,7 @@ export default function FindYourPairPage() {
         </p>
         <div className="flex items-center justify-center space-x-2">
           <span className="text-sm text-muted-foreground">Powered by</span>
-
-          <MetaLogo />
+          <img src="/gemini-logo.svg" alt="Gemini AI" className="h-5 w-auto mb-2" />
         </div>
       </div>
 

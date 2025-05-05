@@ -25,7 +25,7 @@ function Features() {
           <Bot className="w-8 h-8 mb-4 text-primary  transition-all duration-300 group-hover:text-primary/80 dark:group-hover:text-blue-200" />
         }
         title="AI-Connect"
-        description="Use our intelligent assistant powered by Meta Llama AI to find GitHub developers based on skills, location, or specific requirements through natural conversations."
+        description="Use our intelligent assistant powered by AI to find GitHub developers based on skills, location, or specific requirements through natural conversations."
       />
       <FeatureCard
         icon={

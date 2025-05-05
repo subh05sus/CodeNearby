@@ -1,10 +1,11 @@
 export const CHANGELOG = [
+
   {
     version: "1.2.1",
     date: "2025-05-03",
     beta: false,
     changes: [
-      "Changed AI-Connect to use Meta Llama AI for developer recommendations",
+      "Changed AI-Connect to use Gemini AI for developer recommendations",
       "Improved AI-Connect conversation interface for better user experience",
       "Increased limits for AI-Connect conversations",
     ]

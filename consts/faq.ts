@@ -21,7 +21,7 @@ export const faqs: FAQItem[] = [
   {
     question: "What is AI-Connect?",
     answer:
-      "AI-Connect is our intelligent assistant that helps you find GitHub developers based on skills, location, or specific requirements. It uses Meta Llama AI to analyze GitHub profiles and provide personalized developer recommendations through a conversational interface.",
+      "AI-Connect is our intelligent assistant that helps you find GitHub developers based on skills, location, or specific requirements. It uses Gemini AI to analyze GitHub profiles and provide personalized developer recommendations through a conversational interface.",
   },
   {
     question: "How accurate are the AI-Connect search results?",
