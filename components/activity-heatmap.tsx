@@ -35,11 +35,11 @@ const colorClassMap: Record<
   ActivityData['themeColor'],
   string[]
 > = {
-  default: ['fill-gray-200', 'fill-gray-400', 'fill-gray-600', 'fill-gray-800'],
-  blue: ['fill-blue-200', 'fill-blue-400', 'fill-blue-600', 'fill-blue-800'],
-  green: ['fill-green-200', 'fill-green-400', 'fill-green-600', 'fill-green-800'],
-  purple: ['fill-purple-200', 'fill-purple-400', 'fill-purple-600', 'fill-purple-800'],
-  orange: ['fill-orange-200', 'fill-orange-400', 'fill-orange-600', 'fill-orange-800'],
+  default: ['fill-gray-400', 'fill-gray-500', 'fill-gray-700', 'fill-gray-800'],
+  blue: ['fill-blue-400', 'fill-blue-500', 'fill-blue-700', 'fill-blue-800'],
+  green: ['fill-green-400', 'fill-green-500', 'fill-green-700', 'fill-green-800'],
+  purple: ['fill-purple-400', 'fill-purple-500', 'fill-purple-700', 'fill-purple-800'],
+  orange: ['fill-orange-400', 'fill-orange-500', 'fill-orange-700', 'fill-orange-800'],
 };
 
 // Activity heatmap main component
