@@ -61,9 +61,9 @@ export default function Header() {
   const [currentTheme, setCurrentTheme] = useState("system");
 
   const handleSearch = (query: string) => {
-    router.push(/search?q=${encodeURIComponent(query)});
+    router.push(`/search?q=${encodeURIComponent(`"${query}"`)}`);
     setShowSearch(false);
-  };
+  };  
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
