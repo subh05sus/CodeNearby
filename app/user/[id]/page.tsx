@@ -32,6 +32,7 @@ import { Session } from "next-auth";
 import { toast } from "sonner";
 import GithubCard from "@/components/github-card";
 import { Spotlight } from "@/components/ui/spotlight-new";
+import { ActivityHeatmap } from "@/components/activity-heatmap";
 
 interface Post {
   _id: string;
@@ -448,15 +449,15 @@ export default function UserProfilePage() {
                 }
                 className={`w-full md:w-auto ${
                   appearance?.theme === "blue"
-                    ? "bg-blue-900 text-white hover:bg-blue-950"
-                    : appearance?.theme === "green"
+                  ? "bg-blue-900 text-white hover:bg-blue-950"
+                  : appearance?.theme === "green"
                     ? "bg-green-900 text-white hover:bg-green-950"
                     : appearance?.theme === "purple"
-                    ? "bg-purple-900 text-white hover:bg-purple-950"
-                    : appearance?.theme === "orange"
-                    ? "bg-orange-900 text-white hover:bg-orange-950"
-                    : ""
-                } transition-all duration-200`}
+                      ? "bg-purple-900 text-white hover:bg-purple-950"
+                      : appearance?.theme === "orange"
+                        ? "bg-orange-900 text-white hover:bg-orange-950"
+                        : ""
+                  } transition-all duration-200`}
                 size="sm"
               >
                 <Github className="h-4 w-4 mr-2" />
@@ -475,15 +476,15 @@ export default function UserProfilePage() {
                   }
                   className={`w-full md:w-auto ${
                     appearance?.theme === "blue"
-                      ? "bg-blue-900 text-white hover:bg-blue-950"
-                      : appearance?.theme === "green"
+                    ? "bg-blue-900 text-white hover:bg-blue-950"
+                    : appearance?.theme === "green"
                       ? "bg-green-900 text-white hover:bg-green-950"
                       : appearance?.theme === "purple"
-                      ? "bg-purple-900 text-white hover:bg-purple-950"
-                      : appearance?.theme === "orange"
-                      ? "bg-orange-900 text-white hover:bg-orange-950"
-                      : ""
-                  } transition-all duration-200`}
+                        ? "bg-purple-900 text-white hover:bg-purple-950"
+                        : appearance?.theme === "orange"
+                          ? "bg-orange-900 text-white hover:bg-orange-950"
+                          : ""
+                    } transition-all duration-200`}
                   size="sm"
                 >
                   <Twitter className="h-4 w-4 mr-2" />
@@ -499,15 +500,15 @@ export default function UserProfilePage() {
                   }
                   className={`w-full md:w-auto ${
                     appearance?.theme === "blue"
-                      ? "bg-blue-900 text-white hover:bg-blue-950"
-                      : appearance?.theme === "green"
+                    ? "bg-blue-900 text-white hover:bg-blue-950"
+                    : appearance?.theme === "green"
                       ? "bg-green-900 text-white hover:bg-green-950"
                       : appearance?.theme === "purple"
-                      ? "bg-purple-900 text-white hover:bg-purple-950"
-                      : appearance?.theme === "orange"
-                      ? "bg-orange-900 text-white hover:bg-orange-950"
-                      : ""
-                  } transition-all duration-200`}
+                        ? "bg-purple-900 text-white hover:bg-purple-950"
+                        : appearance?.theme === "orange"
+                          ? "bg-orange-900 text-white hover:bg-orange-950"
+                          : ""
+                    } transition-all duration-200`}
                   size="sm"
                 >
                   <LinkIcon className="h-4 w-4 mr-2" />
@@ -525,15 +526,15 @@ export default function UserProfilePage() {
                   }
                   className={`w-full md:w-auto ${
                     appearance?.theme === "blue"
-                      ? "bg-blue-900 text-white hover:bg-blue-950"
-                      : appearance?.theme === "green"
+                    ? "bg-blue-900 text-white hover:bg-blue-950"
+                    : appearance?.theme === "green"
                       ? "bg-green-900 text-white hover:bg-green-950"
                       : appearance?.theme === "purple"
-                      ? "bg-purple-900 text-white hover:bg-purple-950"
-                      : appearance?.theme === "orange"
-                      ? "bg-orange-900 text-white hover:bg-orange-950"
-                      : ""
-                  } transition-all duration-200`}
+                        ? "bg-purple-900 text-white hover:bg-purple-950"
+                        : appearance?.theme === "orange"
+                          ? "bg-orange-900 text-white hover:bg-orange-950"
+                          : ""
+                    } transition-all duration-200`}
                   size="sm"
                 >
                   <MessageSquare className="h-4 w-4 mr-2" />
@@ -570,15 +571,15 @@ export default function UserProfilePage() {
               appearance?.theme !== "default"
                 ? `${
                     appearance?.theme === "blue"
-                      ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : appearance?.theme === "green"
-                      ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : appearance?.theme === "purple"
+                  ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                  : appearance?.theme === "green"
+                    ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                    : appearance?.theme === "purple"
                       ? "dark:bg-purple-500 bg-purple-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
                       : appearance?.theme === "orange"
-                      ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : ""
-                  } transition-all duration-200`
+                        ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                        : ""
+                } transition-all duration-200`
                 : ""
             }
           >
@@ -587,15 +588,15 @@ export default function UserProfilePage() {
                 <Users
                   className={`h-5 w-5 mb-2 text-primary ${
                     appearance?.theme === "blue"
-                      ? "text-blue-500"
-                      : appearance?.theme === "green"
+                    ? "text-blue-500"
+                    : appearance?.theme === "green"
                       ? "text-green-500"
                       : appearance?.theme === "purple"
-                      ? "text-purple-500"
-                      : appearance?.theme === "orange"
-                      ? "text-orange-500"
-                      : ""
-                  }`}
+                        ? "text-purple-500"
+                        : appearance?.theme === "orange"
+                          ? "text-orange-500"
+                          : ""
+                    }`}
                 />
                 <span className="text-2xl font-bold">
                   {profile?.friends?.length || 0}
@@ -611,15 +612,15 @@ export default function UserProfilePage() {
               appearance?.theme !== "default"
                 ? `${
                     appearance?.theme === "blue"
-                      ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : appearance?.theme === "green"
-                      ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : appearance?.theme === "purple"
+                  ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                  : appearance?.theme === "green"
+                    ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                    : appearance?.theme === "purple"
                       ? "dark:bg-purple-500 bg-purple-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
                       : appearance?.theme === "orange"
-                      ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : ""
-                  } transition-all duration-200`
+                        ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                        : ""
+                } transition-all duration-200`
                 : ""
             }
           >
@@ -628,15 +629,15 @@ export default function UserProfilePage() {
                 <GitBranch
                   className={`h-5 w-5 mb-2 text-primary ${
                     appearance?.theme === "blue"
-                      ? "text-blue-500"
-                      : appearance?.theme === "green"
+                    ? "text-blue-500"
+                    : appearance?.theme === "green"
                       ? "text-green-500"
                       : appearance?.theme === "purple"
-                      ? "text-purple-500"
-                      : appearance?.theme === "orange"
-                      ? "text-orange-500"
-                      : ""
-                  }`}
+                        ? "text-purple-500"
+                        : appearance?.theme === "orange"
+                          ? "text-orange-500"
+                          : ""
+                    }`}
                 />
                 <span className="text-2xl font-bold">
                   {stats?.public_repos || 0}
@@ -652,15 +653,15 @@ export default function UserProfilePage() {
               appearance?.theme !== "default"
                 ? `${
                     appearance?.theme === "blue"
-                      ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : appearance?.theme === "green"
-                      ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : appearance?.theme === "purple"
+                  ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                  : appearance?.theme === "green"
+                    ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                    : appearance?.theme === "purple"
                       ? "dark:bg-purple-500 bg-purple-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
                       : appearance?.theme === "orange"
-                      ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : ""
-                  } transition-all duration-200`
+                        ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                        : ""
+                } transition-all duration-200`
                 : ""
             }
           >
@@ -669,15 +670,15 @@ export default function UserProfilePage() {
                 <Star
                   className={`h-5 w-5 mb-2 text-primary ${
                     appearance?.theme === "blue"
-                      ? "text-blue-500"
-                      : appearance?.theme === "green"
+                    ? "text-blue-500"
+                    : appearance?.theme === "green"
                       ? "text-green-500"
                       : appearance?.theme === "purple"
-                      ? "text-purple-500"
-                      : appearance?.theme === "orange"
-                      ? "text-orange-500"
-                      : ""
-                  }`}
+                        ? "text-purple-500"
+                        : appearance?.theme === "orange"
+                          ? "text-orange-500"
+                          : ""
+                    }`}
                 />
                 <span className="text-2xl font-bold">
                   {stats?.followers || 0}
@@ -693,15 +694,15 @@ export default function UserProfilePage() {
               appearance?.theme !== "default"
                 ? `${
                     appearance?.theme === "blue"
-                      ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : appearance?.theme === "green"
-                      ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : appearance?.theme === "purple"
+                  ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                  : appearance?.theme === "green"
+                    ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                    : appearance?.theme === "purple"
                       ? "dark:bg-purple-500 bg-purple-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
                       : appearance?.theme === "orange"
-                      ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : ""
-                  } transition-all duration-200`
+                        ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                        : ""
+                } transition-all duration-200`
                 : ""
             }
           >
@@ -710,15 +711,15 @@ export default function UserProfilePage() {
                 <Calendar
                   className={`h-5 w-5 mb-2 text-primary ${
                     appearance?.theme === "blue"
-                      ? "text-blue-500"
-                      : appearance?.theme === "green"
+                    ? "text-blue-500"
+                    : appearance?.theme === "green"
                       ? "text-green-500"
                       : appearance?.theme === "purple"
-                      ? "text-purple-500"
-                      : appearance?.theme === "orange"
-                      ? "text-orange-500"
-                      : ""
-                  }`}
+                        ? "text-purple-500"
+                        : appearance?.theme === "orange"
+                          ? "text-orange-500"
+                          : ""
+                    }`}
                 />
                 <span className="text-2xl font-bold">
                   {new Date(stats?.created_at || Date.now()).getFullYear()}
@@ -766,13 +767,13 @@ export default function UserProfilePage() {
                                 appearance?.theme === "blue"
                                   ? "bg-blue-500/70"
                                   : appearance?.theme === "green"
-                                  ? "bg-green-500/70"
-                                  : appearance?.theme === "purple"
-                                  ? "bg-purple-500/70"
-                                  : appearance?.theme === "orange"
-                                  ? "bg-orange-500/70"
-                                  : "bg-primary/70"
-                              }`}
+                                    ? "bg-green-500/70"
+                                    : appearance?.theme === "purple"
+                                      ? "bg-purple-500/70"
+                                      : appearance?.theme === "orange"
+                                        ? "bg-orange-500/70"
+                                        : "bg-primary/70"
+                                }`}
                             />
                             <span>{repo.language}</span>
                           </div>
@@ -884,6 +885,10 @@ export default function UserProfilePage() {
             </div>
           </TabsContent>
         </Tabs>
+        <div className="mt-8">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">Activity Overview</h1>
+          <ActivityHeatmap data={{ posts,themeColor:appearance?.theme }} />
+        </div>
       </div>
     </div>
   );

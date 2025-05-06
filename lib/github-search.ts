@@ -460,7 +460,7 @@ export async function searchGitHubReposBasic(query: string): Promise<any[]> {
         }
 
         // Build the search query for repositories
-        let searchQuery = `${query} in:name,description,readme`;
+        const searchQuery = `${query} in:name,description,readme`;
 
         // Generate cache key
         const cacheKey = `github:search:repos:basic:${encodeURIComponent(searchQuery)}`
@@ -538,7 +538,7 @@ export async function searchSimilarRepositories(repoName: string): Promise<any[]
         }
 
         // Build a search query based on the repository's topics, language, and description
-        let searchTerms = [];
+        const searchTerms = [];
         
         // Add topics from the base repository
         if (baseRepoInfo.topics && baseRepoInfo.topics.length > 0) {
