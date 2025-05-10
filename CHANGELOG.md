@@ -2,6 +2,14 @@
 
 All notable changes to CodeNearby will be documented in this file.
 
+## [1.2.1] - 2025-05-03
+
+### Changes
+- Changed AI-Connect to use Gemini AI for developer recommendations
+- Improved AI-Connect conversation interface for better user experience
+- Increased limits for AI-Connect conversations
+- Basic UI and minor bug fixes
+
 ## [1.2.0] - 2025-04-29
 
 ### Changes
@@ -13,7 +21,7 @@ All notable changes to CodeNearby will be documented in this file.
 ## [1.1.0] - 2025-04-25
 
 ### Changes
-- Launched AI-Connect: AI-powered developer search using Meta: Llama 4 Maverick AI
+- Launched AI-Connect: AI-powered developer search using Gemini AI
 - Added GitHub card component for non-CodeNearby users with profile previews
 - Created dedicated AI-Connect about page with feature documentation
 - Fixed theme switcher in footer for better dark mode toggling
