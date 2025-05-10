@@ -8,6 +8,7 @@ export const CHANGELOG = [
       "Changed AI-Connect to use Gemini AI for developer recommendations",
       "Improved AI-Connect conversation interface for better user experience",
       "Increased limits for AI-Connect conversations",
+      "Basic UI and minor bug fixes"
     ]
   },
   {
