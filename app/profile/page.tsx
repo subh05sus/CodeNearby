@@ -44,6 +44,7 @@ import ProfileHeader from "@/components/home/ProfileHeader";
 import { MasonryGrid } from "@/components/masonry-grid";
 import { toast } from "sonner";
 import { Spotlight } from "@/components/ui/spotlight-new";
+import { ActivityHeatmap } from "@/components/activity-heatmap";
 
 interface Post {
   _id: string;
@@ -1018,6 +1019,10 @@ export default function ProfilePage() {
             </Card>
           </TabsContent>
         </Tabs>
+        <div className="mt-8">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">Activity Overview</h1>
+          <ActivityHeatmap data={{ posts, themeColor: appearance?.theme || "green" }} />
+        </div>
       </div>
     </div>
   );
