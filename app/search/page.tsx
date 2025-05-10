@@ -117,11 +117,16 @@ function SearchPage() {
         body: JSON.stringify(developer),
       });
 
-      if (!response.ok) throw new Error("Failed to send friend request");
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to send friend request");
+      }
 
       toast.success("Friend request sent!");
-    } catch {
-      toast.error("Failed to send friend request.");
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to send friend request";
+      toast.error(errorMessage);
     }
   };
 

@@ -83,10 +83,12 @@ export const authOptions = {
             githubBio: profile.bio,
             githubLocation: profile.location,
             friends: [],
+            onboardingCompleted: false,
           });
-          // Add the user to a specific gathering
+
+          // Add the user to the default gathering
           const userId = result.insertedId;
-          const gatheringId = process.env.ALL_GATHERING_ID!; // Specific gathering ID
+          const gatheringId = process.env.ALL_GATHERING_ID; // Default gathering ID
 
           // Update the gathering to add the user to participants
           if (gatheringId) {
@@ -105,6 +107,9 @@ export const authOptions = {
         session.user.githubUsername = user.githubUsername;
         session.user.githubId = user.githubId;
         session.user.friends = user.friends || [];
+        session.user.githubLocation = user.githubLocation;
+        session.user.githubBio = user.githubBio;
+        session.user.githubProfileUrl = user.githubProfileUrl;
       }
       return session;
     },
