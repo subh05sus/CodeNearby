@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import OnboardingPage from "./page-client";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import OnboardingCompleted from "./onboarding-completed";
 
 export default async function OnboardingLayout() {
   const session = await getServerSession(authOptions);
@@ -22,9 +23,9 @@ export default async function OnboardingLayout() {
     _id: new ObjectId(session.user.id),
   });
 
-  // If onboarding is already completed, redirect to home page
+  // If onboarding is already completed, show the option to restart instead of redirecting
   if (user?.onboardingCompleted === true) {
-    redirect("/");
+    return <OnboardingCompleted user={user} />;
   }
 
   // Fetch some developers to show initially

@@ -75,7 +75,7 @@ export default function GatheringsStep({
                 initial={{ x: -20, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
-                className="flex justify-between items-center"
+                className="flex justify-between items-start flex-col md:flex-row md:items-center  "
               >
                 <h3 className="text-xl font-semibold flex items-center">
                   <Users className="h-5 w-5 mr-2" />
@@ -157,8 +157,6 @@ export default function GatheringsStep({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1, duration: 0.5 }}
       >
-
-
         <div className="flex items-center justify-center gap-2 min-h-[28px] w-full">
           <div className="flex items-center justify-end w-[60px]">
             <Switch

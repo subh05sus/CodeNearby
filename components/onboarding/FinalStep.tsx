@@ -1,11 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Home, UserCog, Users, MessageSquare } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const paths = [
   {
@@ -20,7 +19,7 @@ const paths = [
     icon: <UserCog className="h-6 w-6" />,
     title: "Edit Profile",
     description: "Customize your profile to help others find you.",
-    path: "/profile/update",
+    path: "/profile/edit",
     color: "bg-purple-100 dark:bg-purple-900/20",
     textColor: "text-purple-600 dark:text-purple-400",
   },
@@ -44,6 +43,37 @@ const paths = [
 
 export default function FinalStep() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const completeOnboarding = async (path: string) => {
+    try {
+      setIsLoading(true);
+
+      // Save user preferences and mark onboarding as completed
+      await fetch("/api/user/complete-onboarding", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          skills: [], // Skills were already saved in the previous steps
+          joinGathering: true, // Preserve the user's choice from previous steps
+        }),
+      });
+
+      // Clear onboarding data from localStorage
+      localStorage.removeItem("onboardingStep");
+      localStorage.removeItem("onboardingSkills");
+      localStorage.removeItem("onboardingJoinGathering");
+
+      // Redirect to the selected path
+      router.push(path);
+    } catch (error) {
+      console.error("Error completing onboarding:", error);
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center">
       <motion.h2
@@ -82,45 +112,32 @@ export default function FinalStep() {
               boxShadow: "0 10px 30px -15px rgba(0, 0, 0, 0.2)",
             }}
             className="w-full"
+            onClick={() => completeOnboarding(path.path)}
           >
-            <Link href={path.path} passHref>
-              <Card className="h-full border cursor-pointer">
-                <CardContent className="p-6 flex items-center">
-                  <motion.div
-                    className={`rounded-full p-3 mr-4 ${path.color}`}
-                    whileHover={{ rotate: 5 }}
-                  >
-                    <div className={path.textColor}>{path.icon}</div>
-                  </motion.div>
-                  <div>
-                    <h3 className="font-semibold text-lg mb-1">{path.title}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {path.description}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
+            <Card className="h-full border cursor-pointer relative">
+              {isLoading && (
+                <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center rounded-md z-10">
+                  <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
+                </div>
+              )}
+              <CardContent className="p-6 flex items-center">
+                <motion.div
+                  className={`rounded-full p-3 mr-4 ${path.color}`}
+                  whileHover={{ rotate: 5 }}
+                >
+                  <div className={path.textColor}>{path.icon}</div>
+                </motion.div>
+                <div>
+                  <h3 className="font-semibold text-lg mb-1">{path.title}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {path.description}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </motion.div>
         ))}
       </div>
-
-      <motion.div
-        className="mt-8"
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.8, duration: 0.5 }}
-      >
-        <Button
-          size="lg"
-          className="px-8"
-          onClick={() => {
-            router.push("/");
-          }}
-        >
-          Get Started
-        </Button>
-      </motion.div>
     </div>
   );
 }
