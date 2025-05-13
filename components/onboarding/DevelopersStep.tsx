@@ -152,7 +152,6 @@ export default function DevelopersStep({
         if (!response.ok) {
           throw new Error("Failed to fetch developers");
         }
-
         const data = await response.json();
 
         if (!data.developers || data.developers.length === 0) {
@@ -162,7 +161,23 @@ export default function DevelopersStep({
           );
           setIsRandomDevelopers(true);
         } else {
-          setFilteredDevelopers(formatDevelopers(data.developers));
+          // Format and sort developers by matching skills count (if skills are provided)
+          const formattedDevs = formatDevelopers(data.developers);
+
+          if (skills.length > 0 && !data.isRandom) {
+            // Sort by number of matching skills
+            formattedDevs.sort((a, b) => {
+              const aMatches = a.skills.filter((skill) =>
+                skills.includes(skill)
+              ).length;
+              const bMatches = b.skills.filter((skill) =>
+                skills.includes(skill)
+              ).length;
+              return bMatches - aMatches;
+            });
+          }
+
+          setFilteredDevelopers(formattedDevs);
           setIsRandomDevelopers(data.isRandom || false);
         }
       } catch (err) {
@@ -217,7 +232,6 @@ export default function DevelopersStep({
       >
         Developers With Similar Skills
       </motion.h2>
-
       <motion.p
         className="text-center text-muted-foreground mb-4 max-w-lg"
         initial={{ opacity: 0 }}
@@ -228,7 +242,6 @@ export default function DevelopersStep({
           ? "These developers share some of your skills. Connect with them to grow your network."
           : "Here are some developers in the CodeNearby community. Select some skills to find developers with similar interests."}
       </motion.p>
-
       {isRandomDevelopers && !loading && skills.length > 0 && (
         <motion.div
           className="w-full max-w-md mb-6"
@@ -245,7 +258,6 @@ export default function DevelopersStep({
           </Alert>
         </motion.div>
       )}
-
       {loading && (
         <div className="flex items-center justify-center w-full py-12">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -254,7 +266,6 @@ export default function DevelopersStep({
           </span>
         </div>
       )}
-
       {error && (
         <motion.div
           className="bg-destructive/10 text-destructive px-4 py-2 rounded-md mb-4 text-sm"
@@ -264,7 +275,6 @@ export default function DevelopersStep({
           {error}
         </motion.div>
       )}
-
       {!loading && (
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full mt-2">
           <AnimatePresence>
@@ -284,6 +294,7 @@ export default function DevelopersStep({
                   <Card className="h-full border overflow-hidden">
                     <CardContent className="p-6">
                       <div className="flex flex-col items-center text-center">
+                        {" "}
                         <motion.div
                           whileHover={{ scale: 1.05 }}
                           transition={{
@@ -302,22 +313,65 @@ export default function DevelopersStep({
                             </AvatarFallback>
                           </Avatar>
                         </motion.div>
-
                         <h3 className="font-semibold text-base mb-1">
                           {developer.name}
                         </h3>
-
                         <p className="text-sm text-muted-foreground mb-2">
                           @{developer.githubUsername}
                         </p>
-
                         {developer.githubLocation && (
                           <div className="flex items-center justify-center text-xs text-muted-foreground mb-3">
                             <MapPin className="h-3 w-3 mr-1" />
                             <span>{developer.githubLocation}</span>
                           </div>
-                        )}
+                        )}{" "}
+                        {/* Display matched skills count with progress bar */}
+                        {skills.length > 0 && (
+                          <div className="mb-3 w-full px-2">
+                            {(() => {
+                              const matchCount = developer.skills.filter(
+                                (skill) => skills.includes(skill)
+                              ).length;
 
+                              // Calculate match percentage based on user's selected skills
+                              const totalSelected = skills.length;
+                              const matchPercentage = Math.min(
+                                100,
+                                Math.round((matchCount / totalSelected) * 100)
+                              );
+
+                              return matchCount > 0 ? (
+                                <div className="w-full">
+                                  <div className="flex justify-between items-center mb-1">
+                                    <Badge
+                                      variant="secondary"
+                                      className="text-xs px-2 py-0.5"
+                                    >
+                                      {matchCount} skill
+                                      {matchCount !== 1 ? "s" : ""} matched
+                                    </Badge>
+                                    {matchPercentage >= 50 && (
+                                      <span className="text-xs text-green-500 font-medium">
+                                        {matchPercentage}% match
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                    <motion.div
+                                      className="h-full bg-gradient-to-r from-green-400 to-green-500 rounded-full"
+                                      initial={{ width: 0 }}
+                                      animate={{ width: `${matchPercentage}%` }}
+                                      transition={{
+                                        duration: 0.8,
+                                        delay: index * 0.1,
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                              ) : null;
+                            })()}
+                          </div>
+                        )}
                         <div className="flex flex-wrap gap-1 justify-center mb-4">
                           {developer.skills.slice(0, 3).map((skill) => {
                             const isMatched = skills.includes(skill);
@@ -358,7 +412,6 @@ export default function DevelopersStep({
                             </Badge>
                           )}
                         </div>
-
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -441,7 +494,6 @@ export default function DevelopersStep({
           </AnimatePresence>
         </div>
       )}
-
       {!loading && filteredDevelopers.length === 0 && (
         <motion.div
           className="mt-6 text-center text-muted-foreground"
@@ -452,19 +504,18 @@ export default function DevelopersStep({
           No developers found in the system. As more users join CodeNearby,
           you&apos;ll see developers with matching skills here.
         </motion.div>
-      )}
-
+      )}{" "}
       {!loading && filteredDevelopers.length > 0 && (
         <motion.div
-          className="mt-6 flex items-center justify-center text-sm text-muted-foreground"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          className="mt-6 flex items-center justify-center text-sm text-muted-foreground bg-muted/50 px-4 py-2 rounded-full"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.5 }}
         >
           <Code className="h-4 w-4 mr-2" />
           <span>
             {!isRandomDevelopers && skills.length > 0
-              ? "Matching skills are highlighted"
+              ? "Higher match percentage indicates better skill alignment"
               : "Select skills above to find better matches"}
           </span>
         </motion.div>

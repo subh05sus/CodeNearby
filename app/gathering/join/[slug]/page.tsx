@@ -115,7 +115,7 @@ export default function JoinGatheringPage() {
 
   if (!session) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh]">
+      <div className="flex flex-col items-center justify-center min-h-[calc(100dvh-250px)]">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Welcome to Gatherings</CardTitle>
@@ -133,7 +133,7 @@ export default function JoinGatheringPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[80vh]">
+      <div className="flex justify-center items-center min-h-[calc(100dvh-250px)]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -141,7 +141,7 @@ export default function JoinGatheringPage() {
 
   if (!gathering) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh]">
+      <div className="flex flex-col items-center justify-center min-h-[calc(100dvh-250px)]">
         <Card className="w-full max-w-md text-center">
           <CardHeader>
             <CardTitle className="text-2xl">Gathering Not Found</CardTitle>
@@ -166,7 +166,7 @@ export default function JoinGatheringPage() {
     )
   ) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh]">
+      <div className="flex flex-col items-center justify-center min-h-[calc(100dvh-250px)]">
         <Card className="w-full max-w-md text-center pb-6">
           <CardHeader>
             <CardTitle className="text-2xl">Already Joined</CardTitle>
@@ -192,7 +192,7 @@ export default function JoinGatheringPage() {
   const isExpired = timeLeft <= 0;
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 py-8 min-h-[80vh] flex items-center justify-center">
+    <div className="container mx-auto px-4 sm:px-6 py-8 min-h-[calc(100dvh-250px)] flex items-center justify-center">
       <motion.div
         variants={container}
         initial="hidden"

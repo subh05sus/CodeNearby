@@ -49,7 +49,7 @@ export default function OnboardingCompleted() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-6rem)] flex items-center justify-center bg-gradient-to-b from-background to-background/90 p-4 md:p-8">
+    <div className="min-h-[calc(100vh-250px)] flex items-center justify-center bg-gradient-to-b from-background to-background/90 p-4 md:p-8">
       <Card
         className={`max-w-md w-full shadow-lg border border-primary/10 transition-all duration-500 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"

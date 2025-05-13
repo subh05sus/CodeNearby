@@ -64,7 +64,7 @@ export default function Footer() {
                 <img
                   src="/github.svg"
                   alt="GitHub"
-                  className="h-5 w-5 dark:invert invert-0"
+                  className="h-5 w-5 dark:invert invert-0 opacity-70 hover:opacity-100"
                 />
               </Link>
             </nav>

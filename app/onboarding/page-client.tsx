@@ -184,7 +184,7 @@ export default function OnboardingPage({
   };
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-6rem)] bg-gradient-to-b from-background to-background/90">
+    <div className="flex flex-col min-h-[calc(100dvh-250px)] bg-gradient-to-b from-background to-background/90">
       <div className="py-6 px-4 md:px-8 border-b bg-background/60 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-4xl mx-auto w-full">
           {/* Desktop step indicator */}

@@ -44,14 +44,14 @@ function FeatureBigPreview() {
                 <ExternalLink className="ml-2 h-4 w-4" />
               </Link>
             </Button>
-          </div>
-          <div className="md:w-1/2 relative  md:h-auto flex justify-center items-center">
+          </div>{" "}
+          <div className="md:w-1/2 relative md:h-auto flex justify-center items-center p-4 md:p-0">
             <Image
               src="/ai.gif"
               alt="AI-Connect feature preview"
               width={300}
               height={300}
-              className="object-cover"
+              className="object-cover w-[200px] h-[200px] md:w-[300px] md:h-[300px]"
             />
           </div>
         </div>

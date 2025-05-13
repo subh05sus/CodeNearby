@@ -55,5 +55,15 @@ export default async function OnboardingLayout() {
     ])
     .toArray();
 
-  return <OnboardingPage session={session} developers={developers} />;
+  // Convert MongoDB documents to plain objects
+  const serializedDevelopers = developers.map((dev) => ({
+    ...dev,
+    _id: dev._id.toString(),
+    // Convert any other ObjectIds if they exist
+    ...(dev.friendRequestId && {
+      friendRequestId: dev.friendRequestId.toString(),
+    }),
+  }));
+
+  return <OnboardingPage session={session} developers={serializedDevelopers} />;
 }

@@ -13,7 +13,7 @@ export default function NotFound() {
   const shadowColor = resolvedTheme === "dark" ? "white" : "black";
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[70vh] py-12 px-4">
+    <div className="flex flex-col items-center justify-center min-h-[calc(100dvh-250px)] py-12 px-4">
       <div className="absolute top-0 right-0 w-full -z-50">
         <div className="h-[40rem] w-full rounded-md -z-50 flex md:items-center md:justify-center antialiased dark:bg-transparent bg-dot-black/[0.5] relative overflow-hidden">
           <Spotlight />

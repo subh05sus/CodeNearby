@@ -167,7 +167,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <Header />
-            <main className="flex-1 container mx-auto px-4 py-8 min-h-[calc(100vh-9rem)]">
+            <main className="flex-1 container mx-auto px-4 py-8 min-h-[calc(100dvh-180px)]">
               {children}
             </main>
             <Footer />
