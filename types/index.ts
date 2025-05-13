@@ -60,6 +60,7 @@ export interface UserProfile extends Developer {
   githubBio: string;
   githubLocation: string;
   pinnedRepos?: PinnedRepo[];
+  skills?: string[];
   appearance?: {
     theme: 'default' | 'blue' | 'green' | 'purple' | 'orange';
     showActivity: boolean;

@@ -25,7 +25,7 @@ export default async function OnboardingLayout() {
 
   // If onboarding is already completed, show the option to restart instead of redirecting
   if (user?.onboardingCompleted === true) {
-    return <OnboardingCompleted user={user} />;
+    return <OnboardingCompleted />;
   }
 
   // Fetch some developers to show initially

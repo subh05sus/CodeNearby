@@ -73,7 +73,8 @@ export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
 
   // Get Tailwind fill class based on intensity
   const getClassForValue = (value: HeatmapValue) => {
-    if (!value || value.count === 0) return 'fill-gray-200';
+    if (!value || value.count === 0) return 'fill-gray-200 dark:fill-gray-800';
+
     const intensity = Math.min(Math.ceil((value.count / maxCount) * 4), 4);
     return colorClassMap[data.themeColor][intensity - 1];
   };

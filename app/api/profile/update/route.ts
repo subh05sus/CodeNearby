@@ -24,6 +24,7 @@ export async function PUT(request: Request) {
             bannerImage: data.bannerImage,
             pinnedRepos: data.pinnedRepos,
             appearance: data.appearance, // Add support for appearance settings
+            skills: data.skills,
         };
 
         // Filter out undefined values

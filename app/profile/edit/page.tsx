@@ -40,9 +40,44 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 import { fetchUserRepositories } from "@/lib/github";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import { AnimatePresence, motion } from "framer-motion";
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+
+// List of popular programming skills
+const popularSkills = [
+  "JavaScript",
+  "TypeScript",
+  "React",
+  "Next.js",
+  "Node.js",
+  "Python",
+  "Java",
+  "C#",
+  "Go",
+  "Rust",
+  "PHP",
+  "Ruby",
+  "Swift",
+  "Kotlin",
+  "HTML",
+  "CSS",
+  "SQL",
+  "MongoDB",
+  "GraphQL",
+  "Docker",
+  "AWS",
+  "Azure",
+  "Git",
+  "DevOps",
+  "TailwindCSS",
+  "Vue.js",
+  "Angular",
+  "Svelte",
+  "Flutter",
+  "React Native",
+];
 
 // Component to safely use search parameters with Suspense
 function TabParamReader({
@@ -70,12 +105,14 @@ export default function EditProfilePage() {
   const [bio, setBio] = useState("");
   const [location, setLocation] = useState("");
   const [activeTab, setActiveTab] = useState<string>("information");
+  const [skills, setSkills] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [customSkill, setCustomSkill] = useState("");
 
   // For repositories
   const [repositories, setRepositories] = useState<PinnedRepo[]>([]);
   const [loadingRepos, setLoadingRepos] = useState(false);
   const [pinnedRepos, setPinnedRepos] = useState<PinnedRepo[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
 
   // For profile image cropping
   const [cropDialogOpen, setCropDialogOpen] = useState(false);
@@ -144,6 +181,7 @@ export default function EditProfilePage() {
       setName(data.name || "");
       setBio(data.githubBio || "");
       setLocation(data.githubLocation || "");
+      setSkills(data.skills || []);
 
       // Initialize pinned repos if they exist
       if (data.pinnedRepos && data.pinnedRepos.length > 0) {
@@ -204,6 +242,7 @@ export default function EditProfilePage() {
           bannerImage: bannerImageUrl,
           pinnedRepos,
           appearance,
+          skills,
         }),
       });
 
@@ -547,7 +586,6 @@ export default function EditProfilePage() {
                       rows={4}
                     />
                   </div>
-
                   <div className="space-y-2">
                     <Label htmlFor="location">Location</Label>
                     <Input
@@ -556,6 +594,105 @@ export default function EditProfilePage() {
                       onChange={(e) => setLocation(e.target.value)}
                       placeholder="Your location"
                     />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="skills">Skills</Label>{" "}
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {skills.map((skill, index) => (
+                        <Badge
+                          key={index}
+                          variant="secondary"
+                          className="gap-1 px-3 py-1"
+                        >
+                          {skill}
+                          <X
+                            className="h-3 w-3 ml-1 cursor-pointer hover:text-destructive"
+                            onClick={() => {
+                              setSkills(skills.filter((_, i) => i !== index));
+                            }}
+                          />
+                        </Badge>
+                      ))}
+                      {skills.length === 15 && (
+                        <Badge
+                          variant="outline"
+                          className="bg-yellow-100/20 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300"
+                        >
+                          Maximum limit reached
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      <Input
+                        id="customSkill"
+                        value={customSkill}
+                        onChange={(e) => setCustomSkill(e.target.value)}
+                        placeholder="Add a skill (e.g., JavaScript, React, Python)"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && customSkill.trim()) {
+                            e.preventDefault();
+                            if (
+                              !skills.includes(customSkill.trim()) &&
+                              skills.length < 15
+                            ) {
+                              setSkills([...skills, customSkill.trim()]);
+                              setCustomSkill("");
+                            } else if (skills.length >= 15) {
+                              toast.error("You can add a maximum of 15 skills");
+                            }
+                          }
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => {
+                          if (
+                            customSkill.trim() &&
+                            !skills.includes(customSkill.trim()) &&
+                            skills.length < 15
+                          ) {
+                            setSkills([...skills, customSkill.trim()]);
+                            setCustomSkill("");
+                          } else if (skills.length >= 15) {
+                            toast.error("You can add a maximum of 15 skills");
+                          }
+                        }}
+                      >
+                        Add
+                      </Button>
+                    </div>{" "}
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Press Enter to add a skill, or click the Add button. These
+                      skills will be displayed on your profile. Maximum of 15
+                      skills allowed.
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="popularSkills">Popular Skills</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {popularSkills.map((skill, index) => (
+                        <Badge
+                          key={index}
+                          variant="outline"
+                          className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
+                          onClick={() => {
+                            if (!skills.includes(skill) && skills.length < 15) {
+                              setSkills([...skills, skill]);
+                            } else if (skills.length >= 15) {
+                              toast.error("You can add a maximum of 15 skills");
+                            }
+                          }}
+                        >
+                          {skill}
+                        </Badge>
+                      ))}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Click on a skill to add it to your profile.
+                    </p>
                   </div>
                 </CardContent>
               </Card>

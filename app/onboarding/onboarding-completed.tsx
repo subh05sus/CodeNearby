@@ -8,18 +8,11 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { RefreshCw, Home, User, Code, Bell, CheckCircle2 } from "lucide-react";
+import { RefreshCw, Home, User, CheckCircle2 } from "lucide-react";
 
-interface OnboardingCompletedProps {
-  user: any;
-}
-
-export default function OnboardingCompleted({
-  user,
-}: OnboardingCompletedProps) {
+export default function OnboardingCompleted() {
   const router = useRouter();
   const [isResetting, setIsResetting] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -73,7 +66,7 @@ export default function OnboardingCompleted({
             You&apos;ve already completed the onboarding process for CodeNearby.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-5 px-6">
+        {/* <CardContent className="space-y-5 px-6">
           <div className="bg-muted/30 p-5 rounded-lg border border-muted/50 shadow-sm">
             <h3 className="font-medium mb-3 flex items-center gap-2">
               <User className="h-4 w-4 text-primary" />
@@ -137,7 +130,7 @@ export default function OnboardingCompleted({
             Would you like to reset your onboarding preferences and go through
             the process again?
           </p>
-        </CardContent>
+        </CardContent> */}
         <CardFooter className="flex flex-col sm:flex-row gap-3 px-6 pb-6">
           <Button
             variant="outline"

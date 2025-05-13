@@ -577,8 +577,32 @@ export default function ProfilePage() {
               )}
             </div>
           </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+          {profile?.skills && profile.skills.length > 0 && (
+            <div className="mt-4">
+              <div className="flex flex-wrap gap-1.5">
+                {profile.skills.map((skill: string, index: number) => (
+                  <Badge
+                    key={index}
+                    variant="secondary"
+                    className={`bg-primary/10 hover:bg-primary/15 text-primary cursor-default font-semibold ${
+                      appearance?.theme === "blue"
+                        ? "bg-blue-500/10 hover:bg-blue-500/15 text-blue-500"
+                        : appearance?.theme === "green"
+                        ? "bg-green-500/10 hover:bg-green-500/15 text-green-500"
+                        : appearance?.theme === "purple"
+                        ? "bg-purple-500/10 hover:bg-purple-500/15 text-purple-500"
+                        : appearance?.theme === "orange"
+                        ? "bg-orange-500/10 hover:bg-orange-500/15 text-orange-500"
+                        : ""
+                    }`}
+                  >
+                    {skill}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
             <Card
               className={
                 appearance?.theme !== "default"
@@ -1020,8 +1044,12 @@ export default function ProfilePage() {
           </TabsContent>
         </Tabs>
         <div className="mt-8">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">Activity Overview</h1>
-          <ActivityHeatmap data={{ posts, themeColor: appearance?.theme || "green" }} />
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">
+            Activity Overview
+          </h1>
+          <ActivityHeatmap
+            data={{ posts, themeColor: appearance?.theme || "green" }}
+          />
         </div>
       </div>
     </div>
