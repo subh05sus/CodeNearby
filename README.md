@@ -7,6 +7,8 @@
 [![Contributors](https://img.shields.io/github/contributors/subh05sus/codenearby)](https://github.com/subh05sus/codenearby/graphs/contributors)
 [![Open Issues](https://img.shields.io/github/issues/subh05sus/codenearby)](https://github.com/subh05sus/codenearby/issues)
 [![Vercel](https://vercelbadge.vercel.app/api/subh05sus/codenearby)](https://codenearby.space)
+![Visitors](https://komarev.com/ghpvc/?username=subh05sus&label=Visitors&color=blue)
+
 
 **CodeNearby** is a social networking platform built with **Next.js 14**, made specifically for developers to connect, collaborate, and grow together.
 
@@ -167,20 +169,6 @@ We welcome all contributions — from bug fixes to new feature ideas. Whether yo
    ```
 6. **Submit your PR** to the `main` branch with a clear description.
 
----
-
-### 🧠 Contribution Workflow Diagram
-
-```mermaid
-graph TD;
-  A[Fork Repository] --> B[Clone Locally]
-  B --> C[Create Feature Branch]
-  C --> D[Make Changes & Commit]
-  D --> E[Push to Fork]
-  E --> F[Open Pull Request]
-  F --> G[Review & Merge]
-```
-
 > 💡 *Pro tip: Please follow our [PR template](./.github/PULL_REQUEST_TEMPLATE.md) and ensure your branch is updated with `main` before requesting review.*
 
 ---
@@ -197,7 +185,31 @@ graph TD;
 > **Networking for developers should be effortless.**  
 Whether you're looking for a mentor, co-founder, or hackathon buddy, **CodeNearby** makes it simple and personal.
 
----
+
+## 🛤️ Roadmap & Future Plans
+
+- [x] Real-time chat integration
+- [x] More Advanced AI matchmaking
+- [ ] Mobile app support (React Native)
+- [ ] Event scheduling and calendar sync
+- [ ] Video chat integration for real-time collaboration
+- [ ] Localization and multi-language support
+      
+
+## ❓ FAQ
+
+**Q: Is CodeNearby free to use?**  
+A: Yes, it’s fully open-source and free.
+
+**Q: Can I self-host CodeNearby?**  
+A: Absolutely. Follow the setup instructions and you’re good.
+
+**Q: How does AI-Connect protect my data?**  
+A: We only use your public GitHub data and process AI requests securely with Google Gemini API.
+
+**Q: Can I contribute without coding?**  
+A: Yes! You can help by reporting bugs, suggesting features, or improving docs.
+
 
 ## 🌍 Join the Movement
 
@@ -205,7 +217,6 @@ Let's make the developer community stronger, more collaborative, and accessible 
 
 **⭐ Star this repo | 🍴 Fork it | 🤝 Contribute**
 
----
 
 ## 📣 Find us on
 
@@ -213,7 +224,12 @@ Let's make the developer community stronger, more collaborative, and accessible 
 - [Twitter(X)](https://x.com/code_nearby)
 
 
----
+## 🆘 Need Help?
+
+- Join the [GitHub Discussions](https://github.com/subh05sus/codenearby/discussions) for community support  
+- Open an issue for bugs or feature requests  
+- Contact [Subhadip](https://subhadip.me/) directly for inquiries  
+
 
 > Built with ❤️ by [Subhadip](https://subhadip.me) and the awesome [contributors](https://github.com/subh05sus/codenearby/graphs/contributors).
 
