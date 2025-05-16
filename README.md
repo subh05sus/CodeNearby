@@ -17,9 +17,18 @@
 
 ### 🌐 [Visit codenearby.space Now](https://codenearby.space)
 
+## 📚 Table of Contents
+
+- [🌟 Features](#-features)
+- [⚙️ Tech Stack](#️-tech-stack)
+- [🧠 Why CodeNearby?](#-why-codenearby)
+- [🛠️ Getting Started](#️-getting-started-local-development)
+- [🤝 Contributing](#-contributing-to-codenearby)
+- [📌 Our Vision](#-our-vision)
+- [📣 Find us on](#-find-us-on)
+
 
 ## 🌟 Features
-
 - 🔍 **Discover Developers**: Search by skills, interests, and location
 - 🤖 **AI-Connect**: Find GitHub developers through natural conversation using Meta: Llama 4 Maverick AI
 - 💬 **Chat**: Real-time conversations and collaboration
@@ -128,16 +137,60 @@ npm run dev
 
 ---
 
-## 🤝 Contributing
+## 🤝 Contributing to CodeNearby
 
-We welcome all contributions — from bug fixes to feature ideas. To get started:
+We welcome all contributions — from bug fixes to new feature ideas. Whether you're improving UI, fixing typos, or optimizing performance, you're helping the community.
 
-1. Fork the repo
-2. Create a new branch: `git checkout -b feature/your-feature`
-3. Commit your changes
-4. Push to your fork and create a PR
+### 📌 Steps to Contribute
+
+1. **Fork** the repository
+2. **Clone** your fork locally:
+
+   ```bash
+   git clone https://github.com/subh05sus/codenearby.git
+   cd codenearby
+   ```
+3. **Create a new feature branch**:
+
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+4. **Make your changes** and commit them:
+
+   ```bash
+   git commit -m "feat: add your feature"
+   ```
+5. **Push to your fork** and create a Pull Request:
+
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+6. **Submit your PR** to the `main` branch with a clear description.
 
 ---
+
+### 🧠 Contribution Workflow Diagram
+
+```mermaid
+graph TD;
+  A[Fork Repository] --> B[Clone Locally]
+  B --> C[Create Feature Branch]
+  C --> D[Make Changes & Commit]
+  D --> E[Push to Fork]
+  E --> F[Open Pull Request]
+  F --> G[Review & Merge]
+```
+
+> 💡 *Pro tip: Please follow our [PR template](./.github/PULL_REQUEST_TEMPLATE.md) and ensure your branch is updated with `main` before requesting review.*
+
+---
+
+### 💡 Contributors
+
+<a href="https://github.com/subh05sus/codenearby/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=subh05sus/codenearby" />
+</a>
+
 
 ## 📌 Our Vision
 
