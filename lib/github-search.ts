@@ -79,6 +79,13 @@ export async function searchGitHubUsersBasic(location: string | null, skills: st
  * @returns Detailed developer information
  */
 export async function getGitHubUserDetails(username: string) {
+    // Validate the username to prevent SSRF attacks
+    const isValidUsername = /^[a-zA-Z0-9-]{1,39}$/.test(username);
+    if (!isValidUsername) {
+        console.error(`Invalid GitHub username: ${username}`);
+        return null;
+    }
+
     try {
         // Check cache first
         const cacheKey = `github:user:${username}`
