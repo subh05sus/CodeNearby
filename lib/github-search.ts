@@ -755,7 +755,7 @@ export async function getRepositoryInfo(repoName: string): Promise<any | null> {
 
         return repoDetails;
     } catch (error) {
-        console.error(`Error getting details for repository ${repoName}:`, error)
+        console.error("Error getting details for repository %s:", repoName, error)
         return null
     }
 }
