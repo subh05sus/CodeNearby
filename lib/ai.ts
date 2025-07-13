@@ -1,6 +1,6 @@
 // import OpenAI from 'openai';
-import { generateText } from "ai"
-import { google } from '@ai-sdk/google';
+import { generateText } from "ai";
+import { google } from "@ai-sdk/google";
 
 // const openai = new OpenAI({
 //     baseURL: "https://openrouter.ai/api/v1",
@@ -10,7 +10,6 @@ import { google } from '@ai-sdk/google';
 //         "X-Title": "CodeNearby",
 //     },
 // });
-
 
 // export async function analyzeImageWithAI(imageUrl: string, prompt: string = "What is in this image?") {
 //     try {
@@ -72,21 +71,22 @@ import { google } from '@ai-sdk/google';
 //     }
 // }
 
-
-
 export async function generateMessage(prompt: string) {
-    try {
-        // Generate a response about the detailed profile
-        const { text: aiResponse } = await generateText({
-            model: google("models/gemini-2.0-flash-exp"),
-            prompt: `${prompt}`,
-            maxTokens: 8000,
-        });
+  try {
+    // Generate a response about the detailed profile
+    const response = await generateText({
+      model: google("models/gemini-2.0-flash-exp"),
+      prompt: `${prompt}`,
+      maxTokens: 8000,
+    });
 
-        // console.log("AI Response:", aiResponse);
-        return aiResponse;
-    } catch (error) {
-        console.error("Error generating text with Google:", error);
-        throw error;
-    }
+    // console.log("AI Response:", response);
+    // Extract the text content from the response
+    const aiResponse = response.text.trim();
+    const tokensUsed = response.usage?.totalTokens || 0;
+    return { aiResponse, tokensUsed };
+  } catch (error) {
+    console.error("Error generating text with Google:", error);
+    throw error;
+  }
 }

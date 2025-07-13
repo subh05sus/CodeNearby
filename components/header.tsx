@@ -10,8 +10,10 @@ import { useRouter, usePathname } from "next/navigation";
 import {
   ChevronDown,
   ChevronUp,
+  Code,
   Command,
   Globe,
+  Key,
   LogOut,
   Mail,
   MessageSquare,
@@ -335,6 +337,35 @@ export default function Header() {
                 </li>
                 <li>
                   <Button
+                    variant={`${
+                      pathname === "/" && theme === "light"
+                        ? "outline"
+                        : "ghost"
+                    }`}
+                    asChild
+                    className="xl:block hidden"
+                  >
+                    <Link href="/api-docs">
+                      <span>API Docs</span>
+                    </Link>
+                  </Button>
+                  <Button
+                    variant={`${
+                      pathname === "/" && theme === "light"
+                        ? "outline"
+                        : "ghost"
+                    }`}
+                    asChild
+                    size="icon"
+                    className="xl:hidden flex items-center"
+                  >
+                    <Link href="/api-docs">
+                      <Code />
+                    </Link>
+                  </Button>
+                </li>
+                <li>
+                  <Button
                     variant="outline"
                     size="sm"
                     className="px-1 py-[18px] rounded-lg"
@@ -395,6 +426,14 @@ export default function Header() {
                         <Link href="/requests">
                           <Users />
                           <span>Requests</span>
+                        </Link>
+                      </DropdownMenuItem>
+
+                      {/* API Dashboard */}
+                      <DropdownMenuItem asChild>
+                        <Link href="/api-dashboard">
+                          <Key />
+                          <span>API Dashboard</span>
                         </Link>
                       </DropdownMenuItem>
 
@@ -561,6 +600,9 @@ export default function Header() {
               </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => router.push("/feed")}>
                 Feed
+              </DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => router.push("/api-docs")}>
+                API Docs
               </DropdownMenuItem>
               {session ? (
                 <>

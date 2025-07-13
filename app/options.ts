@@ -92,10 +92,12 @@ export const authOptions = {
 
           // Update the gathering to add the user to participants
           if (gatheringId) {
-            await db.collection("gatherings").updateOne(
-              { _id: new ObjectId(gatheringId) },
-              { $addToSet: { participants: userId } }
-            );
+            await db
+              .collection("gatherings")
+              .updateOne(
+                { _id: new ObjectId(gatheringId) },
+                { $addToSet: { participants: userId } }
+              );
           }
         }
       }
