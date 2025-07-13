@@ -33,6 +33,12 @@ export default function Footer() {
                 About
               </Link>
               <Link
+                href="/contact"
+                className="text-sm text-muted-foreground hover:text-foreground py-1"
+              >
+                Contact
+              </Link>
+              <Link
                 href="/privacy"
                 className="text-sm text-muted-foreground hover:text-foreground py-1"
               >
@@ -43,6 +49,12 @@ export default function Footer() {
                 className="text-sm text-muted-foreground hover:text-foreground py-1"
               >
                 Terms
+              </Link>
+              <Link
+                href="/refunds"
+                className="text-sm text-muted-foreground hover:text-foreground py-1"
+              >
+                Refunds
               </Link>
               <Link
                 href="/changelog"
