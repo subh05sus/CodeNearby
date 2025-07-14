@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -25,17 +23,17 @@ import { toast } from "sonner";
 import { useCurrency } from "@/hooks/use-currency";
 import { getFormattedTokenPackages } from "@/lib/user-tiers";
 import { CurrencyToggle } from "@/components/currency-toggle";
+import RazorpayPayment from "@/components/razorpay-payment";
 
 export default function TokenStorePage() {
-  const { data: session } = useSession();
   const router = useRouter();
   const { currency, toggleCurrency } = useCurrency();
-  const [loading, setLoading] = useState<string | null>(null);
+  const [loading] = useState<string | null>(null);
 
-  const tokenPackages = getFormattedTokenPackages(currency).map(pkg => ({
+  const tokenPackages = getFormattedTokenPackages(currency).map((pkg) => ({
     ...pkg,
     description: getPackageDescription(pkg.id),
-    price: currency.code === "USD" ? pkg.price.usd : pkg.price.inr
+    price: currency.code === "USD" ? pkg.price.usd : pkg.price.inr,
   }));
 
   const userTiers = [
@@ -43,65 +41,37 @@ export default function TokenStorePage() {
       id: "free",
       name: "Free",
       description: "Perfect for getting started",
-      features: ["1,000 daily tokens", "1 API key", "Basic analytics", "Community support"],
-      limits: { dailyTokens: 1000, maxApiKeys: 1 }
+      features: [
+        "1,000 daily tokens",
+        "1 API key",
+        "Basic analytics",
+        "Community support",
+      ],
+      limits: { dailyTokens: 1000, maxApiKeys: 1 },
     },
     {
-      id: "premium", 
+      id: "premium",
       name: "Premium",
       description: "For serious developers",
-      features: ["2,000 daily tokens", "10 API keys", "Advanced analytics", "Priority support"],
-      limits: { dailyTokens: 2000, maxApiKeys: 10 }
-    }
+      features: [
+        "2,000 daily tokens",
+        "10 API keys",
+        "Advanced analytics",
+        "Priority support",
+      ],
+      limits: { dailyTokens: 2000, maxApiKeys: 10 },
+    },
   ];
 
   function getPackageDescription(packageId: string): string {
     const descriptions = {
       basic: "Perfect for small projects and testing",
       standard: "Great for regular API usage",
-      pro: "Ideal for high-volume applications", 
-      enterprise: "Best value for heavy usage"
+      pro: "Ideal for high-volume applications",
+      enterprise: "Best value for heavy usage",
     };
     return descriptions[packageId as keyof typeof descriptions] || "";
   }
-
-  const handlePurchase = async (packageId: string) => {
-    if (!session?.user) {
-      toast.error("Please sign in to purchase tokens");
-      router.push("/auth/signin");
-      return;
-    }
-
-    setLoading(packageId);
-    try {
-      const response = await fetch("/api/v1/billing/buy-tokens", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          packageId,
-          currency: currency.code,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success("Redirecting to checkout...");
-        // In a real app, redirect to the payment processor
-        console.log("Checkout URL:", data.url);
-        window.open(data.url, "_blank");
-      } else {
-        toast.error(data.error || "Failed to create checkout");
-      }
-    } catch (error) {
-      console.error("Purchase error:", error);
-      toast.error("An error occurred. Please try again.");
-    } finally {
-      setLoading(null);
-    }
-  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -190,14 +160,23 @@ export default function TokenStorePage() {
               </div>
 
               {/* Purchase Button */}
-              <Button
-                onClick={() => handlePurchase(pkg.id)}
+              <RazorpayPayment
+                packageId={pkg.id}
+                currency={currency.code as "USD" | "INR"}
+                amount={pkg.price}
+                packageName={pkg.name}
+                tokens={pkg.tokens}
+                bonus={pkg.bonus || 0}
+                onSuccess={() => {
+                  toast.success("Tokens purchased successfully!");
+                  router.push("/api-dashboard");
+                }}
+                onError={(error) => {
+                  toast.error(`Purchase failed: ${error}`);
+                }}
                 disabled={loading === pkg.id}
-                className="w-full"
-                variant={pkg.popular ? "default" : "outline"}
-              >
-                {loading === pkg.id ? "Processing..." : "Purchase Tokens"}
-              </Button>
+                className={pkg.popular ? "bg-blue-600 hover:bg-blue-700" : ""}
+              />
             </CardContent>
           </Card>
         ))}
@@ -228,12 +207,16 @@ export default function TokenStorePage() {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span>Daily free tokens:</span>
-                    <span className="font-medium">{tier.limits.dailyTokens}</span>
+                    <span className="font-medium">
+                      {tier.limits.dailyTokens}
+                    </span>
                   </div>
 
                   <div className="flex justify-between">
                     <span>Max API keys:</span>
-                    <span className="font-medium">{tier.limits.maxApiKeys}</span>
+                    <span className="font-medium">
+                      {tier.limits.maxApiKeys}
+                    </span>
                   </div>
 
                   <Separator />

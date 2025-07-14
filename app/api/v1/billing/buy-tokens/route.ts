@@ -2,12 +2,13 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/options";
 import clientPromise from "@/lib/mongodb";
-import {
-  UserRecord,
-  getTokenPackage,
-  addPurchasedTokens,
-} from "@/lib/user-tiers";
+import { UserRecord, getTokenPackage } from "@/lib/user-tiers";
 import { ObjectId } from "mongodb";
+import {
+  razorpayInstance,
+  convertToSmallestUnit,
+  generateReceiptId,
+} from "@/lib/razorpay";
 
 export async function POST(request: Request) {
   try {
@@ -56,42 +57,48 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // For demo purposes, we'll simulate a successful payment
-    // In production, this would integrate with Stripe, Razorpay, etc.
+    // Calculate amount in paise (Razorpay uses smallest currency unit)
+    const amount =
+      currency === "INR"
+        ? convertToSmallestUnit(packageData.price.inr) // Convert rupees to paise
+        : convertToSmallestUnit(packageData.price.usd); // Convert dollars to cents
 
-    // Generate a mock transaction ID
-    const transactionId = `txn_${Date.now()}_${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
+    // Create Razorpay order
+    const razorpayOrder = await razorpayInstance.orders.create({
+      amount: amount,
+      currency: currency,
+      receipt: generateReceiptId(session.user.id),
+      notes: {
+        userId: session.user.id,
+        packageId: packageId,
+        tokens: packageData.tokens.toString(),
+        bonus: packageData.bonus.toString(),
+      },
+    });
 
-    // Add purchased tokens to user account
-    const updatedUser = addPurchasedTokens(user, packageData, transactionId);
+    // Store pending order in database for verification later
+    await db.collection("pending_orders").insertOne({
+      orderId: razorpayOrder.id,
+      userId: session.user.id,
+      packageId: packageId,
+      amount: amount,
+      currency: currency,
+      status: "created",
+      createdAt: new Date(),
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
+    });
 
-    // Update user in database
-    await usersCollection.updateOne(
-      { _id: new ObjectId(session.user.id) },
-      {
-        $set: {
-          tier: updatedUser.tier,
-          tokenBalance: updatedUser.tokenBalance,
-          billing: updatedUser.billing,
-          features: updatedUser.features,
-          maxApiKeys: updatedUser.maxApiKeys,
-        },
-      }
-    );
-
-    // Return success response with payment details
+    // Return Razorpay order details for frontend
     return NextResponse.json({
       success: true,
-      transactionId,
+      orderId: razorpayOrder.id,
+      amount: razorpayOrder.amount,
+      currency: razorpayOrder.currency,
       package: packageData,
-      tokensAdded: packageData.tokens + packageData.bonus,
-      newBalance: updatedUser.tokenBalance.total,
-      newTier: updatedUser.tier,
-      // In production, return the payment URL
-      paymentUrl: `#success-${transactionId}`,
-      message: "Tokens purchased successfully!",
+      key: process.env.RZP_TEST_KEY_ID,
+      userEmail: session.user.email,
+      userName: session.user.name,
+      message: "Order created successfully. Proceed with payment.",
     });
   } catch (error) {
     console.error("Error processing token purchase:", error);

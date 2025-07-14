@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 // updateUsers.js
-const { MongoClient } = require("mongodb");
+import { MongoClient } from "mongodb";
 require("dotenv").config();
 
 const uri = process.env.MONGODB_URI; // Change if needed

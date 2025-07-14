@@ -1,7 +1,7 @@
-const { MongoClient } = require("mongodb");
-const dotenv = require("dotenv");
+import { MongoClient } from "mongodb";
+import { config } from "dotenv";
 
-dotenv.config({ path: ".env" });
+config({ path: ".env" });
 
 // MongoDB connection
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017";
@@ -138,4 +138,4 @@ migrateUsers()
     process.exit(1);
   });
 
-module.exports = { migrateUsers };
+export default { migrateUsers };

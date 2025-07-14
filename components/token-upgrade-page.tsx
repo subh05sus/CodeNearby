@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
   Card,
@@ -11,60 +10,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Zap, Star, Users, Crown } from "lucide-react";
 import { toast } from "sonner";
 import { useLocalCurrency } from "@/hooks/use-currency";
 import { USER_TIERS, getFormattedTokenPackages } from "@/lib/user-tiers";
+import RazorpayPayment from "@/components/razorpay-payment";
 
 export default function TokenUpgradePage() {
-  const { data: session } = useSession();
   const router = useRouter();
   const { currency, toggleCurrency } = useLocalCurrency();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
 
   const tokenPackages = getFormattedTokenPackages(currency);
-
-  const handlePurchaseTokens = async (packageData: any) => {
-    if (!session) {
-      router.push("/auth/signin");
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const response = await fetch("/api/v1/billing/buy-tokens", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          packageId: packageData.id,
-          currency: currency.code.toLowerCase(),
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to purchase tokens");
-      }
-
-      // Handle successful purchase
-      if (data.success) {
-        toast.success(data.message || "Tokens purchased successfully!");
-        router.push("/api-dashboard");
-      } else if (data.paymentUrl) {
-        window.location.href = data.paymentUrl;
-      }
-    } catch (error) {
-      console.error("Purchase error:", error);
-      toast.error(error instanceof Error ? error.message : "Purchase failed");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const getIcon = (packageId: string) => {
     switch (packageId) {
@@ -163,16 +121,27 @@ export default function TokenUpgradePage() {
                   ))}
                 </ul>
 
-                <Button
-                  onClick={() => handlePurchaseTokens(pkg)}
+                <RazorpayPayment
+                  packageId={pkg.id}
+                  currency={currency.code as "USD" | "INR"}
+                  amount={
+                    currency.code === "USD" ? pkg.price.usd : pkg.price.inr
+                  }
+                  packageName={pkg.name}
+                  tokens={pkg.tokens}
+                  bonus={pkg.bonus}
+                  onSuccess={() => {
+                    toast.success("Tokens purchased successfully!");
+                    router.push("/api-dashboard");
+                  }}
+                  onError={(error) => {
+                    toast.error(`Purchase failed: ${error}`);
+                  }}
                   disabled={isLoading}
-                  className={`w-full ${
+                  className={
                     pkg.popular ? "bg-primary hover:bg-primary/90" : ""
-                  }`}
-                  variant={pkg.popular ? "default" : "outline"}
-                >
-                  {isLoading ? "Processing..." : "Purchase"}
-                </Button>
+                  }
+                />
               </CardContent>
             </Card>
           ))}
