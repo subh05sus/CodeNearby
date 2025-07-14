@@ -419,6 +419,7 @@ export default function Header() {
                           <span>Profile</span>
                         </Link>
                       </DropdownMenuItem>
+
                       {/* messages */}
                       <DropdownMenuItem asChild>
                         <Link href="/messages">
@@ -440,7 +441,10 @@ export default function Header() {
                       <DropdownMenuItem asChild>
                         <Link href="/api-dashboard">
                           <Key />
-                          <span>API Dashboard</span>
+                          <span>API Dashboard</span>{" "}
+                          <span className="text-[0.6rem] px-1  bg-orange-600 rounded-md text-white font-semibold">
+                            NEW
+                          </span>
                         </Link>
                       </DropdownMenuItem>
 
@@ -628,6 +632,14 @@ export default function Header() {
                 <>
                   <DropdownMenuItem onSelect={() => router.push("/ai-connect")}>
                     AI Connect{" "}
+                    <span className="text-[0.6rem] px-1  bg-orange-600 rounded-md text-white font-semibold">
+                      NEW
+                    </span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onSelect={() => router.push("/api-dashboard")}
+                  >
+                    API Dashboard{" "}
                     <span className="text-[0.6rem] px-1  bg-orange-600 rounded-md text-white font-semibold">
                       NEW
                     </span>
