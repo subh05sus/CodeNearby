@@ -26,6 +26,9 @@ import {
   User,
   UserPlus,
   Users,
+  Key,
+  Book,
+  Zap,
 } from "lucide-react";
 import { SearchOverlay } from "./search-overlay";
 import Image from "next/image";
@@ -333,6 +336,39 @@ export default function Header() {
                     </Link>
                   </Button>
                 </li>
+
+                {session && (
+                  <li>
+                    <Button
+                      variant={`${
+                        pathname === "/api-dashboard" && theme === "light"
+                          ? "outline"
+                          : "ghost"
+                      }`}
+                      asChild
+                      className="xl:block hidden"
+                    >
+                      <Link href="/api-dashboard">
+                        <span>API</span>
+                      </Link>
+                    </Button>
+                    <Button
+                      variant={`${
+                        pathname === "/api-dashboard" && theme === "light"
+                          ? "outline"
+                          : "ghost"
+                      }`}
+                      asChild
+                      size="icon"
+                      className="xl:hidden flex items-center"
+                    >
+                      <Link href="/api-dashboard">
+                        <Key />
+                      </Link>
+                    </Button>
+                  </li>
+                )}
+
                 <li>
                   <Button
                     variant="outline"
@@ -395,6 +431,32 @@ export default function Header() {
                         <Link href="/requests">
                           <Users />
                           <span>Requests</span>
+                        </Link>
+                      </DropdownMenuItem>
+
+                      <DropdownMenuSeparator />
+
+                      {/* API Dashboard */}
+                      <DropdownMenuItem asChild>
+                        <Link href="/api-dashboard">
+                          <Key />
+                          <span>API Dashboard</span>
+                        </Link>
+                      </DropdownMenuItem>
+
+                      {/* API Documentation */}
+                      <DropdownMenuItem asChild>
+                        <Link href="/api-docs">
+                          <Book />
+                          <span>API Docs</span>
+                        </Link>
+                      </DropdownMenuItem>
+
+                      {/* Upgrade */}
+                      <DropdownMenuItem asChild>
+                        <Link href="/upgrade">
+                          <Zap />
+                          <span>Upgrade</span>
                         </Link>
                       </DropdownMenuItem>
 

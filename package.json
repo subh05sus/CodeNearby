@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "generate-changelog": "node generate-changelog.js",
+    "test-api": "node scripts/test-api.js",
     "prepare": "husky"
   },
   "dependencies": {
