@@ -68,8 +68,8 @@ export const metadata: Metadata = {
     description:
       "Find developers near you, share ideas, and build something awesome together.",
     images: "/og.png",
-    creator: "@SubhadipDev",
-    site: "@SubhadipDev",
+    creator: "@that_webdev_guy",
+    site: "@that_webdev_guy",
   },
 
   robots: {
@@ -143,7 +143,7 @@ export const metadata: Metadata = {
         "@type": "Person",
         name: "Subhadip Saha",
         sameAs: [
-          "https://twitter.com/SubhadipDev",
+          "https://twitter.com/that_webdev_guy",
           "https://github.com/subh05sus",
         ],
       },
