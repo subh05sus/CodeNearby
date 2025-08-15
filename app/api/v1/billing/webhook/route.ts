@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     const expectedSignature = crypto
       .createHmac(
         "sha256",
-        process.env.RZP_WEBHOOK_SECRET || process.env.RZP_TEST_KEY_SECRET!
+        process.env.RZP_WEBHOOK_SECRET || process.env.RZP_PROD_KEY_SECRET!
       )
       .update(body)
       .digest("hex");

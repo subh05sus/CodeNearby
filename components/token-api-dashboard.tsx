@@ -367,13 +367,37 @@ export default function TokenAPIPage() {
               <h2 className="text-xl font-semibold">Your API Keys</h2>
               <Dialog
                 open={showNewKeyDialog}
-                onOpenChange={setShowNewKeyDialog}
+                onOpenChange={(open) => {
+                  if (open) {
+                    if (canCreateKey) {
+                      setShowNewKeyDialog(true);
+                    } else {
+                      toast.error(
+                        apiKeyLimitInfo?.reason || "Cannot create API key"
+                      );
+                    }
+                  } else {
+                    setShowNewKeyDialog(false);
+                  }
+                }}
               >
                 <DialogTrigger asChild>
                   <span>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button disabled={!canCreateKey}>
+                        <Button
+                          disabled={!canCreateKey}
+                          onClick={(e) => {
+                            if (!canCreateKey) {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              toast.error(
+                                apiKeyLimitInfo?.reason ||
+                                  "Cannot create API key"
+                              );
+                            }
+                          }}
+                        >
                           <Plus className="h-4 w-4 mr-2" />
                           <span>Create API Key</span>
                         </Button>
@@ -504,7 +528,17 @@ export default function TokenAPIPage() {
                       API.
                     </p>
                     <div>
-                      <Button onClick={() => setShowNewKeyDialog(true)}>
+                      <Button
+                        onClick={() => {
+                          if (canCreateKey) {
+                            setShowNewKeyDialog(true);
+                          } else {
+                            toast.error(
+                              apiKeyLimitInfo?.reason || "Cannot create API key"
+                            );
+                          }
+                        }}
+                      >
                         <Plus className="h-4 w-4 mr-2" /> Create API Key
                       </Button>
                     </div>

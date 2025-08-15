@@ -3,14 +3,14 @@ import crypto from "crypto";
 
 // Initialize Razorpay instance
 export const razorpayInstance = new Razorpay({
-  key_id: process.env.RZP_TEST_KEY_ID!,
-  key_secret: process.env.RZP_TEST_KEY_SECRET!,
+  key_id: process.env.RZP_PROD_KEY_ID!,
+  key_secret: process.env.RZP_PROD_KEY_SECRET!,
 });
 
 // Razorpay configuration
 export const razorpayConfig = {
-  keyId: process.env.RZP_TEST_KEY_ID!,
-  keySecret: process.env.RZP_TEST_KEY_SECRET!,
+  keyId: process.env.RZP_PROD_KEY_ID!,
+  keySecret: process.env.RZP_PROD_KEY_SECRET!,
   currency: {
     USD: "USD",
     INR: "INR",
@@ -43,7 +43,7 @@ export const validatePaymentSignature = (
 ): boolean => {
   const body = orderId + "|" + paymentId;
   const expectedSignature = crypto
-    .createHmac("sha256", process.env.RZP_TEST_KEY_SECRET!)
+    .createHmac("sha256", process.env.RZP_PROD_KEY_SECRET!)
     .update(body.toString())
     .digest("hex");
 
