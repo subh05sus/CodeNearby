@@ -1,4 +1,16 @@
 export const CHANGELOG = [
+  {
+    version: "1.3.0",
+    date: "2025-08-15",
+    beta: false,
+    changes: [
+      "Developers API: Extract skills and location via AI, then search GitHub with cached basic search; improved name/bio matching and location filtering",
+      "Developers API: Added AI summary of fetched users; token usage now accounts for both extraction and summary calls",
+      "Profile Analyze: Added AI-generated profile summary and switched to consuming actual tokens used",
+      "Repositories API: Reinforced search-first then AI analysis flow; expanded structured debugging logs",
+      "API v1 routes: Improved structured logging and GitHub request headers to reduce rate-limit issues",
+    ],
+  },
 
   {
     version: "1.2.1",
@@ -8,8 +20,8 @@ export const CHANGELOG = [
       "Changed AI-Connect to use Gemini AI for developer recommendations",
       "Improved AI-Connect conversation interface for better user experience",
       "Increased limits for AI-Connect conversations",
-      "Basic UI and minor bug fixes"
-    ]
+      "Basic UI and minor bug fixes",
+    ],
   },
   {
     version: "1.2.0",
@@ -20,7 +32,7 @@ export const CHANGELOG = [
       "Themed the profile page for better user experience",
       "Implemented PFP preview feature for profile images",
       "Improved AI-Connect with better search algorithms for developer recommendations",
-    ]
+    ],
   },
   {
     version: "1.1.0",
@@ -30,8 +42,8 @@ export const CHANGELOG = [
       "Launched AI-Connect: AI-powered developer search using Gemini AI",
       "Added GitHub card component for non-CodeNearby users with profile previews",
       "Created dedicated AI-Connect about page with feature documentation",
-      "Fixed theme switcher in footer for better dark mode toggling"
-    ]
+      "Fixed theme switcher in footer for better dark mode toggling",
+    ],
   },
   {
     version: "1.0.5",
@@ -42,7 +54,7 @@ export const CHANGELOG = [
       "Added GitHub query search methods for intelligent developer recommendations",
       "Improved about page with AI-Connect feature showcase",
       "Added GitHub repository URL for project contributions",
-    ]
+    ],
   },
   {
     version: "1.0.0",

@@ -2,6 +2,15 @@
 
 All notable changes to CodeNearby will be documented in this file.
 
+## [1.3.0] - 2025-08-15
+
+### Changes
+- Developers API: Extract skills and location via AI, then search GitHub with cached basic search; improved name/bio matching and location filtering
+- Developers API: Added AI summary of fetched users; token usage now accounts for both extraction and summary calls
+- Profile Analyze: Added AI-generated profile summary and switched to consuming actual tokens used
+- Repositories API: Reinforced search-first then AI analysis flow; expanded structured debugging logs
+- API v1 routes: Improved structured logging and GitHub request headers to reduce rate-limit issues
+
 ## [1.2.1] - 2025-05-03
 
 ### Changes
