@@ -1,7 +1,7 @@
 "use client";
 
 import { Switch } from "@/components/ui/switch";
-import { Currency } from "@/lib/user-tiers";
+import { Currency } from "@/consts/pricing";
 
 interface CurrencyToggleProps {
   currency: Currency;
@@ -13,9 +13,7 @@ export function CurrencyToggle({ currency, onToggle }: CurrencyToggleProps) {
     <div className="flex items-center justify-center gap-3">
       <span
         className={`text-sm ${
-          currency.code === "USD"
-            ? "font-semibold"
-            : "text-muted-foreground"
+          currency.code === "USD" ? "font-semibold" : "text-muted-foreground"
         }`}
       >
         USD ($)
@@ -27,9 +25,7 @@ export function CurrencyToggle({ currency, onToggle }: CurrencyToggleProps) {
       />
       <span
         className={`text-sm ${
-          currency.code === "INR"
-            ? "font-semibold"
-            : "text-muted-foreground"
+          currency.code === "INR" ? "font-semibold" : "text-muted-foreground"
         }`}
       >
         INR (₹)

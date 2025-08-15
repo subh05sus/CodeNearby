@@ -35,7 +35,7 @@ const paths = [
     icon: <MessageSquare className="h-6 w-6" />,
     title: "Post Your First Post",
     description: "Share your thoughts with the community.",
-    path: "/feed",
+    path: "/feed?source=onboarding",
     color: "bg-orange-100 dark:bg-orange-900/20",
     textColor: "text-orange-600 dark:text-orange-400",
   },

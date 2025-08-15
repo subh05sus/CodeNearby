@@ -15,7 +15,7 @@ language queries.
 
 1. AI-Connect Developer Search
    Endpoint: POST /api/v1/developers
-   Token Cost: Variable (200-800 tokens per request, average: 400)
+   Token Cost: Variable (200-800 tokens per request, average: 400) [consts/pricing]
    Description: Find developers using natural language queries
    
    Input: { "query": "Find React Native developers in New York" }
@@ -28,8 +28,8 @@ language queries.
    - Experience level detection
 
 2. AI-Connect Profile Analysis  
-   Endpoint: POST /api/v1/profile
-   Token Cost: Variable (300-2000 tokens per request, average: 1000)
+   Endpoint: POST /api/v1/profile or /api/v1/profile/analyze
+   Token Cost: Variable (300-2000 tokens per request, average: 1000) [consts/pricing]
    Description: Get AI analysis of GitHub developer profiles
    
    Input: { "username": "octocat" }
@@ -43,7 +43,7 @@ language queries.
 
 3. AI-Connect Repository Search
    Endpoint: POST /api/v1/repositories
-   Token Cost: Variable (150-1200 tokens per request, average: 600)
+   Token Cost: Variable (150-1200 tokens per request, average: 600) [consts/pricing]
    Description: Find repositories using natural language
    
    Input: { "query": "React UI component libraries" }
@@ -57,7 +57,7 @@ language queries.
 
 4. User Tier Information
    Endpoint: GET /api/v1/users/tier
-   Token Cost: 0 tokens (free)
+   Token Cost: 0 tokens (free) [consts/pricing]
    Description: Get current user tier and token balance
 
 ============================================================================
@@ -71,7 +71,7 @@ All API requests require authentication using API keys:
 
 2. API keys are tied to user accounts and tier levels
 
-3. Each request consumes tokens based on actual AI usage (not pre-estimated)
+3. Requests perform a pre-check using an estimated cost (from consts/pricing), then consume tokens based on actual AI usage when available.
 
 4. Requests return current token balance and usage information
 

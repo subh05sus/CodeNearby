@@ -2,16 +2,15 @@
 import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
 
-export async function generateMessage(prompt: string) {
+export async function generateMessage(prompt: string, maxTokens?: number) {
   try {
     // Generate a response about the detailed profile
     const response = await generateText({
       model: google("models/gemini-2.0-flash-exp"),
       prompt: `${prompt}`,
-      maxTokens: 8000,
+      maxTokens: maxTokens || 8000,
     });
 
-    // console.log("AI Response:", response);
     // Extract the text content from the response
     const aiResponse = response.text.trim();
     const tokensUsed = response.usage?.totalTokens || 0;

@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/options";
 import clientPromise from "@/lib/mongodb";
-import { UserRecord, getTokenPackage } from "@/lib/user-tiers";
+import { UserRecord } from "@/lib/user-tiers";
+import { getTokenPackage } from "@/consts/pricing";
 import { ObjectId } from "mongodb";
 import {
   razorpayInstance,

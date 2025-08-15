@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { API_TOKEN_COSTS } from "@/consts/pricing";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -31,6 +32,13 @@ const API_BASE_URL =
     ? "https://codenearby.space"
     : "http://localhost:3069";
 
+function tokenCostLabel(endpoint: string) {
+  const cost = API_TOKEN_COSTS[endpoint as keyof typeof API_TOKEN_COSTS];
+  if (cost) return `${cost.min}-${cost.max}`;
+  if (endpoint === "/api/v1/pricing") return "0";
+  return "varies";
+}
+
 const API_ENDPOINTS = [
   {
     id: "developers",
@@ -38,7 +46,7 @@ const API_ENDPOINTS = [
     method: "POST",
     endpoint: "/api/v1/developers",
     description: "Find developers using natural language queries powered by AI",
-    tokenCost: "500-2000",
+    tokenCost: tokenCostLabel("/api/v1/developers"),
     parameters: [
       {
         name: "query",
@@ -98,7 +106,7 @@ const API_ENDPOINTS = [
     method: "POST",
     endpoint: "/api/v1/profile/analyze",
     description: "Get AI-powered analysis of GitHub developer profiles",
-    tokenCost: "300-800",
+    tokenCost: tokenCostLabel("/api/v1/profile/analyze"),
     parameters: [
       {
         name: "username",
@@ -143,7 +151,7 @@ const API_ENDPOINTS = [
     method: "POST",
     endpoint: "/api/v1/repositories",
     description: "Find GitHub repositories using natural language queries",
-    tokenCost: "200-600",
+    tokenCost: tokenCostLabel("/api/v1/repositories"),
     parameters: [
       {
         name: "query",
@@ -201,7 +209,7 @@ const API_ENDPOINTS = [
     method: "GET",
     endpoint: "/api/v1/pricing",
     description: "Get current pricing tiers and token costs",
-    tokenCost: "0",
+    tokenCost: tokenCostLabel("/api/v1/pricing"),
     parameters: [],
     example: {
       request: {},

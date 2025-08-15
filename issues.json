@@ -1,0 +1,460 @@
+[
+  {
+    "assignees": [],
+    "body": "---\n\n## **Description**\nThe current footer is minimal but lacks visual appeal and functional enhancements.  \nIt feels too plain, has limited content organization, and does not make full use of the available space for navigation and branding.\n\n<img width=\"1883\" height=\"482\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/df6b0930-e876-4d2b-af7b-292c7eda6bb8\" />\n\n---\n\n## **Problems Identified**\n- Very basic design with minimal styling.\n- Lacks visual hierarchy — all text appears similar in weight and color.\n- Limited section separation — navigation links are not clearly grouped.\n- No clear call-to-action or interactive elements apart from links.\n- Minimal brand identity presence — the footer could better represent the product’s personality.\n- Limited responsiveness and spacing on smaller screens.\n\n---\n\n## **Proposed Improvements**\n- **Improve visual styling** with better typography, spacing, and section separation.\n- Group navigation links into clear categories for better usability.\n- Add subtle background color or divider line for better section distinction.\n- Include brand tagline, mission statement, or a short description to strengthen brand identity.\n- Enhance the theme toggle UI to blend more naturally with the design.\n- Add hover effects to links and icons for better interactivity.\n- Ensure full **responsive design** for mobile and tablet views.\n- Optionally, include social media links, newsletter signup, or quick contact options.\n\n---\n\n## **Tech Stack**\n- **HTML5** – Semantic structure for better accessibility.\n- **CSS3** – Flexbox/Grid for layout, hover effects, and responsiveness.\n- **JavaScript (Optional)** – Smooth theme switching, interactive elements.\n\n\n\n---\n\n## **Expected Outcome**\n- A **modern, well-structured footer** that is visually appealing.\n- Clear navigation with grouped links for better UX.\n- Stronger brand presence and better use of available space.\n- Fully responsive layout across devices.\n\n\n@subh05sus  I am OSCI contributor , and want to work on this issue , please assign it to me.\n",
+    "createdAt": "2025-08-15T03:01:06Z",
+    "labels": [
+      {
+        "id": "LA_kwDONuATd88AAAAB-RMokA",
+        "name": "design",
+        "description": "UI/UX related",
+        "color": "590EC5"
+      }
+    ],
+    "number": 32,
+    "state": "OPEN",
+    "title": "[UI]  UI Enhancement: Improve Footer Design and Functionality",
+    "url": "https://github.com/subh05sus/CodeNearby/issues/32"
+  },
+  {
+    "assignees": [],
+    "body": "### 🎯 What’s the suggestion?\nRefine the landing page’s visual hierarchy, contrast ratios, and call-to-action flow to reduce unnecessary cognitive load, improve scannability, and align with WCAG accessibility standards. This involves:\n\n- Increasing text-to-background contrast in key messaging areas.\n\n- Aligning interactive elements with their contextual text to strengthen information grouping (Gestalt principles).\n\n- Establishing a single, dominant primary CTA for first-time visitors to optimize decision-making flow.\n\n### 👀 What’s wrong with the current version?\n- **Fragmented Attention Flow** → “Login with GitHub” in the top-right and “AI Connect is Live” in the center compete for attention, making it unclear which is the primary action.\n\n- **Contrast & Accessibility Gap** → The “Make Connections strong” section has insufficient visual weight and borderline WCAG AA contrast levels, reducing readability.\n\n- **Disconnected Interactive Element** → The “strong” button feels visually detached from its headline, breaking typographic continuity.\n\n- **Whitespace Imbalance** → Excess vertical gap between tagline and hero section creates a “dead zone” that interrupts scanning flow.\n\n<img width=\"1849\" height=\"865\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/7bd86d1d-bb55-46e2-a976-b0ec4f54ad05\" />",
+    "createdAt": "2025-08-14T13:20:08Z",
+    "labels": [
+      {
+        "id": "LA_kwDONuATd88AAAAB-RMokA",
+        "name": "design",
+        "description": "UI/UX related",
+        "color": "590EC5"
+      }
+    ],
+    "number": 31,
+    "state": "OPEN",
+    "title": "Optimizing Landing Page Visual Hierarchy, Contrast Ratios, and CTA Flow for Enhanced Cognitive Load Management & Accessibility Compliance",
+    "url": "https://github.com/subh05sus/CodeNearby/issues/31"
+  },
+  {
+    "assignees": [],
+    "body": "Hey @subh05sus \n\nIssue: Add Functional Social Media Links in Footer\n\nDescription\nThe footer currently does not contain any social media icons or links. This omission limits users’ ability to quickly navigate to the project’s official social media pages, reducing opportunities for community engagement and brand visibility. Adding a dedicated social media section will enhance connectivity and professionalism.\n\nBenefits\n-Improves user navigation and experience.\n-Provides quick access to official social media profiles.\n-Enhances brand visibility and engagement.\n\nSuggested Implementation\n-Add correct href URLs for each social media icon.\n-Use target=\"_blank\" and rel=\"noopener noreferrer\" to open links in a new tab securely.\n-Verify that all icons have valid links to the respective platforms (e.g., Facebook, Twitter/X, LinkedIn, Instagram).\n\nContribution\nI would like to work on implementing functional and verified social media links in the footer.Please assign this issue to me.\n\nThank You",
+    "createdAt": "2025-08-08T20:31:04Z",
+    "labels": [
+      {
+        "id": "LA_kwDONuATd88AAAAB3zlbPg",
+        "name": "enhancement",
+        "description": "New feature or request",
+        "color": "a2eeef"
+      }
+    ],
+    "number": 30,
+    "state": "OPEN",
+    "title": "[Feature] <Enhancing Footer>",
+    "url": "https://github.com/subh05sus/CodeNearby/issues/30"
+  },
+  {
+    "assignees": [
+      {
+        "id": "U_kgDOB0gCxg",
+        "login": "i-mkarmakar",
+        "name": "Manish Karmakar"
+      }
+    ],
+    "body": "### 🎯 What’s the suggestion?\n\nUpdate the button layout within the user card component to improve responsiveness on smaller screens. Recommended logic:\n\n* 🧱 Ensure icons and text do **not overlap** by using responsive utility classes like `flex-wrap`, `gap-x-2`, or `text-sm`.\n* 📏 Stack buttons vertically or wrap them inside a flex column when screen width is below a certain breakpoint (e.g., `sm:` or `md:`).\n* 🔧 Consider hiding the button text on smaller devices and showing only the icons with tooltips for cleaner UI.\n\nThis will make the buttons more usable and visually clean on all devices.\n\n---\n\n### 👀 What’s wrong with the current version?\n\nCurrently, on smaller screen sizes, the icon and text inside each button overlap, causing a cramped and unreadable layout. This affects the clarity and usability of the interface—especially on mobile devices. Users expect touch-friendly and readable buttons that adapt to screen size, and this behavior breaks that expectation.\n\n---\n\n### 🧠 Mockup or Reference\n\nHere’s a demo video of the current UI behavior:\n\nhttps://github.com/user-attachments/assets/cb7c5084-1a61-4b7f-9dab-8f6879e3cb37\n\nSuggested UI behavior:\n\n* ✅ Icons and text should adjust or stack gracefully.\n* 📱 Optimized for mobile screens without overflow or overlap.\n",
+    "createdAt": "2025-05-08T16:56:24Z",
+    "labels": [
+      {
+        "id": "LA_kwDONuATd88AAAAB-RMokA",
+        "name": "design",
+        "description": "UI/UX related",
+        "color": "590EC5"
+      }
+    ],
+    "number": 26,
+    "state": "OPEN",
+    "title": "[UI] Fix Icon and Text Overlap in Buttons on Small Screens",
+    "url": "https://github.com/subh05sus/CodeNearby/issues/26"
+  },
+  {
+    "assignees": [
+      {
+        "id": "U_kgDOB4RF2w",
+        "login": "partiksingh1",
+        "name": "Partik Singh Tanwer"
+      }
+    ],
+    "body": "### 🎯 What’s the suggestion?\nThe main text on the home screen can be aligned perfectly.\n\n### 👀 What’s wrong with the current version?\nCurrently, the moving text (the one that changes frequently) is not aligned perfectly with the other text. It appears a bit off on medium screens, which looks weird if we look closely, but it is perfectly fine on smaller screens.\n\n### 🧠 Mockup or Reference\n\n<img width=\"1141\" alt=\"Image\" src=\"https://github.com/user-attachments/assets/c4b015d2-e086-4a8f-bbd8-3e8f9f549201\" />\n\n",
+    "createdAt": "2025-05-03T15:06:02Z",
+    "labels": [
+      {
+        "id": "LA_kwDONuATd88AAAAB-RMokA",
+        "name": "design",
+        "description": "UI/UX related",
+        "color": "590EC5"
+      }
+    ],
+    "number": 21,
+    "state": "CLOSED",
+    "title": "[UI] Alignment Issue with Moving Text on Medium Screens",
+    "url": "https://github.com/subh05sus/CodeNearby/issues/21"
+  },
+  {
+    "assignees": [
+      {
+        "id": "U_kgDOB4RF2w",
+        "login": "partiksingh1",
+        "name": "Partik Singh Tanwer"
+      }
+    ],
+    "body": "### ✨ What’s the feature?\nSet up Husky Git hooks to automatically run `npm run generate-changelog` before every push.\n\n### 📌 Why is it needed?\nEnsures changelogs stay up to date with every contribution. This maintains a clean commit history and reduces manual work.\n\n### 🧩 Any examples or references?\n- [Husky Git Hooks](https://typicode.github.io/husky/#/)",
+    "createdAt": "2025-04-30T22:50:34Z",
+    "labels": [
+      {
+        "id": "LA_kwDONuATd88AAAAB3zlbMw",
+        "name": "documentation",
+        "description": "Improvements or additions to documentation",
+        "color": "0075ca"
+      },
+      {
+        "id": "LA_kwDONuATd88AAAAB3zlbSg",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 20,
+    "state": "CLOSED",
+    "title": "[chore] Setup Husky for changelog automation",
+    "url": "https://github.com/subh05sus/CodeNearby/issues/20"
+  },
+  {
+    "assignees": [],
+    "body": "### ✨ What’s the feature?\nAllow users to control the visibility of their profile, activity, and connections — private, public, or custom privacy settings.\n\n### 📌 Why is it needed?\nEmpowers users to control their data, promoting trust and confidence in the platform.\n\n### 🧩 Any examples or references?\n- LinkedIn privacy settings\n- GitHub profile visibility settings\n\n---\n\n> Got a cool idea? We’re all ears.\n",
+    "createdAt": "2025-04-30T22:18:42Z",
+    "labels": [
+      {
+        "id": "LA_kwDONuATd88AAAAB3zlbPg",
+        "name": "enhancement",
+        "description": "New feature or request",
+        "color": "a2eeef"
+      },
+      {
+        "id": "LA_kwDONuATd88AAAAB3zlbSg",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 19,
+    "state": "OPEN",
+    "title": "[Feature] Enable Profile Privacy Settings",
+    "url": "https://github.com/subh05sus/CodeNearby/issues/19"
+  },
+  {
+    "assignees": [
+      {
+        "id": "U_kgDOB0gCxg",
+        "login": "i-mkarmakar",
+        "name": "Manish Karmakar"
+      }
+    ],
+    "body": "### 🎯 What’s the suggestion?\nEnhance the navbar’s responsiveness for mobile devices to ensure a smoother, more accessible experience.\n\n### 👀 What’s wrong with the current version?\nThe navbar collapses awkwardly and may not align properly on smaller screens, making it difficult to navigate.\n\n---\n\n> Got a cool idea? We’re all ears.\n",
+    "createdAt": "2025-04-30T22:13:18Z",
+    "labels": [
+      {
+        "id": "LA_kwDONuATd88AAAAB3zlbSg",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      },
+      {
+        "id": "LA_kwDONuATd88AAAAB-RMokA",
+        "name": "design",
+        "description": "UI/UX related",
+        "color": "590EC5"
+      }
+    ],
+    "number": 18,
+    "state": "CLOSED",
+    "title": "[UI] Improve Navbar Responsiveness for Mobile Devices",
+    "url": "https://github.com/subh05sus/CodeNearby/issues/18"
+  },
+  {
+    "assignees": [],
+    "body": "### 🐢 What’s slow or laggy?\nThe home page takes too long to load.\n\n### 📊 Steps or pages where it happens\n1. Visit the homepage\n2. Wait for content to render\n\n### 📈 Metrics or Insights\n- Largest Contentful Paint (LCP) over 2 seconds\n- JavaScript execution time is above acceptable thresholds [(per Lighthouse)](https://pagespeed.web.dev/analysis/https-codenearby-space/kbolv9a0h6?hl=en-US&form_factor=desktop)\n\n---\n\n> Got a cool idea? We’re all ears.\n",
+    "createdAt": "2025-04-30T22:10:57Z",
+    "labels": [
+      {
+        "id": "LA_kwDONuATd88AAAAB-RNWCA",
+        "name": "performance",
+        "description": "related to optimization",
+        "color": "b60205"
+      }
+    ],
+    "number": 17,
+    "state": "OPEN",
+    "title": "[Perf] Long Page Load Times on Homepage",
+    "url": "https://github.com/subh05sus/CodeNearby/issues/17"
+  },
+  {
+    "assignees": [],
+    "body": "### 🐢 What’s slow or laggy?\nThe event feed page is slow to load when there are many past events, especially with a high volume of user-generated data.\n\n### 📊 Steps or pages where it happens\n1. Open the \"Event Feed\"\n2. Wait for past events to appear\n\n### 📈 Metrics or Insights\n- First meaningful paint (FMP) time exceeds 4 seconds\n- Backend query performance issues detected in logs\n\n---\n\n> Got a cool idea? We’re all ears.\n",
+    "createdAt": "2025-04-30T22:09:24Z",
+    "labels": [
+      {
+        "id": "LA_kwDONuATd88AAAAB-RNWCA",
+        "name": "performance",
+        "description": "related to optimization",
+        "color": "b60205"
+      }
+    ],
+    "number": 16,
+    "state": "OPEN",
+    "title": "[Perf] Slow Rendering on Event Feed with High Volume",
+    "url": "https://github.com/subh05sus/CodeNearby/issues/16"
+  },
+  {
+    "assignees": [],
+    "body": "### ✨ What’s the feature?\nAllow users to sync and see local dev meetups or events via Google Calendar API (opt-in).\n\n### 📌 Why is it needed?\nReinforces the \"local meets global\" vision. Keeps developers informed of nearby IRL events.\n\n### 🧩 Any examples or references?\n- Dev.to event sync\n- Google Calendar API\n\n---\n\n> Got a cool idea? We’re all ears.\n",
+    "createdAt": "2025-04-30T22:06:02Z",
+    "labels": [
+      {
+        "id": "LA_kwDONuATd88AAAAB3zlbPg",
+        "name": "enhancement",
+        "description": "New feature or request",
+        "color": "a2eeef"
+      }
+    ],
+    "number": 15,
+    "state": "OPEN",
+    "title": "[Feature] Sync Local Dev Events via Google Calendar API",
+    "url": "https://github.com/subh05sus/CodeNearby/issues/15"
+  },
+  {
+    "assignees": [],
+    "body": "### ✨ What’s the feature?\nEnable browser push notifications for new messages, connection requests, or events using Firebase Cloud Messaging.\n\n### 📌 Why is it needed?\nBoosts real-time engagement and retention for active users.\n\n### 🧩 Any examples or references?\n- Firebase Web Push Guide\n- GitHub's in-app + push notification model\n\n---\n\n> Got a cool idea? We’re all ears.\n",
+    "createdAt": "2025-04-30T22:04:59Z",
+    "labels": [
+      {
+        "id": "LA_kwDONuATd88AAAAB3zlbPg",
+        "name": "enhancement",
+        "description": "New feature or request",
+        "color": "a2eeef"
+      }
+    ],
+    "number": 14,
+    "state": "OPEN",
+    "title": "[Feature] Add Push Notification Support via Firebase",
+    "url": "https://github.com/subh05sus/CodeNearby/issues/14"
+  },
+  {
+    "assignees": [],
+    "body": "### ✨ What’s the feature?\nShow users their profile views, chat activity, and connection growth over time.\n\n### 📌 Why is it needed?\nAdds motivation, transparency, and insight. Encourages consistent usage.\n\n### 🧩 Any examples or references?\n- GitHub Insights\n- LinkedIn profile stats\n\n---\n\n> Got a cool idea? We’re all ears.\n",
+    "createdAt": "2025-04-30T22:04:31Z",
+    "labels": [
+      {
+        "id": "LA_kwDONuATd88AAAAB3zlbPg",
+        "name": "enhancement",
+        "description": "New feature or request",
+        "color": "a2eeef"
+      },
+      {
+        "id": "LA_kwDONuATd88AAAAB3zlbSg",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 13,
+    "state": "OPEN",
+    "title": "[Feature] Add Analytics Dashboard for Users",
+    "url": "https://github.com/subh05sus/CodeNearby/issues/13"
+  },
+  {
+    "assignees": [],
+    "body": "### ✨ What’s the feature?\nUse fuzzy matching or typo-tolerant search for finding developers by name, skill, or location.\n\n### 📌 Why is it needed?\nCurrent search may miss close matches. This improves user experience and discoverability.\n\n### 🧩 Any examples or references?\n- [Fuse.js](https://fusejs.io/)\n- Algolia search pattern\n\n---\n\n> Got a cool idea? We’re all ears.\n",
+    "createdAt": "2025-04-30T22:03:44Z",
+    "labels": [
+      {
+        "id": "LA_kwDONuATd88AAAAB3zlbPg",
+        "name": "enhancement",
+        "description": "New feature or request",
+        "color": "a2eeef"
+      },
+      {
+        "id": "LA_kwDONuATd88AAAAB3zlbSg",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 12,
+    "state": "OPEN",
+    "title": "[Feature] Improve Developer Search with Fuzzy Matching",
+    "url": "https://github.com/subh05sus/CodeNearby/issues/12"
+  },
+  {
+    "assignees": [],
+    "body": "### ✨ What’s the feature?\nIntroduce visual badges for users like \"Early Adopter\", \"Top Contributor\", \"Verified GitHub\", etc.\n\n### 📌 Why is it needed?\nBuilds identity, reputation, and trust among users. Boosts engagement.\n\n### 🧩 Any examples or references?\n- GitHub sponsor badges\n- Stack Overflow reputation system\n\n---\n\n> Got a cool idea? We’re all ears.\n",
+    "createdAt": "2025-04-30T22:02:38Z",
+    "labels": [
+      {
+        "id": "LA_kwDONuATd88AAAAB3zlbPg",
+        "name": "enhancement",
+        "description": "New feature or request",
+        "color": "a2eeef"
+      }
+    ],
+    "number": 11,
+    "state": "OPEN",
+    "title": "[Feature] Add User Badges (Early Adopter, Contributor, etc.)",
+    "url": "https://github.com/subh05sus/CodeNearby/issues/11"
+  },
+  {
+    "assignees": [],
+    "body": "### ✨ What’s the feature?\nIntroduce a tab where users can share their favorite tools (VSCode extensions, themes, APIs, etc.)\n\n### 📌 Why is it needed?\nFosters community knowledge sharing. Helps new devs learn what pros use.\n\n### 🧩 Any examples or references?\n- [DevHunt Tools](https://devhunt.org/tools)\n- Dev.to tool collections\n\n---\n\n> Got a cool idea? We’re all ears.\n",
+    "createdAt": "2025-04-30T22:02:04Z",
+    "labels": [
+      {
+        "id": "LA_kwDONuATd88AAAAB3zlbPg",
+        "name": "enhancement",
+        "description": "New feature or request",
+        "color": "a2eeef"
+      },
+      {
+        "id": "LA_kwDONuATd88AAAAB3zlbSg",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 10,
+    "state": "OPEN",
+    "title": "[Feature] Create a Developer Toolkit Section",
+    "url": "https://github.com/subh05sus/CodeNearby/issues/10"
+  },
+  {
+    "assignees": [],
+    "body": "### ✨ What’s the feature?\nShow a leaderboard of top contributors, most active users, or most followed developers.\n\n### 📌 Why is it needed?\nEncourages positive competition and daily engagement. Adds gamification to CodeNearby.\n\n### 🧩 Any examples or references?\n- Stack Overflow leaderboard\n- GitHub stars/commits tracking\n\n---\n\n> Got a cool idea? We’re all ears.\n",
+    "createdAt": "2025-04-30T22:01:24Z",
+    "labels": [
+      {
+        "id": "LA_kwDONuATd88AAAAB3zlbPg",
+        "name": "enhancement",
+        "description": "New feature or request",
+        "color": "a2eeef"
+      }
+    ],
+    "number": 9,
+    "state": "OPEN",
+    "title": "[Feature] Build a Public Developer Leaderboard",
+    "url": "https://github.com/subh05sus/CodeNearby/issues/9"
+  },
+  {
+    "assignees": [],
+    "body": "### 🐢 What’s slow or laggy?\nRedis caching for AI queries and GitHub search feels inconsistent. Sometimes data is re-fetched instead of served from cache.\n\n### 📊 Steps or pages where it happens\n1. AI-Connect chat — repeated prompts re-trigger expensive fetches\n2. GitHub developer search — same query re-executes within short intervals\n\n### 📈 Metrics or Insights\n- Initial response: ~400ms  \n- Repeated query (should be cache hit): still ~350–400ms  \n\n### 🧩 Any examples or references?\n- [Upstash Redis Docs](https://docs.upstash.com/)\n- LRU strategy libraries\n\n---\n\n> Got a cool idea? We’re all ears.\n",
+    "createdAt": "2025-04-30T21:59:54Z",
+    "labels": [
+      {
+        "id": "LA_kwDONuATd88AAAAB3zlbPg",
+        "name": "enhancement",
+        "description": "New feature or request",
+        "color": "a2eeef"
+      },
+      {
+        "id": "LA_kwDONuATd88AAAAB-RNWCA",
+        "name": "performance",
+        "description": "related to optimization",
+        "color": "b60205"
+      }
+    ],
+    "number": 8,
+    "state": "OPEN",
+    "title": "[Perf] Inconsistent Redis Caching for AI-Connect and GitHub Search Queries",
+    "url": "https://github.com/subh05sus/CodeNearby/issues/8"
+  },
+  {
+    "assignees": [],
+    "body": "### ✨ What’s the feature?\nImplement geolocation-based suggestions for developer meetups or events happening nearby.\n\n### 📌 Why is it needed?\nBoosts real-world dev connections. Uses the “Nearby” in CodeNearby meaningfully.\n\n### 🧩 Any examples or references?\n- [Geolocation API](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API)\n- Meetup.com API / Dev.to Events\n\n---\n\n> Got a cool idea? We’re all ears.\n",
+    "createdAt": "2025-04-30T21:58:07Z",
+    "labels": [
+      {
+        "id": "LA_kwDONuATd88AAAAB3zlbPg",
+        "name": "enhancement",
+        "description": "New feature or request",
+        "color": "a2eeef"
+      }
+    ],
+    "number": 7,
+    "state": "OPEN",
+    "title": "[Feature] Auto-Suggest Nearby Events Based on Location",
+    "url": "https://github.com/subh05sus/CodeNearby/issues/7"
+  },
+  {
+    "assignees": [
+      {
+        "id": "U_kgDOB4RF2w",
+        "login": "partiksingh1",
+        "name": "Partik Singh Tanwer"
+      }
+    ],
+    "body": "### ✨ What’s the feature?\nShow a **GitHub-like activity heatmap** for each user, based on their commits or posts on CodeNearby.\n\n### 📌 Why is it needed?\nGives quick visual insight into user activeness, making collaboration choices smarter.\n\n### 🧩 Any examples or references?\n- GitHub contribution graph\n- [React-Calendar-Heatmap](https://github.com/patrykandpatrick/v-calendar)\n\n---\n\n> Got a cool idea? We’re all ears.\n",
+    "createdAt": "2025-04-30T21:57:39Z",
+    "labels": [
+      {
+        "id": "LA_kwDONuATd88AAAAB3zlbPg",
+        "name": "enhancement",
+        "description": "New feature or request",
+        "color": "a2eeef"
+      },
+      {
+        "id": "LA_kwDONuATd88AAAAB3zlbSg",
+        "name": "good first issue",
+        "description": "Good for newcomers",
+        "color": "7057ff"
+      }
+    ],
+    "number": 6,
+    "state": "CLOSED",
+    "title": "[Feature] Show Developer Activity Heatmap",
+    "url": "https://github.com/subh05sus/CodeNearby/issues/6"
+  },
+  {
+    "assignees": [],
+    "body": "### ✨ What’s the feature?\nImplement **streaming text generation** (e.g., using Server-Sent Events or similar) for AI-Connect responses instead of returning full responses at once.\n\n### 📌 Why is it needed?\nCurrently, the AI replies only after the full response is generated, which can feel slow and less interactive. Streaming would:\n- Improve perceived speed\n- Enhance user experience with real-time typing effect\n- Align with modern AI UX patterns (like ChatGPT)\n\n### 🧩 Any examples or references?\n- [Streaming in AI SDK](https://sdk.vercel.ai/docs/reference/ai-sdk-core/stream-text)\n\n---\n\n> Got a cool idea? We’re all ears.\n",
+    "createdAt": "2025-04-30T21:56:22Z",
+    "labels": [
+      {
+        "id": "LA_kwDONuATd88AAAAB3zlbPg",
+        "name": "enhancement",
+        "description": "New feature or request",
+        "color": "a2eeef"
+      }
+    ],
+    "number": 5,
+    "state": "OPEN",
+    "title": "[Feature] Implement Streaming Text Generation for AI-Connect",
+    "url": "https://github.com/subh05sus/CodeNearby/issues/5"
+  },
+  {
+    "assignees": [
+      {
+        "id": "U_kgDOB0gCxg",
+        "login": "i-mkarmakar",
+        "name": "Manish Karmakar"
+      }
+    ],
+    "body": "### 🎯 What’s the suggestion?\nUpdate the **Appearance** button's icon in the My Account dropdown to dynamically reflect the selected theme mode. Recommended logic:\n\n- 🌙 **Moon icon** → when **Light Mode** is active (indicates \"Click to switch to Dark Mode\").\n- ☀️ **Sun icon** → when **Dark Mode** is active (indicates \"Click to switch to Light Mode\").\n- 🖥️ **Monitor icon** → when **System Theme** is selected (indicates the site follows system settings).\n\nThis will make the button more intuitive by clearly showing the active or next mode.\n\n### 👀 What’s wrong with the current version?\nCurrently, the **Appearance** button is showing a **user+ icon** instead of the expected theme-related icon. The icon is static and does not reflect the active or upcoming theme. This could lead to confusion as users expect icons to update dynamically based on the current theme, similar to platforms like GitHub or VS Code.\n\n### 🧠 Mockup or Reference\nTake a look at the current UI below to understand the existing design:  \n![Image](https://github.com/user-attachments/assets/f93ee586-c9df-45f3-9863-8e92f61fb82d\n\nSuggested icons logic:\n- 🌙 Moon (when Light Mode is active)\n- ☀️ Sun (when Dark Mode is active)\n- 🖥️ Monitor (when System Theme is active)",
+    "createdAt": "2025-04-30T17:09:50Z",
+    "labels": [
+      {
+        "id": "LA_kwDONuATd88AAAAB-RMokA",
+        "name": "design",
+        "description": "UI/UX related",
+        "color": "590EC5"
+      }
+    ],
+    "number": 3,
+    "state": "CLOSED",
+    "title": "[UI] Incorrect icon shown for 'Appearance' theme toggle\"",
+    "url": "https://github.com/subh05sus/CodeNearby/issues/3"
+  }
+]

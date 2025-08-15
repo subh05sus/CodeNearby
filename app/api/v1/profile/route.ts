@@ -8,6 +8,7 @@ import {
   resetDailyTokens,
 } from "@/lib/user-tiers";
 import { generateMessage } from "@/lib/ai";
+import { getEstimatedTokenCost } from "@/consts/pricing";
 import crypto from "crypto";
 import { ObjectId } from "mongodb";
 
@@ -113,6 +114,21 @@ export async function POST(request: Request) {
       );
     }
 
+    // Estimate and pre-check tokens before AI call
+    const estimate = getEstimatedTokenCost("/api/v1/profile").average;
+    if (!canConsumeTokens(user, estimate)) {
+      return NextResponse.json(
+        {
+          error: "Insufficient tokens",
+          required: estimate,
+          available: user.tokenBalance.total,
+          message: "Please purchase more tokens to continue using the API",
+          estimate,
+        },
+        { status: 402 }
+      );
+    }
+
     // Generate AI prompt for profile analysis
     const aiPrompt = `You are an AI assistant that analyzes GitHub developer profiles. 
 
@@ -165,8 +181,9 @@ Note: This is a simulated analysis for demonstration purposes. In production, th
       );
     }
 
-    // Consume tokens
-    const updatedUser = consumeTokens(user, tokensUsed);
+    // Consume tokens (actual or fallback to estimate)
+    const actualUsage = tokensUsed && tokensUsed > 0 ? tokensUsed : estimate;
+    const updatedUser = consumeTokens(user, actualUsage);
 
     // Update user in database
     const client = await clientPromise;
@@ -188,11 +205,12 @@ Note: This is a simulated analysis for demonstration purposes. In production, th
       username,
       analysis: aiResponse,
       usage: {
-        tokensUsed,
+        tokensUsed: actualUsage,
         remainingTokens: updatedUser.tokenBalance.total,
         requestId: `profile_${Date.now()}_${Math.random()
           .toString(36)
           .substr(2, 9)}`,
+        estimate,
       },
       tier: user.tier,
       timestamp: new Date().toISOString(),

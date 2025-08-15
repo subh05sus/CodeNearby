@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useCurrency } from "@/hooks/use-currency";
-import { getFormattedTokenPackages } from "@/lib/user-tiers";
+import { getFormattedTokenPackages } from "@/consts/pricing";
 import { CurrencyToggle } from "@/components/currency-toggle";
 import RazorpayPayment from "@/components/razorpay-payment";
 

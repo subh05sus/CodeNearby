@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { TOKEN_PACKAGES, USER_TIERS } from "@/lib/user-tiers";
+import { TOKEN_PACKAGES, USER_TIERS, API_TOKEN_COSTS } from "@/consts/pricing";
 
 export async function GET() {
   try {
@@ -30,26 +30,22 @@ export async function GET() {
           features: pkg.features,
           popular: pkg.popular,
         })),
-        apiEndpoints: [
-          {
-            endpoint: "/api/v1/developers",
+        apiEndpoints: Object.entries(API_TOKEN_COSTS).map(
+          ([endpoint, cost]) => ({
+            endpoint,
             method: "POST",
-            tokenCost: "500-2000",
-            description: "AI-powered developer search",
-          },
-          {
-            endpoint: "/api/v1/profile/analyze",
-            method: "POST",
-            tokenCost: "300-800",
-            description: "GitHub profile analysis",
-          },
-          {
-            endpoint: "/api/v1/repositories",
-            method: "POST",
-            tokenCost: "200-600",
-            description: "Repository search",
-          },
-        ],
+            tokenCost: `${cost.min}-${cost.max}`,
+            description:
+              endpoint === "/api/v1/developers"
+                ? "AI-powered developer search"
+                : endpoint === "/api/v1/profile" ||
+                  endpoint === "/api/v1/profile/analyze"
+                ? "GitHub profile analysis"
+                : endpoint === "/api/v1/repositories"
+                ? "Repository search"
+                : "API endpoint",
+          })
+        ),
       },
     };
 

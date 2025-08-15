@@ -1,29 +1,21 @@
 // User tier definitions and utilities for CodeNearby API system
+import {
+  USER_TIERS as PRICING_USER_TIERS,
+  TOKEN_PACKAGES as PRICING_TOKEN_PACKAGES,
+  API_TOKEN_COSTS as PRICING_API_TOKEN_COSTS,
+  getEstimatedTokenCost as PRICING_getEstimatedTokenCost,
+  type Currency as PricingCurrency,
+  CURRENCIES as PRICING_CURRENCIES,
+  type UserTierId,
+  type TierConfig,
+  type TokenPackage as PricingTokenPackage,
+} from "@/consts/pricing";
 
-export type UserTier = "free" | "premium";
+export type UserTier = UserTierId;
 
-export interface TierLimits {
-  dailyTokens: number;
-  maxApiKeys: number;
-  features: string[];
-  support: string;
-  analytics: boolean;
-  repositorySearch: boolean;
-  prioritySupport: boolean;
-}
+export type TierLimits = TierConfig;
 
-export interface TokenPackage {
-  id: string;
-  name: string;
-  tokens: number;
-  bonus: number;
-  price: {
-    usd: number;
-    inr: number;
-  };
-  features: string[];
-  popular?: boolean;
-}
+export type TokenPackage = PricingTokenPackage;
 
 export interface UserRecord {
   _id?: string;
@@ -74,74 +66,10 @@ export interface UserRecord {
 }
 
 // Tier configurations
-export const USER_TIERS: Record<UserTier, TierLimits> = {
-  free: {
-    dailyTokens: 1000,
-    maxApiKeys: 1,
-    features: [
-      "Developer search",
-      "Profile analysis",
-      "Community support",
-      "Basic queries",
-    ],
-    support: "Community",
-    analytics: false,
-    repositorySearch: false,
-    prioritySupport: false,
-  },
-  premium: {
-    dailyTokens: 2000,
-    maxApiKeys: 10,
-    features: [
-      "All FREE features",
-      "Repository search",
-      "Priority support",
-      "Advanced analytics",
-      "Bulk purchase discounts",
-    ],
-    support: "Priority",
-    analytics: true,
-    repositorySearch: true,
-    prioritySupport: true,
-  },
-};
+export const USER_TIERS: Record<UserTier, TierLimits> = PRICING_USER_TIERS;
 
 // Token packages for purchase
-export const TOKEN_PACKAGES: TokenPackage[] = [
-  {
-    id: "basic",
-    name: "BASIC",
-    tokens: 5000,
-    bonus: 0,
-    price: { usd: 9, inr: 49 },
-    features: ["Never expires", "Email support"],
-  },
-  {
-    id: "standard",
-    name: "STANDARD",
-    tokens: 15000,
-    bonus: 2000,
-    price: { usd: 25, inr: 149 },
-    popular: true,
-    features: ["Never expires", "Priority support"],
-  },
-  {
-    id: "pro",
-    name: "PRO",
-    tokens: 50000,
-    bonus: 10000,
-    price: { usd: 79, inr: 499 },
-    features: ["Never expires", "Priority support", "Advanced analytics"],
-  },
-  {
-    id: "enterprise",
-    name: "ENTERPRISE",
-    tokens: 150000,
-    bonus: 50000,
-    price: { usd: 199, inr: 1499 },
-    features: ["Never expires", "24/7 support", "Custom integrations"],
-  },
-];
+export const TOKEN_PACKAGES: TokenPackage[] = PRICING_TOKEN_PACKAGES;
 
 // Utility functions
 export function getTierLimits(tier: UserTier): TierLimits {
@@ -152,10 +80,7 @@ export function getTokenPackage(packageId: string): TokenPackage | undefined {
   return TOKEN_PACKAGES.find((pkg) => pkg.id === packageId);
 }
 
-export function getFormattedTokenPackages(currency: {
-  code: "USD" | "INR";
-  symbol: string;
-}) {
+export function getFormattedTokenPackages(currency: PricingCurrency) {
   return TOKEN_PACKAGES.map((pkg) => ({
     ...pkg,
     formattedPrice:
@@ -327,39 +252,13 @@ export function canCreateApiKey(user: UserRecord): {
 }
 
 // Currency utilities
-export interface Currency {
-  code: "USD" | "INR";
-  symbol: string;
-  name: string;
-}
-
-export const CURRENCIES: Currency[] = [
-  { code: "USD", symbol: "$", name: "US Dollar" },
-  { code: "INR", symbol: "₹", name: "Indian Rupee" },
-];
-
+export type Currency = PricingCurrency & { name?: string };
 export function getCurrency(code: "USD" | "INR"): Currency {
-  return CURRENCIES.find((c) => c.code === code) || CURRENCIES[0];
+  return (
+    PRICING_CURRENCIES.find((c) => c.code === code) || PRICING_CURRENCIES[0]
+  );
 }
 
 // Token cost estimation for different API endpoints
-export const API_TOKEN_COSTS = {
-  "/api/v1/developers": { min: 200, max: 800, average: 400 },
-  "/api/v1/profile": { min: 300, max: 2000, average: 1000 },
-  "/api/v1/repositories": { min: 150, max: 1200, average: 600 },
-  "/api/v1/users/tier": { min: 0, max: 0, average: 0 },
-};
-
-export function getEstimatedTokenCost(endpoint: string): {
-  min: number;
-  max: number;
-  average: number;
-} {
-  return (
-    API_TOKEN_COSTS[endpoint as keyof typeof API_TOKEN_COSTS] || {
-      min: 100,
-      max: 500,
-      average: 300,
-    }
-  );
-}
+export const API_TOKEN_COSTS = PRICING_API_TOKEN_COSTS;
+export const getEstimatedTokenCost = PRICING_getEstimatedTokenCost;

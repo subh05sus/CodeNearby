@@ -1,18 +1,22 @@
 /* eslint-disable jsx-a11y/alt-text */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSession } from "next-auth/react";
-import { ImageIcon, X } from "lucide-react";
+import { ImageIcon, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CreatePoll } from "./create-poll";
 import { ShareLocation } from "./share-location";
 import { ShareSchedule } from "./share-schedule";
 import { EmojiPicker } from "./emoji-picker";
 import Image from "next/image";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { getLocationByIp } from "@/lib/location";
+import { Session } from "next-auth";
+import { Badge } from "./ui/badge";
 
 interface CreatePostProps {
   onSubmit: (
@@ -25,7 +29,10 @@ interface CreatePostProps {
 }
 
 export function CreatePost({ onSubmit }: CreatePostProps) {
-  const { data: session } = useSession();
+  const { data: session } = useSession() as { data: Session | null };
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const [content, setContent] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [poll, setPoll] = useState<{
@@ -37,6 +44,42 @@ export function CreatePost({ onSubmit }: CreatePostProps) {
   );
   const [schedule, setSchedule] = useState<Date | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [city, setCity] = useState<string | null>(null);
+  const [isCityLoading, setIsCityLoading] = useState(false);
+
+  const isOnboarding = (searchParams?.get("source") || "") === "onboarding";
+  const displayName = (session?.user?.name?.split(" ")[0] ||
+    session?.user?.githubUsername ||
+    "there") as string;
+
+  useEffect(() => {
+    if (!isOnboarding) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        setIsCityLoading(true);
+        const res = await getLocationByIp();
+        if (!cancelled) setCity(res?.city || null);
+      } catch {
+        if (!cancelled) setCity(null);
+      } finally {
+        if (!cancelled) setIsCityLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isOnboarding]);
+
+  const suggestions: string[] = [
+    `👋 Hey, I'm ${displayName}! Just joined CodeNearby and excited to meet devs nearby.`,
+    "🚀 Starting a new side project this week. Anyone up for pairing or quick code reviews?",
+    "🤝 Looking to join a small weekend hack/build. Comment if you're interested!",
+    `📍 I'm based in ${
+      city ?? (isCityLoading ? "detecting your city..." : "<your city>")
+    }. Who else is nearby and wants to connect?`,
+  ];
 
   const handleSubmit = async () => {
     if (!content.trim() && !image && !poll && !location && !schedule) return;
@@ -54,6 +97,15 @@ export function CreatePost({ onSubmit }: CreatePostProps) {
       setPoll(null);
       setLocation(null);
       setSchedule(null);
+      // After successful post, remove ?source from URL (preserve other params)
+      if (searchParams && searchParams.get("source")) {
+        const params = new URLSearchParams(searchParams.toString());
+        params.delete("source");
+        const next = params.toString();
+        router.replace(next ? `${pathname}?${next}` : pathname, {
+          scroll: false,
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -75,6 +127,14 @@ export function CreatePost({ onSubmit }: CreatePostProps) {
     setContent((prev) => prev + emoji);
   };
 
+  const handlePickSuggestion = (text: string) => {
+    setContent(text);
+    // focus the textarea so user can edit immediately
+    requestAnimationFrame(() => {
+      textareaRef.current?.focus();
+    });
+  };
+
   return (
     <div className="bg-background border rounded-xl p-4">
       <div className="flex portrait:flex-col gap-4">
@@ -85,10 +145,42 @@ export function CreatePost({ onSubmit }: CreatePostProps) {
           </AvatarFallback>
         </Avatar>
         <div className="flex-1">
+          {isOnboarding && !content.trim() && (
+            <div className="mb-3">
+              <div className="text-sm text-muted-foreground mb-2">
+                Quick start ideas for your first post
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {suggestions.map((s, i) => {
+                  const isCityButton = i === suggestions.length - 1;
+                  const loading = isCityButton && isCityLoading && !city;
+                  return (
+                    <Badge
+                      key={i}
+                      variant="outline"
+                      // size="sm"
+                      className={cn(
+                        "rounded-full text-wrap  text-left px-3 py-1.5 cursor-pointer",
+                        loading && "pointer-events-none opacity-70"
+                      )}
+                      aria-busy={loading}
+                      onClick={() => handlePickSuggestion(s)}
+                    >
+                      {loading && (
+                        <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                      )}
+                      {s}
+                    </Badge>
+                  );
+                })}
+              </div>
+            </div>
+          )}
           <Textarea
             placeholder="What is happening?!"
             value={content}
             onChange={(e) => setContent(e.target.value)}
+            ref={textareaRef}
             className="min-h-[100px] border-none focus-visible:ring-0 text-lg resize-none "
           />
           <div className="flex items-center portrait:flex-col portrait:items-start  portrait:w-full justify-between mt-4 border-t pt-4">

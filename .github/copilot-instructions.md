@@ -1,173 +1,74 @@
-# CodeNearby - Copilot Instructions
+# CodeNearby – Copilot Playbook (for AI agents)
 
-## Project Overview
-CodeNearby is a **Next.js 14** social networking platform for developers featuring real-time chat, location-based discovery, AI-powered developer search, and GitHub integration. Think "Tinder for developers" with collaborative features.
+Purpose: Make changes fast and safely by following the repo’s real conventions. Keep edits small, reuse helpers, and prefer the existing data flow.
 
-## Architecture & Tech Stack
+## Architecture in one glance
 
-### Core Stack
-- **Framework**: Next.js 14 with App Router
-- **Database**: MongoDB (primary data) + Firebase Realtime Database (chat/gatherings)
-- **Authentication**: NextAuth.js with GitHub OAuth
-- **AI**: Google Gemini API for developer search and recommendations
-- **Caching**: Upstash Redis for API responses and AI interactions
-- **Styling**: Tailwind CSS with shadcn/ui components
-- **Real-time**: Firebase Realtime Database for chat and gathering features
+- Next.js 14 App Router. UI in `app/**` and `components/**`.
+- Persistence: MongoDB via `lib/mongodb.ts` (singleton).
+- Realtime/ephemeral: Firebase Realtime DB via `lib/firebase.ts` (chat, polls).
+- Auth: NextAuth GitHub OAuth using `app/options.ts` (extended Session: id, githubUsername, etc.).
+- AI: Google Gemini via `lib/ai.ts` (ai-sdk/google).
+- Caching/limits: Upstash Redis via `lib/redis.ts` and helpers in `lib/utils.ts`.
+- External: GitHub REST via `lib/github.ts` and `lib/github-search.ts`; Cloudinary uploads.
 
-### Key External Services
-- **Cloudinary**: Image uploads and transformations
-- **GitHub API**: Profile sync, repository data, activity feeds
-- **Upstash Redis**: Caching layer for performance optimization
+## Core patterns to copy
 
-## Critical Development Patterns
+- Route handlers: `app/api/**/route.ts`
+  - Validate session with `getServerSession(authOptions)` when user context is required.
+  - For public API v1, validate `x-api-key` and tokens (see `app/api/v1/**`, `lib/user-tiers.ts`).
+  - Always respond with `NextResponse.json({ ... }, { status })`.
+- Mongo access: `const client = await clientPromise; const db = client.db();`
+  - Collections seen: `users`, `apiKeys`, `gatherings`, `posts`.
+- Caching: use `cacheData(key, data, seconds)` and `getCachedData<T>(key)`.
+- Rate limits: use `rateLimit(req, identifier, { limit, windowMs, message })` + expose headers via `getRateLimitInfo` (see `app/api/ai-chat/route.ts`).
 
-### 1. Authentication & Session Management
-```typescript
-// Always use getServerSession for server components
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/options";
+## API v1 (tokened) conventions
 
-// Extended session type includes GitHub data
-interface Session {
-  user: {
-    id: string;
-    githubUsername: string;
-    githubId: string;
-    // ... other fields
-  }
-}
-```
+- Send `x-api-key` header. Validate via hashed key lookup in `apiKeys` (see `app/api/v1/developers/route.ts`).
+- Track/charge tokens with `lib/user-tiers.ts` (`canConsumeTokens`, `consumeTokens`, daily reset helpers).
+- AI calls via `generateMessage` return `{ aiResponse, tokensUsed }` – deduct before returning.
 
-### 2. Database Architecture - Hybrid Approach
-- **MongoDB**: User profiles, posts, friendships, gatherings metadata
-- **Firebase**: Real-time chat messages, gathering chat rooms, live updates
-- **Pattern**: Use MongoDB for persistent data, Firebase for ephemeral real-time features
+## Realtime chat/polls
 
-### 3. API Route Patterns
-```typescript
-// Standard API route structure
-export async function GET/POST(request: Request) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  
-  const client = await clientPromise;
-  const db = client.db();
-  // ... operations
-}
-```
+- UI: `app/gathering/[slug]/chat/page.tsx`.
+- Firebase paths:
+  - Messages: `messages/${slug}` with `onChildAdded`/`onChildChanged`.
+  - Polls: `polls/${slug}/${pollId}`.
+- Features: anonymous messages, pin/unpin, host-only controls.
 
-### 4. Real-time Chat Implementation
-- **Path**: `app/gathering/[slug]/chat/page.tsx` for gathering chats
-- **Pattern**: Firebase `onChildAdded`/`onChildChanged` for real-time updates
-- **Features**: Anonymous messaging, message pinning, polls, @mentions
-```typescript
-// Firebase real-time listener pattern
-const messagesRef = ref(db, `messages/${gatheringSlug}`);
-const unsubscribe = onChildAdded(messagesRef, (snapshot) => {
-  const message = snapshot.val();
-  setMessages(prev => [...prev, { ...message, id: snapshot.key }]);
-});
-```
+## GitHub integration
 
-### 5. AI Chat Interface (`components/ai-chat-interface.tsx`)
-- **Complex state management** for developer search results and repository data
-- **Caching strategy** with Redis for API responses
-- **Pattern matching** for different query types (developer search, repo search, profile lookup)
-- **Location-based search** integration
+- Quick user/activity: `lib/github.ts`.
+- Search and detail with caching: `lib/github-search.ts` (basic vs detailed search, repo info, similar repos).
+- Respect rate limits; prefer caching keys like `github:search:*` and `github:user:*`.
 
-## Component Architecture
+## Auth lifecycle
 
-### Layout Structure
-- `app/layout.tsx`: Root layout with theme provider, auth provider
-- `components/header.tsx`: Complex navigation with search, auth states
-- `components/logged-in-view.tsx` vs `components/not-logged-in-view.tsx`: Conditional rendering
+- Provider setup and session shape: `app/options.ts`.
+- On sign-in, user record is upserted and optionally added to default gathering via `ALL_GATHERING_ID`.
 
-### Key Reusable Components
-- `components/post-card.tsx`: Complex post rendering with polls, comments, sharing
-- `components/developer-grid.tsx`: Animated grid for displaying developer profiles
-- `components/chat-list.tsx`: Friend list with last message previews
-- `components/search-overlay.tsx`: Global search functionality
+## Local dev workflow
 
-### UI Components (shadcn/ui)
-Located in `components/ui/` - customized versions of shadcn components with project-specific styling.
+- Commands: `npm run dev`, `npm run build`, `npm run lint`, `npm run generate-changelog`, `npm run test-api`.
+- Env: copy `.env.example` → `.env.local` (GitHub OAuth, MongoDB, Firebase, Upstash Redis, Gemini, Cloudinary).
+- API smoke tests: `scripts/test-api.js` (uses `BASE_URL` and `x-api-key`).
 
-## Data Flow Patterns
+## UI conventions
 
-### 1. Onboarding Flow
-- **Path**: `app/onboarding/` with multi-step process
-- **Pattern**: Server-side checks in layout, client-side step management
-- **Key**: `onboardingCompleted` flag in user document
+- shadcn-based components in `components/ui/**`; theme/provider wiring in `app/layout.tsx` and `components/providers.tsx`.
+- AI search UI logic: `components/ai-chat-interface.tsx` (intent detection for dev/person/repo queries).
 
-### 2. Location-Based Features
-- **IP-based detection**: `lib/location.ts` for automatic location detection
-- **User location storage**: MongoDB user documents
-- **Search integration**: Location filters in developer discovery
+## Where to look (by task)
 
-### 3. GitHub Integration
-- **Profile sync**: Automatic on auth, manual refresh available
-- **Activity feeds**: `lib/github.ts` for fetching GitHub events
-- **Repository search**: Integrated into AI chat interface
+- Add/modify API: start from a similar file in `app/api/**/route.ts`; reuse caching + rate limit helpers.
+- Add AI usage: call `generateMessage` and budget tokens through `lib/user-tiers.ts`.
+- Realtime features: follow Firebase patterns in gathering chat.
 
-## Development Workflow
+Notes/pitfalls
 
-### Essential Commands
-```bash
-npm run dev          # Development server
-npm run build        # Production build
-npm run lint         # ESLint checking
-npm run generate-changelog  # Update changelog
-```
+- Mongo client is TLS-enabled by default (`lib/mongodb.ts`); ensure valid `MONGODB_URI`.
+- Many features require session; API v1 requires `x-api-key` even when signed in.
+- Set `UPSTASH_REDIS_REST_*` for caching/limits; missing config degrades behavior.
 
-### Environment Setup
-- Copy `.env.example` to `.env.local`
-- **Required**: GitHub OAuth, MongoDB, Firebase, Gemini API, Upstash Redis
-- **Optional**: Cloudinary (for image uploads)
-
-### Database Operations
-- **No migrations**: MongoDB schema-less, handled in application code
-- **Indexes**: Critical for user searches by location, skills, GitHub data
-- **Connection**: Singleton pattern in `lib/mongodb.ts`
-
-## Feature-Specific Guidance
-
-### Adding New Chat Features
-- Extend `Message` interface in gathering chat components
-- Update Firebase message structure
-- Consider anonymity and host-only permissions
-
-### Developer Search/Discovery
-- Modify `app/api/ai-chat/route.ts` for new search logic
-- Update caching strategy in Redis integration
-- Consider rate limiting for external API calls
-
-### Real-time Features
-- Use Firebase Realtime Database, not Firestore
-- Implement proper cleanup in useEffect hooks
-- Handle offline/connection states
-
-### GitHub Integration
-- Respect API rate limits (5000/hour authenticated)
-- Cache responses in Redis when possible
-- Handle missing/private profile data gracefully
-
-## Testing & Debugging
-
-### Common Issues
-- **Firebase connection**: Check environment variables with `NEXT_PUBLIC_` prefix
-- **MongoDB connection**: Verify TLS settings in production
-- **GitHub API limits**: Monitor rate limit headers in responses
-- **Chat not updating**: Verify Firebase rules and authentication
-
-### Performance Considerations
-- Use Redis caching for expensive GitHub API calls
-- Implement proper image optimization with Cloudinary
-- Lazy load components with dynamic imports for large pages
-- Monitor Firebase real-time connection limits
-
-## Deployment Notes
-- **Platform**: Designed for Vercel deployment
-- **Environment**: Production requires all external service credentials
-- **Static assets**: Images configured for multiple CDN domains
-- **Build**: Next.js static optimization enabled where possible
+That’s the essential map. If any area is unclear or missing (e.g., pricing, keys, or a new endpoint contract), tell me what to expand and I’ll refine this guide.

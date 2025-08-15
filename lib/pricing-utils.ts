@@ -1,5 +1,9 @@
 // Pricing utilities and formatting for CodeNearby API
-import { Currency, TOKEN_PACKAGES } from "@/lib/user-tiers";
+import {
+  TOKEN_PACKAGES,
+  USER_TIERS as RAW_USER_TIERS,
+  type Currency,
+} from "@/consts/pricing";
 
 export interface FormattedTokenPackage {
   id: string;
@@ -30,7 +34,9 @@ export interface FormattedUserTier {
   popular?: boolean;
 }
 
-export function getFormattedTokenPackages(currency: Currency): FormattedTokenPackage[] {
+export function getFormattedTokenPackages(
+  currency: Currency
+): FormattedTokenPackage[] {
   return TOKEN_PACKAGES.map((pkg) => ({
     id: pkg.id,
     name: pkg.name,
@@ -38,8 +44,11 @@ export function getFormattedTokenPackages(currency: Currency): FormattedTokenPac
     tokens: pkg.tokens,
     bonus: pkg.bonus,
     totalTokens: pkg.tokens + pkg.bonus,
-    price: pkg.price[currency.code.toLowerCase() as keyof typeof pkg.price],
-    formattedPrice: `${currency.symbol}${pkg.price[currency.code.toLowerCase() as keyof typeof pkg.price].toLocaleString()}`,
+    price: currency.code === "USD" ? pkg.price.usd : pkg.price.inr,
+    formattedPrice: `${currency.symbol}${(currency.code === "USD"
+      ? pkg.price.usd
+      : pkg.price.inr
+    ).toLocaleString()}`,
     features: pkg.features,
     popular: pkg.popular,
   }));
@@ -55,45 +64,26 @@ function getPackageDescription(packageId: string): string {
   return descriptions[packageId as keyof typeof descriptions] || "";
 }
 
-export const USER_TIERS: FormattedUserTier[] = [
-  {
-    id: "free",
-    name: "Free",
-    price: "Free",
-    description: "Perfect for getting started",
-    features: [
-      "1,000 daily tokens",
-      "1 API key",
-      "Basic analytics",
-      "Community support",
-    ],
-    limits: {
-      dailyTokens: 1000,
-      maxApiKeys: 1,
-      analytics: true,
-      repositorySearch: true,
-      prioritySupport: false,
-    },
+export const USER_TIERS: FormattedUserTier[] = (
+  Object.entries(RAW_USER_TIERS) as Array<
+    [
+      keyof typeof RAW_USER_TIERS,
+      (typeof RAW_USER_TIERS)[keyof typeof RAW_USER_TIERS]
+    ]
+  >
+).map(([id, t]) => ({
+  id,
+  name: id.charAt(0).toUpperCase() + id.slice(1),
+  price: id === "free" ? "Free" : "Paid",
+  description:
+    id === "free" ? "Perfect for getting started" : "For serious developers",
+  features: t.features,
+  limits: {
+    dailyTokens: t.dailyTokens,
+    maxApiKeys: t.maxApiKeys,
+    analytics: t.analytics,
+    repositorySearch: t.repositorySearch,
+    prioritySupport: t.prioritySupport,
   },
-  {
-    id: "premium",
-    name: "Premium",
-    price: "$9.99/month",
-    description: "For serious developers",
-    features: [
-      "2,000 daily tokens",
-      "10 API keys",
-      "Advanced analytics",
-      "Priority support",
-      "Early access to features",
-    ],
-    limits: {
-      dailyTokens: 2000,
-      maxApiKeys: 10,
-      analytics: true,
-      repositorySearch: true,
-      prioritySupport: true,
-    },
-    popular: true,
-  },
-];
+  popular: id === "premium",
+}));

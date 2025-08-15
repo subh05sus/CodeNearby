@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, createContext, useContext } from "react";
-import { Currency, getCurrency } from "@/lib/user-tiers";
+import { Currency } from "@/consts/pricing";
+import { getCurrency } from "@/lib/user-tiers";
 
 interface CurrencyContextType {
   currency: Currency;

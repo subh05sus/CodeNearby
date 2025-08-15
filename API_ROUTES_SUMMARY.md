@@ -15,16 +15,16 @@
 ### Core API Endpoints (Already Existed)
 3. **`/api/v1/developers`** ✅ EXISTS
    - `POST` - AI-powered developer search
-   - Token cost: 500-2000 tokens
+   - Token cost: 200-800 tokens (from consts/pricing)
 
 4. **`/api/v1/repositories`** ✅ EXISTS
    - `POST` - AI-powered repository search
-   - Token cost: 200-600 tokens
+   - Token cost: 150-1200 tokens (from consts/pricing)
 
 ### New Endpoints Created
 5. **`/api/v1/profile/analyze`** ✅ CREATED
    - `POST` - GitHub profile analysis with AI insights
-   - Token cost: 300-800 tokens
+   - Token cost: 300-2000 tokens (from consts/pricing)
    - Analyzes user repos, languages, experience, collaboration
 
 6. **`/api/v1/pricing`** ✅ CREATED

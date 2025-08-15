@@ -1,5 +1,5 @@
 import { Switch } from "@/components/ui/switch";
-import { Currency } from "@/lib/user-tiers";
+import { Currency } from "@/consts/pricing";
 
 interface CurrencyToggleProps {
   currency: Currency;
