@@ -37,8 +37,8 @@ Create `.env.local` with the following keys. Values with asterisk are required.
 - UPSTASH_REDIS_REST_TOKEN
 
 ## Payments (Razorpay)
-- RZP_TEST_KEY_ID
-- RZP_TEST_KEY_SECRET
+- RZP_PROD_KEY_ID
+- RZP_PROD_KEY_SECRET
 - RZP_WEBHOOK_SECRET
 
 Tip: For production, rotate secrets periodically and use platform secret stores.

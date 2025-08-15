@@ -96,7 +96,7 @@ export async function POST(request: Request) {
       amount: razorpayOrder.amount,
       currency: razorpayOrder.currency,
       package: packageData,
-      key: process.env.RZP_TEST_KEY_ID,
+      key: process.env.RZP_PROD_KEY_ID,
       userEmail: session.user.email,
       userName: session.user.name,
       message: "Order created successfully. Proceed with payment.",

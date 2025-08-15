@@ -77,8 +77,8 @@ Handles Razorpay webhooks for:
 
 ```env
 # Razorpay Test Credentials
-RZP_TEST_KEY_ID=rzp_test_xxx
-RZP_TEST_KEY_SECRET=xxx
+RZP_PROD_KEY_ID=rzp_test_xxx
+RZP_PROD_KEY_SECRET=xxx
 
 # Optional: Webhook Secret
 RZP_WEBHOOK_SECRET=webhook_secret
