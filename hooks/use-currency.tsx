@@ -53,7 +53,7 @@ export function useCurrency() {
 
 // Standalone hook for components that don't need the provider
 export function useLocalCurrency() {
-  const [currency, setCurrencyState] = useState<Currency>(getCurrency("USD"));
+  const [currency, setCurrencyState] = useState<Currency>(getCurrency("INR"));
 
   useEffect(() => {
     const saved = localStorage.getItem("codenearby-currency");

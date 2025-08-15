@@ -42,24 +42,24 @@ export default function TokenStorePage() {
       name: "Free",
       description: "Perfect for getting started",
       features: [
-        "1,000 daily tokens",
-        "1 API key",
+        "2,000 daily tokens",
+        "2 API keys",
         "Basic analytics",
         "Community support",
       ],
-      limits: { dailyTokens: 1000, maxApiKeys: 1 },
+      limits: { dailyTokens: 2000, maxApiKeys: 2 },
     },
     {
       id: "premium",
       name: "Premium",
       description: "For serious developers",
       features: [
-        "2,000 daily tokens",
+        "5,000 daily tokens",
         "10 API keys",
         "Advanced analytics",
         "Priority support",
       ],
-      limits: { dailyTokens: 2000, maxApiKeys: 10 },
+      limits: { dailyTokens: 5000, maxApiKeys: 10 },
     },
   ];
 

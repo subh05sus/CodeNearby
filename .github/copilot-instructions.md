@@ -1,74 +1,66 @@
 # CodeNearby – Copilot Playbook (for AI agents)
 
-Purpose: Make changes fast and safely by following the repo’s real conventions. Keep edits small, reuse helpers, and prefer the existing data flow.
+Purpose: Move fast, stay safe. Copy existing patterns, keep edits small, and reuse helpers.
 
-## Architecture in one glance
+## Architecture quick map
 
 - Next.js 14 App Router. UI in `app/**` and `components/**`.
-- Persistence: MongoDB via `lib/mongodb.ts` (singleton).
-- Realtime/ephemeral: Firebase Realtime DB via `lib/firebase.ts` (chat, polls).
-- Auth: NextAuth GitHub OAuth using `app/options.ts` (extended Session: id, githubUsername, etc.).
-- AI: Google Gemini via `lib/ai.ts` (ai-sdk/google).
-- Caching/limits: Upstash Redis via `lib/redis.ts` and helpers in `lib/utils.ts`.
-- External: GitHub REST via `lib/github.ts` and `lib/github-search.ts`; Cloudinary uploads.
+- Data: MongoDB via `lib/mongodb.ts` (singleton clientPromise).
+- Realtime: Firebase Realtime DB via `lib/firebase.ts` (chat, polls).
+- Auth: NextAuth (GitHub OAuth) in `app/options.ts` (Session has id/github fields; adds user to `ALL_GATHERING_ID` on first sign-in).
+- AI: Google Gemini via `lib/ai.ts` (ai-sdk/google, model `gemini-2.0-flash-exp`).
+- Cache + limits: Upstash Redis via `lib/redis.ts`; helpers in `lib/utils.ts` (rateLimit + headers).
+- GitHub: `lib/github.ts`, `lib/github-search.ts` (search, repo info, similar repos).
 
-## Core patterns to copy
+## API route conventions
 
-- Route handlers: `app/api/**/route.ts`
-  - Validate session with `getServerSession(authOptions)` when user context is required.
-  - For public API v1, validate `x-api-key` and tokens (see `app/api/v1/**`, `lib/user-tiers.ts`).
-  - Always respond with `NextResponse.json({ ... }, { status })`.
-- Mongo access: `const client = await clientPromise; const db = client.db();`
-  - Collections seen: `users`, `apiKeys`, `gatherings`, `posts`.
-- Caching: use `cacheData(key, data, seconds)` and `getCachedData<T>(key)`.
-- Rate limits: use `rateLimit(req, identifier, { limit, windowMs, message })` + expose headers via `getRateLimitInfo` (see `app/api/ai-chat/route.ts`).
+- Handlers live in `app/api/**/route.ts`; always return `NextResponse.json({...}, { status })`.
+- Web app routes use `getServerSession(authOptions)`; public API v1 uses API Key auth only.
+- API Key format: `cn_...`; store SHA-256 `hashedKey` in `apiKeys` (see `lib/api-auth.ts`). Reuse `requireApiKey()` instead of re-implementing.
+- Mongo: `const client = await clientPromise; const db = client.db();` Use `ObjectId` for ids. Collections: `users`, `apiKeys`, `gatherings`, `posts`.
 
-## API v1 (tokened) conventions
+## Token budgeting pattern (v1)
 
-- Send `x-api-key` header. Validate via hashed key lookup in `apiKeys` (see `app/api/v1/developers/route.ts`).
-- Track/charge tokens with `lib/user-tiers.ts` (`canConsumeTokens`, `consumeTokens`, daily reset helpers).
-- AI calls via `generateMessage` return `{ aiResponse, tokensUsed }` – deduct before returning.
+- Estimate first via `getEstimatedTokenCost(endpoint)` from `consts/pricing.ts`.
+- Call AI with `generateMessage(prompt[, maxTokens])`; it returns `{ aiResponse, tokensUsed }`.
+- Use actual `tokensUsed` when available; otherwise fall back to the estimate.
+- Check/charge with `canConsumeTokens`, `consumeTokens`, and persist updated `tokenBalance` + `usage` in `users`.
+- Reset daily tokens with `shouldResetDailyTokens`/`resetDailyTokens` before charging. Gate features via `user.features.*` (e.g., `developerSearch`).
 
-## Realtime chat/polls
+## Caching and rate limits
 
-- UI: `app/gathering/[slug]/chat/page.tsx`.
-- Firebase paths:
-  - Messages: `messages/${slug}` with `onChildAdded`/`onChildChanged`.
-  - Polls: `polls/${slug}/${pollId}`.
-- Features: anonymous messages, pin/unpin, host-only controls.
+- Cache via `cacheData/getCachedData` (Upstash). Common keys:
+  - `ai:repo-search:${encodeURIComponent(q)}`
+  - `ai:similar-repos:${repo}`, `ai:repo-analysis:${repo}`
+  - `github:search:*`, `github:user:*`
+- Typical TTLs: AI responses ~3600s, profile analysis ~1800s (see usages in `app/api/ai-chat/route.ts`).
+- Rate limit with `rateLimit(req, id, { limit, windowMs, message })` and expose `X-RateLimit-*` via `getRateLimitInfo`.
 
-## GitHub integration
+## Files that show the patterns
 
-- Quick user/activity: `lib/github.ts`.
-- Search and detail with caching: `lib/github-search.ts` (basic vs detailed search, repo info, similar repos).
-- Respect rate limits; prefer caching keys like `github:search:*` and `github:user:*`.
+- API v1 token workflow: `app/api/v1/developers/route.ts` (estimate → AI → actual usage → consume → persist).
+- Rate limiting + headers: `app/api/ai-chat/route.ts`.
+- API key auth helpers: `lib/api-auth.ts`.
+- Pricing/tokens: `consts/pricing.ts`; per-endpoint `API_TOKEN_COSTS`.
+- Redis helpers: `lib/redis.ts`; rate-limit helpers: `lib/utils.ts`.
 
-## Auth lifecycle
-
-- Provider setup and session shape: `app/options.ts`.
-- On sign-in, user record is upserted and optionally added to default gathering via `ALL_GATHERING_ID`.
-
-## Local dev workflow
+## Dev workflow
 
 - Commands: `npm run dev`, `npm run build`, `npm run lint`, `npm run generate-changelog`, `npm run test-api`.
-- Env: copy `.env.example` → `.env.local` (GitHub OAuth, MongoDB, Firebase, Upstash Redis, Gemini, Cloudinary).
-- API smoke tests: `scripts/test-api.js` (uses `BASE_URL` and `x-api-key`).
+- Build runs `prebuild` to generate changelog (`generate-changelog.js`).
+- Env: copy `.env.example` → `.env.local` (GitHub, MongoDB, Firebase, Upstash, Gemini, Cloudinary).
+- API smoke test: edit `TEST_API_KEY` in `scripts/test-api.js`, start dev server, then `npm run test-api`.
 
-## UI conventions
+## Realtime chat/polls (UI example)
 
-- shadcn-based components in `components/ui/**`; theme/provider wiring in `app/layout.tsx` and `components/providers.tsx`.
-- AI search UI logic: `components/ai-chat-interface.tsx` (intent detection for dev/person/repo queries).
+- `app/gathering/[slug]/chat/page.tsx`; Firebase paths:
+  - Messages: `messages/${slug}` (child add/change listeners)
+  - Polls: `polls/${slug}/${pollId}`
 
-## Where to look (by task)
+## Gotchas
 
-- Add/modify API: start from a similar file in `app/api/**/route.ts`; reuse caching + rate limit helpers.
-- Add AI usage: call `generateMessage` and budget tokens through `lib/user-tiers.ts`.
-- Realtime features: follow Firebase patterns in gathering chat.
+- Mongo client uses TLS (`lib/mongodb.ts`); ensure `MONGODB_URI` is valid.
+- Many app routes require session; API v1 must use `x-api-key` even if signed in.
+- Set `UPSTASH_REDIS_REST_*`; if missing, rate limiting gracefully degrades.
 
-Notes/pitfalls
-
-- Mongo client is TLS-enabled by default (`lib/mongodb.ts`); ensure valid `MONGODB_URI`.
-- Many features require session; API v1 requires `x-api-key` even when signed in.
-- Set `UPSTASH_REDIS_REST_*` for caching/limits; missing config degrades behavior.
-
-That’s the essential map. If any area is unclear or missing (e.g., pricing, keys, or a new endpoint contract), tell me what to expand and I’ll refine this guide.
+If you add new endpoints, mirror an existing one under `app/api/v1/**`, reuse `requireApiKey`, token budgeting, and caching/limits.
