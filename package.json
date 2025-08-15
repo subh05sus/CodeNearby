@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "node generate-changelog.js && next build",
+    "build": "cross-env NODE_ENV=production next build",
+    "prebuild": "node generate-changelog.js",
     "start": "next start",
     "lint": "next lint",
     "generate-changelog": "node generate-changelog.js",
@@ -46,6 +47,7 @@
     "clsx": "^2.1.1",
     "color-thief-browser": "^2.0.2",
     "colorthief": "^2.6.0",
+    "cross-env": "^10.0.0",
     "date-fns": "^4.1.0",
     "dotted-map": "^2.2.3",
     "firebase": "^11.2.0",
