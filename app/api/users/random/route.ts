@@ -3,8 +3,9 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/options";
 import clientPromise from "@/lib/mongodb";
 import { cookies } from "next/headers";
+import { getCachedData, cacheData } from "@/lib/redis";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
@@ -24,7 +25,17 @@ export async function GET() {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
     const currentUserId = currentUser.githubId;
-    const friendsIds = currentUser.friends.map((id: number) => id);
+    const friendsIds = Array.isArray(currentUser.friends)
+      ? currentUser.friends.map((id: number) => id)
+      : [];
+
+    // Per-user cache key; short TTL to avoid stale friend exclusions
+    const cacheKey = `users:random:${currentUserId}`;
+
+    const cached = await getCachedData<any[]>(cacheKey);
+    if (cached && Array.isArray(cached)) {
+      return NextResponse.json(cached);
+    }
 
     const avoidArray = [currentUserId, ...friendsIds];
 
@@ -50,6 +61,9 @@ export async function GET() {
         },
       ])
       .toArray();
+
+    // Cache for 10 minutes (600s)
+    await cacheData(cacheKey, randomUsers, 600);
 
     return NextResponse.json(randomUsers);
   } catch (error) {

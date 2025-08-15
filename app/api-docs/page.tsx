@@ -26,6 +26,12 @@ import { toast } from "sonner";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import Link from "next/link";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const API_BASE_URL =
   process.env.NODE_ENV === "production"
@@ -425,433 +431,490 @@ export default function ApiDocsPage() {
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">API Documentation</h1>
-            <p className="text-xl text-muted-foreground">
-              AI-powered developer search and GitHub integration API
-            </p>
-          </div>
-          <div className="flex gap-3">
-            <Button variant="outline" asChild>
-              <Link href="/api-dashboard">
-                <Key className="h-4 w-4 mr-2" />
-                Dashboard
-              </Link>
-            </Button>
-            <Button asChild>
-              <Link href="/upgrade">
-                <Zap className="h-4 w-4 mr-2" />
-                Get API Keys
-              </Link>
-            </Button>
-          </div>
-        </div>
-
-        {/* Quick Start */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Book className="h-5 w-5" />
-              Quick Start
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <ol className="list-decimal list-inside space-y-2">
-                <li>
-                  <Link
-                    href="/api-dashboard"
-                    className="text-blue-600 hover:underline"
-                  >
-                    Create an API key
-                  </Link>{" "}
-                  in your dashboard
-                </li>
-                <li>
-                  Include your API key in the{" "}
-                  <code className="bg-muted px-1 rounded">x-api-key</code>{" "}
-                  header
-                </li>
-                <li>
-                  Make requests to{" "}
-                  <code className="bg-muted px-1 rounded">
-                    {API_BASE_URL}/api/v1/*
-                  </code>
-                </li>
-                <li>Monitor your token usage in the dashboard</li>
-              </ol>
-
-              <div className="mt-4 p-4 bg-muted rounded-lg">
-                <h4 className="font-medium mb-2">Base URL:</h4>
-                <code className="text-sm">{API_BASE_URL}/api/v1</code>
-              </div>
+    <TooltipProvider>
+      <div className="container mx-auto w-full max-w-7xl ">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center justify-between mb-4">
+            <div>
+              <h1 className="text-4xl font-bold mb-2">API Documentation</h1>
+              <p className="text-xl text-muted-foreground">
+                AI-powered developer search and GitHub integration API
+              </p>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+            <div className="flex flex-wrap gap-2 sm:gap-3">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" asChild>
+                    <Link href="/api-dashboard">
+                      <Key className="h-4 w-4 mr-2" />
+                      <span>Dashboard</span>
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Open API Dashboard</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button asChild>
+                    <Link href="/upgrade">
+                      <Zap className="h-4 w-4 mr-2" />
+                      <span>Get API Tokens</span>
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Upgrade your API plan</TooltipContent>
+              </Tooltip>
+            </div>
+          </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* Sidebar - Endpoint List */}
-        <div className="lg:col-span-1">
-          <Card>
+          {/* Quick Start */}
+          <Card className="mb-6 shadow-sm border-muted/40">
             <CardHeader>
-              <CardTitle>API Endpoints</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="space-y-1">
-                {API_ENDPOINTS.map((endpoint) => (
-                  <button
-                    key={endpoint.id}
-                    onClick={() => setSelectedEndpoint(endpoint)}
-                    className={`w-full text-left p-3 hover:bg-muted/50 transition-colors ${
-                      selectedEndpoint.id === endpoint.id ? "bg-muted" : ""
-                    }`}
-                  >
-                    <div className="flex items-center gap-2 mb-1">
-                      <Badge
-                        variant={
-                          endpoint.method === "GET" ? "secondary" : "default"
-                        }
-                      >
-                        {endpoint.method}
-                      </Badge>
-                      <span className="font-medium text-sm">
-                        {endpoint.name}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {endpoint.tokenCost} tokens
-                    </p>
-                  </button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Main Content */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Endpoint Details */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2 mb-2">
-                <Badge
-                  variant={
-                    selectedEndpoint.method === "GET" ? "secondary" : "default"
-                  }
-                >
-                  {selectedEndpoint.method}
-                </Badge>
-                <code className="text-sm bg-muted px-2 py-1 rounded">
-                  {selectedEndpoint.endpoint}
-                </code>
-              </div>
-              <CardTitle>{selectedEndpoint.name}</CardTitle>
-              <CardDescription>{selectedEndpoint.description}</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <Book className="h-5 w-5" />
+                Quick Start
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-yellow-500" />
-                    <span className="text-sm font-medium">Token Cost:</span>
-                    <Badge variant="outline">
-                      {selectedEndpoint.tokenCost}
-                    </Badge>
-                  </div>
-                </div>
+                <ol className="list-decimal list-inside space-y-2">
+                  <li>
+                    <Link
+                      href="/api-dashboard"
+                      className="text-blue-600 hover:underline"
+                    >
+                      Create an API key
+                    </Link>{" "}
+                    in your dashboard
+                  </li>
+                  <li>
+                    Include your API key in the{" "}
+                    <code className="bg-muted px-1 rounded">x-api-key</code>{" "}
+                    header
+                  </li>
+                  <li>
+                    Make requests to{" "}
+                    <code className="bg-muted px-1 rounded">
+                      {API_BASE_URL}/api/v1/*
+                    </code>
+                  </li>
+                  <li>Monitor your token usage in the dashboard</li>
+                </ol>
 
-                {/* Parameters */}
-                {selectedEndpoint.parameters.length > 0 && (
-                  <div>
-                    <h4 className="font-medium mb-3">Parameters</h4>
-                    <div className="space-y-3">
-                      {selectedEndpoint.parameters.map((param) => (
-                        <div key={param.name} className="border rounded p-3">
-                          <div className="flex items-center gap-2 mb-1">
-                            <code className="font-mono text-sm">
-                              {param.name}
-                            </code>
-                            <Badge
-                              variant={
-                                param.required ? "destructive" : "secondary"
-                              }
-                            >
-                              {param.required ? "Required" : "Optional"}
-                            </Badge>
-                            <Badge variant="outline">{param.type}</Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground mb-1">
-                            {param.description}
-                          </p>
-                          <code className="text-xs bg-muted px-2 py-1 rounded">
-                            Example: {JSON.stringify(param.example)}
-                          </code>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                <div className="mt-4 p-4 bg-muted rounded-lg">
+                  <h4 className="font-medium mb-2">Base URL:</h4>
+                  <code className="text-sm">{API_BASE_URL}/api/v1</code>
+                </div>
               </div>
             </CardContent>
           </Card>
+        </div>
 
-          {/* Code Examples & Playground */}
-          <Tabs defaultValue="playground" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="playground">API Playground</TabsTrigger>
-              <TabsTrigger value="examples">Code Examples</TabsTrigger>
-            </TabsList>
+        <div className="grid lg:grid-cols-3 gap-6 lg:w-full w-[calc(100vw-2rem)]">
+          {/* Sidebar - Endpoint List */}
+          <div className="lg:col-span-1 lg:sticky lg:top-24 lg:w-full">
+            <Card className="shadow-sm border-muted/40">
+              <CardHeader>
+                <CardTitle>API Endpoints</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0 lg:max-h-[60vh] lg:overflow-auto">
+                <div className="space-y-1">
+                  {API_ENDPOINTS.map((endpoint) => (
+                    <button
+                      key={endpoint.id}
+                      onClick={() => setSelectedEndpoint(endpoint)}
+                      className={`w-full text-left p-3 hover:bg-muted/50 transition-colors ${
+                        selectedEndpoint.id === endpoint.id ? "bg-muted" : ""
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <Badge
+                          variant={
+                            endpoint.method === "GET" ? "secondary" : "default"
+                          }
+                        >
+                          {endpoint.method}
+                        </Badge>
+                        <span className="font-medium text-sm">
+                          {endpoint.name}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {endpoint.tokenCost} tokens
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-            {/* Playground */}
-            <TabsContent value="playground">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Play className="h-5 w-5" />
-                    Try it out
-                  </CardTitle>
-                  <CardDescription>
-                    Test the API endpoint with your own parameters
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* API Key Input */}
-                  <div>
-                    <Label htmlFor="apiKey">API Key</Label>
-                    <Input
-                      id="apiKey"
-                      type="password"
-                      placeholder="Enter your API key"
-                      value={apiKey}
-                      onChange={(e) => setApiKey(e.target.value)}
-                    />
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Endpoint Details */}
+            <Card className="shadow-sm border-muted/40">
+              <CardHeader>
+                <div className="flex items-center gap-2 mb-2">
+                  <Badge
+                    variant={
+                      selectedEndpoint.method === "GET"
+                        ? "secondary"
+                        : "default"
+                    }
+                  >
+                    {selectedEndpoint.method}
+                  </Badge>
+                  <code className="text-sm bg-muted px-2 py-1 rounded">
+                    {selectedEndpoint.endpoint}
+                  </code>
+                </div>
+                <CardTitle>{selectedEndpoint.name}</CardTitle>
+                <CardDescription>
+                  {selectedEndpoint.description}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <Zap className="h-4 w-4 text-yellow-500" />
+                      <span className="text-sm font-medium">Token Cost:</span>
+                      <Badge variant="outline">
+                        {selectedEndpoint.tokenCost}
+                      </Badge>
+                    </div>
                   </div>
 
                   {/* Parameters */}
                   {selectedEndpoint.parameters.length > 0 && (
                     <div>
-                      <Label>Parameters</Label>
-                      <div className="space-y-2 mt-2">
+                      <h4 className="font-medium mb-3">Parameters</h4>
+                      <div className="space-y-3">
                         {selectedEndpoint.parameters.map((param) => (
-                          <div key={param.name}>
-                            <Label htmlFor={param.name} className="text-sm">
-                              {param.name}{" "}
-                              {param.required && (
-                                <span className="text-red-500">*</span>
-                              )}
-                            </Label>
-                            <Input
-                              id={param.name}
-                              placeholder={`Enter ${param.name}`}
-                              value={playgroundParams[param.name] || ""}
-                              onChange={(e) =>
-                                setPlaygroundParams((prev) => ({
-                                  ...prev,
-                                  [param.name]: e.target.value,
-                                }))
-                              }
-                            />
+                          <div key={param.name} className="border rounded p-3">
+                            <div className="flex items-center gap-2 mb-1">
+                              <code className="font-mono text-sm">
+                                {param.name}
+                              </code>
+                              <Badge
+                                variant={
+                                  param.required ? "destructive" : "secondary"
+                                }
+                              >
+                                {param.required ? "Required" : "Optional"}
+                              </Badge>
+                              <Badge variant="outline">{param.type}</Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-1">
+                              {param.description}
+                            </p>
+                            <code className="text-xs bg-muted px-2 py-1 rounded">
+                              Example: {JSON.stringify(param.example)}
+                            </code>
                           </div>
                         ))}
                       </div>
                     </div>
                   )}
+                </div>
+              </CardContent>
+            </Card>
 
-                  <Button
-                    onClick={handlePlaygroundTest}
-                    disabled={isLoading}
-                    className="w-full"
-                  >
-                    {isLoading ? "Testing..." : "Send Request"}
-                  </Button>
+            {/* Code Examples & Playground */}
+            <Tabs defaultValue="playground" className="space-y-4">
+              <TabsList className="flex w-fit gap-2">
+                <TabsTrigger
+                  className="flex-shrink-0 min-w-[140px]"
+                  value="playground"
+                >
+                  API Playground
+                </TabsTrigger>
+                <TabsTrigger
+                  className="flex-shrink-0 min-w-[130px]"
+                  value="examples"
+                >
+                  Code Examples
+                </TabsTrigger>
+              </TabsList>
 
-                  {/* Response */}
-                  {playgroundResponse && (
+              {/* Playground */}
+              <TabsContent value="playground">
+                <Card className="shadow-sm border-muted/40">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Play className="h-5 w-5" />
+                      Try it out
+                    </CardTitle>
+                    <CardDescription>
+                      Test the API endpoint with your own parameters
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* API Key Input */}
                     <div>
-                      <Label>Response</Label>
-                      <div className="mt-2 relative">
-                        <SyntaxHighlighter
-                          language="json"
-                          style={vscDarkPlus}
-                          className="rounded-md"
-                        >
-                          {JSON.stringify(playgroundResponse, null, 2)}
-                        </SyntaxHighlighter>
+                      <Label htmlFor="apiKey">API Key</Label>
+                      <Input
+                        id="apiKey"
+                        type="password"
+                        placeholder="Enter your API key"
+                        value={apiKey}
+                        onChange={(e) => setApiKey(e.target.value)}
+                      />
+                    </div>
+
+                    {/* Parameters */}
+                    {selectedEndpoint.parameters.length > 0 && (
+                      <div>
+                        <Label>Parameters</Label>
+                        <div className="space-y-2 mt-2">
+                          {selectedEndpoint.parameters.map((param) => (
+                            <div key={param.name}>
+                              <Label htmlFor={param.name} className="text-sm">
+                                {param.name}{" "}
+                                {param.required && (
+                                  <span className="text-red-500">*</span>
+                                )}
+                              </Label>
+                              <Input
+                                id={param.name}
+                                placeholder={`Enter ${param.name}`}
+                                value={playgroundParams[param.name] || ""}
+                                onChange={(e) =>
+                                  setPlaygroundParams((prev) => ({
+                                    ...prev,
+                                    [param.name]: e.target.value,
+                                  }))
+                                }
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <Tooltip>
+                      <TooltipTrigger asChild>
                         <Button
-                          variant="ghost"
-                          size="sm"
-                          className="absolute top-2 right-2"
-                          onClick={() =>
-                            copyToClipboard(
-                              JSON.stringify(playgroundResponse, null, 2)
-                            )
-                          }
+                          onClick={handlePlaygroundTest}
+                          disabled={isLoading}
+                          className="w-full"
                         >
-                          <Copy className="h-4 w-4" />
+                          {isLoading ? "Testing..." : "Send Request"}
                         </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        Execute request with provided values
+                      </TooltipContent>
+                    </Tooltip>
+
+                    {/* Response */}
+                    {playgroundResponse && (
+                      <div>
+                        <Label>Response</Label>
+                        <div className="mt-2 relative overflow-x-auto rounded-md border border-muted/40">
+                          <SyntaxHighlighter
+                            language="json"
+                            style={vscDarkPlus}
+                            className="min-w-max"
+                          >
+                            {JSON.stringify(playgroundResponse, null, 2)}
+                          </SyntaxHighlighter>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="absolute top-2 right-2"
+                                onClick={() =>
+                                  copyToClipboard(
+                                    JSON.stringify(playgroundResponse, null, 2)
+                                  )
+                                }
+                              >
+                                <Copy className="h-4 w-4 mr-2" /> Copy
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Copy response</TooltipContent>
+                          </Tooltip>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Code Examples */}
+              <TabsContent value="examples">
+                <Card className="shadow-sm border-muted/40">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Code className="h-5 w-5" />
+                      Code Examples
+                    </CardTitle>
+                    <CardDescription>
+                      Copy and paste these examples into your application
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <Label>Language</Label>
+                        <Select
+                          value={selectedLanguage}
+                          onValueChange={setSelectedLanguage}
+                        >
+                          <SelectTrigger className="w-48">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="curl">cURL</SelectItem>
+                            <SelectItem value="javascript">
+                              JavaScript
+                            </SelectItem>
+                            <SelectItem value="python">Python</SelectItem>
+                            <SelectItem value="node">Node.js</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="relative overflow-x-auto p-0 rounded-md border border-muted/40 lg:w-auto w-[calc(100vw-4rem)]">
+                        <SyntaxHighlighter
+                          language={
+                            selectedLanguage === "curl"
+                              ? "bash"
+                              : selectedLanguage
+                          }
+                          customStyle={{
+                            margin: 0,
+                          }}
+                          style={vscDarkPlus}
+                          className="overflow-x-scroll rounded-md my-0"
+                        >
+                          {generateCodeSnippet()}
+                        </SyntaxHighlighter>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="absolute top-2 right-2"
+                              onClick={() =>
+                                copyToClipboard(generateCodeSnippet())
+                              }
+                            >
+                              <Copy className="h-4 w-4 mr-2" /> Copy
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Copy code</TooltipContent>
+                        </Tooltip>
+                      </div>
+
+                      <div>
+                        <Label>Example Response</Label>
+                        <div className="mt-2 relative overflow-x-auto rounded-md border border-muted/40 lg:w-auto w-[calc(100vw-4rem)]">
+                          <SyntaxHighlighter
+                            language="json"
+                            style={vscDarkPlus}
+                            className="rounded-md overscroll-x-scroll my-0"
+                            customStyle={{
+                              margin: 0,
+                            }}
+                          >
+                            {JSON.stringify(
+                              selectedEndpoint.example.response,
+                              null,
+                              2
+                            )}
+                          </SyntaxHighlighter>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="absolute top-2 right-2"
+                                onClick={() =>
+                                  copyToClipboard(
+                                    JSON.stringify(
+                                      selectedEndpoint.example.response,
+                                      null,
+                                      2
+                                    )
+                                  )
+                                }
+                              >
+                                <Copy className="h-4 w-4 mr-2" /> Copy
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Copy response</TooltipContent>
+                          </Tooltip>
+                        </div>
                       </div>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
 
-            {/* Code Examples */}
-            <TabsContent value="examples">
-              <Card>
+            {/* Authentication & Errors */}
+            <div className="grid md:grid-cols-2 gap-6">
+              <Card className="shadow-sm border-muted/40">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Code className="h-5 w-5" />
-                    Code Examples
+                    <Key className="h-5 w-5" />
+                    Authentication
                   </CardTitle>
-                  <CardDescription>
-                    Copy and paste these examples into your application
-                  </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <Label>Language</Label>
-                      <Select
-                        value={selectedLanguage}
-                        onValueChange={setSelectedLanguage}
-                      >
-                        <SelectTrigger className="w-48">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="curl">cURL</SelectItem>
-                          <SelectItem value="javascript">JavaScript</SelectItem>
-                          <SelectItem value="python">Python</SelectItem>
-                          <SelectItem value="node">Node.js</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                <CardContent className="space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    Include your API key in the request header:
+                  </p>
+                  <code className="block bg-muted p-2 rounded text-sm">
+                    x-api-key: your-api-key-here
+                  </code>
+                  <div className="flex items-start gap-2 mt-4">
+                    <AlertCircle className="h-4 w-4 text-yellow-500 mt-0.5" />
+                    <p className="text-sm text-muted-foreground">
+                      Keep your API key secure and never expose it in
+                      client-side code.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
 
-                    <div className="relative">
-                      <SyntaxHighlighter
-                        language={
-                          selectedLanguage === "curl"
-                            ? "bash"
-                            : selectedLanguage
-                        }
-                        style={vscDarkPlus}
-                        className="rounded-md"
-                      >
-                        {generateCodeSnippet()}
-                      </SyntaxHighlighter>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="absolute top-2 right-2"
-                        onClick={() => copyToClipboard(generateCodeSnippet())}
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                    </div>
-
-                    {/* Example Response */}
+              <Card className="shadow-sm border-muted/40">
+                <CardHeader>
+                  <CardTitle>Common Error Codes</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="space-y-3">
                     <div>
-                      <Label>Example Response</Label>
-                      <div className="mt-2 relative">
-                        <SyntaxHighlighter
-                          language="json"
-                          style={vscDarkPlus}
-                          className="rounded-md"
-                        >
-                          {JSON.stringify(
-                            selectedEndpoint.example.response,
-                            null,
-                            2
-                          )}
-                        </SyntaxHighlighter>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="absolute top-2 right-2"
-                          onClick={() =>
-                            copyToClipboard(
-                              JSON.stringify(
-                                selectedEndpoint.example.response,
-                                null,
-                                2
-                              )
-                            )
-                          }
-                        >
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                      </div>
+                      <Badge variant="destructive">401</Badge>
+                      <span className="ml-2 text-sm">
+                        Invalid or missing API key
+                      </span>
+                    </div>
+                    <div>
+                      <Badge variant="destructive">402</Badge>
+                      <span className="ml-2 text-sm">Insufficient tokens</span>
+                    </div>
+                    <div>
+                      <Badge variant="destructive">429</Badge>
+                      <span className="ml-2 text-sm">Rate limit exceeded</span>
+                    </div>
+                    <div>
+                      <Badge variant="destructive">400</Badge>
+                      <span className="ml-2 text-sm">
+                        Invalid request parameters
+                      </span>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-            </TabsContent>
-          </Tabs>
-
-          {/* Authentication & Errors */}
-          <div className="grid md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Key className="h-5 w-5" />
-                  Authentication
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <p className="text-sm text-muted-foreground">
-                  Include your API key in the request header:
-                </p>
-                <code className="block bg-muted p-2 rounded text-sm">
-                  x-api-key: your-api-key-here
-                </code>
-                <div className="flex items-start gap-2 mt-4">
-                  <AlertCircle className="h-4 w-4 text-yellow-500 mt-0.5" />
-                  <p className="text-sm text-muted-foreground">
-                    Keep your API key secure and never expose it in client-side
-                    code.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Common Error Codes</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="space-y-3">
-                  <div>
-                    <Badge variant="destructive">401</Badge>
-                    <span className="ml-2 text-sm">
-                      Invalid or missing API key
-                    </span>
-                  </div>
-                  <div>
-                    <Badge variant="destructive">402</Badge>
-                    <span className="ml-2 text-sm">Insufficient tokens</span>
-                  </div>
-                  <div>
-                    <Badge variant="destructive">429</Badge>
-                    <span className="ml-2 text-sm">Rate limit exceeded</span>
-                  </div>
-                  <div>
-                    <Badge variant="destructive">400</Badge>
-                    <span className="ml-2 text-sm">
-                      Invalid request parameters
-                    </span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }

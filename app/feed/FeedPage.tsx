@@ -10,6 +10,14 @@ import { PostCard } from "@/components/post-card";
 import { MasonryGrid } from "@/components/masonry-grid";
 import LoginButton from "@/components/login-button";
 import { toast } from "sonner";
+import { Switch } from "@/components/ui/switch";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Slider } from "@/components/ui/slider";
 
 interface Post {
   _id: string;
@@ -55,7 +63,22 @@ export default function FeedPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [showGithubEvents, setShowGithubEvents] = useState<boolean>(true);
+  const [columns, setColumns] = useState<number>(2);
   const { ref, inView } = useInView();
+
+  useEffect(() => {
+    // restore toggle from localStorage
+    try {
+      const saved = localStorage.getItem("feed:showGithubEvents");
+      if (saved !== null) setShowGithubEvents(saved === "1");
+      const savedCols = localStorage.getItem("feed:columns");
+      if (savedCols) {
+        const n = parseInt(savedCols, 10);
+        if (!Number.isNaN(n) && n >= 1 && n <= 6) setColumns(n);
+      }
+    } catch {}
+  }, []);
 
   useEffect(() => {
     if (inView) {
@@ -63,14 +86,45 @@ export default function FeedPage() {
     }
   }, [inView]);
 
-  const loadMorePosts = async () => {
-    if (loading) return;
+  // When toggling, refresh first page quickly by resetting pagination
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        "feed:showGithubEvents",
+        showGithubEvents ? "1" : "0"
+      );
+    } catch {}
+    // Reset and refetch from page 1
+    setPosts([]);
+    setPage(1);
+    // Trigger immediate fetch
+    loadMorePosts(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showGithubEvents]);
+
+  const loadMorePosts = async (force = false) => {
+    if (loading && !force) return;
     setLoading(true);
     try {
-      const response = await fetch(`/api/posts?page=${page}`);
+      const response = await fetch(
+        `/api/feed?page=${force ? 1 : page}&includeGithub=${
+          showGithubEvents ? "1" : "0"
+        }`
+      );
       const newPosts = await response.json();
-      setPosts((prevPosts) => [...prevPosts, ...newPosts]);
-      setPage((prevPage) => prevPage + 1);
+      // Dedupe by _id across pages
+      setPosts((prevPosts) => {
+        let filtered = Array.isArray(newPosts) ? newPosts : [];
+        // If toggle hides events, filter them out just in case backend included any
+        if (!showGithubEvents) {
+          filtered = filtered.filter(
+            (p: any) => !String(p._id).startsWith("gh_event_")
+          );
+        }
+        // const filtered = incoming.filter((p: any) => !seen.has(p._id));
+        return force ? filtered : [...prevPosts, ...filtered];
+      });
+      setPage((prevPage) => (force ? 2 : prevPage + 1));
     } catch {
       toast.error("Failed to load posts");
     } finally {
@@ -134,6 +188,11 @@ export default function FeedPage() {
       return;
     }
 
+    // Ignore votes on GitHub event synthetic items
+    if (postId.startsWith("gh_event_")) {
+      return;
+    }
+
     try {
       const response = await fetch(`/api/posts/${postId}/vote`, {
         method: "POST",
@@ -172,6 +231,11 @@ export default function FeedPage() {
       toast.error("You must be logged in to comment");
       return;
     }
+    // Ignore comments on GitHub event synthetic items
+    if (postId.startsWith("gh_event_")) {
+      return;
+    }
+
     try {
       const response = await fetch(`/api/posts/${postId}/comments`, {
         method: "POST",
@@ -243,6 +307,11 @@ export default function FeedPage() {
       return;
     }
 
+    // Ignore poll votes on GitHub event synthetic items
+    if (postId.startsWith("gh_event_")) {
+      return;
+    }
+
     try {
       const response = await fetch(`/api/posts/${postId}/poll-vote`, {
         method: "POST",
@@ -275,6 +344,11 @@ export default function FeedPage() {
   ) => {
     if (!session) {
       toast.error("You must be logged in to vote");
+      return;
+    }
+
+    // Ignore comment votes on GitHub event synthetic items
+    if (postId.startsWith("gh_event_")) {
       return;
     }
 
@@ -348,20 +422,80 @@ export default function FeedPage() {
       <div className="relative mb-8">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 blur-3xl -z-10" />
         <CreatePost onSubmit={handleCreatePost} />
+        <div className="flex justify-end items-center gap-2 mt-2">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center gap-2 cursor-default select-none">
+                  <span className="text-sm text-muted-foreground">
+                    More personalized mode
+                  </span>
+                  <Switch
+                    checked={showGithubEvents}
+                    onCheckedChange={(v) => setShowGithubEvents(!!v)}
+                    aria-label="Toggle GitHub events"
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                Show GitHub received events from people you follow mixed into
+                your feed.
+              </TooltipContent>
+            </Tooltip>
+            {/* Column slider */}
+            <div className="flex items-center gap-2 ml-4">
+              <span className="text-sm text-muted-foreground">Columns</span>
+              <div className="w-40">
+                <Slider
+                  min={1}
+                  max={4}
+                  step={1}
+                  value={[columns]}
+                  onValueChange={(vals: number[]) => {
+                    const n = Math.min(4, Math.max(1, vals[0] ?? columns));
+                    setColumns(n);
+                    try {
+                      localStorage.setItem("feed:columns", String(n));
+                    } catch {}
+                  }}
+                />
+              </div>
+              <span className="text-sm w-5 text-center">{columns}</span>
+            </div>
+          </TooltipProvider>
+        </div>
       </div>
 
       <div className="mt-6">
-        <MasonryGrid>
-          {posts.map((post) => (
-            <PostCard
-              key={post._id}
-              post={post}
-              onVote={handleVote}
-              onAddComment={handleAddComment}
-              onVotePoll={handleVotePoll}
-              onCommentVote={handleCommentVote}
-            />
-          ))}
+        <MasonryGrid columns={columns}>
+          {posts.map((post) => {
+            // Scale cards a bit smaller at higher column counts to prevent overflow
+            const scaleClass =
+              columns >= 6
+                ? "scale-[0.9] origin-top-left"
+                : columns >= 5
+                ? "scale-[0.95] origin-top-left"
+                : columns >= 4
+                ? "scale-[0.98] origin-top-left"
+                : "";
+            return (
+              <div
+                key={post._id}
+                className={`${scaleClass} ${columns >= 5 ? "text-sm" : ""}`}
+              >
+                <PostCard
+                  post={post}
+                  compactView={columns >= 4}
+                  onVote={handleVote}
+                  onAddComment={handleAddComment}
+                  onVotePoll={handleVotePoll}
+                  onCommentVote={handleCommentVote}
+                  isGithubEvent={post._id.startsWith("gh_event_")}
+                  column={columns}
+                />
+              </div>
+            );
+          })}
         </MasonryGrid>
       </div>
 

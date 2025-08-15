@@ -46,14 +46,14 @@ export const validatePaymentSignature = (
     .createHmac("sha256", process.env.RZP_TEST_KEY_SECRET!)
     .update(body.toString())
     .digest("hex");
-  
+
   return expectedSignature === signature;
 };
 
 // Razorpay order status
 export const ORDER_STATUS = {
   CREATED: "created",
-  ATTEMPTED: "attempted", 
+  ATTEMPTED: "attempted",
   PAID: "paid",
 } as const;
 
@@ -66,5 +66,6 @@ export const PAYMENT_STATUS = {
   FAILED: "failed",
 } as const;
 
-export type OrderStatus = typeof ORDER_STATUS[keyof typeof ORDER_STATUS];
-export type PaymentStatus = typeof PAYMENT_STATUS[keyof typeof PAYMENT_STATUS];
+export type OrderStatus = (typeof ORDER_STATUS)[keyof typeof ORDER_STATUS];
+export type PaymentStatus =
+  (typeof PAYMENT_STATUS)[keyof typeof PAYMENT_STATUS];
