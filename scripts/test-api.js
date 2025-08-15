@@ -41,7 +41,7 @@ async function testEndpoint(name, url, options = {}) {
 
 async function runTests() {
   console.log('🚀 Starting CodeNearby API Tests');
-  console.log('=' * 50);
+  console.log('='.repeat(50));
 
   // Test 1: User Tier Information (No auth needed for testing)
   await testEndpoint(
