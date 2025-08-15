@@ -27,7 +27,7 @@ export interface TierConfig {
 export const USER_TIERS: Record<UserTierId, TierConfig> = {
   free: {
     dailyTokens: 2000,
-    maxApiKeys: 2,
+    maxApiKeys: 1,
     features: [
       "Developer search",
       "Profile analysis",
