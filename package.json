@@ -4,12 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node generate-changelog.js && next build",
     "start": "next start",
     "lint": "next lint",
     "generate-changelog": "node generate-changelog.js",
-    "test-api": "node scripts/test-api.js",
-    "prepare": "husky"
+    "test-api": "node scripts/test-api.js"
   },
   "dependencies": {
     "@ai-sdk/google": "^1.2.13",
