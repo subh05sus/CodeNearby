@@ -65,18 +65,50 @@ export default function FeedPage() {
   const [loading, setLoading] = useState(false);
   const [showGithubEvents, setShowGithubEvents] = useState<boolean>(true);
   const [columns, setColumns] = useState<number>(2);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
   const { ref, inView } = useInView();
 
   useEffect(() => {
     // restore toggle from localStorage
     try {
+      // Detect mobile viewport and lock columns to 1 on small devices
+      const mq = window.matchMedia("(max-width: 768px)");
+
+      const applyViewport = (matches: boolean) => {
+        setIsMobile(matches);
+        if (matches) {
+          setColumns(1);
+        } else {
+          const savedCols = localStorage.getItem("feed:columns");
+          if (savedCols) {
+            const n = parseInt(savedCols, 10);
+            if (!Number.isNaN(n) && n >= 1 && n <= 6) setColumns(n);
+          }
+        }
+      };
+
+      // initial run
+      applyViewport(mq.matches);
+
+      // restore toggle
       const saved = localStorage.getItem("feed:showGithubEvents");
       if (saved !== null) setShowGithubEvents(saved === "1");
-      const savedCols = localStorage.getItem("feed:columns");
-      if (savedCols) {
-        const n = parseInt(savedCols, 10);
-        if (!Number.isNaN(n) && n >= 1 && n <= 6) setColumns(n);
+
+      const handleChange = (e: MediaQueryListEvent) => applyViewport(e.matches);
+      if (typeof mq.addEventListener === "function") {
+        mq.addEventListener("change", handleChange);
+      } else if (typeof mq.addListener === "function") {
+        // Safari/older
+        mq.addListener(handleChange as any);
       }
+
+      return () => {
+        if (typeof mq.removeEventListener === "function") {
+          mq.removeEventListener("change", handleChange);
+        } else if (typeof mq.removeListener === "function") {
+          mq.removeListener(handleChange as any);
+        }
+      };
     } catch {}
   }, []);
 
@@ -417,6 +449,8 @@ export default function FeedPage() {
     );
   }
 
+  const effectiveColumns = isMobile ? 1 : columns;
+
   return (
     <div className="max-w-6xl mx-auto px-4">
       <div className="relative mb-8">
@@ -443,7 +477,7 @@ export default function FeedPage() {
               </TooltipContent>
             </Tooltip>
             {/* Column slider */}
-            <div className="flex items-center gap-2 ml-4">
+            <div className="hidden md:flex items-center gap-2 md:ml-4">
               <span className="text-sm text-muted-foreground">Columns</span>
               <div className="w-40">
                 <Slider
@@ -467,31 +501,33 @@ export default function FeedPage() {
       </div>
 
       <div className="mt-6">
-        <MasonryGrid columns={columns}>
+        <MasonryGrid columns={effectiveColumns}>
           {posts.map((post) => {
             // Scale cards a bit smaller at higher column counts to prevent overflow
             const scaleClass =
-              columns >= 6
+              effectiveColumns >= 6
                 ? "scale-[0.9] origin-top-left"
-                : columns >= 5
+                : effectiveColumns >= 5
                 ? "scale-[0.95] origin-top-left"
-                : columns >= 4
+                : effectiveColumns >= 4
                 ? "scale-[0.98] origin-top-left"
                 : "";
             return (
               <div
                 key={post._id}
-                className={`${scaleClass} ${columns >= 5 ? "text-sm" : ""}`}
+                className={`${scaleClass} ${
+                  effectiveColumns >= 5 ? "text-sm" : ""
+                }`}
               >
                 <PostCard
                   post={post}
-                  compactView={columns >= 4}
+                  compactView={effectiveColumns >= 4}
                   onVote={handleVote}
                   onAddComment={handleAddComment}
                   onVotePoll={handleVotePoll}
                   onCommentVote={handleCommentVote}
                   isGithubEvent={post._id.startsWith("gh_event_")}
-                  column={columns}
+                  column={effectiveColumns}
                 />
               </div>
             );
