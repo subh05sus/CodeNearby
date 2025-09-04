@@ -1,3 +1,24 @@
+
+<!-- Describe the change in a single sentence. -->
+
+Summary:
+
+---
+
+Checklist:
+- [ ] I added/updated documentation where relevant (see `PUSH_NOTIFICATIONS.md`)
+- [ ] I updated `.env.example` with any required env vars
+- [ ] The app builds and starts locally (`npm run dev`) without secrets (guarded behavior)
+- [ ] For features that require external services, I documented how to test (service worker/Firebase instructions)
+- [ ] I did not commit secrets or private keys
+
+Testing steps:
+1. Run `npm run dev`
+2. Open http://localhost:3000
+3. Sign in and test notification flows when env vars are provided, or run the /api/notifications/test helper if present
+
+Notes for reviewers:
+- This PR includes push notification setup and defensive guards so local runs without Firebase/Mongo credentials do not crash the app.
 # 🚀 Pull Request Overview
 
 ## 📄 Description
