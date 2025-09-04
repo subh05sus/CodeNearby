@@ -23,6 +23,7 @@ import { db as database } from "@/lib/firebase";
 import LoginButton from "@/components/login-button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
+import { useMessageNotifications } from "@/hooks/use-message-notifications";
 
 interface Message {
   id: string;
@@ -39,6 +40,7 @@ export default function MessagePage() {
   const params = useParams();
   const router = useRouter();
   const { data: session } = useSession() as { data: Session | null };
+  const { sendDirectMessageNotification } = useMessageNotifications();
   const [loading, setLoading] = useState(true);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -60,6 +62,12 @@ export default function MessagePage() {
     const roomId =
       minimum(params.id as string, session.user.githubId) +
       maximum(params.id as string, session.user.githubId);
+
+    if (!database) {
+      console.warn("Firebase database is not initialized. Skipping message fetch.");
+      setLoading(false);
+      return;
+    }
 
     const messagesRef = ref(database, `messages/${roomId}`);
 
@@ -98,18 +106,32 @@ export default function MessagePage() {
     }
   };
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (inputMessage.trim() === "" || !session?.user?.githubId || !params.id)
       return;
 
     const roomId = [session.user.githubId, params.id].sort().join("");
+    const messageContent = inputMessage.trim();
+
+    if (!database) {
+      console.warn("Firebase database is not initialized. Can't send message.");
+      toast.error("Messaging is temporarily unavailable.");
+      return;
+    }
 
     const messagesRef = ref(database, `messages/${roomId}`);
-    push(messagesRef, {
+    await push(messagesRef, {
       senderId: session.user.githubId,
-      content: inputMessage,
+      content: messageContent,
       timestamp: Date.now(),
     });
+
+    // Send push notification to recipient
+    await sendDirectMessageNotification(
+      params.id as string,
+      messageContent,
+      params.id as string
+    );
 
     setInputMessage("");
   };

@@ -4,6 +4,7 @@ import { authOptions } from "@/app/options";
 import { ref, push } from "firebase/database";
 import clientPromise from "@/lib/mongodb";
 import { db as firebaseDb } from "@/lib/firebase";
+import { sendGatheringMessageNotification } from "@/lib/push-notifications-server";
 
 export async function POST(
   request: Request,
@@ -55,8 +56,50 @@ export async function POST(
         : null,
     };
 
-    const messagesRef = ref(firebaseDb, `messages/${params.slug}`);
-    await push(messagesRef, message);
+    if (!firebaseDb) {
+      console.warn("Firebase database is not initialized. Skipping push to realtime DB.");
+    } else {
+      const messagesRef = ref(firebaseDb, `messages/${params.slug}`);
+      await push(messagesRef, message);
+    }
+
+    // Send push notifications to gathering participants (except sender)
+    try {
+      // Get gathering participants with FCM tokens
+      const participantsWithTokens = await db
+        .collection("users")
+        .find(
+          {
+            _id: { $in: gathering.participants.filter((id: string) => id !== session.user.id) },
+            fcmToken: { $exists: true, $ne: null },
+            "notificationSettings.gatheringMessages": { $ne: false },
+          },
+          { projection: { fcmToken: 1 } }
+        )
+        .toArray();
+
+      const fcmTokens = participantsWithTokens
+        .map((user) => user.fcmToken)
+        .filter(Boolean);
+
+      if (fcmTokens.length > 0) {
+        // Create message preview (limit to 100 characters)
+        const messagePreview = content.length > 100 
+          ? content.substring(0, 97) + "..."
+          : content;
+
+        await sendGatheringMessageNotification(
+          fcmTokens,
+          isAnonymous ? "Anonymous" : (session.user.name || "Someone"),
+          gathering.title || "Gathering",
+          messagePreview,
+          params.slug
+        );
+      }
+    } catch (error) {
+      console.error("Error sending gathering message push notifications:", error);
+      // Don't fail the request if notification fails
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

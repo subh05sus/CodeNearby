@@ -4,6 +4,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/header";
 import { NextAuthProvider } from "@/components/providers";
 import Footer from "@/components/footer";
+import { PushNotificationProvider } from "@/components/push-notification-provider";
+import { NotificationPrompt } from "@/components/notification-prompt";
 import type { Metadata } from "next";
 import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/next";
@@ -169,21 +171,23 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <NextAuthProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <Header />
-            <main className="flex-1 container mx-auto px-4 py-8 min-h-[calc(100dvh-180px)]">
-              {children}
-            </main>
-            <Footer />
-            <Analytics />
-
-            <Toaster richColors position="bottom-right" closeButton />
-          </ThemeProvider>
+          <PushNotificationProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <Header />
+              <main className="flex-1 container mx-auto px-4 py-8 min-h-[calc(100dvh-180px)]">
+                {children}
+              </main>
+              <Footer />
+              <Analytics />
+              <NotificationPrompt />
+              <Toaster richColors position="bottom-right" closeButton />
+            </ThemeProvider>
+          </PushNotificationProvider>
         </NextAuthProvider>
       </body>
     </html>

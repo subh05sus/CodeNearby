@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import clientPromise from "@/lib/mongodb";
 import { authOptions } from "@/app/options";
+import { sendFriendRequestNotification } from "@/lib/push-notifications-server";
 
 export async function POST(request: Request) {
   try {
@@ -51,6 +52,20 @@ export async function POST(request: Request) {
       },
       receiverInCodeNearby: !!receiverUser,
     });
+
+    // Send push notification if the receiver is a CodeNearby user and has FCM token
+    if (receiverUser?.fcmToken && receiverUser?.notificationSettings?.friendRequests !== false) {
+      try {
+        await sendFriendRequestNotification(
+          receiverUser.fcmToken,
+          session.user.name || session.user.githubUsername || "Someone",
+          session.user.githubUsername || "unknown"
+        );
+      } catch (error) {
+        console.error("Error sending friend request push notification:", error);
+        // Don't fail the request if notification fails
+      }
+    }
 
     return NextResponse.json({ id: result.insertedId });
   } catch (error) {
