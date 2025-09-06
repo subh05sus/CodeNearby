@@ -24,6 +24,12 @@ canvas {
   --color-3: 210 100% 63%;
   --color-4: 195 100% 63%;
   --color-5: 90 100% 63%;
+  --header-height: 64px; /* 4rem */
+}
+@media (min-width: 1024px) {
+  :root {
+    --header-height: 72px; /* a bit taller on large if desired */
+  }
 }
 
 @layer base {
