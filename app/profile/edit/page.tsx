@@ -44,6 +44,7 @@ import { Badge } from "@/components/ui/badge";
 import { AnimatePresence, motion } from "framer-motion";
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { NotificationSettings } from "@/components/notification-settings";
 
 // List of popular programming skills
 const popularSkills = [
@@ -545,6 +546,9 @@ export default function EditProfilePage() {
               <TabsTrigger value="appearance" className="flex-1">
                 Appearance
               </TabsTrigger>
+              <TabsTrigger value="notifications" className="flex-1">
+                Notifications
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="information" className="space-y-4">
@@ -1034,6 +1038,10 @@ export default function EditProfilePage() {
                   </div>
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            <TabsContent value="notifications" className="space-y-4">
+              <NotificationSettings />
             </TabsContent>
           </Tabs>
 
