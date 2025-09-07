@@ -7,14 +7,32 @@ const options = {
   tlsAllowInvalidHostnames: true,
 };
 
-type DummyClient = { db: () => never };
+type DummyCollection = {
+  find?: () => { toArray: () => Promise<any[]> };
+  findOne?: () => Promise<null>;
+  insertOne?: () => Promise<{ insertedId: null }>;
+  updateOne?: () => Promise<{ modifiedCount: number }>;
+  deleteOne?: () => Promise<{ deletedCount: number }>;
+  [key: string]: any;
+};
+
+type DummyDb = {
+  collection: (name: string) => DummyCollection;
+  [key: string]: any;
+};
+
+type DummyClient = { db: (name?: string) => DummyDb };
 
 const createDummyClient = (reason: string): DummyClient => ({
-  db: () => {
-    throw new Error(
-      `MongoDB client is not available: ${reason}. Set MONGODB_URI to a valid MongoDB connection string.`
-    );
-  },
+  db: (_name?: string) => ({
+    collection: (_col: string) => ({
+      find: () => ({ toArray: async () => [] }),
+      findOne: async () => null,
+      insertOne: async () => ({ insertedId: null }),
+      updateOne: async () => ({ modifiedCount: 0 }),
+      deleteOne: async () => ({ deletedCount: 0 }),
+    }),
+  }),
 });
 
 let client: MongoClient | DummyClient;

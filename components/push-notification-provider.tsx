@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import type { Session } from "next-auth";
 import {
@@ -13,12 +13,27 @@ import {
 export function PushNotificationProvider({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession() as { data: Session | null };
 
+  const initializePushNotifications = useCallback(async () => {
+    try {
+      // Check if notifications are already enabled
+      if (areNotificationsEnabled()) {
+        // Get token and store it (in case it changed)
+        const token = await requestNotificationPermission();
+        if (token && session?.user?.id) {
+          await storeFCMToken(token, session.user.id);
+        }
+      }
+    } catch (error) {
+      console.error("Error initializing push notifications:", error);
+    }
+  }, [session]);
+
   useEffect(() => {
     // Initialize push notifications when user is authenticated
     if (session?.user?.id) {
       initializePushNotifications();
     }
-  }, [session]);
+  }, [initializePushNotifications, session]);
 
   useEffect(() => {
     // Set up service worker
@@ -43,20 +58,7 @@ export function PushNotificationProvider({ children }: { children: React.ReactNo
     };
   }, []);
 
-  const initializePushNotifications = async () => {
-    try {
-      // Check if notifications are already enabled
-      if (areNotificationsEnabled()) {
-        // Get token and store it (in case it changed)
-        const token = await requestNotificationPermission();
-        if (token && session?.user?.id) {
-          await storeFCMToken(token, session.user.id);
-        }
-      }
-    } catch (error) {
-      console.error("Error initializing push notifications:", error);
-    }
-  };
+  // ...existing code...
 
   return <>{children}</>;
 }

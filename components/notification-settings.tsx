@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import type { Session } from "next-auth";
 import { Button } from "@/components/ui/button";
@@ -39,16 +39,7 @@ export function NotificationSettings() {
     pushEnabled: false,
   });
   const [pushSupported, setPushSupported] = useState(false);
-
-  useEffect(() => {
-    // Check if push notifications are supported
-    setPushSupported("Notification" in window && "serviceWorker" in navigator);
-    
-    // Load settings from localStorage and server
-    loadSettings();
-  }, [session]);
-
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
     try {
       // Load from localStorage first
       const localSettings = getNotificationSettings();
@@ -71,7 +62,15 @@ export function NotificationSettings() {
     } catch (error) {
       console.error("Error loading notification settings:", error);
     }
-  };
+  }, [session]);
+
+  useEffect(() => {
+    // Check if push notifications are supported
+    setPushSupported("Notification" in window && "serviceWorker" in navigator);
+    
+    // Load settings from localStorage and server
+    loadSettings();
+  }, [session, loadSettings]);
 
   const handleEnablePushNotifications = async () => {
     if (!pushSupported) {
@@ -265,26 +264,29 @@ export function NotificationSettings() {
         <div className="space-y-4">
           <h4 className="text-sm font-medium">Notification Types</h4>
           <div className="space-y-4">
-            {settingsItems.map((item) => (
-              <div key={item.key} className="flex items-center justify-between">
-                <div className="space-y-0.5 flex-1">
-                  <div className="flex items-center gap-2">
-                    <item.icon className="h-4 w-4" />
-                    <Label htmlFor={item.key} className="text-sm font-medium">
-                      {item.label}
-                    </Label>
+            {settingsItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <div key={item.key} className="flex items-center justify-between">
+                  <div className="space-y-0.5 flex-1">
+                    <div className="flex items-center gap-2">
+                      <Icon className="h-4 w-4" />
+                      <Label htmlFor={item.key} className="text-sm font-medium">
+                        {item.label}
+                      </Label>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {item.description}
+                    </p>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    {item.description}
-                  </p>
+                  <Switch
+                    id={item.key}
+                    checked={settings[item.key]}
+                    onCheckedChange={(checked) => handleSettingChange(item.key, checked)}
+                  />
                 </div>
-                <Switch
-                  id={item.key}
-                  checked={settings[item.key]}
-                  onCheckedChange={(checked) => handleSettingChange(item.key, checked)}
-                />
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -292,7 +294,7 @@ export function NotificationSettings() {
           <div className="p-4 bg-muted rounded-lg">
             <p className="text-sm text-muted-foreground">
               💡 <strong>Tip:</strong> You can customize browser notification settings 
-              in your browser's settings or by clicking the lock icon in the address bar.
+              in your browser&apos;s settings or by clicking the lock icon in the address bar.
             </p>
           </div>
         )}
