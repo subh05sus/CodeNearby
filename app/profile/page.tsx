@@ -98,7 +98,13 @@ export default function ProfilePage() {
     compactPosts: boolean;
     highlightCode: boolean;
     showSpotlight: boolean;
-  } | null>(null);
+  }>({
+    theme: "default",
+    showActivity: false,
+    compactPosts: false,
+    highlightCode: false,
+    showSpotlight: false,
+  });
 
   const loadActivities = async () => {
     if (!session?.user?.githubUsername) return;
@@ -484,17 +490,16 @@ export default function ProfilePage() {
                 }
                 className={
                   appearance?.theme !== "default"
-                    ? `${
-                        appearance?.theme === "blue"
-                          ? "dark:bg-blue-900 dark:hover:bg-blue-950 text-white  bg-blue-500 hover:bg-blue-600 "
-                          : appearance?.theme === "green"
-                          ? "dark:bg-green-900 dark:hover:bg-green-950 text-white  bg-green-500 hover:bg-green-600 "
-                          : appearance?.theme === "purple"
+                    ? `${appearance?.theme === "blue"
+                      ? "dark:bg-blue-900 dark:hover:bg-blue-950 text-white  bg-blue-500 hover:bg-blue-600 "
+                      : appearance?.theme === "green"
+                        ? "dark:bg-green-900 dark:hover:bg-green-950 text-white  bg-green-500 hover:bg-green-600 "
+                        : appearance?.theme === "purple"
                           ? "dark:bg-purple-900 dark:hover:bg-purple-950 text-white  bg-purple-500 hover:bg-purple-600 "
                           : appearance?.theme === "orange"
-                          ? "dark:bg-orange-900 dark:hover:bg-orange-950 text-white  bg-orange-500 hover:bg-orange-600 "
-                          : ""
-                      } `
+                            ? "dark:bg-orange-900 dark:hover:bg-orange-950 text-white  bg-orange-500 hover:bg-orange-600 "
+                            : ""
+                    } `
                     : ""
                 }
                 size="sm"
@@ -516,17 +521,16 @@ export default function ProfilePage() {
                   }
                   className={
                     appearance?.theme !== "default"
-                      ? `${
-                          appearance?.theme === "blue"
-                            ? "dark:bg-blue-900 dark:hover:bg-blue-950 text-white  bg-blue-500 hover:bg-blue-600 "
-                            : appearance?.theme === "green"
-                            ? "dark:bg-green-900 dark:hover:bg-green-950 text-white  bg-green-500 hover:bg-green-600 "
-                            : appearance?.theme === "purple"
+                      ? `${appearance?.theme === "blue"
+                        ? "dark:bg-blue-900 dark:hover:bg-blue-950 text-white  bg-blue-500 hover:bg-blue-600 "
+                        : appearance?.theme === "green"
+                          ? "dark:bg-green-900 dark:hover:bg-green-950 text-white  bg-green-500 hover:bg-green-600 "
+                          : appearance?.theme === "purple"
                             ? "dark:bg-purple-900 dark:hover:bg-purple-950 text-white  bg-purple-500 hover:bg-purple-600 "
                             : appearance?.theme === "orange"
-                            ? "dark:bg-orange-900 dark:hover:bg-orange-950 text-white  bg-orange-500 hover:bg-orange-600 "
-                            : ""
-                        } `
+                              ? "dark:bg-orange-900 dark:hover:bg-orange-950 text-white  bg-orange-500 hover:bg-orange-600 "
+                              : ""
+                      } `
                       : ""
                   }
                   size="sm"
@@ -549,17 +553,16 @@ export default function ProfilePage() {
                   }
                   className={
                     appearance?.theme !== "default"
-                      ? `${
-                          appearance?.theme === "blue"
-                            ? "dark:bg-blue-900 dark:hover:bg-blue-950 text-white  bg-blue-500 hover:bg-blue-600 "
-                            : appearance?.theme === "green"
-                            ? "dark:bg-green-900 dark:hover:bg-green-950 text-white  bg-green-500 hover:bg-green-600 "
-                            : appearance?.theme === "purple"
+                      ? `${appearance?.theme === "blue"
+                        ? "dark:bg-blue-900 dark:hover:bg-blue-950 text-white  bg-blue-500 hover:bg-blue-600 "
+                        : appearance?.theme === "green"
+                          ? "dark:bg-green-900 dark:hover:bg-green-950 text-white  bg-green-500 hover:bg-green-600 "
+                          : appearance?.theme === "purple"
                             ? "dark:bg-purple-900 dark:hover:bg-purple-950 text-white  bg-purple-500 hover:bg-purple-600 "
                             : appearance?.theme === "orange"
-                            ? "dark:bg-orange-900 dark:hover:bg-orange-950 text-white  bg-orange-500 hover:bg-orange-600 "
-                            : ""
-                        } `
+                              ? "dark:bg-orange-900 dark:hover:bg-orange-950 text-white  bg-orange-500 hover:bg-orange-600 "
+                              : ""
+                      } `
                       : ""
                   }
                   size="sm"
@@ -584,17 +587,16 @@ export default function ProfilePage() {
                   <Badge
                     key={index}
                     variant="secondary"
-                    className={`bg-primary/10 hover:bg-primary/15 text-primary cursor-default font-semibold ${
-                      appearance?.theme === "blue"
-                        ? "bg-blue-500/10 hover:bg-blue-500/15 text-blue-500"
-                        : appearance?.theme === "green"
+                    className={`bg-primary/10 hover:bg-primary/15 text-primary cursor-default font-semibold ${appearance?.theme === "blue"
+                      ? "bg-blue-500/10 hover:bg-blue-500/15 text-blue-500"
+                      : appearance?.theme === "green"
                         ? "bg-green-500/10 hover:bg-green-500/15 text-green-500"
                         : appearance?.theme === "purple"
-                        ? "bg-purple-500/10 hover:bg-purple-500/15 text-purple-500"
-                        : appearance?.theme === "orange"
-                        ? "bg-orange-500/10 hover:bg-orange-500/15 text-orange-500"
-                        : ""
-                    }`}
+                          ? "bg-purple-500/10 hover:bg-purple-500/15 text-purple-500"
+                          : appearance?.theme === "orange"
+                            ? "bg-orange-500/10 hover:bg-orange-500/15 text-orange-500"
+                            : ""
+                      }`}
                   >
                     {skill}
                   </Badge>
@@ -606,34 +608,32 @@ export default function ProfilePage() {
             <Card
               className={
                 appearance?.theme !== "default"
-                  ? `${
-                      appearance?.theme === "blue"
-                        ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : appearance?.theme === "green"
-                        ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : appearance?.theme === "purple"
+                  ? `${appearance?.theme === "blue"
+                    ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                    : appearance?.theme === "green"
+                      ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                      : appearance?.theme === "purple"
                         ? "dark:bg-purple-500 bg-purple-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
                         : appearance?.theme === "orange"
-                        ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : ""
-                    } transition-all duration-200`
+                          ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                          : ""
+                  } transition-all duration-200`
                   : ""
               }
             >
               <CardContent className="pt-6">
                 <div className="flex flex-col items-center">
                   <Users
-                    className={`h-5 w-5 mb-2 text-primary ${
-                      appearance?.theme === "blue"
-                        ? "text-blue-500"
-                        : appearance?.theme === "green"
+                    className={`h-5 w-5 mb-2 text-primary ${appearance?.theme === "blue"
+                      ? "text-blue-500"
+                      : appearance?.theme === "green"
                         ? "text-green-500"
                         : appearance?.theme === "purple"
-                        ? "text-purple-500"
-                        : appearance?.theme === "orange"
-                        ? "text-orange-500"
-                        : ""
-                    }`}
+                          ? "text-purple-500"
+                          : appearance?.theme === "orange"
+                            ? "text-orange-500"
+                            : ""
+                      }`}
                   />
                   <span className="text-2xl font-bold">
                     {profile?.friends?.length || 0}
@@ -647,34 +647,32 @@ export default function ProfilePage() {
             <Card
               className={
                 appearance?.theme !== "default"
-                  ? `${
-                      appearance?.theme === "blue"
-                        ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : appearance?.theme === "green"
-                        ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : appearance?.theme === "purple"
+                  ? `${appearance?.theme === "blue"
+                    ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                    : appearance?.theme === "green"
+                      ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                      : appearance?.theme === "purple"
                         ? "dark:bg-purple-500 bg-purple-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
                         : appearance?.theme === "orange"
-                        ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : ""
-                    } transition-all duration-200`
+                          ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                          : ""
+                  } transition-all duration-200`
                   : ""
               }
             >
               <CardContent className="pt-6">
                 <div className="flex flex-col items-center">
                   <GitBranch
-                    className={`h-5 w-5 mb-2 text-primary ${
-                      appearance?.theme === "blue"
-                        ? "text-blue-500"
-                        : appearance?.theme === "green"
+                    className={`h-5 w-5 mb-2 text-primary ${appearance?.theme === "blue"
+                      ? "text-blue-500"
+                      : appearance?.theme === "green"
                         ? "text-green-500"
                         : appearance?.theme === "purple"
-                        ? "text-purple-500"
-                        : appearance?.theme === "orange"
-                        ? "text-orange-500"
-                        : ""
-                    }`}
+                          ? "text-purple-500"
+                          : appearance?.theme === "orange"
+                            ? "text-orange-500"
+                            : ""
+                      }`}
                   />
                   <span className="text-2xl font-bold">
                     {stats?.public_repos || 0}
@@ -688,34 +686,32 @@ export default function ProfilePage() {
             <Card
               className={
                 appearance?.theme !== "default"
-                  ? `${
-                      appearance?.theme === "blue"
-                        ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : appearance?.theme === "green"
-                        ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : appearance?.theme === "purple"
+                  ? `${appearance?.theme === "blue"
+                    ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                    : appearance?.theme === "green"
+                      ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                      : appearance?.theme === "purple"
                         ? "dark:bg-purple-500 bg-purple-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
                         : appearance?.theme === "orange"
-                        ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : ""
-                    } transition-all duration-200`
+                          ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                          : ""
+                  } transition-all duration-200`
                   : ""
               }
             >
               <CardContent className="pt-6">
                 <div className="flex flex-col items-center">
                   <Star
-                    className={`h-5 w-5 mb-2 text-primary ${
-                      appearance?.theme === "blue"
-                        ? "text-blue-500"
-                        : appearance?.theme === "green"
+                    className={`h-5 w-5 mb-2 text-primary ${appearance?.theme === "blue"
+                      ? "text-blue-500"
+                      : appearance?.theme === "green"
                         ? "text-green-500"
                         : appearance?.theme === "purple"
-                        ? "text-purple-500"
-                        : appearance?.theme === "orange"
-                        ? "text-orange-500"
-                        : ""
-                    }`}
+                          ? "text-purple-500"
+                          : appearance?.theme === "orange"
+                            ? "text-orange-500"
+                            : ""
+                      }`}
                   />
                   <span className="text-2xl font-bold">
                     {stats?.followers || 0}
@@ -729,34 +725,32 @@ export default function ProfilePage() {
             <Card
               className={
                 appearance?.theme !== "default"
-                  ? `${
-                      appearance?.theme === "blue"
-                        ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : appearance?.theme === "green"
-                        ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : appearance?.theme === "purple"
+                  ? `${appearance?.theme === "blue"
+                    ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                    : appearance?.theme === "green"
+                      ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                      : appearance?.theme === "purple"
                         ? "dark:bg-purple-500 bg-purple-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
                         : appearance?.theme === "orange"
-                        ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : ""
-                    } transition-all duration-200`
+                          ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
+                          : ""
+                  } transition-all duration-200`
                   : ""
               }
             >
               <CardContent className="pt-6">
                 <div className="flex flex-col items-center">
                   <Calendar
-                    className={`h-5 w-5 mb-2 text-primary ${
-                      appearance?.theme === "blue"
-                        ? "text-blue-500"
-                        : appearance?.theme === "green"
+                    className={`h-5 w-5 mb-2 text-primary ${appearance?.theme === "blue"
+                      ? "text-blue-500"
+                      : appearance?.theme === "green"
                         ? "text-green-500"
                         : appearance?.theme === "purple"
-                        ? "text-purple-500"
-                        : appearance?.theme === "orange"
-                        ? "text-orange-500"
-                        : ""
-                    }`}
+                          ? "text-purple-500"
+                          : appearance?.theme === "orange"
+                            ? "text-orange-500"
+                            : ""
+                      }`}
                   />
                   <span className="text-2xl font-bold">
                     {new Date(stats?.created_at || Date.now()).getFullYear()}
@@ -1048,7 +1042,7 @@ export default function ProfilePage() {
             Activity Overview
           </h1>
           <ActivityHeatmap
-            data={{ posts, themeColor: appearance?.theme || "green" }}
+            data={{ posts, themeColor: appearance?.theme }}
           />
         </div>
       </div>
