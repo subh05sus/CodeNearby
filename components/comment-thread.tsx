@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ChevronDown, MessageSquare, ChevronRight, Plus } from "lucide-react";
+import { ChevronDown, MessageSquare, ChevronRight, Plus, User, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { formatDistanceToNow } from "date-fns";
 import { Session } from "next-auth";
 import { toast } from "sonner";
+import SwissButton from "./swiss/SwissButton";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface Comment {
   _id: string;
@@ -67,7 +67,6 @@ export function CommentThread({
     if (!replyContent.trim()) return;
     try {
       await onReply(postId, replyContent, comment._id);
-      // Update the reply key to force re-render
       setReplyContent("");
       setIsReplying(false);
     } catch {
@@ -76,98 +75,109 @@ export function CommentThread({
   };
 
   return (
-    <div className="relative mb-4 overflow-x-scroll no-scrollbar">
-      <div className="flex gap-2">
-        {depth > 0 && (
-          <div className="absolute left-0 top-0 bottom-0 w-px bg-border -ml-4" />
-        )}
-        <Button
-          variant="ghost"
-          size="sm"
-          className="self-start"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-        >
-          {isCollapsed ? (
-            <ChevronRight className="h-4 w-4" />
-          ) : (
-            <ChevronDown className="h-4 w-4" />
-          )}
-        </Button>
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <Avatar className="w-6 h-6">
-              <AvatarImage src={comment.user?.image} />
-              <AvatarFallback>{comment.user?.name?.[0]}</AvatarFallback>
-            </Avatar>
-            <span className="font-medium text-sm text-nowrap">
-              {comment.user?.name}
-            </span>
-            <span className="text-muted-foreground text-sm text-nowrap">
-              {formatDistanceToNow(new Date(comment.createdAt), {
-                addSuffix: true,
-              })}
-            </span>
-          </div>
-          <div className="pl-8">
-            <p className="text-sm mb-2 ">{comment.content}</p>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center">
-                <Button
-                  asChild
-                  variant={"secondary"}
-                  size="sm"
-                  disabled={canVote || isVoting}
-                >
-                  <motion.button
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => handleVote("up")}
-                    className="text-muted-foreground hover:text-primary"
-                    disabled={!canVote || isVoting}
-                  >
-                    <Plus className="h-4 w-4" />
-                    <span className="mx-1 text-sm">
-                      {comment.votes.up - comment.votes.down}
-                    </span>
-                  </motion.button>
-                </Button>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-muted-foreground hover:text-primary"
-                onClick={() => setIsReplying(!isReplying)}
-              >
-                <MessageSquare className="h-4 w-4 mr-1" />
-                Reply
-              </Button>
+    <div className={cn(
+      "relative transition-all duration-300",
+      depth > 0 ? "mt-4 ml-6 border-l-4 border-swiss-black pl-6" : ""
+    )}>
+      <div className="flex flex-col gap-4">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="relative h-8 w-8 border-2 border-swiss-black bg-swiss-muted overflow-hidden">
+              {comment.user?.image ? (
+                <Image src={comment.user.image} alt={comment.user.name || "User"} fill className="object-cover" />
+              ) : (
+                <div className="h-full w-full flex items-center justify-center bg-swiss-black text-swiss-white font-black text-[10px] uppercase">
+                  {(comment.user?.name || "U").charAt(0)}
+                </div>
+              )}
             </div>
+            <div>
+              <span className="font-black uppercase tracking-tighter text-xs leading-none block">
+                {comment.user?.name || "Anonymous"}
+              </span>
+              <span className="text-[8px] font-bold uppercase tracking-widest text-swiss-red flex items-center gap-1 mt-0.5">
+                <Clock className="h-2 w-2" />
+                {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+              </span>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="w-8 h-8 flex items-center justify-center border-2 border-swiss-black hover:bg-swiss-black hover:text-swiss-white transition-colors"
+          >
+            {isCollapsed ? <Plus className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          </button>
+        </div>
+
+        {/* Content Body */}
+        {!isCollapsed && (
+          <>
+            <div className="bg-swiss-white border-2 border-swiss-black p-4 font-bold uppercase tracking-tight text-sm leading-tight">
+              {comment.content}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="flex items-center border-2 border-swiss-black divide-x-2 divide-swiss-black">
+                <button
+                  onClick={() => handleVote("up")}
+                  disabled={!canVote || isVoting}
+                  className={cn(
+                    "w-10 h-10 flex items-center justify-center transition-colors hover:bg-swiss-black hover:text-swiss-white",
+                    !canVote && "opacity-20 grayscale"
+                  )}
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
+                <div className="px-3 h-10 flex items-center justify-center bg-swiss-muted font-black text-sm">
+                  {comment.votes.up - comment.votes.down}
+                </div>
+              </div>
+
+              <SwissButton
+                variant="secondary"
+                size="sm"
+                onClick={() => setIsReplying(!isReplying)}
+                className="h-10 px-4"
+              >
+                <MessageSquare className="h-4 w-4 mr-2" />
+                REPLY
+              </SwissButton>
+            </div>
+
             {isReplying && (
-              <div className="mt-2 flex gap-2">
-                <Input
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex gap-2"
+              >
+                <input
                   value={replyContent}
                   onChange={(e) => setReplyContent(e.target.value)}
-                  placeholder="Write a reply..."
-                  className="flex-1"
+                  placeholder="ADD REPLY..."
+                  className="flex-1 bg-swiss-white border-4 border-swiss-black p-3 font-bold uppercase tracking-tight focus:bg-swiss-muted transition-colors outline-none text-sm"
                 />
-                <Button onClick={handleReply}>Reply</Button>
+                <SwissButton onClick={handleReply} variant="primary">SEND</SwissButton>
+              </motion.div>
+            )}
+
+            {comment.replies && comment.replies.length > 0 && (
+              <div className="space-y-4">
+                {comment.replies.map((reply) => (
+                  <CommentThread
+                    key={reply._id}
+                    comment={reply}
+                    postId={postId}
+                    depth={depth + 1}
+                    onVote={onVote}
+                    onReply={onReply}
+                  />
+                ))}
               </div>
             )}
-          </div>
-          {!isCollapsed && comment.replies && comment.replies.length > 0 && (
-            <div className="ml-8 mt-4">
-              {comment.replies.map((reply) => (
-                <CommentThread
-                  key={reply._id}
-                  comment={reply}
-                  postId={postId}
-                  depth={depth + 1}
-                  onVote={onVote}
-                  onReply={onReply}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+          </>
+        )}
       </div>
     </div>
   );

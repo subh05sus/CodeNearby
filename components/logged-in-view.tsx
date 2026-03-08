@@ -11,41 +11,54 @@ import { Quote } from "./home/Quote";
 import { ReceivedFriendRequests } from "./home/received-friend-requests";
 import LatestChangelog from "./latest-changelog";
 import ProductHunt from "./ProductHunt";
-import { Spotlight } from "./ui/spotlight-new";
+import SwissSection from "./swiss/SwissSection";
 
 function LoggedInView({ user }: { user: any }) {
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="absolute top-0 right-0 w-full -z-50">
-        <div className="h-[40rem] w-full rounded-md -z-50 dark:flex hidden md:items-center md:justify-center antialiased dark:bg-transparent bg-dot-black/[0.25] relative overflow-hidden">
-          <Spotlight />
-        </div>
-        <div className="h-[40rem] w-full rounded-md -z-50 flex dark:hidden  md:items-center md:justify-center antialiased bg-dot-black/[0.25] relative overflow-hidden" />
-        <div className="absolute bottom-0 left-0 w-full right-0 h-96 bg-gradient-to-t from-background to-transparent dark:bg-transparent dark:hidden" />
-      </div>
-      <Hello name={user.name} picture={user.image} />
+    <div className="bg-white dark:bg-black min-h-screen swiss-noise transition-colors duration-300">
+      <SwissSection variant="white" pattern="grid" className="py-12">
+        <Hello name={user.name} picture={user.image} />
 
-      <div className="xl:grid-cols-3 sm:grid-cols-2 grid gap-4 grid-cols-1">
-        <GitHubReceivedEvents username={user.githubUsername} />
-        <NewPeopleToConnect />
-      </div>
-      <div className="grid grid-cols-1 gap-4 my-4 sm:grid-cols-2">
-        <GitHubEvents username={user.githubUsername} />
-        <CurrentGatherings />
-      </div>
-      <ReceivedFriendRequests />
-      <div className="mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 my-12">
+          <div className="md:col-span-8">
+            <GitHubReceivedEvents username={user.githubUsername} />
+          </div>
+          <div className="md:col-span-4">
+            <NewPeopleToConnect />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 my-12">
+          <div className="md:col-span-6">
+            <GitHubEvents username={user.githubUsername} />
+          </div>
+          <div className="md:col-span-6">
+            <CurrentGatherings />
+          </div>
+        </div>
+
+        <ReceivedFriendRequests />
+      </SwissSection>
+
+      <SwissSection number="01" title="Innovation" variant="muted" pattern="dots">
         <FeatureBigPreview />
-      </div>
-      <div className="mt-20">
+      </SwissSection>
+
+      <SwissSection number="02" title="Platform" variant="white">
         <Details />
-        <div className="w-fit">
+        <div className="mt-12">
           <ProductHunt />
         </div>
         <Quote />
-      </div>
-      <LatestChangelog />
-      <FAQSection />
+      </SwissSection>
+
+      <SwissSection number="03" title="Updates" variant="muted" pattern="grid">
+        <LatestChangelog />
+      </SwissSection>
+
+      <SwissSection number="04" title="Questions" variant="white">
+        <FAQSection />
+      </SwissSection>
     </div>
   );
 }

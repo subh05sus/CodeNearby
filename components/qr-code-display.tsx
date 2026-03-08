@@ -4,9 +4,9 @@
 
 import { useState, useEffect } from "react";
 import QRCode from "qrcode";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
+import SwissCard from "./swiss/SwissCard";
+import SwissButton from "./swiss/SwissButton";
 
 interface QRCodeDisplayProps {
   slug: string;
@@ -39,19 +39,23 @@ export function QRCodeDisplay({ slug }: QRCodeDisplayProps) {
   };
 
   return (
-    <Card>
-      <CardContent className="flex flex-col items-center p-6">
+    <SwissCard variant="white" pattern="grid" className="max-w-xs mx-auto">
+      <div className="flex flex-col items-center">
         {qrCodeUrl && (
-          <Image
-            width={256}
-            height={256}
-            src={qrCodeUrl || "/placeholder.svg"}
-            alt="Gathering QR Code"
-            className="mb-4"
-          />
+          <div className="border-4 border-black p-2 bg-white mb-8">
+            <Image
+              width={200}
+              height={200}
+              src={qrCodeUrl || "/placeholder.svg"}
+              alt="Gathering QR Code"
+              className="rounded-none"
+            />
+          </div>
         )}
-        <Button onClick={downloadQRCode}>Download QR Code</Button>
-      </CardContent>
-    </Card>
+        <SwissButton variant="accent" className="w-full" onClick={downloadQRCode}>
+          DOWNLOAD QR CODE
+        </SwissButton>
+      </div>
+    </SwissCard>
   );
 }

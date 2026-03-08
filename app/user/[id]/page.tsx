@@ -4,10 +4,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Loader2,
   Users,
@@ -20,8 +16,17 @@ import {
   Plus,
   GitFork,
   Calendar,
+  Activity,
+  Settings,
+  Share2,
+  Eye,
+  Trash2,
+  MapPin,
+  Building,
+  Pin
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import type { UserProfile } from "@/types";
 import { PostCard } from "@/components/post-card";
 import { formatDistanceToNow } from "date-fns";
@@ -34,6 +39,10 @@ import { toast } from "sonner";
 import GithubCard from "@/components/github-card";
 import { Spotlight } from "@/components/ui/spotlight-new";
 import { ActivityHeatmap } from "@/components/activity-heatmap";
+import SwissCard from "@/components/swiss/SwissCard";
+import SwissButton from "@/components/swiss/SwissButton";
+import SwissSection from "@/components/swiss/SwissSection";
+import { cn } from "@/lib/utils";
 
 interface Post {
   _id: string;
@@ -82,6 +91,7 @@ export default function UserProfilePage() {
   const [stats, setStats] = useState<any>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [activities, setActivities] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState("posts");
   const router = useRouter();
 
   const [appearance, setAppearance] = useState<{
@@ -419,7 +429,7 @@ export default function UserProfilePage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="w-full px-2 mx-auto max-w-6xl">
       {appearance?.showSpotlight && (
         <div className="absolute top-0 right-0 w-full -z-50">
           <div className="w-full rounded-md -z-50 flex md:items-center md:justify-center antialiased dark:bg-transparent  relative overflow-hidden h-[calc(100vh-10rem)]">
@@ -427,497 +437,230 @@ export default function UserProfilePage() {
           </div>
         </div>
       )}
+
       <ProfileHeader
         imageUrl={profile.image || "/placeholder.svg"}
         bannerUrl={profile.bannerImage || "/bg.webp"}
         appearance={appearance}
       />
-      <div className="mt-20 px-4">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end">
-          <div>
-            <h1 className="text-3xl font-bold">{profile.name}</h1>
-            <p className="text-muted-foreground">@{profile.githubUsername}</p>
+
+      {/* Profile Info & Actions Section */}
+      <SwissSection variant="white" className="mt-[-100px] relative z-10 p-12 mb-12 shadow-[16px_16px_0_0_rgba(0,0,0,1)]">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-12">
+          <div className="space-y-6 flex-1">
+            <h1 className="text-7xl font-black uppercase tracking-tighter leading-none italic underline decoration-8 decoration-swiss-red">
+              {profile.name}
+            </h1>
+            <div className="flex flex-wrap gap-4">
+              <span className="font-black bg-swiss-black text-swiss-white px-4 py-1 text-xl tracking-widest uppercase">
+                @{profile.githubUsername}
+              </span>
+              {profile.githubLocation && (
+                <span className="font-bold border-4 border-swiss-black px-4 py-1 flex items-center gap-2 uppercase text-sm">
+                  <MapPin className="h-4 w-4" /> {profile.githubLocation}
+                </span>
+              )}
+            </div>
             {profile.githubBio && (
-              <p className="text-muted-foreground mt-1.5 max-w-2xl">
+              <p className="text-2xl font-bold uppercase tracking-tight leading-tight max-w-2xl opacity-80 border-l-8 border-swiss-black pl-6">
                 {profile.githubBio}
               </p>
             )}
+
+            {profile.skills && profile.skills.length > 0 && (
+              <div className="flex flex-wrap gap-2 pt-4">
+                {profile.skills.map((skill: string, index: number) => (
+                  <span key={index} className="px-3 py-1 bg-swiss-black text-swiss-white text-[10px] font-black uppercase tracking-[0.2em]">
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
-          <div className="md:flex flex-wrap grid grid-cols-2 w-full md:w-auto items-center gap-2 mt-4 md:mt-0">
-            <Link
-              href={`https://github.com/${profile.githubUsername}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button
-                variant={
-                  appearance?.theme !== "default" ? "default" : "outline"
-                }
-                className={`w-full md:w-auto ${
-                  appearance?.theme === "blue"
-                    ? "bg-blue-900 text-white hover:bg-blue-950"
-                    : appearance?.theme === "green"
-                    ? "bg-green-900 text-white hover:bg-green-950"
-                    : appearance?.theme === "purple"
-                    ? "bg-purple-900 text-white hover:bg-purple-950"
-                    : appearance?.theme === "orange"
-                    ? "bg-orange-900 text-white hover:bg-orange-950"
-                    : ""
-                } transition-all duration-200`}
-                size="sm"
-              >
-                <Github className="h-4 w-4 mr-2" />
-                GitHub Profile
-              </Button>
-            </Link>
-            {stats?.twitter_username && (
-              <Link
-                href={`https://twitter.com/${stats.twitter_username}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button
-                  variant={
-                    appearance?.theme !== "default" ? "default" : "outline"
-                  }
-                  className={`w-full md:w-auto ${
-                    appearance?.theme === "blue"
-                      ? "bg-blue-900 text-white hover:bg-blue-950"
-                      : appearance?.theme === "green"
-                      ? "bg-green-900 text-white hover:bg-green-950"
-                      : appearance?.theme === "purple"
-                      ? "bg-purple-900 text-white hover:bg-purple-950"
-                      : appearance?.theme === "orange"
-                      ? "bg-orange-900 text-white hover:bg-orange-950"
-                      : ""
-                  } transition-all duration-200`}
-                  size="sm"
-                >
-                  <Twitter className="h-4 w-4 mr-2" />
-                  Twitter
-                </Button>
-              </Link>
-            )}
-            {stats?.blog && (
-              <Link href={stats.blog} target="_blank" rel="noopener noreferrer">
-                <Button
-                  variant={
-                    appearance?.theme !== "default" ? "default" : "outline"
-                  }
-                  className={`w-full md:w-auto ${
-                    appearance?.theme === "blue"
-                      ? "bg-blue-900 text-white hover:bg-blue-950"
-                      : appearance?.theme === "green"
-                      ? "bg-green-900 text-white hover:bg-green-950"
-                      : appearance?.theme === "purple"
-                      ? "bg-purple-900 text-white hover:bg-purple-950"
-                      : appearance?.theme === "orange"
-                      ? "bg-orange-900 text-white hover:bg-orange-950"
-                      : ""
-                  } transition-all duration-200`}
-                  size="sm"
-                >
-                  <LinkIcon className="h-4 w-4 mr-2" />
-                  Website
-                </Button>
-              </Link>
-            )}
+
+          <div className="flex flex-col gap-4 w-full md:w-auto">
             {profile.friends?.includes(
               session?.user?.githubId ? parseInt(session.user.githubId) : -1
             ) ? (
-              <Link href={`/messages/${profile.githubId}`}>
-                <Button
-                  variant={
-                    appearance?.theme !== "default" ? "default" : "outline"
-                  }
-                  className={`w-full md:w-auto ${
-                    appearance?.theme === "blue"
-                      ? "bg-blue-900 text-white hover:bg-blue-950"
-                      : appearance?.theme === "green"
-                      ? "bg-green-900 text-white hover:bg-green-950"
-                      : appearance?.theme === "purple"
-                      ? "bg-purple-900 text-white hover:bg-purple-950"
-                      : appearance?.theme === "orange"
-                      ? "bg-orange-900 text-white hover:bg-orange-950"
-                      : ""
-                  } transition-all duration-200`}
-                  size="sm"
-                >
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  Message
-                </Button>
-              </Link>
+              <SwissButton variant="primary" size="lg" className="h-20 text-2xl shadow-[8px_8px_0_0_rgba(255,0,0,1)]" asChild>
+                <Link href={`/messages/${profile.githubId}`}>
+                  <MessageSquare className="h-8 w-8 mr-4" /> SEND_MESSAGE
+                </Link>
+              </SwissButton>
             ) : (
-              <Button
-                variant="default"
-                size="sm"
-                className="w-full md:w-auto"
+              <SwissButton
+                variant="primary"
+                size="lg"
+                className="h-20 text-2xl shadow-[8px_8px_0_0_rgba(255,0,0,1)]"
                 onClick={async () => {
                   await handleAddFriend();
-                  const btn = document.getElementById(
-                    `add-friend-${profile?.githubId}`
-                  );
+                  const btn = document.getElementById(`add-friend-${profile?.githubId}`);
                   if (btn) {
-                    btn.textContent = "Request Sent";
+                    btn.textContent = "REQUEST_SENT";
                     (btn as HTMLButtonElement).disabled = true;
                   }
                 }}
                 id={`add-friend-${profile?.githubId}`}
               >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Friend
-              </Button>
+                <Plus className="h-8 w-8 mr-4" /> ESTABLISH_CONNECTION
+              </SwissButton>
             )}
-          </div>
-        </div>
-        {profile.skills && profile.skills.length > 0 && (
-          <div className="my-4">
-            <div className="flex flex-wrap gap-1.5">
-              {profile.skills.map((skill: string, index: number) => (
-                <Badge
-                  key={index}
-                  variant="secondary"
-                  className={`bg-primary/10 hover:bg-primary/15 text-primary font-semibold ${
-                    appearance?.theme === "blue"
-                      ? "bg-blue-500/10 hover:bg-blue-500/15 text-blue-500"
-                      : appearance?.theme === "green"
-                      ? "bg-green-500/10 hover:bg-green-500/15 text-green-500"
-                      : appearance?.theme === "purple"
-                      ? "bg-purple-500/10 hover:bg-purple-500/15 text-purple-500"
-                      : appearance?.theme === "orange"
-                      ? "bg-orange-500/10 hover:bg-orange-500/15 text-orange-500"
-                      : ""
-                  }`}
-                >
-                  {skill}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <Card
-            className={
-              appearance?.theme !== "default"
-                ? `${
-                    appearance?.theme === "blue"
-                      ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : appearance?.theme === "green"
-                      ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : appearance?.theme === "purple"
-                      ? "dark:bg-purple-500 bg-purple-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : appearance?.theme === "orange"
-                      ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : ""
-                  } transition-all duration-200`
-                : ""
-            }
-          >
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center">
-                <Users
-                  className={`h-5 w-5 mb-2 text-primary ${
-                    appearance?.theme === "blue"
-                      ? "text-blue-500"
-                      : appearance?.theme === "green"
-                      ? "text-green-500"
-                      : appearance?.theme === "purple"
-                      ? "text-purple-500"
-                      : appearance?.theme === "orange"
-                      ? "text-orange-500"
-                      : ""
-                  }`}
-                />
-                <span className="text-2xl font-bold">
-                  {profile?.friends?.length || 0}
-                </span>
-                <span className="text-sm dark:text-muted-foreground">
-                  Friends
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-          <Card
-            className={
-              appearance?.theme !== "default"
-                ? `${
-                    appearance?.theme === "blue"
-                      ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : appearance?.theme === "green"
-                      ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : appearance?.theme === "purple"
-                      ? "dark:bg-purple-500 bg-purple-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : appearance?.theme === "orange"
-                      ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : ""
-                  } transition-all duration-200`
-                : ""
-            }
-          >
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center">
-                <GitBranch
-                  className={`h-5 w-5 mb-2 text-primary ${
-                    appearance?.theme === "blue"
-                      ? "text-blue-500"
-                      : appearance?.theme === "green"
-                      ? "text-green-500"
-                      : appearance?.theme === "purple"
-                      ? "text-purple-500"
-                      : appearance?.theme === "orange"
-                      ? "text-orange-500"
-                      : ""
-                  }`}
-                />
-                <span className="text-2xl font-bold">
-                  {stats?.public_repos || 0}
-                </span>
-                <span className="text-sm dark:text-muted-foreground">
-                  Repositories
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-          <Card
-            className={
-              appearance?.theme !== "default"
-                ? `${
-                    appearance?.theme === "blue"
-                      ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : appearance?.theme === "green"
-                      ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : appearance?.theme === "purple"
-                      ? "dark:bg-purple-500 bg-purple-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : appearance?.theme === "orange"
-                      ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : ""
-                  } transition-all duration-200`
-                : ""
-            }
-          >
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center">
-                <Star
-                  className={`h-5 w-5 mb-2 text-primary ${
-                    appearance?.theme === "blue"
-                      ? "text-blue-500"
-                      : appearance?.theme === "green"
-                      ? "text-green-500"
-                      : appearance?.theme === "purple"
-                      ? "text-purple-500"
-                      : appearance?.theme === "orange"
-                      ? "text-orange-500"
-                      : ""
-                  }`}
-                />
-                <span className="text-2xl font-bold">
-                  {stats?.followers || 0}
-                </span>
-                <span className="text-sm dark:text-muted-foreground">
-                  Followers
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-          <Card
-            className={
-              appearance?.theme !== "default"
-                ? `${
-                    appearance?.theme === "blue"
-                      ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : appearance?.theme === "green"
-                      ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : appearance?.theme === "purple"
-                      ? "dark:bg-purple-500 bg-purple-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : appearance?.theme === "orange"
-                      ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                      : ""
-                  } transition-all duration-200`
-                : ""
-            }
-          >
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center">
-                <Calendar
-                  className={`h-5 w-5 mb-2 text-primary ${
-                    appearance?.theme === "blue"
-                      ? "text-blue-500"
-                      : appearance?.theme === "green"
-                      ? "text-green-500"
-                      : appearance?.theme === "purple"
-                      ? "text-purple-500"
-                      : appearance?.theme === "orange"
-                      ? "text-orange-500"
-                      : ""
-                  }`}
-                />
-                <span className="text-2xl font-bold">
-                  {new Date(stats?.created_at || Date.now()).getFullYear()}
-                </span>
-                <span className="text-sm dark:text-muted-foreground">
-                  Joined GitHub
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-        {/* Pinned Repositories Section */}
-        {profile.pinnedRepos && profile.pinnedRepos.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">Pinned Repositories</h2>
-            <div className="grid md:grid-cols-2 gap-4">
-              {profile.pinnedRepos.map((repo) => (
-                <Card key={repo.id}>
-                  <CardContent className="p-5">
-                    <div className="flex flex-col h-full">
-                      <div className="flex items-start gap-3 mb-3">
-                        <div>
-                          <h3 className="font-medium">
-                            <Link
-                              href={repo.html_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="hover:text-primary transition-colors hover:underline"
-                            >
-                              {repo.name}
-                            </Link>
-                          </h3>
-                          <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                            {repo.description || "No description available"}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3 text-sm mt-auto">
-                        {repo.language && (
-                          <div className="flex items-center">
-                            <span
-                              className={`h-3 w-3 rounded-full mr-1.5 
-                              ${
-                                appearance?.theme === "blue"
-                                  ? "bg-blue-500/70"
-                                  : appearance?.theme === "green"
-                                  ? "bg-green-500/70"
-                                  : appearance?.theme === "purple"
-                                  ? "bg-purple-500/70"
-                                  : appearance?.theme === "orange"
-                                  ? "bg-orange-500/70"
-                                  : "bg-primary/70"
-                              }`}
-                            />
-                            <span>{repo.language}</span>
-                          </div>
-                        )}
-                        <div className="flex items-center">
-                          <Star className="h-4 w-4 mr-1" />
-                          <span>{repo.stargazers_count}</span>
-                        </div>
-                        <div className="flex items-center">
-                          <GitFork className="h-4 w-4 mr-1" />
-                          <span>{repo.forks_count}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
-        <Tabs defaultValue="posts">
-          <TabsList>
-            <TabsTrigger value="posts">Posts</TabsTrigger>
-            {appearance?.showActivity && (
-              <TabsTrigger value="activity">Recent Activity</TabsTrigger>
-            )}
-          </TabsList>
 
-          <TabsContent value="activity">
-            <Card>
-              <CardContent className="p-6">
-                {activities.length === 0 ? (
-                  <p className="text-muted-foreground">
-                    No recent GitHub activity found.
-                  </p>
-                ) : (
-                  <div className="space-y-4">
-                    {activities.map((activity) => (
-                      <div
-                        key={activity.id}
-                        className="flex items-start gap-4 py-3 border-b"
-                      >
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">
-                              {activity.type.replace("Event", "")}
-                            </span>
-                            <span className="text-muted-foreground text-sm">
-                              {formatDistanceToNow(
-                                new Date(activity.created_at),
-                                { addSuffix: true }
-                              )}
-                            </span>
-                          </div>
-                          <Link
-                            href={`https://github.com/${activity.repo.name}`}
-                            className="text-sm hover:underline text-muted-foreground"
-                            target="_blank"
-                          >
-                            {activity.repo.name}
-                          </Link>
-                          {activity.payload?.commits && (
-                            <div className="mt-2 space-y-1">
-                              {activity.payload.commits.map((commit: any) => (
-                                <div key={commit.sha} className="text-sm">
-                                  <Link
-                                    href={`https://github.com/${activity.repo.name}/commit/${commit.sha}`}
-                                    className="text-xs font-mono text-muted-foreground hover:underline"
-                                    target="_blank"
-                                  >
-                                    {commit.sha.substring(0, 7)}
-                                  </Link>
-                                  <span className="ml-2">{commit.message}</span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="posts">
-            <div className="space-y-6">
-              {posts.length > 0 ? (
-                <MasonryGrid>
-                  {posts.map((post) => (
-                    <PostCard
-                      key={post._id}
-                      post={post}
-                      onVote={handleVote}
-                      onAddComment={handleAddComment}
-                      onVotePoll={handleVotePoll}
-                      onCommentVote={handleCommentVote}
-                      compactView={appearance?.compactPosts}
-                    />
-                  ))}
-                </MasonryGrid>
-              ) : (
-                <p className="text-muted-foreground w-full text-center">
-                  No posts found.
-                </p>
+            <div className="grid grid-cols-2 gap-4">
+              <SwissButton variant="secondary" className="h-16" asChild>
+                <Link href={`https://github.com/${profile.githubUsername}`} target="_blank">
+                  <Github className="h-6 w-6 mr-2" /> GITHUB
+                </Link>
+              </SwissButton>
+              {stats?.twitter_username && (
+                <SwissButton variant="secondary" className="h-16" asChild>
+                  <Link href={`https://twitter.com/${stats.twitter_username}`} target="_blank">
+                    <Twitter className="h-6 w-6 mr-2" /> TWITTER
+                  </Link>
+                </SwissButton>
               )}
             </div>
-          </TabsContent>
-        </Tabs>
-        <div className="mt-8">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">
-            Activity Overview
-          </h1>
-          <ActivityHeatmap data={{ posts, themeColor: appearance?.theme }} />
+          </div>
+        </div>
+      </SwissSection>
+
+      <div className="grid lg:grid-cols-12 gap-12 mb-24">
+        {/* Stats Column */}
+        <div className="lg:col-span-4 space-y-12">
+          <div className="grid grid-cols-1 gap-6">
+            <SwissCard variant="accent" className="p-8 group hover:-translate-y-2 transition-transform">
+              <div className="flex justify-between items-start mb-4">
+                <Users className="h-10 w-10" />
+                <span className="text-6xl font-black italic">01</span>
+              </div>
+              <p className="text-sm font-black tracking-[0.3em] opacity-60 mb-1 uppercase">ESTABLISHED_CONNECTIONS</p>
+              <h4 className="text-6xl font-black tracking-tighter leading-none">{profile?.friends?.length || 0}</h4>
+            </SwissCard>
+
+            <SwissCard className="p-8 group hover:-translate-y-2 transition-transform shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
+              <div className="flex justify-between items-start mb-4">
+                <GitBranch className="h-10 w-10" />
+                <span className="text-6xl font-black italic opacity-10">02</span>
+              </div>
+              <p className="text-sm font-black tracking-[0.3em] opacity-60 mb-1 uppercase">ACTIVE_REPOSITORIES</p>
+              <h4 className="text-6xl font-black tracking-tighter leading-none">{stats?.public_repos || 0}</h4>
+            </SwissCard>
+
+            <SwissCard className="p-8 group hover:-translate-y-2 transition-transform shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
+              <div className="flex justify-between items-start mb-4">
+                <Star className="h-10 w-10" />
+                <span className="text-6xl font-black italic opacity-10">03</span>
+              </div>
+              <p className="text-sm font-black tracking-[0.3em] opacity-60 mb-1 uppercase">TOTAL_FOLLOWERS</p>
+              <h4 className="text-6xl font-black tracking-tighter leading-none">{stats?.followers || 0}</h4>
+            </SwissCard>
+          </div>
+
+          {/* Pinned Repos */}
+          {profile.pinnedRepos && profile.pinnedRepos.length > 0 && (
+            <div className="space-y-6">
+              <h3 className="text-4xl font-black uppercase tracking-tighter border-b-8 border-swiss-black pb-4">PINNED_MODULES</h3>
+              <div className="space-y-4">
+                {profile.pinnedRepos.map((repo) => (
+                  <SwissCard key={repo.id} className="p-6 hover:bg-swiss-black hover:text-swiss-white transition-colors group">
+                    <div className="flex items-start justify-between mb-4">
+                      <Pin className="h-5 w-5 rotate-45" />
+                      <div className="flex gap-4">
+                        <span className="flex items-center gap-1 text-[10px] font-black"><Star className="h-3 w-3" /> {repo.stargazers_count}</span>
+                        <span className="flex items-center gap-1 text-[10px] font-black"><GitFork className="h-3 w-3" /> {repo.forks_count}</span>
+                      </div>
+                    </div>
+                    <Link href={repo.html_url} target="_blank" className="block text-xl font-black uppercase tracking-tight mb-2 group-hover:underline underline-offset-4">
+                      {repo.name}
+                    </Link>
+                    <p className="text-xs font-bold leading-tight opacity-60 group-hover:opacity-100">{repo.description}</p>
+                    {repo.language && (
+                      <div className="mt-4 flex items-center gap-2">
+                        <div className="w-3 h-3 bg-swiss-red" />
+                        <span className="text-[10px] font-black tracking-widest uppercase">{repo.language}</span>
+                      </div>
+                    )}
+                  </SwissCard>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Content Column */}
+        <div className="lg:col-span-8">
+          <div className="flex gap-2 mb-12 overflow-x-auto pb-4 scrollbar-hide">
+            {[
+              { id: "posts", label: "USER_ENTRIES", icon: MessageSquare },
+              { id: "activity", label: "PULSE_ACTIVITY", icon: Activity },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  "px-8 py-4 border-4 border-swiss-black font-black uppercase tracking-widest text-sm flex items-center gap-3 transition-all",
+                  activeTab === tab.id
+                    ? "bg-swiss-black text-swiss-white shadow-[8px_8px_0_0_rgba(255,0,0,1)] -translate-y-2"
+                    : "bg-swiss-white text-swiss-black hover:bg-swiss-muted"
+                )}
+              >
+                <tab.icon className="h-5 w-5" />
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="min-h-[500px] mb-24">
+            {activeTab === "posts" && (
+              <div className="space-y-12">
+                {posts.length > 0 ? (
+                  <MasonryGrid>
+                    {posts.map((post) => (
+                      <PostCard
+                        key={post._id}
+                        post={post as any}
+                        onVote={handleVote}
+                        onAddComment={handleAddComment}
+                        onVotePoll={handleVotePoll}
+                        onCommentVote={handleCommentVote}
+                        compactView={appearance?.compactPosts}
+                      />
+                    ))}
+                  </MasonryGrid>
+                ) : (
+                  <div className="border-8 border-swiss-black p-12 text-center bg-swiss-muted/20">
+                    <p className="font-black text-4xl uppercase tracking-tighter opacity-20">NO_DATA_AVAILABLE</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === "activity" && (
+              <div className="space-y-12">
+                <SwissCard className="p-8 shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
+                  <h3 className="text-2xl font-black uppercase tracking-tighter mb-8 border-b-4 border-swiss-black pb-4">HEATMAP_VISUALIZATION</h3>
+                  <ActivityHeatmap data={{ posts: posts as any, themeColor: appearance?.theme || 'green' }} />
+                </SwissCard>
+
+                <div className="grid gap-4">
+                  {activities.map((activity, i) => (
+                    <div key={i} className="group border-l-8 border-swiss-black hover:border-swiss-red pl-6 py-4 transition-all bg-swiss-white">
+                      <div className="flex items-center gap-4 mb-1">
+                        <span className="font-black text-[10px] tracking-widest text-swiss-red uppercase">{activity.type.replace('Event', '')}</span>
+                        <span className="text-[10px] font-bold opacity-30 uppercase">{formatDistanceToNow(new Date(activity.created_at || Date.now()), { addSuffix: true })}</span>
+                      </div>
+                      <p className="font-bold uppercase tracking-tight text-lg group-hover:translate-x-2 transition-transform">
+                        {activity.repo.name}
+                      </p>
+                    </div>
+                  ))}
+                  {activities.length === 0 && (
+                    <p className="text-center font-bold uppercase opacity-20 py-12">NO_ACTIVITY_LOGGED</p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

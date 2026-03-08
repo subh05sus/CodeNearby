@@ -60,6 +60,26 @@ const config: Config = {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
+        "swiss-red": "hsl(var(--swiss-red))",
+        "swiss-muted": "hsl(var(--swiss-muted))",
+        "swiss-black": "hsl(var(--swiss-black))",
+        "swiss-white": "hsl(var(--swiss-white))",
+      },
+      fontFamily: {
+        sans: ["Inter", "sans-serif"],
+        inter: ["Inter", "sans-serif"],
+      },
+      letterSpacing: {
+        tighter: "-0.05em",
+        tightest: "-0.1em",
+        widest: "0.2em",
+      },
+      fontSize: {
+        "10xl": "10rem",
+        "12xl": "12rem",
+      },
+      borderWidth: {
+        "4": "4px",
       },
       borderRadius: {
         lg: "var(--radius)",

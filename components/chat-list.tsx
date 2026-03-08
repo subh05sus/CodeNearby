@@ -4,11 +4,12 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { Loader2 } from "lucide-react";
+import { Loader2, MessageSquare } from "lucide-react";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface Friend {
   id: string;
@@ -19,6 +20,7 @@ interface Friend {
   lastMessage?: {
     content: string;
     timestamp: number;
+    type?: string;
   };
 }
 
@@ -38,11 +40,10 @@ export function ChatList() {
     try {
       const response = await fetch("/api/friends");
       const data = await response.json();
-
       setFriends(data);
     } catch {
-      toast.error("Error", {
-        description: "Failed to fetch friends.",
+      toast.error("MISSION_FAILURE", {
+        description: "FAILED_TO_FETCH_COMMUNICATION_NODES.",
       });
     } finally {
       setLoading(false);
@@ -51,77 +52,111 @@ export function ChatList() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-full">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className="flex flex-col justify-center items-center h-64 gap-4">
+        <Loader2 className="h-8 w-8 animate-spin text-swiss-red" />
+        <span className="text-xs font-black uppercase tracking-widest italic opacity-40">SCANNING_NODES...</span>
       </div>
     );
   }
 
+  const sortedFriends = Array.isArray(friends)
+    ? [...friends].sort((a, b) => (b.lastMessage?.timestamp || 0) - (a.lastMessage?.timestamp || 0))
+    : [];
+
   return (
-    <div className="space-y-2 p-2">
-      {Array.isArray(friends) && friends.length > 0 ? (
-        [...friends]
-          .sort((a, b) => {
-            const timeA = a.lastMessage?.timestamp || 0;
-            const timeB = b.lastMessage?.timestamp || 0;
-            return timeB - timeA;
-          })
-          .map((friend) => (
+    <div className="divide-y-8 divide-swiss-black">
+      {sortedFriends.length > 0 ? (
+        sortedFriends.map((friend) => {
+          const isActive = params.id === friend.githubId.toString();
+          return (
             <Link key={friend.id} href={`/messages/${friend.githubId}`}>
               <div
-                className={`flex items-center p-3 rounded-lg transition-colors duration-200 ${
-                  params.id === friend.githubId.toString()
-                    ? "bg-gray-200 dark:bg-zinc-800"
-                    : "hover:bg-gray-100 dark:hover:bg-zinc-900"
-                }`}
+                className={cn(
+                  "group flex items-center p-6 transition-all duration-200 relative overflow-hidden",
+                  isActive
+                    ? "bg-swiss-red text-swiss-white"
+                    : "bg-swiss-white hover:bg-swiss-muted/10"
+                )}
               >
-                <Image
-                  height={48}
-                  width={48}
-                  src={friend.image || "/placeholder.svg"}
-                  alt={friend.name}
-                  className="w-12 h-12 rounded-full mr-4"
-                />
-                <div className="flex-grow min-w-0">
-                  <div className="flex justify-between items-baseline">
-                    <h3 className="font-semibold truncate">{friend.name}</h3>
-                    <span className="text-xs text-muted-foreground hidden sm:inline">
-                      {formatDistanceToNow(
-                        friend.lastMessage?.timestamp || Date.now(),
-                        { addSuffix: true }
-                      )}
-                    </span>
+                {isActive && (
+                  <div className="absolute top-0 right-0 p-2">
+                    <div className="w-2 h-2 bg-swiss-white rounded-full animate-pulse" />
                   </div>
-                  <p className="text-sm text-muted-foreground truncate">
+                )}
+
+                <div className="relative shrink-0 mr-6">
+                  <div className={cn(
+                    "absolute inset-0 translate-x-1 translate-y-1 -z-10",
+                    isActive ? "bg-swiss-black" : "bg-swiss-red"
+                  )} />
+                  <Image
+                    height={64}
+                    width={64}
+                    src={friend.image || "/placeholder.svg"}
+                    alt={friend.name}
+                    className={cn(
+                      "w-16 h-16 border-4 border-swiss-black object-cover transition-all duration-500",
+                      isActive ? "grayscale-0" : "grayscale group-hover:grayscale-0"
+                    )}
+                  />
+                </div>
+
+                <div className="flex-grow min-w-0 space-y-1">
+                  <div className="flex justify-between items-baseline gap-2">
+                    <h3 className={cn(
+                      "text-xl font-black uppercase tracking-tighter truncate italic",
+                      isActive ? "text-swiss-white" : "text-swiss-black"
+                    )}>
+                      {friend.name}
+                    </h3>
+                    {friend.lastMessage?.timestamp && (
+                      <span className={cn(
+                        "text-[10px] font-black uppercase tracking-widest whitespace-nowrap opacity-60",
+                        isActive ? "text-swiss-white" : "text-swiss-red"
+                      )}>
+                        {formatDistanceToNow(friend.lastMessage.timestamp, { addSuffix: false })}
+                      </span>
+                    )}
+                  </div>
+
+                  <p className={cn(
+                    "text-xs font-bold uppercase tracking-tight truncate leading-none",
+                    isActive ? "text-swiss-white/80" : "text-swiss-black/40"
+                  )}>
                     {(() => {
                       try {
                         const content = friend.lastMessage?.content;
-                        const parsed = JSON.parse(content || "");
-                        if (parsed.type) {
-                          return "Shared Feed Post";
-                        }
+                        if (!content) return "NO_DATA_TRANSFER";
+                        const parsed = JSON.parse(content);
+                        if (parsed.type) return "ENCRYPTED_MEDIA_PACKAGE";
                         return content;
                       } catch {
-                        return friend.lastMessage?.content;
+                        return friend.lastMessage?.content || "NO_DATA_TRANSFER";
                       }
                     })()}
                   </p>
                 </div>
               </div>
             </Link>
-          ))
+          );
+        })
       ) : (
-        <p className="text-center text-muted-foreground">
-          {
-            [
-              "No friends found. Even your shadow ditched you. 😈🔥",
-              "No friends found. Loneliness just sent you a friend request. 😭🔥",
-              "No friends found. Even WiFi has more connections. 📶🔥",
-              "No friends found. You're the human version of airplane mode. ✈️🔥",
-              "No friends found. Even spam bots stopped messaging you. 📩🔥",
-            ][Math.floor(Math.random() * 5)]
-          }
-        </p>
+        <div className="p-12 text-center space-y-6">
+          <div className="inline-block p-4 border-4 border-dashed border-swiss-black opacity-20">
+            <MessageSquare className="h-12 w-12" />
+          </div>
+          <p className="text-xl font-black uppercase tracking-tighter italic opacity-40 leading-tight">
+            {
+              [
+                "ZERO_CONNECTIONS_DETECTED_MODULE_ISOLATION_ACTIVE",
+                "NETWORK_GRID_EMPTY_SEARCHING_FOR_SIGNALS",
+                "COMMUNICATION_CHANNELS_OFFLINE_AWAITING_PROTOCOLS",
+                "SOLITARY_NODE_STATUS_CONFIRMED_ENCRYPT_LIFELINE",
+                "NO_ACTIVE_UPLINKS_FOUND_IN_THIS_SECTOR"
+              ][Math.floor(Math.random() * 5)]
+            }
+          </p>
+        </div>
       )}
     </div>
   );

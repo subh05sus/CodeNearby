@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import WelcomeStep from "@/components/onboarding/WelcomeStep";
 import FeaturesStep from "@/components/onboarding/FeaturesStep";
 import GatheringsStep from "@/components/onboarding/GatheringsStep";
@@ -10,7 +9,7 @@ import SkillsStep from "@/components/onboarding/SkillsStep";
 import DevelopersStep from "@/components/onboarding/DevelopersStep";
 import FinalStep from "@/components/onboarding/FinalStep";
 import { useRouter } from "next/navigation";
-import { Check, ChevronRight, ChevronLeft } from "lucide-react";
+import { Check, ChevronRight, ChevronLeft, ArrowRight } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -26,6 +25,8 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
+import SwissButton from "@/components/swiss/SwissButton";
+import { cn } from "@/lib/utils";
 
 interface OnboardingPageProps {
   session: any;
@@ -45,21 +46,19 @@ export default function OnboardingPage({
   const [isLoading, setIsLoading] = useState(false);
 
   const steps = [
-    { id: 0, name: "Welcome", icon: "👋" },
-    { id: 1, name: "Features", icon: "⚡" },
-    { id: 2, name: "Gatherings", icon: "👥" },
-    { id: 3, name: "Skills", icon: "🛠️" },
-    { id: 4, name: "Developers", icon: "👩‍💻" },
-    { id: 5, name: "Complete", icon: "🎉" },
+    { id: 0, name: "WELCOME", icon: "👋" },
+    { id: 1, name: "FEATURES", icon: "⚡" },
+    { id: 2, name: "GATHERINGS", icon: "👥" },
+    { id: 3, name: "SKILLS", icon: "🛠️" },
+    { id: 4, name: "DEVS", icon: "👩‍💻" },
+    { id: 5, name: "COMPLETE", icon: "🎉" },
   ];
 
   const totalSteps = steps.length;
 
-  // Calculate progress when step changes
   useEffect(() => {
     setProgress(((currentStep + 1) / totalSteps) * 100);
 
-    // Save progress to localStorage
     if (typeof window !== "undefined") {
       localStorage.setItem("onboardingStep", currentStep.toString());
       localStorage.setItem("onboardingSkills", JSON.stringify(selectedSkills));
@@ -67,7 +66,6 @@ export default function OnboardingPage({
     }
   }, [currentStep, selectedSkills, joinGathering, totalSteps]);
 
-  // Load progress from localStorage on initial render
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedStep = localStorage.getItem("onboardingStep");
@@ -127,7 +125,6 @@ export default function OnboardingPage({
   const completeOnboarding = async () => {
     try {
       setIsLoading(true);
-      // Save user preferences and complete onboarding
       await fetch("/api/user/complete-onboarding", {
         method: "POST",
         headers: {
@@ -139,12 +136,10 @@ export default function OnboardingPage({
         }),
       });
 
-      // Clear onboarding data from localStorage
       localStorage.removeItem("onboardingStep");
       localStorage.removeItem("onboardingSkills");
       localStorage.removeItem("onboardingJoinGathering");
 
-      // Redirect to home page
       router.push("/");
     } catch (error) {
       console.error("Error completing onboarding:", error);
@@ -184,68 +179,85 @@ export default function OnboardingPage({
   };
 
   return (
-    <div className="flex flex-col min-h-[calc(100dvh-250px)] bg-gradient-to-b from-background to-background/90">
-      <div className="py-6 px-4 md:px-8 border-b bg-background/60 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto w-full">
-          {/* Desktop step indicator */}
-          <div className="hidden md:flex justify-between mb-2 relative">
-            {steps.map((step, i) => (
-              <div
-                key={step.id}
-                className="flex flex-col items-center relative z-10 cursor-pointer"
-                onClick={() => i < currentStep && setCurrentStep(i)}
-              >
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center mb-2
-                    ${
-                      i < currentStep
-                        ? "bg-primary text-primary-foreground"
-                        : i === currentStep
-                        ? "bg-primary text-primary-foreground ring-4 ring-primary/20"
-                        : "bg-muted text-muted-foreground"
-                    }`}
-                >
-                  {i < currentStep ? (
-                    <Check className="h-5 w-5" />
-                  ) : (
-                    step.icon || i + 1
-                  )}
-                </div>
-                <span
-                  className={`text-xs whitespace-nowrap ${
-                    currentStep === i
-                      ? "font-medium text-foreground"
-                      : "text-muted-foreground"
-                  }`}
-                >
-                  {step.name}
-                </span>
+    <div className="flex flex-col min-h-[calc(100vh-6rem)] bg-swiss-white dark:bg-black transition-colors duration-300">
+      {/* Header with Step Indicator */}
+      <div className="py-12 px-4 md:px-8 border-b-8 border-swiss-black dark:border-white sticky top-0 z-10 bg-swiss-white dark:bg-black/95 backdrop-blur-md">
+        <div className="max-w-6xl mx-auto w-full">
+          <div className="flex justify-between items-center mb-12">
+            <div className="flex items-center gap-4">
+              <div className="bg-swiss-red p-2 text-swiss-white dark:text-black">
+                <ChevronRight className="h-6 w-6" />
               </div>
-            ))}
-
-            {/* Connecting line */}
-            <div className="absolute top-5 left-0 w-full h-0.5 bg-muted -z-0">
-              <div
-                className="h-full bg-primary transition-all duration-300 ease-in-out"
-                style={{ width: `${progress - 100 / totalSteps / 2}%` }}
-              />
+              <span className="text-xs font-black uppercase tracking-[0.4em] text-black dark:text-white">INIT_FLOW // PREFERENCES</span>
+            </div>
+            <div className="text-[10px] font-black uppercase tracking-widest opacity-40 dark:opacity-60 italic text-black dark:text-white">
+              STEP_0{currentStep + 1} // 0{totalSteps}
             </div>
           </div>
 
-          {/* Mobile step indicator */}
-          <div className="md:hidden flex items-center justify-between mb-1">
-            <span className="text-sm font-medium">
-              Step {currentStep + 1}: {steps[currentStep].name}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {currentStep + 1} of {totalSteps}
-            </span>
+          <div className="hidden md:flex justify-between relative">
+            {steps.map((step, i) => (
+              <div
+                key={step.id}
+                className="flex flex-col items-center relative z-10 cursor-pointer group"
+                onClick={() => i < currentStep && setCurrentStep(i)}
+              >
+                <div
+                  className={cn(
+                    "w-14 h-14 border-4 transition-all duration-300 flex items-center justify-center mb-3",
+                    i < currentStep
+                      ? "bg-swiss-black dark:bg-white border-swiss-black dark:border-white text-swiss-white dark:text-black"
+                      : i === currentStep
+                        ? "bg-swiss-red border-swiss-black dark:border-white text-swiss-white dark:text-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] dark:shadow-[6px_6px_0_0_rgba(255,255,255,1)]"
+                        : "bg-swiss-white dark:bg-black border-swiss-muted dark:border-white/20 text-swiss-muted dark:text-white/20"
+                  )}
+                >
+                  {i < currentStep ? (
+                    <Check className="h-6 w-6" />
+                  ) : (
+                    <span className="text-xl font-black">{step.icon || i + 1}</span>
+                  )}
+                </div>
+                <span
+                  className={cn(
+                    "text-[10px] font-black uppercase tracking-widest transition-opacity leading-none text-black dark:text-white",
+                    currentStep === i ? "opacity-100" : "opacity-40 flex dark:opacity-20"
+                  )}
+                >
+                  {step.name}
+                </span>
+
+                {/* Connecting Line Segment */}
+                {i < steps.length - 1 && (
+                  <div className="absolute top-7 left-[calc(50%+28px)] w-[calc(100%)] h-1 bg-swiss-muted -z-10 group-first:ml-0">
+                    <div
+                      className="h-full bg-swiss-black dark:bg-white transition-all duration-500"
+                      style={{ width: i < currentStep ? '100%' : '0%' }}
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Mobile indicator */}
+          <div className="md:hidden flex flex-col gap-2">
+            <div className="flex justify-between items-baseline">
+              <h2 className="text-3xl font-black uppercase tracking-tighter italic leading-none text-black dark:text-white">{steps[currentStep].name}</h2>
+              <span className="font-black text-swiss-red italic">0{currentStep + 1}</span>
+            </div>
+            <div className="w-full h-4 bg-swiss-muted dark:bg-white/10 border-2 border-swiss-black dark:border-white">
+              <div
+                className="h-full bg-swiss-red transition-all duration-500"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col">
-        <div className="flex-1 max-w-4xl mx-auto w-full px-4 py-8 md:py-12">
+      <div className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden">
+        <div className="flex-1 max-w-6xl mx-auto w-full px-4 py-12 md:py-24">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
@@ -260,22 +272,23 @@ export default function OnboardingPage({
           </AnimatePresence>
         </div>
 
-        <div className="border-t py-6 px-4 md:px-8 bg-background/60 backdrop-blur-sm sticky bottom-0">
-          <div className="max-w-4xl mx-auto w-full flex justify-between items-center">
+        {/* Footer Actions */}
+        <div className="border-t-8 border-swiss-black dark:border-white py-12 px-4 md:px-8 bg-swiss-white dark:bg-black sticky bottom-0">
+          <div className="max-w-6xl mx-auto w-full flex justify-between items-center">
             <div>
               {currentStep > 0 && (
-                <Button
-                  variant="outline"
+                <SwissButton
+                  variant="secondary"
                   onClick={prevStep}
-                  className="gap-1"
-                  size="lg"
+                  className="h-16 px-8 border-4"
                 >
-                  <ChevronLeft className="h-4 w-4" />
-                  <span className="sm:inline hidden">Back</span>
-                </Button>
+                  <ChevronLeft className="h-5 w-5 mr-2" />
+                  <span className="font-black uppercase tracking-widest sm:inline hidden">PREVIOUS_NODE</span>
+                </SwissButton>
               )}
             </div>
-            <div className="flex gap-2 items-center">
+
+            <div className="flex gap-4 items-center">
               {currentStep < totalSteps - 1 ? (
                 <>
                   <Dialog
@@ -283,29 +296,32 @@ export default function OnboardingPage({
                     onOpenChange={setShowSkipDialog}
                   >
                     <DialogTrigger asChild>
-                      <Button variant="ghost" className="sm:inline-flex hidden">
-                        Skip to end
-                      </Button>
+                      <button className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40 hover:opacity-100 dark:opacity-60 dark:hover:opacity-100 transition-opacity sm:inline-flex hidden items-center gap-2 mr-6 italic text-black dark:text-white">
+                        BYPASS_FLOW <ArrowRight className="h-3 w-3" />
+                      </button>
                     </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Skip the onboarding process?</DialogTitle>
-                        <DialogDescription>
-                          If you skip, you&apos;ll miss setting up your skills
-                          and preferences. You can always update these later in
-                          your profile settings.
+                    <DialogContent className="border-8 border-swiss-black dark:border-white p-12 bg-swiss-white dark:bg-black rounded-none">
+                      <DialogHeader className="p-0 space-y-6">
+                        <DialogTitle className="text-5xl font-black uppercase tracking-tighter italic leading-tight text-black dark:text-white">ABORT_ONBOARDING?</DialogTitle>
+                        <DialogDescription className="text-lg font-bold uppercase tracking-tight opacity-60 dark:opacity-80 italic text-black dark:text-white">
+                          SKIP_PROTOCOLS // YOU_WILL_MISS_SYSTEM_CALIBRATION. YOU_CAN_CONFIGURE_PARAMETERS_LATER_IN_PROFILE_REGISTRY.
                         </DialogDescription>
                       </DialogHeader>
-                      <DialogFooter className="mt-4 gap-2">
-                        <Button
-                          variant="outline"
+                      <DialogFooter className="mt-12 flex flex-row justify-between gap-4">
+                        <SwissButton
+                          variant="secondary"
+                          className="flex-1 h-16 border-4"
                           onClick={() => setShowSkipDialog(false)}
                         >
-                          Continue Setup
-                        </Button>
-                        <Button variant="default" onClick={skipToEnd}>
-                          Skip Anyway
-                        </Button>
+                          RESUME_SETUP
+                        </SwissButton>
+                        <SwissButton
+                          variant="primary"
+                          className="flex-1 h-16 border-4"
+                          onClick={skipToEnd}
+                        >
+                          SKIP_ANYWAY
+                        </SwissButton>
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
@@ -313,42 +329,38 @@ export default function OnboardingPage({
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Button
+                        <SwissButton
                           onClick={nextStep}
-                          size="lg"
-                          className="gap-1 px-6 sm:min-w-[120px]"
+                          className="h-20 px-12 text-xl font-black uppercase tracking-widest border-4 bg-swiss-red text-swiss-white dark:text-black hover:shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0_0_rgba(255,255,255,1)] group"
                         >
-                          <span>Continue</span>
-                          <ChevronRight className="h-4 w-4" />
-                        </Button>
+                          <span>CONTINUE</span>
+                          <ChevronRight className="h-6 w-6 ml-2 transition-transform group-hover:translate-x-1" />
+                        </SwissButton>
                       </TooltipTrigger>
-                      <TooltipContent>
-                        <p>
-                          Move to the next step: {steps[currentStep + 1]?.name}
-                        </p>
+                      <TooltipContent className="bg-swiss-black dark:bg-white text-swiss-white dark:text-black border-0 font-black uppercase tracking-widest p-4 italic">
+                        MOVE_TO: {steps[currentStep + 1]?.name}
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 </>
               ) : (
-                <Button
+                <SwissButton
                   onClick={completeOnboarding}
-                  className="gap-2 px-6 sm:min-w-[140px]"
-                  size="lg"
+                  className="h-20 px-12 text-xl font-black uppercase tracking-widest border-4 bg-swiss-black dark:bg-white text-swiss-white dark:text-black hover:bg-swiss-red dark:hover:bg-swiss-red hover:shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0_0_rgba(255,255,255,1)]"
                   disabled={isLoading}
                 >
                   {isLoading ? (
-                    <>
-                      <span className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full"></span>
-                      <span>Processing...</span>
-                    </>
+                    <div className="flex items-center gap-4">
+                      <div className="animate-spin h-6 w-6 border-4 border-swiss-white dark:border-black border-t-transparent" />
+                      <span>SYNCHRONIZING...</span>
+                    </div>
                   ) : (
-                    <>
-                      <span>Get Started</span>
-                      <Check className="h-4 w-4" />
-                    </>
+                    <div className="flex items-center gap-4">
+                      <span>INITIALIZE_SYSTEM</span>
+                      <Check className="h-6 w-6" />
+                    </div>
                   )}
-                </Button>
+                </SwissButton>
               )}
             </div>
           </div>

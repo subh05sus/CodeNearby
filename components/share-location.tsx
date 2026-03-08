@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,6 +7,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { MapPin } from "lucide-react";
+import SwissButton from "./swiss/SwissButton";
 
 interface ShareLocationProps {
   onShareLocation: (latitude: number, longitude: number) => void;
@@ -42,29 +42,31 @@ export function ShareLocation({ onShareLocation }: ShareLocationProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-primary hover:bg-primary/10 rounded-full"
+        <SwissButton
+          variant="secondary"
+          size="sm"
+          className="w-10 h-10 p-0"
         >
           <MapPin className="w-5 h-5" />
-        </Button>
+        </SwissButton>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] rounded-none border-4 border-black p-8">
         <DialogHeader>
-          <DialogTitle>Share Your Location</DialogTitle>
+          <DialogTitle className="text-2xl font-black uppercase tracking-tightest mb-4">Share Your Location</DialogTitle>
         </DialogHeader>
-        <div className="py-4">
+        <div className="py-4 border-t-2 border-black/10">
           {location ? (
-            <div>
-              <p>Latitude: {location.lat}</p>
-              <p>Longitude: {location.lng}</p>
-              <Button onClick={handleShareLocation} className="mt-4">
-                Share This Location
-              </Button>
+            <div className="flex flex-col gap-4">
+              <div className="bg-muted p-4 border-2 border-black font-mono text-xs">
+                <p>LAT: {location.lat}</p>
+                <p>LNG: {location.lng}</p>
+              </div>
+              <SwissButton onClick={handleShareLocation} variant="accent" className="w-full">
+                SHARE THIS LOCATION
+              </SwissButton>
             </div>
           ) : (
-            <Button onClick={handleGetLocation}>Get My Location</Button>
+            <SwissButton onClick={handleGetLocation} className="w-full">GET MY LOCATION</SwissButton>
           )}
         </div>
       </DialogContent>

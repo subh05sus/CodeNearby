@@ -18,12 +18,14 @@ interface CreatePollProps {
   gatheringSlug: string;
   onPollCreated: (pollMessage: string) => void;
   canCreatePoll: boolean;
+  children?: React.ReactNode;
 }
 
 export function CreateGatheringPoll({
   gatheringSlug,
   onPollCreated,
   canCreatePoll,
+  children,
 }: CreatePollProps) {
   const [question, setQuestion] = useState("");
   const [options, setOptions] = useState(["", ""]);
@@ -88,9 +90,11 @@ export function CreateGatheringPoll({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="secondary" disabled={canCreatePoll}>
-          <BarChart2 className="h-4 w-4" />
-        </Button>
+        {children || (
+          <Button variant="secondary" disabled={canCreatePoll}>
+            <BarChart2 className="h-4 w-4" />
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

@@ -3,10 +3,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import SwissCard from "@/components/swiss/SwissCard";
+import SwissButton from "@/components/swiss/SwissButton";
 import { Code, MapPin, Loader2, Info, UserPlus, Check, X } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
@@ -16,6 +14,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 interface Developer {
   _id: string;
@@ -29,7 +29,7 @@ interface Developer {
 
 interface DevelopersStepProps {
   skills: string[];
-  developers?: any[]; // Initial developers data from the server
+  developers?: any[];
 }
 
 export default function DevelopersStep({
@@ -44,10 +44,8 @@ export default function DevelopersStep({
     [key: string]: string;
   }>({});
 
-  // Store availableDevelopers in a ref to prevent it from causing re-renders
   const availableDevelopersRef = useRef(developers);
 
-  // Format developers to ensure they have all required fields
   const formatDevelopers = (devs: any[]): Developer[] => {
     return devs.map((dev) => ({
       _id: dev._id?.toString() || Math.random().toString(),
@@ -59,12 +57,11 @@ export default function DevelopersStep({
         )}&background=random`,
       githubUsername: dev.githubUsername || "developer",
       githubId: dev.githubId || null,
-      githubLocation: dev.githubLocation || "Unknown Location",
+      githubLocation: dev.githubLocation || "UNKNOWN_LOCATION",
       skills: Array.isArray(dev.skills) ? dev.skills : [],
     }));
   };
 
-  // Function to send friend request
   const sendFriendRequest = async (developer: Developer) => {
     try {
       setPendingRequests((prev) => ({ ...prev, [developer._id]: "pending" }));
@@ -89,31 +86,27 @@ export default function DevelopersStep({
             ...prev,
             [developer._id]: "exists",
           }));
-          toast.info(`You've already sent a request to ${developer.name}`);
+          toast.info(`ALREADY_SENT_TO_${developer.name.toUpperCase()}`);
           return;
         }
-        throw new Error(errorData.error || "Failed to send friend request");
+        throw new Error(errorData.error || "FAILED_TO_SEND");
       }
 
-      // Success
       setPendingRequests((prev) => ({ ...prev, [developer._id]: "success" }));
-      toast.success(`Friend request sent to ${developer.name}`);
+      toast.success(`REQUEST_SENT_TO_${developer.name.toUpperCase()}`);
     } catch (err) {
       console.error("Error sending friend request:", err);
       setPendingRequests((prev) => ({ ...prev, [developer._id]: "error" }));
-      toast.error(`Failed to send request to ${developer.name}`);
+      toast.error(`FAILED_TO_SEND_TO_${developer.name.toUpperCase()}`);
     }
   };
 
-  // // Fetch existing friend requests on component mount
   useEffect(() => {
     const fetchExistingRequests = async () => {
       try {
         const response = await fetch("/api/friends/requests");
         if (response.ok) {
           const data = await response.json();
-
-          // Create a map of pending requests for quick lookup
           const requestMap: { [key: string]: string } = {};
           data.forEach((request: any) => {
             if (
@@ -123,24 +116,18 @@ export default function DevelopersStep({
               requestMap[request.receiverGithubUsername] = "exists";
             }
           });
-
           setPendingRequests(requestMap);
         }
       } catch (error) {
-        console.error("Error fetching existing friend requests:", error);
+        console.error("Error fetching requests:", error);
       }
     };
-
     fetchExistingRequests();
-  }, []); // Empty dependency array ensures this only runs once on mount
+  }, []);
 
-  // Fetch developers with similar skills when skills change
   useEffect(() => {
     const fetchDevelopers = async () => {
-      if (skills.length === 0) {
-        setIsRandomDevelopers(true);
-      }
-
+      if (skills.length === 0) setIsRandomDevelopers(true);
       setLoading(true);
       setError(null);
 
@@ -148,375 +135,186 @@ export default function DevelopersStep({
         const response = await fetch(
           `/api/onboarding/developers?skills=${skills.join(",")}`
         );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch developers");
-        }
+        if (!response.ok) throw new Error("FETCH_FAILED");
         const data = await response.json();
 
         if (!data.developers || data.developers.length === 0) {
-          // If no developers returned, use the initial data or mocks
-          setFilteredDevelopers(
-            formatDevelopers(availableDevelopersRef.current)
-          );
+          setFilteredDevelopers(formatDevelopers(availableDevelopersRef.current));
           setIsRandomDevelopers(true);
         } else {
-          // Format and sort developers by matching skills count (if skills are provided)
           const formattedDevs = formatDevelopers(data.developers);
-
           if (skills.length > 0 && !data.isRandom) {
-            // Sort by number of matching skills
             formattedDevs.sort((a, b) => {
-              const aMatches = a.skills.filter((skill) =>
-                skills.includes(skill)
-              ).length;
-              const bMatches = b.skills.filter((skill) =>
-                skills.includes(skill)
-              ).length;
+              const aMatches = a.skills.filter((skill) => skills.includes(skill)).length;
+              const bMatches = b.skills.filter((skill) => skills.includes(skill)).length;
               return bMatches - aMatches;
             });
           }
-
           setFilteredDevelopers(formattedDevs);
           setIsRandomDevelopers(data.isRandom || false);
         }
       } catch (err) {
-        console.error("Error fetching developers:", err);
-        setError(
-          "Could not load developers. Using default recommendations instead."
-        );
-
-        // Fall back to client-side filtering
-        const formattedDevelopers = formatDevelopers(
-          availableDevelopersRef.current
-        );
-        const filtered = formattedDevelopers.filter((dev) =>
-          dev.skills.some((skill) => skills.includes(skill))
-        );
-
-        if (filtered.length === 0) {
-          // If no matches, use random developers
-          const randomDevelopers = [...formattedDevelopers]
-            .sort(() => 0.5 - Math.random())
-            .slice(0, 4);
-          setFilteredDevelopers(randomDevelopers);
-          setIsRandomDevelopers(true);
-        } else {
-          setFilteredDevelopers(filtered);
-          setIsRandomDevelopers(false);
-        }
+        setFilteredDevelopers(formatDevelopers(availableDevelopersRef.current).slice(0, 6));
+        setIsRandomDevelopers(true);
       } finally {
         setLoading(false);
       }
     };
-
     fetchDevelopers();
-  }, [skills]); // Remove availableDevelopers from dependencies
+  }, [skills]);
 
-  // Get request status for a developer
   const getRequestStatus = (developer: Developer) => {
-    return (
-      pendingRequests[developer._id] ||
-      pendingRequests[developer.githubUsername] ||
-      null
-    );
+    return pendingRequests[developer._id] || pendingRequests[developer.githubUsername] || null;
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <motion.h2
-        className="text-2xl font-bold mb-3 text-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        Developers With Similar Skills
-      </motion.h2>
-      <motion.p
-        className="text-center text-muted-foreground mb-4 max-w-lg"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
-      >
-        {skills.length > 0
-          ? "These developers share some of your skills. Connect with them to grow your network."
-          : "Here are some developers in the CodeNearby community. Select some skills to find developers with similar interests."}
-      </motion.p>
-      {isRandomDevelopers && !loading && skills.length > 0 && (
-        <motion.div
-          className="w-full max-w-md mb-6"
+    <div className="flex flex-col items-center space-y-12">
+      <div className="text-center space-y-4">
+        <motion.h2
+          className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic leading-none border-b-8 border-swiss-red pb-4 text-black dark:text-white"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.3 }}
         >
-          <Alert className="bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900">
-            <Info className="h-4 w-4 text-blue-500 dark:text-blue-400" />
-            <AlertDescription className="text-sm text-blue-700 dark:text-blue-300">
-              We couldn&apos;t find enough developers with your exact skills.
-              Showing a mix of random developers from our community instead.
-            </AlertDescription>
-          </Alert>
-        </motion.div>
+          SIMILAR_TECHNICAL_IDENTITIES
+        </motion.h2>
+        <motion.p
+          className="text-xl font-bold uppercase tracking-tight opacity-40 dark:opacity-60 italic max-w-xl mx-auto text-black dark:text-white"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          {skills.length > 0
+            ? "IDENTIFYING_SYSTEMS_WITH_MATCHING_STACK_PARAMETERS"
+            : "GENERAL_COMMUNITY_IDENTITIES_DETECTED // SELECT_SKILLS_FOR_PRECISION"}
+        </motion.p>
+      </div>
+
+      {isRandomDevelopers && !loading && skills.length > 0 && (
+        <Alert className="max-w-xl border-4 border-swiss-black dark:border-white bg-swiss-red text-swiss-white rounded-none">
+          <Info className="h-4 w-4" />
+          <AlertDescription className="font-black uppercase tracking-tighter text-xs">
+            INSUFFICIENT_EXACT_MATCHES // DISPLAYING_MIXED_NEURAL_PROFILES
+          </AlertDescription>
+        </Alert>
       )}
+
       {loading && (
-        <div className="flex items-center justify-center w-full py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <span className="ml-2 text-muted-foreground">
-            Finding developers with similar skills...
-          </span>
+        <div className="flex flex-col items-center justify-center p-20 space-y-4 text-black dark:text-white">
+          <Loader2 className="h-12 w-12 animate-spin text-swiss-red" />
+          <span className="text-xl font-black uppercase tracking-tighter italic">SCANNING_NETWORK...</span>
         </div>
       )}
-      {error && (
-        <motion.div
-          className="bg-destructive/10 text-destructive px-4 py-2 rounded-md mb-4 text-sm"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          {error}
-        </motion.div>
-      )}
+
       {!loading && (
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full mt-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
           <AnimatePresence>
             {filteredDevelopers.slice(0, 6).map((developer, index) => {
               const requestStatus = getRequestStatus(developer);
+              const matchCount = developer.skills.filter(s => skills.includes(s)).length;
+              const matchPercentage = skills.length > 0 ? Math.min(100, Math.round((matchCount / skills.length) * 100)) : 0;
+
               return (
                 <motion.div
                   key={developer._id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ delay: 0.1 + index * 0.1, duration: 0.3 }}
-                  whileHover={{
-                    boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)",
-                  }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
                 >
-                  <Card className="h-full border overflow-hidden">
-                    <CardContent className="p-6">
-                      <div className="flex flex-col items-center text-center">
-                        {" "}
-                        <motion.div
-                          whileHover={{ scale: 1.05 }}
-                          transition={{
-                            type: "spring",
-                            stiffness: 300,
-                            damping: 20,
-                          }}
-                        >
-                          <Avatar className="h-16 w-16 mb-4 border-2 border-primary/10">
-                            <AvatarImage
-                              src={developer.image}
-                              alt={developer.name}
-                            />
-                            <AvatarFallback>
-                              {developer.name[0]?.toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                        </motion.div>
-                        <h3 className="font-semibold text-base mb-1">
-                          {developer.name}
-                        </h3>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          @{developer.githubUsername}
-                        </p>
-                        {developer.githubLocation && (
-                          <div className="flex items-center justify-center text-xs text-muted-foreground mb-3">
-                            <MapPin className="h-3 w-3 mr-1" />
-                            <span>{developer.githubLocation}</span>
-                          </div>
-                        )}{" "}
-                        {/* Display matched skills count with progress bar */}
-                        {skills.length > 0 && (
-                          <div className="mb-3 w-full px-2">
-                            {(() => {
-                              const matchCount = developer.skills.filter(
-                                (skill) => skills.includes(skill)
-                              ).length;
+                  <SwissCard className="h-full border-4 border-swiss-black dark:border-white p-8 bg-swiss-white dark:bg-black shadow-[12px_12px_0_0_rgba(0,0,0,1)] dark:shadow-[12px_12px_0_0_rgba(255,255,255,1)] hover:shadow-[12px_12px_0_0_rgba(255,0,0,1)] transition-all flex flex-col items-center text-center">
+                    <div className="relative w-24 h-24 mb-6 ring-4 ring-swiss-black dark:ring-white grayscale group-hover:grayscale-0 transition-all overflow-hidden border-4 border-swiss-white dark:border-black shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
+                      <Image src={developer.image} alt={developer.name} fill className="object-cover" />
+                    </div>
 
-                              // Calculate match percentage based on user's selected skills
-                              const totalSelected = skills.length;
-                              const matchPercentage = Math.min(
-                                100,
-                                Math.round((matchCount / totalSelected) * 100)
-                              );
+                    <div className="space-y-1 mb-4">
+                      <h3 className="text-xl font-black uppercase tracking-tighter italic leading-none text-black dark:text-white">{developer.name}</h3>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 dark:opacity-60 italic text-black dark:text-white">@{developer.githubUsername}</p>
+                    </div>
 
-                              return matchCount > 0 ? (
-                                <div className="w-full">
-                                  <div className="flex justify-between items-center mb-1">
-                                    <Badge
-                                      variant="secondary"
-                                      className="text-xs px-2 py-0.5"
-                                    >
-                                      {matchCount} skill
-                                      {matchCount !== 1 ? "s" : ""} matched
-                                    </Badge>
-                                    {matchPercentage >= 50 && (
-                                      <span className="text-xs text-green-500 font-medium">
-                                        {matchPercentage}% match
-                                      </span>
-                                    )}
-                                  </div>
-                                  <div className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                                    <motion.div
-                                      className="h-full bg-gradient-to-r from-green-400 to-green-500 rounded-full"
-                                      initial={{ width: 0 }}
-                                      animate={{ width: `${matchPercentage}%` }}
-                                      transition={{
-                                        duration: 0.8,
-                                        delay: index * 0.1,
-                                      }}
-                                    />
-                                  </div>
-                                </div>
-                              ) : null;
-                            })()}
-                          </div>
-                        )}
-                        <div className="flex flex-wrap gap-1 justify-center mb-4">
-                          {developer.skills.slice(0, 3).map((skill) => {
-                            const isMatched = skills.includes(skill);
-                            return (
-                              <motion.div
-                                key={skill}
-                                initial={{ scale: 1 }}
-                                animate={
-                                  isMatched && !isRandomDevelopers
-                                    ? {
-                                        scale: [1, 1.1, 1],
-                                        transition: {
-                                          repeat: 1,
-                                          repeatType: "reverse",
-                                          duration: 0.5,
-                                          delay: index * 0.1 + 0.5,
-                                        },
-                                      }
-                                    : {}
-                                }
-                              >
-                                <Badge
-                                  variant={
-                                    isMatched && !isRandomDevelopers
-                                      ? "default"
-                                      : "outline"
-                                  }
-                                  className="text-xs"
-                                >
-                                  {skill}
-                                </Badge>
-                              </motion.div>
-                            );
-                          })}
-                          {developer.skills.length > 3 && (
-                            <Badge variant="outline" className="text-xs">
-                              +{developer.skills.length - 3} more
-                            </Badge>
-                          )}
+                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest opacity-60 mb-6 bg-swiss-muted dark:bg-white dark:text-black px-3 py-1 border-2 border-swiss-black dark:border-white">
+                      <MapPin className="h-3 w-3" />
+                      {(developer.githubLocation || "UNKNOWN_LOCATION").toUpperCase()}
+                    </div>
+
+                    {skills.length > 0 && matchCount > 0 && (
+                      <div className="w-full space-y-2 mb-6 text-black dark:text-white">
+                        <div className="flex justify-between items-end">
+                          <span className="text-[10px] font-black uppercase tracking-widest leading-none">MATCH_PRECISION</span>
+                          <span className="text-xl font-black uppercase tracking-tighter italic leading-none">{matchPercentage}%</span>
                         </div>
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div>
-                                {requestStatus === "success" ? (
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="w-full"
-                                    disabled
-                                  >
-                                    <Check className="h-4 w-4 mr-1 text-green-500" />
-                                    Request Sent
-                                  </Button>
-                                ) : requestStatus === "exists" ? (
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="w-full"
-                                    disabled
-                                  >
-                                    <Check className="h-4 w-4 mr-1 text-green-500" />
-                                    Request Sent
-                                  </Button>
-                                ) : requestStatus === "error" ? (
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="w-full text-destructive"
-                                    onClick={() => sendFriendRequest(developer)}
-                                  >
-                                    <X className="h-4 w-4 mr-1" />
-                                    Try Again
-                                  </Button>
-                                ) : requestStatus === "pending" ? (
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="w-full"
-                                    disabled
-                                  >
-                                    <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                                    Sending...
-                                  </Button>
-                                ) : (
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="w-full hover:bg-primary hover:text-primary-foreground"
-                                    onClick={() => sendFriendRequest(developer)}
-                                  >
-                                    <UserPlus className="h-4 w-4 mr-1" />
-                                    Connect
-                                  </Button>
-                                )}
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              {requestStatus === "success" ||
-                              requestStatus === "exists" ? (
-                                <p>Friend request already sent</p>
-                              ) : requestStatus === "error" ? (
-                                <p>
-                                  Failed to send request. Click to try again.
-                                </p>
-                              ) : requestStatus === "pending" ? (
-                                <p>Sending friend request...</p>
-                              ) : (
-                                <p>Send a friend request to {developer.name}</p>
-                              )}
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                        <div className="h-4 w-full bg-swiss-muted dark:bg-white/10 border-2 border-swiss-black dark:border-white group overflow-hidden">
+                          <motion.div
+                            className="h-full bg-swiss-red"
+                            initial={{ width: 0 }}
+                            animate={{ width: `${matchPercentage}%` }}
+                            transition={{ duration: 1, delay: 0.5 + index * 0.1 }}
+                          />
+                        </div>
                       </div>
-                    </CardContent>
-                  </Card>
+                    )}
+
+                    <div className="flex flex-wrap gap-2 justify-center mb-8 h-20 overflow-hidden">
+                      {developer.skills.slice(0, 4).map(skill => (
+                        <div key={skill} className={cn(
+                          "px-2 py-1 text-[8px] font-black uppercase tracking-[0.2em] border-2",
+                          skills.includes(skill)
+                            ? "bg-swiss-black dark:bg-white text-swiss-white dark:text-black border-swiss-black dark:border-white"
+                            : "border-swiss-muted dark:border-white/20 opacity-40 dark:opacity-20 text-black dark:text-white"
+                        )}>
+                          {skill}
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="w-full mt-auto">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="w-full">
+                              <SwissButton
+                                variant={requestStatus === "success" || requestStatus === "exists" ? "secondary" : "primary"}
+                                className="w-full h-12 text-sm"
+                                disabled={requestStatus === "pending" || requestStatus === "success" || requestStatus === "exists"}
+                                onClick={() => sendFriendRequest(developer)}
+                              >
+                                {requestStatus === "pending" ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                                {requestStatus === "success" || requestStatus === "exists" ? "UPLINK_ESTABLISHED" : "INITIALIZE_CONNECT"}
+                              </SwissButton>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent className="bg-swiss-black dark:bg-white text-swiss-white dark:text-black border-2 border-swiss-white dark:border-black p-4 rounded-none">
+                            <p className="text-[10px] font-black uppercase tracking-widest italic">
+                              {requestStatus === "success" || requestStatus === "exists" ? "ACCESS_GRANTED" : `SEND_REQUEST_TO_${developer.name.toUpperCase()}`}
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  </SwissCard>
                 </motion.div>
               );
             })}
           </AnimatePresence>
         </div>
       )}
+
       {!loading && filteredDevelopers.length === 0 && (
-        <motion.div
-          className="mt-6 text-center text-muted-foreground"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          No developers found in the system. As more users join CodeNearby,
-          you&apos;ll see developers with matching skills here.
-        </motion.div>
-      )}{" "}
+        <div className="text-center p-12 border-4 border-swiss-black dark:border-white border-dotted max-w-xl text-black dark:text-white">
+          <p className="text-xl font-black uppercase tracking-tighter italic">NO_VALID_IDENTITIES_FOUND_IN_SYSTEM_CACHE</p>
+        </div>
+      )}
+
       {!loading && filteredDevelopers.length > 0 && (
         <motion.div
-          className="mt-6 flex items-center justify-center text-sm text-muted-foreground bg-muted/50 px-4 py-2 rounded-full"
+          className="mt-12 flex items-center gap-4 bg-swiss-black dark:bg-white text-swiss-white dark:text-black px-8 py-4 border-4 border-swiss-black dark:border-white shadow-[8px_8px_0_0_rgba(255,0,0,1)]"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.5 }}
+          transition={{ delay: 0.8 }}
         >
-          <Code className="h-4 w-4 mr-2" />
-          <span>
+          <Code className="h-6 w-6 text-swiss-red" />
+          <span className="font-black uppercase tracking-[0.3em] text-xs leading-none">
             {!isRandomDevelopers && skills.length > 0
-              ? "Higher match percentage indicates better skill alignment"
-              : "Select skills above to find better matches"}
+              ? "MATCH_ACCURACY_QUANTIFIED_VIA_NEURAL_ALIGNMENT"
+              : "DEFINE_TECHNICAL_PARAMETERS_TO_INCREASE_PRECISION"}
           </span>
         </motion.div>
       )}

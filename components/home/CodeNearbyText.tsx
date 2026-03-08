@@ -1,17 +1,10 @@
 "use client";
 
-import { useTheme } from "next-themes";
-import { LineShadowText } from "../magicui/LineShadowText";
-
 export function CodeNearbyText() {
-  const theme = useTheme();
-  const shadowColor = theme.resolvedTheme === "dark" ? "white" : "black";
   return (
-    <h1 className="text-balance text-5xl font-semibold leading-none tracking-tighter  md:text-7xl">
-      Code
-      <LineShadowText className="italic" shadowColor={shadowColor}>
-        Nearby
-      </LineShadowText>
+    <h1 className="text-5xl md:text-8xl font-black uppercase tracking-tightest leading-[0.85] select-none text-black dark:text-white">
+      <span className="block">CODE</span>
+      <span className="block text-swiss-red">NEARBY</span>
     </h1>
   );
 }

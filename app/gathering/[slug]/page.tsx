@@ -36,21 +36,22 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Switch } from "@/components/ui/switch";
 import { QRCodeDisplay } from "@/components/qr-code-display";
 import { Input } from "@/components/ui/input";
 import { Ripple } from "@/components/magicui/ripple";
 import { RandomProfileCircles } from "@/components/random-profile-circles";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Switch } from "@/components/ui/switch";
 import LoginButton from "@/components/login-button";
-import { Separator } from "@/components/ui/separator";
+import { Search, Zap } from "lucide-react";
 import { Session } from "next-auth";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AnimatePresence, motion } from "framer-motion";
 import { IconArrowsExchange2 } from "@tabler/icons-react";
 import InfiniteMenu from "@/components/reactbits/InfiniteMenu";
+import SwissButton from "@/components/swiss/SwissButton";
+import { cn } from "@/lib/utils";
 
 interface User {
   _id: string;
@@ -84,10 +85,8 @@ export default function GatheringRoomPage() {
   const [showCheckIcon, setShowCheckIcon] = useState(false);
   const [showConnectView, setShowConnectView] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedName, setEditedName] = useState(gathering?.name || "");
-  const [filteredParticipants, setFilteredParticipants] = useState({
-    participants: gathering?.participants || [],
-  });
+  const [editedName, setEditedName] = useState("");
+  const [filteredParticipants, setFilteredParticipants] = useState<User[]>([]);
 
   const handleSaveName = async () => {
     if (!isHost) return;
@@ -122,7 +121,8 @@ export default function GatheringRoomPage() {
       }
       const data = await response.json();
       setGathering(data);
-      setFilteredParticipants({ participants: data.participants });
+      setFilteredParticipants(data.participants);
+      setEditedName(data.name);
       const imagesWithIds = data.participants
         .map((participant: any) => ({
           image: participant.image,
@@ -140,125 +140,69 @@ export default function GatheringRoomPage() {
     }
   };
 
-  const handleBlockUser = async (userId: string) => {
+  const handleModeration = async (action: string, userId?: string, enabled?: boolean) => {
     try {
       const response = await fetch(`/api/gathering/${params.slug}/moderate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "block", userId }),
+        body: JSON.stringify({ action, userId, enabled }),
       });
       if (!response.ok) {
-        throw new Error("Failed to block user");
+        throw new Error("Action failed");
+      }
+      if (action === "hostOnly") {
+        setHostOnlyMode(!!enabled);
       }
       fetchGathering();
-      toast.success("User has been blocked from the gathering.");
+      toast.success(`Action: ${action} executed.`);
     } catch {
-      toast.error("Failed to block user. Please try again.");
-    }
-  };
-
-  const handleUnblockUser = async (userId: string) => {
-    try {
-      const response = await fetch(`/api/gathering/${params.slug}/moderate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "unblock", userId }),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to unblock user");
-      }
-      fetchGathering();
-
-      toast.success("User has been unblocked from the gathering.");
-    } catch {
-      toast.error("Failed to unblock user. Please try again.");
-    }
-  };
-
-  const handleMuteUser = async (userId: string) => {
-    try {
-      const response = await fetch(`/api/gathering/${params.slug}/moderate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "mute", userId }),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to mute user");
-      }
-      fetchGathering();
-
-      toast.success("User has been muted in the gathering.");
-    } catch {
-      toast.error("Failed to mute user. Please try again.");
-    }
-  };
-
-  const handleUnmuteUser = async (userId: string) => {
-    try {
-      const response = await fetch(`/api/gathering/${params.slug}/moderate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "unmute", userId }),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to unmute user");
-      }
-      fetchGathering();
-
-      toast.success("User has been unmuted in the gathering.");
-    } catch {
-      toast.error("Failed to unmute user. Please try again.");
-    }
-  };
-
-  const handleHostOnlyMode = async () => {
-    try {
-      const response = await fetch(`/api/gathering/${params.slug}/moderate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "hostOnly", enabled: !hostOnlyMode }),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to toggle host-only mode");
-      }
-      setHostOnlyMode(!hostOnlyMode);
-
-      toast.success(`Host-only mode ${hostOnlyMode ? "disabled" : "enabled"}.`);
-    } catch {
-      toast.error("Failed to toggle host-only mode. Please try again.");
+      toast.error("Moderation action failed.");
     }
   };
 
   const copyInviteLink = () => {
     const inviteLink = `${window.location.origin}/gathering/join/${gathering?.slug}`;
     navigator.clipboard.writeText(inviteLink);
-
     toast.success("Invite link copied to clipboard.");
   };
 
   if (!session) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
-        <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
-        <p>You need to be signed in to view this gathering.</p>
-        <LoginButton />
+      <div className="flex flex-col items-center justify-center min-h-[70vh] p-8">
+        <div className="border-8 border-swiss-black p-12 bg-swiss-white text-center shadow-[12px_12px_0_0_rgba(0,0,0,1)]">
+          <h1 className="font-black text-6xl uppercase tracking-tighter mb-6 leading-none">
+            ACCESS<br />RESTRICTED
+          </h1>
+          <p className="font-bold uppercase tracking-tight text-xl mb-8 opacity-60">
+            SIGN IN TO ACCESS THIS ROOM
+          </p>
+          <div className="flex justify-center">
+            <LoginButton />
+          </div>
+        </div>
       </div>
     );
   }
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className="flex flex-col items-center justify-center min-h-[70vh]">
+        <div className="w-32 h-32 bg-swiss-black animate-pulse border-8 border-swiss-muted" />
+        <p className="font-black mt-6 uppercase tracking-widest text-xs">JOINING_SESSION...</p>
       </div>
     );
   }
 
   if (!gathering) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
-        <h1 className="text-2xl font-bold mb-4">Gathering Not Found</h1>
-        <p>The requested gathering could not be found.</p>
+      <div className="flex flex-col items-center justify-center min-h-[70vh] p-8">
+        <div className="border-8 border-swiss-black p-12 bg-swiss-white text-center shadow-[12px_12px_0_0_rgba(0,0,0,1)]">
+          <h1 className="font-black text-6xl uppercase tracking-tighter mb-6">404_NOT_FOUND</h1>
+          <p className="font-bold uppercase tracking-tight text-xl mb-8 opacity-60">ROOM_SIGNAL_NOT_DETECTED</p>
+          <SwissButton asChild variant="secondary" className="px-8">
+            <Link href="/gathering">RETURN_TO_BASE</Link>
+          </SwissButton>
+        </div>
       </div>
     );
   }
@@ -270,326 +214,292 @@ export default function GatheringRoomPage() {
     )
   ) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
-        <h1 className="text-2xl font-bold mb-4">Unauthorized</h1>
-        <p>You are not a participant of this gathering.</p>
-        <p className="mb-4">Would you like to join this gathering?</p>
-        <Button asChild>
-          <Link href={`/gathering/join/${params.slug}`}>Join Gathering</Link>
-        </Button>
+      <div className="flex flex-col items-center justify-center min-h-[70vh] p-8">
+        <div className="border-8 border-swiss-black p-12 bg-swiss-white text-center shadow-[12px_12px_0_0_rgba(0,0,0,1)]">
+          <h1 className="font-black text-6xl uppercase tracking-tighter mb-6">UNAUTHORIZED</h1>
+          <p className="font-bold uppercase tracking-tight text-xl mb-8 opacity-60">NOT_A_PARTICIPANT_OF_THIS_NODE</p>
+          <SwissButton asChild className="px-12 text-xl py-6">
+            <Link href={`/gathering/join/${params.slug}`}>JOIN_GATHERING</Link>
+          </SwissButton>
+        </div>
       </div>
     );
   }
 
   const isHost = session.user.id === gathering.hostId;
-
-  const timeLeft =
-    new Date(gathering.expiresAt).getTime() - new Date().getTime();
+  const timeLeft = new Date(gathering.expiresAt).getTime() - new Date().getTime();
   const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
   const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
 
   return (
-    <div className="container max-w-7xl mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row justify-between items-start mb-8 gap-4">
-        <div>
-          <div className="flex gap-3 items-center">
-            {isEditing ? (
-              <>
-                <input
-                  type="text"
-                  value={editedName}
-                  onChange={(e) => setEditedName(e.target.value)}
-                  className="text-4xl font-bold bg-transparent border-b-2 border-primary outline-none"
-                />
-                <div className="flex gap-2">
-                  <Check
-                    className="h-5 w-5 text-primary/60 hover:text-primary cursor-pointer"
-                    onClick={handleSaveName}
+    <div className="bg-swiss-white min-h-screen pb-24">
+      {/* Swiss Header */}
+      <div className="border-b-8 border-swiss-black bg-swiss-white sticky top-0 z-20">
+        <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="flex-1">
+            <div className="flex items-center gap-4 mb-4">
+              {isEditing ? (
+                <div className="flex flex-1 gap-4 items-center">
+                  <input
+                    type="text"
+                    value={editedName}
+                    onChange={(e) => setEditedName(e.target.value)}
+                    className="font-black text-7xl uppercase tracking-tighter bg-swiss-muted/50 border-b-8 border-swiss-black outline-none w-full"
                   />
-                  <X
-                    className="h-5 w-5 text-primary/60 hover:text-primary cursor-pointer"
-                    onClick={() => {
-                      setIsEditing(false);
-                      setEditedName(gathering.name);
-                    }}
-                  />
+                  <div className="flex gap-2">
+                    <button onClick={handleSaveName} className="p-4 bg-swiss-black text-swiss-white hover:bg-swiss-red transition-colors">
+                      <Check className="h-8 w-8" />
+                    </button>
+                    <button onClick={() => { setIsEditing(false); setEditedName(gathering.name); }} className="p-4 border-4 border-swiss-black hover:bg-swiss-muted transition-colors">
+                      <X className="h-8 w-8" />
+                    </button>
+                  </div>
                 </div>
-              </>
-            ) : (
-              <>
-                <h1 className="text-4xl font-bold">{gathering.name}</h1>
-                {isHost && (
-                  <Edit3
-                    className="h-5 w-5 text-primary/60 hover:text-primary cursor-pointer"
-                    onClick={() => {
-                      setIsEditing(true);
-                      setEditedName(gathering.name);
-                    }}
-                  />
-                )}
-              </>
-            )}
+              ) : (
+                <>
+                  <h1 className="font-black text-8xl uppercase tracking-tighter leading-[0.8]">
+                    {gathering.name}
+                  </h1>
+                  {isHost && (
+                    <button onClick={() => setIsEditing(true)} className="p-2 border-4 border-swiss-black hover:bg-swiss-muted transition-colors">
+                      <Edit3 className="h-6 w-6 stroke-[3]" />
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
+
+            <div className="flex flex-wrap gap-4 font-black text-[10px] uppercase tracking-widest mt-6">
+              <div className="px-3 py-1 bg-swiss-black text-swiss-white flex items-center gap-2">
+                <Clock className="w-4 h-4 text-swiss-red" />
+                {hoursLeft}H {minutesLeft}M REMAINING
+              </div>
+              <div className="px-3 py-1 border-2 border-swiss-black flex items-center gap-2">
+                <Users className="w-4 h-4 text-swiss-red" />
+                {gathering.participants.length} NODES_SYNCED
+              </div>
+              {isHost && (
+                <div className="px-3 py-1 bg-swiss-red text-swiss-white flex items-center gap-2">
+                  <Crown className="w-4 h-4" />
+                  ADMIN_HOST
+                </div>
+              )}
+            </div>
           </div>
-          <div className="flex items-center gap-2 mt-2 cursor-default">
-            <Badge variant="secondary">
-              <Clock className="w-3 h-3 mr-1" />
-              {hoursLeft}h {minutesLeft}m left
-            </Badge>
-            <Badge variant="secondary">
-              <Users className="w-3 h-3 mr-1" />
-              {gathering.participants.length} participants
-            </Badge>
-            {isHost && (
-              <Badge variant="default">
-                <Crown className="w-3 h-3 mr-1" />
-                Host
-              </Badge>
+
+          <div className="flex shrink-0 gap-3">
+            {gathering?.blockedUsers?.includes(session?.user?.id) ? (
+              <SwissButton variant="secondary" disabled className="h-16 px-10">
+                <UserX className="mr-3 h-6 w-6" /> BLOCKED
+              </SwissButton>
+            ) : (
+              <SwissButton asChild className="h-16 px-10 text-xl">
+                <Link href={`/gathering/${gathering.slug}/chat`}>
+                  <MessageSquare className="mr-3 h-6 w-6 stroke-[3]" /> JOIN_CHAT_ROOM
+                </Link>
+              </SwissButton>
             )}
           </div>
         </div>
-        {gathering?.blockedUsers?.includes(session?.user?.id) ? (
-          <Button size="lg" className="shrink-0" disabled>
-            <UserX className="mr-2 h-5 w-5" />
-            You are blocked
-          </Button>
-        ) : (
-          <Button asChild size="lg" className="shrink-0">
-            <Link href={`/gathering/${gathering.slug}/chat`}>
-              <MessageSquare className="mr-2 h-5 w-5" />
-              Join Chat Room
-            </Link>
-          </Button>
-        )}
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8">
-        <Card className="md:order-1">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Participants</CardTitle>
+      <div className="max-w-7xl mx-auto px-6 py-12 grid md:grid-cols-2 gap-12">
+        {/* Participants Section */}
+        <div className="border-8 border-swiss-black bg-swiss-white shadow-[16px_16px_0_0_rgba(0,0,0,1)] flex flex-col min-h-[600px]">
+          <div className="p-6 border-b-8 border-swiss-black flex justify-between items-center bg-swiss-muted/10">
+            <h2 className="font-black text-3xl uppercase tracking-tighter">PARTICIPANTS</h2>
             {isHost && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-4 bg-swiss-white border-4 border-swiss-black px-4 py-2">
+                <span className="font-black text-[10px] uppercase tracking-widest">HOST_ONLY</span>
                 <Switch
                   checked={hostOnlyMode}
-                  onCheckedChange={handleHostOnlyMode}
-                  id="host-only-mode"
+                  onCheckedChange={(checked) => handleModeration("hostOnly", undefined, checked)}
+                  className="data-[state=checked]:bg-swiss-red"
                 />
-                <span className="text-sm text-muted-foreground">Host Only</span>
               </div>
             )}
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="connect" className="w-full">
-              <TabsList className="w-full">
-                <TabsTrigger value="connect" className="flex-1">
-                  Connect
+          </div>
+
+          <div className="flex-1 flex flex-col">
+            <Tabs defaultValue="connect" className="flex flex-col flex-1 h-full">
+              <TabsList className="grid grid-cols-2 rounded-none h-14 p-0 bg-swiss-black border-b-8 border-swiss-black">
+                <TabsTrigger
+                  value="connect"
+                  className="rounded-none h-full font-black uppercase tracking-widest text-xs data-[state=active]:bg-swiss-white data-[state=active]:text-swiss-black text-swiss-white transition-all"
+                >
+                  CONNECT_MODE
                 </TabsTrigger>
-                <TabsTrigger value="view-all" className="flex-1">
-                  View All
+                <TabsTrigger
+                  value="view-all"
+                  className="rounded-none h-full font-black uppercase tracking-widest text-xs data-[state=active]:bg-swiss-white data-[state=active]:text-swiss-black text-swiss-white transition-all"
+                >
+                  DATA_GRID
                 </TabsTrigger>
               </TabsList>
-              <TabsContent value="connect" className="mt-4 relative">
+
+              <TabsContent value="connect" className="flex-1 m-0 p-8 relative min-h-[450px]">
                 <AnimatePresence mode="wait">
                   {showConnectView ? (
                     <motion.div
                       key="connect"
-                      initial={{ opacity: 0, scale: 0.9 }}
+                      initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      className="relative aspect-square w-full bg-background/50 rounded-lg"
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      className="relative aspect-square w-full bg-swiss-muted/20 border-4 border-swiss-black overflow-hidden"
                     >
-                      <Ripple mainCircleSize={10} numCircles={10} />
+                      <Ripple mainCircleSize={10} numCircles={10} className="opacity-40" />
                       <RandomProfileCircles
                         profiles={participantImagesWithIds}
                         OwnProfileImage={session.user?.image || ""}
-                        OwnProfileImageSize={80}
+                        OwnProfileImageSize={100}
                       />
                     </motion.div>
                   ) : (
                     <motion.div
                       key="sphere"
-                      initial={{ opacity: 0, scale: 0.9 }}
+                      initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      className="relative aspect-square w-full bg-background/50 rounded-lg"
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      className="relative aspect-square w-full bg-swiss-black border-4 border-swiss-black overflow-hidden"
                     >
-                      <div className="grid gap-4 p-2">
+                      <div className="h-full">
                         {(() => {
-                          const items = participantImagesWithIds.map(
-                            (user) => ({
-                              image: user.image,
-                              link: `/u/${user.id}`,
-                              title: user.id,
-                              description: "",
-                            })
-                          );
+                          const items = participantImagesWithIds.map(user => ({
+                            image: user.image,
+                            link: `/u/${user.id}`,
+                            title: user.id.toUpperCase(),
+                            description: "NODE_ACTIVE",
+                          }));
                           return (
-                            <>
-                              <div className="max-h-[600px] w-full aspect-square relative rounded-xl overflow-hidden">
-                                <InfiniteMenu items={items} />
-                                <motion.div
-                                  initial={{ opacity: 1 }}
-                                  animate={{
-                                    opacity: items.length === 0 ? 1 : 0,
-                                  }}
-                                  onTapStart={() => ({
-                                    opacity: 0,
-                                    transition: { duration: 0.5 },
-                                  })}
-                                  transition={{ delay: 3, duration: 0.5 }}
-                                  className=" pointer-events-none absolute inset-0 bg-background/50 z-40 flex items-center justify-center"
-                                >
-                                  <div className="text-center relative w-full h-full">
-                                    <p className="text-xl text-foreground absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-40">
-                                      Move it around!
-                                    </p>
-                                    <ArrowUpIcon className="w-8 h-8 absolute top-10 left-1/2 -translate-x-1/2 text-foreground z-40" />
-                                    <ArrowDownIcon className="w-8 h-8 absolute bottom-10 left-1/2 -translate-x-1/2 text-foreground z-40" />
-                                    <ArrowLeftIcon className="w-8 h-8 absolute left-10 top-1/2 -translate-y-1/2 text-foreground z-40" />
-                                    <ArrowRightIcon className="w-8 h-8 absolute right-10 top-1/2 -translate-y-1/2 text-foreground z-40" />
-                                  </div>
-                                </motion.div>
+                            <div className="h-full relative font-black uppercase tracking-tighter">
+                              <InfiniteMenu items={items} />
+                              <div className="absolute inset-x-0 bottom-4 text-center pointer-events-none z-10">
+                                <p className="px-4 py-1 bg-swiss-red text-swiss-white inline-block text-[10px] animate-pulse">
+                                  ACTIVE_STREAMING_UI
+                                </p>
                               </div>
-                            </>
+                            </div>
                           );
                         })()}
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
-                <div className="absolute top-4 right-4 z-50 flex gap-2">
-                  <Button
-                    variant={showConnectView ? "default" : "secondary"}
-                    size="icon"
-                    onClick={fetchGathering}
-                  >
-                    <RefreshCcw size={20} />
-                  </Button>
-                  <Button
-                    variant={showConnectView ? "default" : "secondary"}
-                    size="icon"
-                    onClick={() => setShowConnectView(!showConnectView)}
-                  >
-                    <IconArrowsExchange2 size={20} />
-                  </Button>
+                <div className="absolute bottom-12 right-12 z-50 flex gap-4">
+                  <button onClick={fetchGathering} className="w-14 h-14 bg-swiss-white border-4 border-swiss-black flex items-center justify-center hover:bg-swiss-black hover:text-swiss-white transition-all active:translate-y-1">
+                    <RefreshCcw className="h-6 w-6" />
+                  </button>
+                  <button onClick={() => setShowConnectView(!showConnectView)} className="w-14 h-14 bg-swiss-white border-4 border-swiss-black flex items-center justify-center hover:bg-swiss-black hover:text-swiss-white transition-all active:translate-y-1">
+                    <IconArrowsExchange2 className="h-8 w-8" />
+                  </button>
                 </div>
               </TabsContent>
-              <TabsContent value="view-all" className="mt-4">
-                <ScrollArea className=" pr-4 h-[400px]">
-                  <div className="space-y-3">
-                    <div className="mb-4">
-                      <Input
-                        type="text"
-                        placeholder="Filter participants..."
-                        onChange={(e) => {
-                          const filter = e.target.value.toLowerCase();
-                          const filtered = gathering.participants.filter(
-                            (user) => user.name.toLowerCase().includes(filter)
-                          );
-                          setFilteredParticipants({ participants: filtered });
-                        }}
-                        className="m-1 w-[-webkit-fill-available]"
-                      />
-                    </div>
-                    {filteredParticipants.participants.map((user) => (
-                      <div
-                        key={user.id}
-                        className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50"
-                      >
-                        <div className="flex items-center gap-3">
-                          <Avatar>
-                            <AvatarImage src={user.image} alt={user.name} />
-                            <AvatarFallback>{user.name[0]}</AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="font-medium">{user.name}</p>
-                            {user._id === gathering.hostId && (
-                              <p className="text-xs text-muted-foreground">
-                                Host
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                        {isHost && user._id !== session.user?.id && (
-                          <div className="flex gap-2">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() =>
-                                gathering.blockedUsers?.includes(user._id)
-                                  ? handleUnblockUser(user._id)
-                                  : handleBlockUser(user._id)
-                              }
-                            >
-                              {gathering.blockedUsers?.includes(user._id) ? (
-                                <UserCheck2Icon className="h-4 w-4" />
-                              ) : (
-                                <UserX className="h-4 w-4" />
-                              )}
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() =>
-                                gathering.mutedUsers?.includes(user._id)
-                                  ? handleUnmuteUser(user._id)
-                                  : handleMuteUser(user._id)
-                              }
-                            >
-                              {gathering.mutedUsers?.includes(user._id) ? (
-                                <UserPlus2 className="h-4 w-4" />
-                              ) : (
-                                <VolumeX className="h-4 w-4" />
-                              )}
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    ))}
+
+              <TabsContent value="view-all" className="flex-1 m-0 p-8 h-full min-h-[450px]">
+                <div className="flex flex-col h-full gap-6">
+                  <div className="relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 opacity-40" />
+                    <Input
+                      type="text"
+                      placeholder="SCAN_FOR_PEERS..."
+                      onChange={(e) => {
+                        const filter = e.target.value.toLowerCase();
+                        setFilteredParticipants(gathering.participants.filter(user => user.name.toLowerCase().includes(filter)));
+                      }}
+                      className="h-14 pl-12 bg-swiss-white border-4 border-swiss-black rounded-none font-black uppercase tracking-tight focus:bg-swiss-muted transition-colors outline-none w-full"
+                    />
                   </div>
-                </ScrollArea>
+
+                  <ScrollArea className="flex-1 pr-4 border-4 border-swiss-black p-4 bg-swiss-muted/10">
+                    <div className="space-y-3">
+                      {filteredParticipants.map((user) => (
+                        <div key={user.id} className="group bg-swiss-white border-2 border-swiss-black p-4 flex items-center justify-between hover:bg-swiss-muted transition-colors">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 relative border-2 border-swiss-black grayscale group-hover:grayscale-0 transition-all">
+                              <Avatar className="w-full h-full rounded-none">
+                                <AvatarImage src={user.image} className="rounded-none object-cover" />
+                                <AvatarFallback className="rounded-none font-black">{user.name[0]}</AvatarFallback>
+                              </Avatar>
+                            </div>
+                            <div>
+                              <p className="font-black text-sm uppercase tracking-tight">{user.name}</p>
+                              {user._id === gathering.hostId && (
+                                <p className="font-bold text-[8px] uppercase tracking-widest text-swiss-red mt-1">PRIMARY_HOST</p>
+                              )}
+                            </div>
+                          </div>
+
+                          {isHost && user._id !== session.user?.id && (
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleModeration(gathering.blockedUsers?.includes(user._id) ? "unblock" : "block", user._id)}
+                                className={cn("p-2 border-2 border-swiss-black transition-colors", gathering.blockedUsers?.includes(user._id) ? "bg-swiss-black text-swiss-white" : "hover:bg-swiss-red hover:text-swiss-white")}
+                              >
+                                {gathering.blockedUsers?.includes(user._id) ? <UserCheck2Icon className="h-4 w-4" /> : <UserX className="h-4 w-4" />}
+                              </button>
+                              <button
+                                onClick={() => handleModeration(gathering.mutedUsers?.includes(user._id) ? "unmute" : "mute", user._id)}
+                                className={cn("p-2 border-2 border-swiss-black transition-colors", gathering.mutedUsers?.includes(user._id) ? "bg-swiss-black text-swiss-white" : "hover:bg-swiss-black hover:text-swiss-white")}
+                              >
+                                {gathering.mutedUsers?.includes(user._id) ? <UserPlus2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </div>
               </TabsContent>
             </Tabs>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="md:order-2">
-          <CardHeader>
-            <CardTitle>Invite Others</CardTitle>
-            <CardDescription>
-              Share this gathering with your friends
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex justify-center">
+        {/* Invite Section */}
+        <div className="border-8 border-swiss-black bg-swiss-white shadow-[16px_16px_0_0_rgba(0,0,0,1)] p-12 h-fit flex flex-col">
+          <div className="mb-12 border-l-8 border-swiss-black pl-8">
+            <h2 className="font-black text-4xl uppercase tracking-tighter">INVITE_PEERS</h2>
+            <p className="font-bold uppercase tracking-widest text-xs text-swiss-red">EXPAND_LOCAL_NETWORK</p>
+          </div>
+
+          <div className="space-y-12">
+            <div className="flex justify-center p-8 border-4 border-swiss-black bg-swiss-white relative">
               <QRCodeDisplay slug={gathering.slug} />
-            </div>
-            <Separator />
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Invite Link</label>
-              <div className="flex gap-2">
-                <Input
-                  readOnly
-                  value={`${window.location.origin}/gathering/join/${gathering.slug}`}
-                />
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  onClick={() => {
-                    copyInviteLink();
-                    setShowCheckIcon(true);
-                    setTimeout(() => setShowCheckIcon(false), 1000);
-                  }}
-                >
-                  {showCheckIcon ? (
-                    <Check className="h-4 w-4" />
-                  ) : (
-                    <LinkIcon className="h-4 w-4" />
-                  )}
-                </Button>
+              <div className="absolute top-0 right-0 p-2 bg-swiss-black text-swiss-white">
+                <Zap className="h-4 w-4 fill-swiss-red text-swiss-red" />
               </div>
             </div>
-          </CardContent>
-        </Card>
+
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <label className="font-black text-[10px] uppercase tracking-widest">TRANSMISSION_LINK</label>
+                <div className="flex gap-3">
+                  <Input
+                    readOnly
+                    value={`${window.location.origin}/gathering/join/${gathering.slug}`}
+                    className="h-14 px-6 bg-swiss-muted border-4 border-swiss-black rounded-none font-black tracking-tight outline-none w-full text-xs"
+                  />
+                  <button
+                    onClick={() => {
+                      copyInviteLink();
+                      setShowCheckIcon(true);
+                      setTimeout(() => setShowCheckIcon(false), 1000);
+                    }}
+                    className="h-14 w-14 bg-swiss-black text-swiss-white flex items-center justify-center hover:bg-swiss-red transition-all shrink-0 active:translate-y-1"
+                  >
+                    {showCheckIcon ? <Check className="h-6 w-6" /> : <LinkIcon className="h-6 w-6" />}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-8 border-t-4 border-swiss-black">
+              <p className="font-bold uppercase tracking-tight text-[10px] opacity-40 text-center">
+                SCAN QR CODE OR COPY LINK TO SYNCHRONIZE WITH NEW NODES.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

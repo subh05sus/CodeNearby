@@ -1,9 +1,11 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import SwissSection from "@/components/swiss/SwissSection";
+import SwissCard from "@/components/swiss/SwissCard";
+import SwissButton from "@/components/swiss/SwissButton";
 import {
   Github,
   Search,
@@ -13,9 +15,11 @@ import {
   MessageCircle,
   Bot,
   X,
+  Zap,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { AnimatePresence, motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export default function AIConnectAboutPage() {
   const { resolvedTheme } = useTheme();
@@ -23,311 +27,206 @@ export default function AIConnectAboutPage() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    // Use resolvedTheme which gives the actual applied theme
     setCurrentTheme(resolvedTheme === "dark" ? "dark" : "light");
   }, [resolvedTheme]);
+
   return (
-    <div className="container mx-auto px-4 py-8 max-w-5xl">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4">AI-Connect</h1>
-        <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-          An intelligent way to discover and connect with developers worldwide
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-        <div className="flex flex-col justify-center">
-          <h2 className="text-3xl font-bold mb-4">
-            Find the right developers for your projects
-          </h2>
-          <p className="text-lg mb-6">
-            AI-Connect uses advanced artificial intelligence to help you
-            discover GitHub developers based on skills, location, and specific
-            requirements. Whether you&apos;re looking for collaborators, team
-            members, or just want to expand your network, our AI assistant makes
-            it easy.
-          </p>
-          <div className="flex gap-4">
-            <Button asChild className="rounded-full">
-              <Link href="/ai-connect">Try AI-Connect</Link>
-            </Button>
-            <Button variant="outline" asChild className="rounded-full">
-              <Link href="/explore">Explore Developers</Link>
-            </Button>
+    <div className="bg-swiss-white min-h-screen pb-20">
+      {/* Hero Section */}
+      <SwissSection title="AI_CONNECT_PROTOCOL" number="01" variant="white">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-12 mb-12">
+            <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter italic leading-none text-swiss-black mb-8">
+              INTELLIGENT_DISCOVERY
+            </h1>
+            <p className="text-2xl font-bold uppercase tracking-tight max-w-3xl opacity-60">
+              A SECURE NEURAL INTERFACE FOR GLOBAL DEVELOPER COORDINATION. DISCOVER, ANALYZE, AND CONNECT WITH THE WORLD&apos;S ELITE TECH TALENT.
+            </p>
           </div>
-        </div>
-        <div className="relative h-64 md:h-auto rounded-xl overflow-hidden shadow-lg border border-primary/10">
-          {/* Using Framer Motion for zoom effect */}
-          <motion.div
-            layoutId="ai-preview-image"
-            onClick={() => setIsOpen(true)}
-            className="w-full h-full cursor-pointer"
-            whileHover={{ scale: 1.02 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Image
-              src={`/ai-preview-${currentTheme}.png`}
-              alt="AI-Connect Interface"
-              fill
-              className="object-cover"
-              priority
-            />
-          </motion.div>
 
-          {/* Modal overlay for the zoomed image */}
-          <AnimatePresence>
-            {isOpen && (
+          <div className="lg:col-span-7 space-y-8">
+            <h2 className="text-4xl font-black uppercase tracking-tighter italic leading-tight underline decoration-8 decoration-swiss-red">
+              OPTIMIZE_YOUR_NETWORK
+            </h2>
+            <p className="text-xl font-bold uppercase tracking-tight opacity-80 leading-snug">
+              AI-CONNECT LEVERAGES HIGH-PERFORMANCE NEURAL NETWORKS TO IDENTIFY GITHUB ENTITIES BASED ON MULTI-DIMENSIONAL CRITERIA: SKILLS, GEOLOCATION, AND CONTRIBUTION METRICS.
+            </p>
+            <div className="flex flex-wrap gap-6 pt-6">
+              <SwissButton variant="primary" size="lg" className="h-20 px-10 text-xl" asChild>
+                <Link href="/ai-connect">INITIALIZE_INTERFACE</Link>
+              </SwissButton>
+              <SwissButton variant="secondary" size="lg" className="h-20 px-10 text-xl" asChild>
+                <Link href="/explore">BROWSE_ELITE_NODES</Link>
+              </SwissButton>
+            </div>
+          </div>
+
+          <div className="lg:col-span-5">
+            <div className="relative aspect-square border-8 border-swiss-black shadow-[16px_16px_0_0_rgba(0,0,0,1)] group overflow-hidden bg-swiss-red">
               <motion.div
-                className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setIsOpen(false)}
+                onClick={() => setIsOpen(true)}
+                className="w-full h-full cursor-pointer overflow-hidden p-6"
+                whileHover={{ scale: 1.05 }}
               >
-                <motion.div
-                  layoutId="ai-preview-image"
-                  className="relative w-[90vw] h-[90vh] max-w-6xl rounded-xl overflow-hidden"
-                >
+                <div className="absolute inset-0 opacity-20 pointer-events-none z-10" style={{ backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
+                <div className="relative w-full h-full border-4 border-swiss-black">
                   <Image
                     src={`/ai-preview-${currentTheme}.png`}
                     alt="AI-Connect Interface"
                     fill
-                    className="object-contain"
+                    className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
                     priority
                   />
-                  <motion.button
-                    className="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full"
-                    whileHover={{ scale: 1.1 }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsOpen(false);
-                    }}
-                  >
-                    <X size={24} />
-                  </motion.button>
-                </motion.div>
+                </div>
               </motion.div>
-            )}
-          </AnimatePresence>
+            </div>
+          </div>
         </div>
-      </div>
+      </SwissSection>
 
-      <h2 className="text-3xl font-bold mb-6 text-center">Key Features</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        <Card className="bg-card border border-primary/10">
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center text-center gap-4">
-              <div className="bg-primary/10 p-3 rounded-full">
-                <Search className="h-6 w-6 text-primary" />
+      {/* Features Grid */}
+      <SwissSection title="CORE_FUNCTIONALITY" number="02" variant="white">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          {[
+            { icon: Search, title: "NEURAL_SEARCH", desc: "IDENTIFY DEVELOPERS BY STACK, LOGIC, OR INFRASTRUCTURE INTERESTS. SEARCH FOR EXPERTS IN REACT, PYTHON, AND NEURAL NETS." },
+            { icon: MapPin, title: "GEOLOCATION_SYNC", desc: "LOCATE NODES WITHIN YOUR PHYSICAL PROXIMITY OR SPECIFIC GLOBAL COORDINATES. REMOTE COLLABORATION OPTIMIZED." },
+            { icon: User, title: "INTEL_REPORTS", desc: "ACCESS COMPREHENSIVE DATA ON ENTITIES INCLUDING REPOSITORY METRICS, FOLLOWER VELOCITY, AND CONTRIBUTION LOAD." }
+          ].map((feature, i) => (
+            <SwissCard key={feature.title} className="p-10 border-4 border-swiss-black shadow-[12px_12px_0_0_rgba(255,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
+              <div className="space-y-6">
+                <div className="inline-block p-4 bg-swiss-black text-swiss-white">
+                  <feature.icon className="h-10 w-10" />
+                </div>
+                <h3 className="text-3xl font-black uppercase tracking-tighter italic">{feature.title}</h3>
+                <p className="font-bold uppercase tracking-tight opacity-60 leading-tight">
+                  {feature.desc}
+                </p>
               </div>
-              <h3 className="text-xl font-semibold">Smart Developer Search</h3>
-              <p className="text-muted-foreground">
-                Find developers by skills, technologies, or interests. Search
-                for experts in React, Python, Machine Learning, and more.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+            </SwissCard>
+          ))}
+        </div>
+      </SwissSection>
 
-        <Card className="bg-card border border-primary/10">
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center text-center gap-4">
-              <div className="bg-primary/10 p-3 rounded-full">
-                <MapPin className="h-6 w-6 text-primary" />
+      {/* How It Works */}
+      <SwissSection title="OPERATIONAL_GUIDE" number="03" variant="white">
+        <div className="space-y-24">
+          {[
+            { icon: Bot, step: "STEP_01", title: "PROMPT_THE_ASSISTANT", desc: "INTERFACE WITH THE AI USING NATURAL LANGUAGE PROTOCOLS. REQUEST SPECIFIC EXPERTISE OR GEOGRAPHIC DATA.", signals: ["FIND_REACT_EXPERTS_NYC", "TOP_PYTHON_NODES", "LOCATE_NEARBY_ENTITIES"] },
+            { icon: Github, step: "STEP_02", title: "ANALYZE_RESULTS", desc: "THE NEURAL ENGINE AGGREGATES DATA FROM GITHUB. REVIEW ACCURATE METRICS, SKILL SETS, AND CONTRIBUTION HISTORY.", signals: ["DATA_AGGREGATION_ACTIVE", "VALIDATING_IDENTITY", "EXTRACTING_Intel"] },
+            { icon: Users, step: "STEP_03", title: "ESTABLISH_UPLINK", desc: "ONCE OPTIMAL ENTITIES ARE IDENTIFIED, ESTABLISH A DIRECT COMMUNICATION CHANNEL OR TRACK THEIR PROGRESS.", signals: ["CONNECTION_REQUEST_PENDING", "SYNCING_PROTOCOLS", "UPLINK_ESTABLISHED"] }
+          ].map((item, i) => (
+            <div key={item.step} className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+              <div className={cn("lg:col-span-5 space-y-6", i % 2 === 1 ? "lg:order-last" : "")}>
+                <div className="flex items-center gap-4 text-swiss-red font-black italic">
+                  <span className="text-xl tracking-[0.5em]">{item.step}</span>
+                  <div className="h-1 flex-grow bg-swiss-red" />
+                </div>
+                <h3 className="text-5xl font-black uppercase tracking-tighter italic">{item.title}</h3>
+                <p className="text-xl font-bold uppercase tracking-tight opacity-80">{item.desc}</p>
+                <div className="flex flex-wrap gap-2 pt-4">
+                  {item.signals.map(s => (
+                    <span key={s} className="bg-swiss-black text-swiss-white px-3 py-1 text-[10px] font-black uppercase tracking-widest italic">{s}</span>
+                  ))}
+                </div>
               </div>
-              <h3 className="text-xl font-semibold">
-                Location-Based Discovery
-              </h3>
-              <p className="text-muted-foreground">
-                Find developers near you or in specific cities worldwide.
-                Connect with tech talent in your area or explore remote
-                collaboration opportunities.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card border border-primary/10">
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center text-center gap-4">
-              <div className="bg-primary/10 p-3 rounded-full">
-                <User className="h-6 w-6 text-primary" />
+              <div className="lg:col-span-7">
+                <div className="relative aspect-video border-8 border-swiss-black bg-swiss-muted/10 flex items-center justify-center overflow-hidden">
+                  <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+                  <item.icon className="h-32 w-32 text-swiss-black/20" />
+                  <div className="absolute bottom-6 left-6 right-6 h-12 border-4 border-dashed border-swiss-black/20 flex items-center justify-center">
+                    <span className="text-[10px] font-black uppercase tracking-[1em] opacity-20">NEURAL_PREVIEW_ACTIVE</span>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold">Detailed Profiles</h3>
-              <p className="text-muted-foreground">
-                Access comprehensive developer profiles including their top
-                repositories, skills, followers, and contributions on GitHub.
-              </p>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <h2 className="text-3xl font-bold mb-6">How It Works</h2>
-      <div className="space-y-8 mb-12">
-        <div className="flex flex-col md:flex-row gap-6 items-center">
-          <div className="bg-muted w-full md:w-1/3 aspect-video rounded-xl flex items-center justify-center p-8">
-            <Bot className="h-16 w-16 text-primary/70" />
-          </div>
-          <div className="md:w-2/3">
-            <h3 className="text-2xl font-semibold mb-3">
-              Ask the AI Assistant
-            </h3>
-            <p className="text-lg">
-              Simply chat with our AI assistant about the kind of developers
-              you&apos;re looking for. Try prompts like:
-            </p>
-            <ul className="list-disc list-inside mt-4 space-y-2 text-muted-foreground">
-              <li>&quot;Find React developers in New York&quot;</li>
-              <li>&quot;Who are the top Python developers?&quot;</li>
-              <li>&quot;Do you know @username?&quot;</li>
-              <li>&quot;Find developers near me&quot;</li>
-            </ul>
-          </div>
+          ))}
         </div>
+      </SwissSection>
 
-        <div className="flex flex-col md:flex-row gap-6 items-center">
-          <div className="md:w-2/3 order-2 md:order-1">
-            <h3 className="text-2xl font-semibold mb-3">
-              Review Developer Profiles
-            </h3>
-            <p className="text-lg">
-              The AI will present relevant developers with detailed information
-              about their skills, repositories, and contributions. You can ask
-              for more details about specific developers by referencing them by
-              name or position in the results.
-            </p>
-          </div>
-          <div className="bg-muted w-full md:w-1/3 aspect-video rounded-xl flex items-center justify-center p-8 order-1 md:order-2">
-            <Github className="h-16 w-16 text-primary/70" />
-          </div>
-        </div>
-
-        <div className="flex flex-col md:flex-row gap-6 items-center">
-          <div className="bg-muted w-full md:w-1/3 aspect-video rounded-xl flex items-center justify-center p-8">
-            <Users className="h-16 w-16 text-primary/70" />
-          </div>
-          <div className="md:w-2/3">
-            <h3 className="text-2xl font-semibold mb-3">
-              Connect and Collaborate
-            </h3>
-            <p className="text-lg">
-              When you find developers you&apos;re interested in, you can view
-              their full profiles, visit their GitHub repositories, or add them
-              as friends on CodeNearby to start collaborating.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <h2 className="text-3xl font-bold mb-6 text-center">
-        Powered by Advanced AI
-      </h2>
-      <div className="flex flex-col md:flex-row gap-8 items-center mb-12">
-        <div className="md:w-1/3 flex justify-center">
-          <div className="relative h-40 w-40">
-            <Image
-              src={`/gemini-logo.svg`}
-              alt="Gemini AI"
-              fill
-              className="object-contain"
-              priority
-            />
-          </div>
-        </div>
-        <div className="md:w-2/3">
-          <Card className="bg-card/50 border border-primary/10">
-            <CardContent className="pt-6">
-              <p className="text-lg">
-                AI-Connect leverages Gemini AI, Google&apos;s state-of-the-art
-                large language model, to provide intelligent and contextual
-                responses to your developer search queries. The AI analyzes
-                GitHub profiles, repositories, and user data to match you with
-                the most relevant developers for your needs.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold mb-6">
-          Ready to find your next collaborator?
-        </h2>
-        <Button asChild size="lg" className="rounded-full px-8">
-          <Link href="/ai-connect">Start Using AI-Connect</Link>
-        </Button>
-      </div>
-
-      <Card className="bg-muted/50 border border-primary/10 mb-12">
-        <CardContent className="pt-6">
-          <div className="flex items-center gap-2 mb-4">
-            <MessageCircle className="h-5 w-5 text-primary" />
-            <h3 className="text-xl font-semibold">Conversation Example</h3>
-          </div>
-          <div className="space-y-4">
-            <div className="bg-background rounded-xl p-4 shadow-sm">
-              <p className="font-medium text-sm">User:</p>
-              <p className="mt-1">Find React developers in San Francisco</p>
+      {/* Powered by AI */}
+      <SwissSection title="SUBSTRATE" number="04" variant="white">
+        <SwissCard className="p-0 border-8 border-swiss-black bg-swiss-black text-swiss-white overflow-hidden shadow-[20px_20px_0_0_rgba(255,0,0,1)]">
+          <div className="grid grid-cols-1 lg:grid-cols-12">
+            <div className="lg:col-span-4 p-12 bg-swiss-red flex items-center justify-center border-b-8 lg:border-b-0 lg:border-r-8 border-swiss-black">
+              <div className="relative h-48 w-48 invert brightness-0">
+                <img
+                  src="/gemini-logo.svg"
+                  alt="Gemini AI"
+                  className="w-full h-full object-contain"
+                />
+              </div>
             </div>
-            <div className="bg-primary/5 rounded-xl p-4 shadow-sm">
-              <p className="font-medium text-sm">AI Assistant:</p>
-              <p className="mt-1">
-                I found 5 developers that might match your criteria. Here&apos;s
-                a summary of the developers I found:
+            <div className="lg:col-span-8 p-12 space-y-8">
+              <h2 className="text-5xl font-black uppercase tracking-tighter italic">NEURAL_ENGINE_V4.0</h2>
+              <p className="text-2xl font-bold uppercase tracking-tight opacity-80 leading-snug italic">
+                AI-CONNECT LEVERAGES GEMINI AI, GOOGLE&apos;S STATE-OF-THE-ART LARGE LANGUAGE MODEL, TO PROVIDE INTELLIGENT AND CONTEXTUAL RESPONSES. THE ENGINE ANALYZES VAST DATA SETS ACROSS THE GITHUB ECOSYSTEM TO MATCH YOU WITH THE MOST RELEVANT DATA NODES.
               </p>
-              <ol className="list-decimal list-inside mt-2 space-y-1 text-sm">
-                <li>Sarah Chen (@sarahcoder)</li>
-                <li>Michael Johnson (@mjreact)</li>
-                <li>Taylor Rodriguez (@troddev)</li>
-                <li>Alex Kim (@alexk)</li>
-                <li>Jamie Smith (@jsmith)</li>
-              </ol>
-              <p className="mt-2 text-sm">
-                You can ask for more details about a specific developer by
-                saying &quot;Tell me more about @username&quot; or &quot;Show me
-                details for the 3rd one&quot;.
-              </p>
+              <div className="h-4 w-full bg-swiss-red animate-pulse" />
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </SwissCard>
+      </SwissSection>
 
-      <div className="border-t pt-8">
-        <h3 className="text-xl font-bold mb-4">Frequently Asked Questions</h3>
-        <div className="space-y-6">
-          <div>
-            <h4 className="text-lg font-semibold">
-              Is AI-Connect free to use?
-            </h4>
-            <p className="mt-2 text-muted-foreground">
-              Yes, AI-Connect is available to all registered CodeNearby users at
-              no additional cost.
-            </p>
-          </div>
-          <div>
-            <h4 className="text-lg font-semibold">
-              How accurate are the developer search results?
-            </h4>
-            <p className="mt-2 text-muted-foreground">
-              AI-Connect uses real-time data from GitHub to provide accurate
-              developer information. However, search results may be limited by
-              GitHub API rate limits and the availability of public information
-              on user profiles.
-            </p>
-          </div>
-          <div>
-            <h4 className="text-lg font-semibold">
-              Can I use AI-Connect to find remote collaborators?
-            </h4>
-            <p className="mt-2 text-muted-foreground">
-              Absolutely! You can search for developers based on specific skills
-              without location constraints, making it perfect for finding remote
-              team members or collaborators worldwide.
-            </p>
-          </div>
+      {/* CTA Section */}
+      <SwissSection title="INITIALIZATION" number="05" variant="white">
+        <div className="py-20 text-center space-y-12">
+          <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter italic leading-none max-w-5xl mx-auto">
+            READY_FOR_DEPLOYMENT?
+          </h2>
+          <SwissButton variant="primary" size="lg" className="h-24 px-16 text-3xl shadow-[12px_12px_0_0_rgba(255,0,0,1)]" asChild>
+            <Link href="/ai-connect">START_AI_CONNECT</Link>
+          </SwissButton>
         </div>
-      </div>
+      </SwissSection>
+
+      {/* FAQ */}
+      <SwissSection title="TERMINAL_ENTRIES" number="06" variant="white">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {[
+            { q: "IS_INTERFACE_ACCESS_FREE?", a: "AFFIRMATIVE. AI-CONNECT IS ACCESSIBLE TO ALL REGISTERED CODENEARBY NODES WITHOUT ADDITIONAL SURCHARGES." },
+            { q: "DATA_ACCURACY_RATING?", a: "AI-CONNECT ANALYZES REAL-TIME GITHUB TELEMETRY. RESULTS MAY BE SUBJECT TO API THROUGHPUT AND PUBLIC DATA PRIVACY PARAMETERS." },
+            { q: "REMOTE_LAYER_COMPATIBILITY?", a: "FULLY COMPATIBLE. SEARCH PARAMETERS ALLOW FOR GLOBAL MODULES WITHOUT GEOGRAPHIC CONSTRAINTS." }
+          ].map((faq, i) => (
+            <div key={i} className="space-y-4 border-l-8 border-swiss-red pl-8">
+              <h4 className="text-2xl font-black uppercase tracking-tighter italic text-swiss-black">{faq.q}</h4>
+              <p className="text-lg font-bold uppercase tracking-tight opacity-60 leading-tight">{faq.a}</p>
+            </div>
+          ))}
+        </div>
+      </SwissSection>
+
+      {/* Modal for image zoom */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-swiss-black/95 p-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsOpen(false)}
+          >
+            <motion.div
+              className="relative w-full h-full max-w-7xl border-8 border-swiss-white shadow-[24px_24px_0_0_rgba(255,0,0,1)] bg-swiss-black flex items-center justify-center p-8"
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+            >
+              <div className="absolute top-8 right-8 z-50">
+                <SwissButton variant="primary" onClick={() => setIsOpen(false)} className="h-16 w-16 p-0 group">
+                  <X className="h-8 w-8 group-hover:rotate-90 transition-transform" />
+                </SwissButton>
+              </div>
+              <div className="relative w-full h-full flex items-center justify-center">
+                <img
+                  src={`/ai-preview-${currentTheme}.png`}
+                  alt="AI-Connect Interface"
+                  className="max-w-full max-h-full object-contain"
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

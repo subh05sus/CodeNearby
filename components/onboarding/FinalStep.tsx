@@ -1,43 +1,36 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
-import { Home, UserCog, Users, MessageSquare } from "lucide-react";
+import SwissCard from "@/components/swiss/SwissCard";
+import SwissButton from "@/components/swiss/SwissButton";
+import { Home, UserCog, Users, MessageSquare, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const paths = [
   {
-    icon: <Home className="h-6 w-6" />,
-    title: "Explore Platform",
-    description: "Discover all that CodeNearby has to offer.",
+    icon: <Home className="h-8 w-8" />,
+    title: "EXPLORE_PLATFORM",
+    description: "DISCOVER_ALL_THAT_CODENEARBY_HAS_TO_OFFER.",
     path: "/",
-    color: "bg-blue-100 dark:bg-blue-900/20",
-    textColor: "text-blue-600 dark:text-blue-400",
   },
   {
-    icon: <UserCog className="h-6 w-6" />,
-    title: "Edit Profile",
-    description: "Customize your profile to help others find you.",
+    icon: <UserCog className="h-8 w-8" />,
+    title: "EDIT_PROFILE",
+    description: "CUSTOMIZE_YOUR_PROFILE_TO_HELP_OTHERS_FIND_YOU.",
     path: "/profile/edit",
-    color: "bg-purple-100 dark:bg-purple-900/20",
-    textColor: "text-purple-600 dark:text-purple-400",
   },
   {
-    icon: <Users className="h-6 w-6" />,
-    title: "Jump to Gathering",
-    description: "Connect with other developers in your area.",
+    icon: <Users className="h-8 w-8" />,
+    title: "JUMP_TO_GATHERING",
+    description: "CONNECT_WITH_OTHER_DEVELOPERS_IN_YOUR_AREA.",
     path: "/gathering",
-    color: "bg-green-100 dark:bg-green-900/20",
-    textColor: "text-green-600 dark:text-green-400",
   },
   {
-    icon: <MessageSquare className="h-6 w-6" />,
-    title: "Post Your First Post",
-    description: "Share your thoughts with the community.",
+    icon: <MessageSquare className="h-8 w-8" />,
+    title: "POST_YOUR_FIRST_POST",
+    description: "SHARE_YOUR_THOUGHTS_WITH_THE_COMMUNITY.",
     path: "/feed?source=onboarding",
-    color: "bg-orange-100 dark:bg-orange-900/20",
-    textColor: "text-orange-600 dark:text-orange-400",
   },
 ];
 
@@ -48,25 +41,19 @@ export default function FinalStep() {
   const completeOnboarding = async (path: string) => {
     try {
       setIsLoading(true);
-
-      // Save user preferences and mark onboarding as completed
       await fetch("/api/user/complete-onboarding", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          skills: [], // Skills were already saved in the previous steps
-          joinGathering: true, // Preserve the user's choice from previous steps
+          skills: [],
+          joinGathering: true,
         }),
       });
 
-      // Clear onboarding data from localStorage
       localStorage.removeItem("onboardingStep");
       localStorage.removeItem("onboardingSkills");
       localStorage.removeItem("onboardingJoinGathering");
 
-      // Redirect to the selected path
       router.push(path);
     } catch (error) {
       console.error("Error completing onboarding:", error);
@@ -75,69 +62,67 @@ export default function FinalStep() {
   };
 
   return (
-    <div className="flex flex-col items-center">
-      <motion.h2
-        className="text-2xl font-bold mb-3 text-center"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        Welcome to CodeNearby!
-      </motion.h2>
+    <div className="flex flex-col items-center space-y-12">
+      <div className="text-center space-y-4">
+        <motion.h2
+          className="text-5xl md:text-8xl font-black uppercase tracking-tighter italic leading-none border-b-[12px] border-swiss-red pb-6 text-black dark:text-white"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          SYSTEM_DEPLOYMENT_READY
+        </motion.h2>
 
-      <motion.p
-        className="text-center text-muted-foreground mb-8 max-w-lg"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
-      >
-        You&apos;re all set! Here are some paths to get you started on your
-        journey.
-      </motion.p>
+        <motion.p
+          className="text-2xl font-black uppercase tracking-tight opacity-40 dark:opacity-60 italic max-w-2xl mx-auto text-black dark:text-white"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+        >
+          ALL_PARAMETERS_CALIBRATED // SELECT_INITIAL_UPLINK_PATH
+        </motion.p>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
         {paths.map((path, index) => (
           <motion.div
             key={index}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              delay: 0.3 + index * 0.1,
-              duration: 0.5,
-              type: "spring",
-              stiffness: 100,
-            }}
-            whileHover={{
-              scale: 1.03,
-              boxShadow: "0 10px 30px -15px rgba(0, 0, 0, 0.2)",
-            }}
-            className="w-full"
-            onClick={() => completeOnboarding(path.path)}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 + index * 0.1 }}
+            className="w-full h-full"
           >
-            <Card className="h-full border cursor-pointer relative">
-              {isLoading && (
-                <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center rounded-md z-10">
-                  <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full"></div>
-                </div>
-              )}
-              <CardContent className="p-6 flex items-center">
-                <motion.div
-                  className={`rounded-full p-3 mr-4 ${path.color}`}
-                  whileHover={{ rotate: 5 }}
-                >
-                  <div className={path.textColor}>{path.icon}</div>
-                </motion.div>
-                <div>
-                  <h3 className="font-semibold text-lg mb-1">{path.title}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {path.description}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <SwissCard
+              className="h-full border-4 border-swiss-black dark:border-white p-8 bg-swiss-white dark:bg-black hover:bg-swiss-black dark:hover:bg-white hover:text-swiss-white dark:hover:text-black group transition-all cursor-pointer shadow-[12px_12px_0_0_rgba(0,0,0,1)] dark:shadow-[12px_12px_0_0_rgba(255,255,255,1)] hover:shadow-[12px_12px_0_0_rgba(255,0,0,1)] flex flex-col items-start"
+              onClick={() => completeOnboarding(path.path)}
+            >
+              <div className="mb-6 p-4 border-2 border-swiss-black dark:border-white group-hover:border-swiss-white dark:group-hover:border-black transition-colors">
+                {path.icon}
+              </div>
+              <div className="flex-1 space-y-2">
+                <h3 className="font-black text-3xl uppercase tracking-tighter italic leading-none text-black dark:text-white group-hover:text-inherit">{path.title}</h3>
+                <p className="text-xs font-black uppercase tracking-widest opacity-60 dark:opacity-40 italic group-hover:opacity-100 transition-opacity text-black dark:text-white group-hover:text-inherit">
+                  {path.description}
+                </p>
+              </div>
+              <div className="mt-8 flex items-center gap-2 font-black uppercase text-[10px] tracking-[0.4em] border-b-2 border-swiss-red group-hover:border-swiss-white dark:group-hover:border-black transition-colors text-black dark:text-white group-hover:text-inherit">
+                INITIALIZE_BOOT_SEQUENCE
+              </div>
+            </SwissCard>
           </motion.div>
         ))}
       </div>
+
+      {isLoading && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 bg-swiss-black/90 dark:bg-black/95 backdrop-blur-xl z-[9999] flex flex-col items-center justify-center text-swiss-white dark:text-white space-y-4"
+        >
+          <Loader2 className="h-16 w-16 animate-spin text-swiss-red" />
+          <h2 className="text-4xl font-black uppercase tracking-tighter italic">FINALIZING_SYSTEM_SYNC...</h2>
+        </motion.div>
+      )}
     </div>
   );
 }

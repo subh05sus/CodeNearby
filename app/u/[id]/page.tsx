@@ -40,8 +40,9 @@ export default function UserProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className="flex flex-col justify-center items-center min-h-[60vh] gap-8">
+        <Loader2 className="h-16 w-16 animate-spin text-swiss-red" />
+        <h2 className="text-4xl font-black uppercase tracking-tighter italic">RESOLVING_NETWORK_PATH...</h2>
       </div>
     );
   }

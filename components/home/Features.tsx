@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import {
   Users,
   MessageSquare,
@@ -9,51 +8,40 @@ import {
   MessagesSquareIcon,
   Bot,
 } from "lucide-react";
+import SwissCard from "../swiss/SwissCard";
 
 function Features() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 cursor-default">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 px-8">
       <FeatureCard
-        icon={
-          <Users className="w-8 h-8 mb-4 text-primary  transition-all duration-300 group-hover:text-primary/80 dark:group-hover:text-blue-200" />
-        }
+        icon={<Users size={32} />}
         title="Discover Developers"
-        description="Find and connect with developers nearby. Filter by location, skills, and interests to discover potential collaborators in your area."
+        description="Filter by location, skills, and interests to discover potential collaborators in your immediate quadrant."
       />
       <FeatureCard
-        icon={
-          <Bot className="w-8 h-8 mb-4 text-primary  transition-all duration-300 group-hover:text-primary/80 dark:group-hover:text-blue-200" />
-        }
+        icon={<Bot size={32} />}
         title="AI-Connect"
-        description="Use our intelligent assistant powered by AI to find GitHub developers based on skills, location, or specific requirements through natural conversations."
+        description="Intelligent search protocols powered by advanced AI to find GitHub developers based on specific requirements."
       />
       <FeatureCard
-        icon={
-          <MessageSquare className="w-8 h-8 mb-4 text-primary  transition-all duration-300 group-hover:text-primary/80 dark:group-hover:text-blue-200" />
-        }
+        icon={<MessageSquare size={32} />}
         title="Engage in Discussions"
-        description="Start or join technical discussions, debug problems together, and exchange ideas with developers in your local community."
+        description="Synchronous technical discourse and collective problem solving within your local developer community."
       />
       <FeatureCard
-        icon={
-          <Github className="w-8 h-8 mb-4 text-primary  transition-all duration-300 group-hover:text-primary/80 dark:group-hover:text-blue-200" />
-        }
+        icon={<Github size={32} />}
         title="GitHub Integration"
-        description="Connect your GitHub profile to showcase your projects, track contributions, and find local developers with similar coding interests."
+        description="Bi-directional project synchronization and contribution tracking to identify similar coding patterns."
       />
       <FeatureCard
-        icon={
-          <MessagesSquareIcon className="w-8 h-8 mb-4 text-primary  transition-all duration-300 group-hover:text-primary/80 dark:group-hover:text-blue-200" />
-        }
+        icon={<MessagesSquareIcon size={32} />}
         title="Virtual Gatherings"
-        description="Join online meetups, pair programming sessions, and code reviews with developers in your timezone and local area."
+        description="Host and join encrypted live meetups, pair programming sessions, and collaborative code reviews."
       />
       <FeatureCard
-        icon={
-          <Globe className="w-8 h-8 mb-4 text-primary  transition-all duration-300 group-hover:text-primary/80 dark:group-hover:text-blue-200" />
-        }
+        icon={<Globe size={32} />}
         title="Global Community"
-        description="Be part of a worldwide network while focusing on your local tech scene. Connect globally, interact locally with developers near you."
+        description="Universal network connectivity with a focus on local tech clusters. Macro reach, micro interaction."
       />
     </div>
   );
@@ -71,14 +59,22 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <motion.div className="bg-background group border border-primary/5 hover:border-primary/10 text-card-foreground transition-all duration-300 rounded-xl shadow-lg p-6 flex  items-start text-center ">
-      {icon}
-      <div className="flex-1 text-left ml-6">
-        <h2 className="text-xl font-semibold mb-2 group-hover:ml-3 group-hover:text-primary/80 dark:group-hover:text-blue-200  transition-all duration-300">
+    <SwissCard variant="white" pattern="grid" className="group">
+      <div className="flex flex-col h-full">
+        <div className="mb-6 p-4 border-2 border-black dark:border-white bg-black dark:bg-white text-white dark:text-black w-fit group-hover:bg-swiss-red dark:group-hover:bg-swiss-red transition-colors">
+          {icon}
+        </div>
+        <h2 className="text-2xl font-black uppercase tracking-tightest mb-4 leading-none text-black dark:text-white">
           {title}
         </h2>
-        <p className="text-muted-foreground text-xs">{description}</p>
+        <p className="text-xs font-bold uppercase tracking-widest opacity-60 dark:opacity-80 leading-relaxed italic text-black dark:text-white/60">
+          {description}
+        </p>
+        <div className="mt-auto pt-8 flex items-center gap-2">
+          <div className="w-8 h-1 bg-swiss-red" />
+          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-black dark:text-white">Active</span>
+        </div>
       </div>
-    </motion.div>
+    </SwissCard>
   );
 }

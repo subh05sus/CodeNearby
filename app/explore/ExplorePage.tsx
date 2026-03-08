@@ -5,7 +5,7 @@
 import type React from "react";
 
 import { useEffect, useState, useCallback } from "react";
-import { Button } from "@/components/ui/button";
+import SwissButton from "@/components/swiss/SwissButton";
 import { Input } from "@/components/ui/input";
 import { Loader2, MapPin, Search } from "lucide-react";
 import type { Developer } from "@/types";
@@ -63,7 +63,7 @@ export default function ExplorePage() {
         if (data.city) {
           initialLocationSubmit(data.city);
         }
-      } catch {}
+      } catch { }
     };
 
     if (!location) {
@@ -89,7 +89,7 @@ export default function ExplorePage() {
               data.address.county;
             setLocation(locationName);
             handleLocationSubmit({
-              preventDefault: () => {},
+              preventDefault: () => { },
             } as React.FormEvent);
           } catch {
             toast.error(
@@ -112,86 +112,69 @@ export default function ExplorePage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <motion.h1
-        className="text-4xl font-bold mb-8 text-center"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        Explore Nearby Developers
-      </motion.h1>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.2 }}
-      >
-        <form
-          onSubmit={handleLocationSubmit}
-          className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-8"
-        >
-          <div className="relative flex-grow">
-            <Input
-              type="text"
-              placeholder="Enter location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="pl-10"
-            />
-            <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-              size={20}
-            />
+    <div className="bg-swiss-white min-h-screen">
+      {/* Swiss Header */}
+      <div className="border-b-8 border-swiss-black bg-swiss-white sticky top-0 z-20">
+        <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <h1 className="font-black text-8xl uppercase tracking-tighter leading-[0.8] mb-2">
+              EXPLORE<br />NEARBY
+            </h1>
+            <p className="font-bold uppercase tracking-[0.2em] text-xs text-swiss-red">
+              GEOLOCATION / NETWORK_NODES / V_1.0
+            </p>
           </div>
-          <Button type="submit" disabled={loading}>
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Search
-          </Button>
-          <Button
-            type="button"
-            onClick={handleGeolocation}
-            disabled={loading}
-            variant="outline"
+
+          <form
+            onSubmit={handleLocationSubmit}
+            className="flex flex-wrap items-center gap-3"
           >
-            <MapPin className="mr-2 h-4 w-4" />
-            Use My Location
-          </Button>
-        </form>
-      </motion.div>
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {developers.map((dev, index) => (
-          <motion.div
-            key={dev.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-          >
-            <Card className="h-full flex gap-4 p-3 items-center">
-              <Image
-                src={dev.avatar_url || "/placeholder.svg"}
-                alt={dev.login}
-                className="w-24 h-24 rounded-full"
-                width={128}
-                height={128}
+            <div className="relative group flex-grow md:flex-grow-0">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-swiss-black opacity-30 group-focus-within:opacity-100 transition-opacity" />
+              <Input
+                type="text"
+                placeholder="ENTER_LOCATION..."
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="h-14 pl-12 pr-6 bg-swiss-white border-4 border-swiss-black rounded-none font-black uppercase tracking-tight focus:bg-swiss-muted transition-colors outline-none w-full md:w-64"
               />
-              <div className="flex-1 flex flex-col gap-2 w-fit">
-                <span>{dev.login}</span>
-                <Button asChild className="w-fit border" variant={"secondary"}>
-                  <Link
-                    href={dev.html_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <GithubIcon className="inline" />
-                    View GitHub Profile
-                  </Link>
-                </Button>
-              </div>
-            </Card>
-          </motion.div>
-        ))}
-      </div> */}
-      <ExploreDeveloperGrid developers={developers} />
+            </div>
+            <SwissButton type="submit" disabled={loading} className="h-14 px-8">
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              SEARCH
+            </SwissButton>
+            <SwissButton
+              type="button"
+              onClick={handleGeolocation}
+              variant="secondary"
+              disabled={loading}
+              className="h-14 px-6"
+            >
+              <MapPin className="h-5 w-5 mr-2" />
+              LOCATE
+            </SwissButton>
+          </form>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="border-l-8 border-swiss-black pl-8 mb-12">
+          <p className="font-bold uppercase tracking-widest text-xs text-swiss-red mb-2">RESULTS_FEED</p>
+          <h2 className="font-black text-4xl uppercase tracking-tighter">
+            {developers.length} DEVELOPERS FOUND {location && `IN ${location.toUpperCase()}`}
+          </h2>
+        </div>
+
+        <div className="relative">
+          <ExploreDeveloperGrid developers={developers} />
+          {developers.length === 0 && !loading && (
+            <div className="border-8 border-swiss-black p-12 bg-swiss-muted/10 text-center">
+              <p className="font-black text-2xl uppercase tracking-tighter opacity-40">NO_DATA_AVAILABLE</p>
+              <p className="font-bold uppercase tracking-tight text-xs mt-4 opacity-40">ENTER A LOCATION TO BEGIN EXPLORATION</p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

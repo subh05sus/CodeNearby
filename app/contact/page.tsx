@@ -1,214 +1,98 @@
 import { Metadata } from "next";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import SwissButton from "@/components/swiss/SwissButton";
+import SwissSection from "@/components/swiss/SwissSection";
+import SwissCard from "@/components/swiss/SwissCard";
+import { Mail, Phone, Globe } from "lucide-react";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Contact Us | CodeNearby",
   description:
     "Get in touch with the CodeNearby team. Find our contact information including email, phone, and website details for support and inquiries.",
-  openGraph: {
-    title: "Contact Us | CodeNearby",
-    description:
-      "Get in touch with the CodeNearby team. Find our contact information including email, phone, and website details for support and inquiries.",
-    images: [
-      {
-        url: "/og.png",
-        width: 1200,
-        height: 630,
-      },
-    ],
-  },
 };
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Mail, Phone, Globe } from "lucide-react";
-import Link from "next/link";
 
 export default function ContactPage() {
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold mb-4">Contact Us</h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          We&apos;re here to help! Reach out to us through any of the channels below and we&apos;ll get back to you as soon as possible.
-        </p>
-      </div>
+    <div className="bg-swiss-white min-h-screen">
+      <SwissSection
+        number="01"
+        title="CONTACT"
+        variant="white"
+        pattern="grid"
+      >
+        <div className="grid md:grid-cols-12 gap-12">
+          <div className="md:col-span-8">
+            <h3 className="text-4xl font-black uppercase mb-12 tracking-tighter">
+              WE ARE HERE TO HELP. REACH OUT THROUGH THE CHANNELS BELOW.
+            </h3>
 
-      <div className="grid md:grid-cols-2 gap-6 mb-8">
-        {/* Primary Contact */}
-        <Card className="relative overflow-hidden">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Mail className="h-5 w-5 text-primary" />
-              <CardTitle>Primary Email</CardTitle>
-            </div>
-            <CardDescription>
-              For general inquiries and support
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                <a 
-                  href="mailto:hello@codenearby.space" 
-                  className="text-primary hover:underline font-medium"
-                >
+            <div className="grid sm:grid-cols-2 gap-8">
+              <SwissCard variant="white" hoverEffect="invert">
+                <Mail className="h-8 w-8 mb-4 text-swiss-red" />
+                <h4 className="text-xl font-black uppercase mb-2">Primary</h4>
+                <p className="text-sm font-bold uppercase tracking-widest mb-4 opacity-60">General Inquiries</p>
+                <a href="mailto:hello@codenearby.space" className="text-lg font-black uppercase tracking-tighter hover:text-swiss-red transition-colors">
                   hello@codenearby.space
                 </a>
-              </div>
-              <Badge variant="secondary" className="w-fit">
-                Business Inquiries
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
+              </SwissCard>
 
-        {/* Developer Contact */}
-        <Card className="relative overflow-hidden">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Mail className="h-5 w-5 text-primary" />
-              <CardTitle>Developer Contact</CardTitle>
-            </div>
-            <CardDescription>
-              Direct line to our development team
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                <a 
-                  href="mailto:sahasubhadip54@gmail.com" 
-                  className="text-primary hover:underline font-medium"
-                >
+              <SwissCard variant="white" hoverEffect="invert">
+                <Mail className="h-8 w-8 mb-4 text-swiss-red" />
+                <h4 className="text-xl font-black uppercase mb-2">Developer</h4>
+                <p className="text-sm font-bold uppercase tracking-widest mb-4 opacity-60">Technical Support</p>
+                <a href="mailto:sahasubhadip54@gmail.com" className="text-lg font-black uppercase tracking-tighter hover:text-swiss-red transition-colors">
                   sahasubhadip54@gmail.com
                 </a>
-              </div>
-              <Badge variant="secondary" className="w-fit">
-                Technical Support
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
+              </SwissCard>
 
-        {/* Phone Contact */}
-        <Card className="relative overflow-hidden">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Phone className="h-5 w-5 text-primary" />
-              <CardTitle>Phone Support</CardTitle>
-            </div>
-            <CardDescription>
-              Call us for urgent matters
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                <Phone className="h-4 w-4 text-muted-foreground" />
-                <a 
-                  href="tel:+918653462940" 
-                  className="text-primary hover:underline font-medium"
-                >
+              <SwissCard variant="white" hoverEffect="invert">
+                <Phone className="h-8 w-8 mb-4 text-swiss-red" />
+                <h4 className="text-xl font-black uppercase mb-2">Urgent</h4>
+                <p className="text-sm font-bold uppercase tracking-widest mb-4 opacity-60">Phone Support</p>
+                <a href="tel:+918653462940" className="text-lg font-black uppercase tracking-tighter hover:text-swiss-red transition-colors">
                   +91 8653462940
                 </a>
-              </div>
-              <Badge variant="secondary" className="w-fit">
-                Emergency Support
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
+              </SwissCard>
 
-        {/* Website */}
-        <Card className="relative overflow-hidden">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Globe className="h-5 w-5 text-primary" />
-              <CardTitle>Website</CardTitle>
-            </div>
-            <CardDescription>
-              Visit our main platform
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                <Globe className="h-4 w-4 text-muted-foreground" />
-                <a 
-                  href="https://codenearby.space" 
-                  className="text-primary hover:underline font-medium"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+              <SwissCard variant="white" hoverEffect="invert">
+                <Globe className="h-8 w-8 mb-4 text-swiss-red" />
+                <h4 className="text-xl font-black uppercase mb-2">Platform</h4>
+                <p className="text-sm font-bold uppercase tracking-widest mb-4 opacity-60">Main Website</p>
+                <a href="https://codenearby.space" target="_blank" rel="noopener noreferrer" className="text-lg font-black uppercase tracking-tighter hover:text-swiss-red transition-colors">
                   codenearby.space
                 </a>
-              </div>
-              <Badge variant="secondary" className="w-fit">
-                Main Platform
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Contact Information Summary */}
-      <Card className="bg-gradient-to-r from-primary/5 to-secondary/5 border-primary/20">
-        <CardHeader>
-          <CardTitle className="text-center">Quick Contact Summary</CardTitle>
-          <CardDescription className="text-center">
-            All our contact information at a glance
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid sm:grid-cols-3 gap-4 text-center">
-            <div className="space-y-2">
-              <Mail className="h-6 w-6 mx-auto text-primary" />
-              <div className="space-y-1">
-                <p className="font-medium">Email</p>
-                <p className="text-sm text-muted-foreground">hello@codenearby.space</p>
-                <p className="text-sm text-muted-foreground">sahasubhadip54@gmail.com</p>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Phone className="h-6 w-6 mx-auto text-primary" />
-              <div className="space-y-1">
-                <p className="font-medium">Phone</p>
-                <p className="text-sm text-muted-foreground">+91 8653462940</p>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Globe className="h-6 w-6 mx-auto text-primary" />
-              <div className="space-y-1">
-                <p className="font-medium">Website</p>
-                <p className="text-sm text-muted-foreground">codenearby.space</p>
-              </div>
+              </SwissCard>
             </div>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Additional Information */}
-      <div className="mt-8 text-center">
-        <p className="text-muted-foreground mb-4">
-          Looking for something specific? Check out our other pages:
-        </p>
-        <div className="flex flex-wrap justify-center gap-2">
-          <Button variant="outline" asChild>
-            <Link href="/about">About Us</Link>
-          </Button>
-          <Button variant="outline" asChild>
-            <Link href="/privacy">Privacy Policy</Link>
-          </Button>
-          <Button variant="outline" asChild>
-            <Link href="/terms">Terms of Service</Link>
-          </Button>
-          <Button variant="outline" asChild>
-            <Link href="/report-issue">Report an Issue</Link>
-          </Button>
+          <div className="md:col-span-4 self-start">
+            <SwissCard variant="accent" pattern="dots">
+              <h4 className="text-2xl font-black uppercase mb-6">Response Time</h4>
+              <p className="text-lg font-bold uppercase leading-none mb-8">
+                WE AIM TO RESPOND TO ALL INQUIRIES WITHIN 24 HOURS.
+              </p>
+              <div className="border-t-4 border-swiss-white pt-6">
+                <p className="text-sm font-black uppercase tracking-widest">System Efficiency: 100%</p>
+              </div>
+            </SwissCard>
+          </div>
         </div>
-      </div>
+
+        <div className="mt-24 pt-12 border-t-8 border-swiss-black flex flex-wrap gap-4">
+          <SwissButton variant="secondary" asChild>
+            <Link href="/about">ABOUT</Link>
+          </SwissButton>
+          <SwissButton variant="secondary" asChild>
+            <Link href="/privacy">PRIVACY</Link>
+          </SwissButton>
+          <SwissButton variant="secondary" asChild>
+            <Link href="/terms">TERMS</Link>
+          </SwissButton>
+          <SwissButton variant="primary" asChild>
+            <Link href="/">INIT ROOT</Link>
+          </SwissButton>
+        </div>
+      </SwissSection>
     </div>
   );
 }

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,6 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { TimePickerInput } from "./time-picker-input";
+import SwissButton from "./swiss/SwissButton";
 
 interface ShareScheduleProps {
   onShareSchedule: (date: Date) => void;
@@ -30,19 +30,19 @@ export function ShareSchedule({ onShareSchedule }: ShareScheduleProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-primary hover:bg-primary/10 rounded-full"
+        <SwissButton
+          variant="secondary"
+          size="sm"
+          className="w-10 h-10 p-0"
         >
           <CalendarIcon className="w-5 h-5" />
-        </Button>
+        </SwissButton>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] rounded-none border-4 border-black p-8">
         <DialogHeader>
-          <DialogTitle>Share Your Schedule</DialogTitle>
+          <DialogTitle className="text-2xl font-black uppercase tracking-tightest mb-4">Share Your Schedule</DialogTitle>
         </DialogHeader>
-        <div className="py-4">
+        <div className="py-4 border-t-2 border-black/10">
           <Calendar
             mode="single"
             selected={selectedDateTime}
@@ -57,22 +57,26 @@ export function ShareSchedule({ onShareSchedule }: ShareScheduleProps) {
                 )
               )
             }
-            className="rounded-md border"
+            className="rounded-none border-4 border-black p-4 mb-6"
           />
-          <div className="mt-4">
+          <div className="mb-6">
+            <p className="text-xs font-black uppercase tracking-widest text-swiss-red mb-2 italic">Set Time</p>
             <TimePickerInput
               date={selectedDateTime}
               setDate={setSelectedDateTime}
             />
           </div>
           {selectedDateTime && (
-            <p className="mt-4 text-sm">
-              Selected date and time: {format(selectedDateTime, "PPP p")}
-            </p>
+            <div className="bg-muted p-4 border-2 border-black mb-6">
+              <p className="text-xs font-black uppercase tracking-widest opacity-50 mb-1">Target Selection</p>
+              <p className="font-bold text-lg leading-tight uppercase">
+                {format(selectedDateTime, "PPP p")}
+              </p>
+            </div>
           )}
-          <Button onClick={handleShareSchedule} className="mt-4">
-            Share This Schedule
-          </Button>
+          <SwissButton onClick={handleShareSchedule} variant="accent" className="w-full">
+            SHARE THIS SCHEDULE
+          </SwissButton>
         </div>
       </DialogContent>
     </Dialog>

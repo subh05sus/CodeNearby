@@ -1,84 +1,65 @@
 import Link from "next/link";
 import { ThemeSwitch } from "./ThemeSwitch";
 import { githubUrl } from "@/consts/BASIC";
+import Logo from "./logo";
+import { cn } from "@/lib/utils";
 
 export default function Footer() {
-  return (
-    <footer className="border-t bg-background">
-      <div className="container mx-auto px-4 py-6">
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          {/* Logo and copyright */}
-          <div className="flex items-center space-x-4 mb-6 md:mb-0">
-            <Link href="/" className="font-semibold">
-              CodeNearby
-            </Link>
-            <span className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} All rights reserved
-            </span>
-          </div>
+  const footerLinks = [
+    { href: "/about", label: "ABOUT_CORE" },
+    { href: "/contact", label: "CONTACT_SYNC" },
+    { href: "/privacy", label: "PRIVACY_PROTOCOL" },
+    { href: "/terms", label: "TERMS_OF_SERVICE" },
+    { href: "/refunds", label: "REFUND_POLICY" },
+    { href: "/report-issue", label: "REPORT_STASH" },
+  ];
 
-          {/* Theme toggle and links */}
-          <div className="w-full md:w-auto flex flex-col items-center md:flex-row md:items-center gap-6">
-            {/* Theme toggle */}
-            <div className="self-center md:self-auto">
+  return (
+    <footer className="bg-swiss-white border-t-8 border-swiss-black py-20">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-start">
+          {/* Logo and Info */}
+          <div className="md:col-span-5 space-y-8">
+            <Link href="/" className="inline-block hover:opacity-80 transition-opacity">
+              <Logo variant="black" />
+            </Link>
+            <p className="text-sm font-bold uppercase tracking-widest leading-relaxed max-w-sm">
+              Connecting nodes in the local development cluster.
+              Built for high-performance peer discovery.
+            </p>
+            <div className="flex items-center gap-6">
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">
+                © {new Date().getFullYear()} CODENEARBY_SYSTEMS
+              </span>
               <ThemeSwitch />
             </div>
+          </div>
 
-            {/* Navigation links */}
-            <nav className="w-full md:w-auto grid grid-cols-2 sm:grid-cols-3 md:flex gap-y-4 gap-x-6 md:gap-x-6 mt-4 md:mt-0 text-center md:text-left">
-              <Link
-                href="/about"
-                className="text-sm text-muted-foreground hover:text-foreground py-1"
-              >
-                About
-              </Link>
-              <Link
-                href="/contact"
-                className="text-sm text-muted-foreground hover:text-foreground py-1"
-              >
-                Contact
-              </Link>
-              <Link
-                href="/privacy"
-                className="text-sm text-muted-foreground hover:text-foreground py-1"
-              >
-                Privacy
-              </Link>
-              <Link
-                href="/terms"
-                className="text-sm text-muted-foreground hover:text-foreground py-1"
-              >
-                Terms
-              </Link>
-              <Link
-                href="/refunds"
-                className="text-sm text-muted-foreground hover:text-foreground py-1"
-              >
-                Refunds
-              </Link>
-              <Link
-                href="/changelog"
-                className="text-sm text-muted-foreground hover:text-foreground py-1"
-              >
-                Changelog
-              </Link>
-              <Link
-                href="/report-issue"
-                className="text-sm text-muted-foreground hover:text-foreground py-1"
-              >
-                Report an Issue
-              </Link>
-              <Link
+          {/* Navigation */}
+          <div className="md:col-span-7">
+            <nav className="grid grid-cols-2 sm:grid-cols-3 gap-8">
+              {footerLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-xs font-black uppercase tracking-[0.2em] italic text-swiss-black hover:text-swiss-red transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
+              <a
                 href={githubUrl}
                 target="_blank"
-                className="text-sm text-muted-foreground hover:text-foreground flex justify-center md:justify-start items-center py-1"
+                rel="noopener noreferrer"
+                className="text-xs font-black uppercase tracking-[0.2em] italic text-swiss-black hover:text-swiss-red transition-colors flex items-center gap-2 group"
               >
+                GITHUB_SRC
                 <img
                   src="/github.svg"
                   alt="GitHub"
-                  className="h-5 w-5 dark:invert invert-0 opacity-70 hover:opacity-100"
+                  className="h-4 w-4 grayscale group-hover:invert transition-all"
                 />
-              </Link>
+              </a>
             </nav>
           </div>
         </div>

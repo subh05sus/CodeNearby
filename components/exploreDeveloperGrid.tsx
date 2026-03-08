@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import { Developer } from "@/types";
 import {
@@ -14,7 +12,10 @@ import {
   MapPin,
   Twitter,
   X,
+  Zap,
 } from "lucide-react";
+import SwissButton from "./swiss/SwissButton";
+import { cn } from "@/lib/utils";
 
 interface DeveloperDetails {
   created_at: any;
@@ -76,7 +77,7 @@ export default function ExploreDeveloperGrid({
   };
 
   return (
-    <div>
+    <div className="relative">
       <AnimatePresence>
         {active && (
           <>
@@ -84,171 +85,109 @@ export default function ExploreDeveloperGrid({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/20 z-50"
+              className="fixed inset-0 bg-swiss-black/40 backdrop-blur-sm z-[100]"
             />
-            <div className="fixed inset-0 grid place-items-center z-[100]">
-              <motion.button
-                key={`button-${active.login}-${id}`}
-                layout
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{
-                  opacity: 0,
-                  transition: { duration: 0.05 },
-                }}
-                className="flex absolute z-50 top-2 right-2 lg:hidden items-center justify-center bg-white rounded-full h-6 w-6"
-                onClick={() => {
-                  setActive(null);
-                  setDetails(null);
-                }}
-              >
-                <X color="#000" size={12} />
-              </motion.button>
+            <div className="fixed inset-0 grid place-items-center z-[110] p-4">
               <motion.div
                 layoutId={`card-${active.login}-${id}`}
                 ref={ref}
-                className="w-full max-w-[500px] h-full md:h-fit md:max-h-[90%] flex flex-col bg-white dark:bg-neutral-900 sm:rounded-3xl overflow-hidden"
+                className="w-full max-w-2xl bg-swiss-white border-8 border-swiss-black shadow-[24px_24px_0_0_rgba(0,0,0,1)] overflow-hidden flex flex-col md:flex-row"
               >
-                <motion.div
-                  layoutId={`image-container-${active.login}-${id}`}
-                  className="relative"
-                >
-                  <motion.div
-                    layoutId={`image-${active.login}-${id}`}
-                    className="w-full h-80 relative"
+                {/* Detail Image/Sidebar */}
+                <div className="md:w-2/5 relative aspect-square md:aspect-auto border-b-8 md:border-b-0 md:border-r-8 border-swiss-black bg-swiss-muted">
+                  <Image
+                    src={active.avatar_url || "/placeholder.svg"}
+                    alt={active.login}
+                    fill
+                    className="object-cover grayscale"
+                    priority
+                  />
+                  <button
+                    onClick={() => {
+                      setActive(null);
+                      setDetails(null);
+                    }}
+                    className="absolute top-4 left-4 w-10 h-10 bg-swiss-white border-4 border-swiss-black flex items-center justify-center hover:bg-swiss-red hover:text-swiss-white transition-colors"
                   >
-                    <Image
-                      src={active.avatar_url || "/placeholder.svg"}
-                      alt={active.login}
-                      fill
-                      className="object-cover"
-                      priority
-                    />
-                  </motion.div>
-                </motion.div>
+                    <X className="h-6 w-6" />
+                  </button>
+                </div>
 
-                <div className="p-4">
-                  <motion.div layoutId={`content-${active.login}-${id}`}>
-                    <motion.div className="flex md:flex-1  justify-between gap-2">
-                      <motion.div className="flex flex-col md:flex-1 md:w-auto w-full ">
-                        <motion.h2
-                          layoutId={`name-${active.login}-${id}`}
-                          className="text-xl font-bold md:flex-1"
-                        >
-                          {details?.name || active.login}
-                        </motion.h2>
-                        {details?.name && (
-                          <motion.h4 className="text-muted-foreground text-xs">
-                            @{active.login}
-                          </motion.h4>
-                        )}
-                      </motion.div>
-                      <motion.button
-                        layoutId={`view-github-${active.id}`}
-                        className="h-8 w-8 rounded-md  text-center flex justify-center items-center text-xs border bg-background hover:bg-accent hover:text-accent-foreground"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          window.open(active.html_url, "_blank");
-                        }}
-                      >
-                        <GithubIcon size={16} />
-                      </motion.button>
-                    </motion.div>
-                    {loading ? (
-                      <div className="space-y-4">
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-3/4" />
-                        <div className="grid grid-cols-3 gap-4">
-                          <Skeleton className="h-16 w-full" />
-                          <Skeleton className="h-16 w-full" />
-                          <Skeleton className="h-16 w-full" />
+                <div className="md:w-3/5 p-8 flex flex-col max-h-[80vh] overflow-y-auto custom-scrollbar">
+                  <div className="mb-6">
+                    <h2 className="font-black text-5xl uppercase tracking-tighter leading-none mb-2">
+                      {details?.name || active.login}
+                    </h2>
+                    <span className="font-bold uppercase tracking-widest text-xs text-swiss-red">
+                      GITHUB / @{active.login}
+                    </span>
+                  </div>
+
+                  {loading ? (
+                    <div className="space-y-6">
+                      <div className="h-20 bg-swiss-muted border-4 border-swiss-black animate-pulse" />
+                      <div className="grid grid-cols-3 gap-4">
+                        <div className="h-20 bg-swiss-muted border-4 border-swiss-black animate-pulse" />
+                        <div className="h-20 bg-swiss-muted border-4 border-swiss-black animate-pulse" />
+                        <div className="h-20 bg-swiss-muted border-4 border-swiss-black animate-pulse" />
+                      </div>
+                    </div>
+                  ) : details && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="space-y-8"
+                    >
+                      <p className="font-bold uppercase tracking-tight text-lg leading-tight p-4 bg-swiss-muted border-l-8 border-swiss-black">
+                        {details.bio || "NO BIO PROVIDED BY USER."}
+                      </p>
+
+                      <div className="grid grid-cols-3 border-4 border-swiss-black divide-x-4 divide-swiss-black bg-swiss-black">
+                        <div className="p-4 bg-swiss-white flex flex-col items-center">
+                          <span className="font-black text-2xl">{details.followers}</span>
+                          <span className="font-bold uppercase text-[10px] tracking-widest text-swiss-red">FOLLOWERS</span>
+                        </div>
+                        <div className="p-4 bg-swiss-white flex flex-col items-center">
+                          <span className="font-black text-2xl">{details.following}</span>
+                          <span className="font-bold uppercase text-[10px] tracking-widest text-swiss-red">FOLLOWING</span>
+                        </div>
+                        <div className="p-4 bg-swiss-white flex flex-col items-center">
+                          <span className="font-black text-2xl">{details.public_repos}</span>
+                          <span className="font-bold uppercase text-[10px] tracking-widest text-swiss-red">REPOS</span>
                         </div>
                       </div>
-                    ) : (
-                      details && (
-                        <motion.div
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          className="space-y-6"
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {details.location && (
+                          <div className="flex items-center gap-3 font-bold uppercase tracking-tight text-xs">
+                            <MapPin className="h-5 w-5 text-swiss-red" />
+                            {details.location}
+                          </div>
+                        )}
+                        {details.blog && (
+                          <a href={details.blog} target="_blank" rel="noreferrer" className="flex items-center gap-3 font-bold uppercase tracking-tight text-xs hover:text-swiss-red transition-colors">
+                            <LinkIcon className="h-5 w-5 text-swiss-red" />
+                            WEBSITE
+                          </a>
+                        )}
+                        <div className="flex items-center gap-3 font-bold uppercase tracking-tight text-xs">
+                          <Calendar className="h-5 w-5 text-swiss-red" />
+                          JOINED {details.created_at ? new Date(details.created_at).getFullYear() : 'N/A'}
+                        </div>
+                      </div>
+
+                      <div className="pt-6 border-t-4 border-swiss-black flex gap-4">
+                        <SwissButton
+                          variant="primary"
+                          onClick={() => window.open(active.html_url, "_blank")}
+                          className="flex-1"
                         >
-                          <p className="text-muted-foreground">
-                            {details.bio || "No bio available"}
-                          </p>
-
-                          <div className="grid grid-cols-3 gap-4">
-                            <div className="text-center p-4 bg-muted rounded-lg">
-                              <div className="font-bold text-xl">
-                                {details.followers}
-                              </div>
-                              <div className="text-muted-foreground">
-                                Followers
-                              </div>
-                            </div>
-                            <div className="text-center p-4 bg-muted rounded-lg">
-                              <div className="font-bold text-xl">
-                                {details.following}
-                              </div>
-                              <div className="text-muted-foreground">
-                                Following
-                              </div>
-                            </div>
-                            <div className="text-center p-4 bg-muted rounded-lg">
-                              <div className="font-bold text-xl">
-                                {details.public_repos}
-                              </div>
-                              <div className="text-muted-foreground">Repos</div>
-                            </div>
-                          </div>
-
-                          <div className="space-y-2">
-                            {details.location && (
-                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <MapPin size={16} />
-                                <span>{details.location}</span>
-                              </div>
-                            )}
-                            {details.blog && (
-                              <div className="flex items-center gap-2 text-sm">
-                                <LinkIcon size={16} />
-                                <a
-                                  href={details.blog}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-primary hover:underline"
-                                >
-                                  {details.blog}
-                                </a>
-                              </div>
-                            )}
-                            {details.twitter_username && (
-                              <div className="flex items-center gap-2 text-sm">
-                                <Twitter size={16} />
-                                <a
-                                  href={`https://twitter.com/${details.twitter_username}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-primary hover:underline"
-                                >
-                                  @{details.twitter_username}
-                                </a>
-                              </div>
-                            )}
-                            {details.created_at && (
-                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <Calendar size={16} />
-                                <span>
-                                  Joined{" "}
-                                  {new Date(
-                                    details.created_at
-                                  ).toLocaleDateString()}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                        </motion.div>
-                      )
-                    )}
-                  </motion.div>
+                          <GithubIcon className="h-4 w-4 mr-2" />
+                          VIEW GITHUB PROFILE
+                        </SwissButton>
+                      </div>
+                    </motion.div>
+                  )}
                 </div>
               </motion.div>
             </div>
@@ -256,7 +195,7 @@ export default function ExploreDeveloperGrid({
         )}
       </AnimatePresence>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {developers.map((developer) => (
           <motion.div
             layoutId={`card-${developer.login}-${id}`}
@@ -265,49 +204,28 @@ export default function ExploreDeveloperGrid({
               setActive(developer);
               fetchDeveloperDetails(developer.login);
             }}
-            className="bg-background rounded-lg shadow-sm border p-6 cursor-pointer hover:shadow-md transition-shadow"
+            className="group bg-swiss-white border-4 border-swiss-black p-6 cursor-pointer hover:bg-swiss-muted transition-all shadow-[8px_8px_0_0_rgba(0,0,0,1)] hover:shadow-[12px_12px_0_0_rgba(0,0,0,1)] active:translate-x-1 active:translate-y-1 active:shadow-none"
           >
-            <div className="flex items-center gap-4">
-              <motion.div
-                layoutId={`image-container-${developer.login}-${id}`}
-                className="relative"
-              >
-                <motion.div
-                  layoutId={`image-${developer.login}-${id}`}
-                  className="w-16 h-16 relative"
-                >
-                  <Image
-                    src={developer.avatar_url || "/placeholder.svg"}
-                    alt={developer.login}
-                    fill
-                    className="rounded-full object-cover"
-                  />
-                </motion.div>
-              </motion.div>
+            <div className="flex flex-col items-center text-center gap-6">
+              <div className="w-24 h-24 relative border-4 border-swiss-black grayscale group-hover:grayscale-0 transition-all">
+                <Image
+                  src={developer.avatar_url || "/placeholder.svg"}
+                  alt={developer.login}
+                  fill
+                  className="object-cover"
+                />
+              </div>
 
-              <motion.div
-                layoutId={`content-${developer.login}-${id}`}
-                className="flex-1"
-              >
-                <motion.h2
-                  layoutId={`name-${developer.login}-${id}`}
-                  className="text-xl font-semibold mb-3"
-                >
+              <div className="w-full">
+                <h3 className="font-black text-2xl uppercase tracking-tighter leading-none mb-4 break-words">
                   {developer.login}
-                </motion.h2>
-                <div className="flex gap-2">
-                  <motion.button
-                    layoutId={`view-github-${developer.id}`}
-                    className="h-8 rounded-md px-3 text-xs border bg-background hover:bg-accent hover:text-accent-foreground"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      window.open(developer.html_url, "_blank");
-                    }}
-                  >
-                    View GitHub
-                  </motion.button>
+                </h3>
+                <div className="pt-4 border-t-2 border-swiss-black opacity-20 group-hover:opacity-100 transition-opacity">
+                  <p className="font-bold uppercase tracking-widest text-[8px] text-swiss-red">
+                    NODE / INF_SYNC
+                  </p>
                 </div>
-              </motion.div>
+              </div>
             </div>
           </motion.div>
         ))}

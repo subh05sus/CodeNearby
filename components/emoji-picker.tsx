@@ -2,7 +2,6 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
@@ -12,6 +11,7 @@ import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { Smile } from "lucide-react";
 import { useTheme } from "next-themes";
+import SwissButton from "./swiss/SwissButton";
 
 interface EmojiPickerProps {
   onChange: (emoji: string) => void;
@@ -24,23 +24,24 @@ export function EmojiPicker({ onChange }: EmojiPickerProps) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-primary hover:bg-primary/10 rounded-full"
+        <SwissButton
+          variant="secondary"
+          size="sm"
+          className="w-10 h-10 p-0 border-2"
         >
           <Smile className="w-5 h-5" />
-        </Button>
+        </SwissButton>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0 border-none" side="top">
+      <PopoverContent className="w-full p-0 border-4 border-black dark:border-white rounded-none shadow-[10px_10px_0_0_rgba(0,0,0,1)] dark:shadow-[10px_10px_0_0_rgba(255,255,255,1)]" side="top">
         <Picker
           data={data}
           onEmojiSelect={(emoji: any) => {
             onChange(emoji.native);
             setOpen(false);
           }}
-          theme={theme}
+          theme={theme === 'dark' ? 'dark' : 'light'}
           previewPosition="none"
+          skinTonePosition="none"
         />
       </PopoverContent>
     </Popover>

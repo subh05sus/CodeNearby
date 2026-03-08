@@ -1,5 +1,4 @@
 import type React from "react"
-import { Input } from "@/components/ui/input"
 
 interface TimePickerInputProps {
   date: Date
@@ -16,12 +15,11 @@ export function TimePickerInput({ date, setDate }: TimePickerInputProps) {
   }
 
   return (
-    <Input
+    <input
       type="time"
       value={`${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`}
       onChange={handleTimeChange}
-      className="w-fit"
+      className="w-full bg-white border-4 border-black p-4 font-black text-xl uppercase tracking-widest focus:outline-none focus:bg-muted transition-colors cursor-pointer"
     />
   )
 }
-

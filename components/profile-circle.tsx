@@ -12,7 +12,7 @@ export function ProfileCircle({ size, src, alt, id }: ProfileCircleProps) {
   return (
     <div
       onClick={() => router.push(`/u/${id}`)}
-      className="rounded-full overflow-hidden  border-2 border-white z-20 cursor-pointer"
+      className="rounded-none overflow-hidden border-4 border-black z-20 cursor-pointer shadow-[6px_6px_0_0_rgba(255,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all duration-100 flex items-center justify-center bg-white"
       style={{ width: size, height: size }}
     >
       <Image
@@ -20,7 +20,7 @@ export function ProfileCircle({ size, src, alt, id }: ProfileCircleProps) {
         alt={alt}
         width={size}
         height={size}
-        className="object-cover"
+        className="object-cover grayscale hover:grayscale-0 transition-all duration-300"
       />
     </div>
   );

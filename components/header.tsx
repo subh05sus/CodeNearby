@@ -3,14 +3,11 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import {
   ChevronDown,
-  ChevronUp,
-  Command,
   Globe,
   LogOut,
   Mail,
@@ -29,6 +26,8 @@ import {
   Key,
   Book,
   Zap,
+  Menu,
+  X,
 } from "lucide-react";
 import { SearchOverlay } from "./search-overlay";
 import Image from "next/image";
@@ -49,18 +48,17 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Menu } from "lucide-react";
 import { useTheme } from "next-themes";
 import Logo from "./logo";
-import { RainbowButton } from "./magicui/rainbowbutton";
-import { Badge } from "./ui/badge";
-import { AuroraText } from "./magicui/aurora-text";
+import { cn } from "@/lib/utils";
+import SwissButton from "./swiss/SwissButton";
 
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
   const { data: session } = useSession() as { data: Session | null };
   const [showSearch, setShowSearch] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const [currentTheme, setCurrentTheme] = useState("system");
 
@@ -90,38 +88,31 @@ export default function Header() {
     setTheme(value);
   };
 
-  // Add these functions before the return statement in the Header component
   const handleInviteUsersViaEmail = () => {
-    // Create a mailto link with pre-filled content
     const subject = encodeURIComponent("Join me on CodeNearby");
     const body = encodeURIComponent(
-      `Hey! I'd like to invite you to join CodeNearby. Check it out!\n\n${
-        window.location.origin
-      }/invite${
-        session?.user?.githubUsername
-          ? `?ref=${session.user.githubUsername}`
-          : ""
+      `Hey! I'd like to invite you to join CodeNearby. Check it out!\n\n${window.location.origin
+      }/invite${session?.user?.githubUsername
+        ? `?ref=${session.user.githubUsername}`
+        : ""
       }`
     );
     window.open(`mailto:?subject=${subject}&body=${body}`);
   };
 
   const handleInviteUsersViaWhatsApp = () => {
-    // Create a WhatsApp share link
     const text = encodeURIComponent(
-      `Hey! Join me on CodeNearby: ${window.location.origin}/invite${
-        session?.user?.githubUsername
-          ? `?ref=${session.user.githubUsername}`
-          : ""
+      `Hey! Join me on CodeNearby: ${window.location.origin}/invite${session?.user?.githubUsername
+        ? `?ref=${session.user.githubUsername}`
+        : ""
       }`
     );
     window.open(`https://wa.me/?text=${text}`);
   };
 
   const handleInviteUsersViaLink = async () => {
-    const link = `${window.location.origin}/invite${
-      session?.user?.githubUsername ? `?ref=${session.user.githubUsername}` : ""
-    }`;
+    const link = `${window.location.origin}/invite${session?.user?.githubUsername ? `?ref=${session.user.githubUsername}` : ""
+      }`;
 
     if (navigator.share) {
       try {
@@ -134,7 +125,6 @@ export default function Header() {
         console.error("Error sharing:", error);
       }
     } else {
-      // Fallback to clipboard
       navigator.clipboard
         .writeText(link)
         .then(() => {
@@ -146,536 +136,202 @@ export default function Header() {
     }
   };
 
+  const navItems = session ? [
+    { href: "/ai-connect", label: "AI_CONNECT", icon: Sparkles, badge: "NEW" },
+    { href: "/discover", label: "DISCOVER", icon: Globe },
+    { href: "/feed", label: "FEED", icon: RssIcon },
+    { href: "/gathering", label: "GATHERING", icon: Users },
+    { href: "/requests", label: "REQUESTS", icon: Mail },
+    { href: "/messages", label: "MESSAGES", icon: MessageSquare },
+    { href: "/api-dashboard", label: "API", icon: Key },
+  ] : [
+    { href: "/about", label: "ABOUT" },
+    { href: "/explore", label: "EXPLORE" },
+  ] as Array<{ href: string; label: string; icon?: any; badge?: string }>;
+
   return (
-    <header className={`${pathname === "/" ? "" : "border-b bg-background"}`}>
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link href="/">
-          <Logo />
-        </Link>
-        <nav className="hidden lg:block">
-          <ul className="flex space-x-2 items-center">
-            {session ? (
-              <>
-                <li>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    className="xl:block hidden"
+    <>
+      <header className={cn(
+        "sticky top-0 z-50 bg-swiss-white border-b-8 border-swiss-black transition-all",
+        pathname === "/" && "border-b-0"
+      )}>
+        <div className="max-w-7xl mx-auto px-6 h-24 flex justify-between items-center">
+          <Link href="/" className="hover:opacity-80 transition-opacity">
+            <Logo />
+          </Link>
+
+          {/* Desktop Nav */}
+          <nav className="hidden lg:flex items-center gap-8">
+            <ul className="flex items-center gap-1">
+              {navItems.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      "px-4 py-2 text-xs font-black uppercase tracking-[0.2em] italic transition-all relative group",
+                      pathname === item.href ? "text-swiss-red" : "text-swiss-black hover:text-swiss-red"
+                    )}
                   >
-                    <Link href="/ai-connect">
-                      <span>
-                        <AuroraText>AI Connect</AuroraText>{" "}
-                        <span className="text-[0.65rem] mb-4 px-1 py-0.5 bg-orange-600 rounded-md text-white font-semibold">
-                          NEW
-                        </span>
+                    {item.label}
+                    {item.badge && (
+                      <span className="absolute -top-1 -right-2 bg-swiss-red text-[8px] px-1 text-swiss-white italic font-black">
+                        {item.badge}
                       </span>
-                    </Link>
-                  </Button>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    size="icon"
-                    className="xl:hidden flex items-center"
-                  >
-                    <Link href="/ai-connect">
-                      <Sparkles />
-                    </Link>
-                  </Button>
+                    )}
+                    <div className={cn(
+                      "absolute bottom-0 left-4 right-4 h-1 bg-swiss-red scale-x-0 group-hover:scale-x-100 transition-transform origin-left",
+                      pathname === item.href && "scale-x-100"
+                    )} />
+                  </Link>
                 </li>
-                <li>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    className="xl:block hidden"
-                  >
-                    <Link href="/discover">
-                      <span>Discover</span>
-                    </Link>
-                  </Button>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    size="icon"
-                    className="xl:hidden flex items-center"
-                  >
-                    <Link href="/discover">
-                      <Globe />
-                    </Link>
-                  </Button>
-                </li>
-                <li>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    className="xl:block hidden"
-                  >
-                    <Link href="/feed">
-                      <span>Feed</span>
-                    </Link>
-                  </Button>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    size="icon"
-                    className="xl:hidden flex items-center"
-                  >
-                    <Link href="/feed">
-                      <RssIcon />
-                    </Link>
-                  </Button>
-                </li>
-                <li>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    className="xl:block hidden"
-                  >
-                    <Link href="/gathering">
-                      <span>Gathering</span>
-                    </Link>
-                  </Button>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    size="icon"
-                    className="xl:hidden flex items-center"
-                  >
-                    <Link href="/gathering">
-                      <Users />
-                    </Link>
-                  </Button>
-                </li>
+              ))}
+            </ul>
 
-                <li>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    className="xl:block hidden"
-                  >
-                    <Link href="/requests">
-                      <span>Requests</span>
-                    </Link>
-                  </Button>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    size="icon"
-                    className="xl:hidden flex items-center"
-                  >
-                    <Link href="/requests">
-                      <Mail />
-                    </Link>
-                  </Button>
-                </li>
-                <li>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    className="xl:block hidden"
-                  >
-                    <Link href="/messages">
-                      <span>Messages</span>
-                    </Link>
-                  </Button>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    size="icon"
-                    className="xl:hidden flex items-center"
-                  >
-                    <Link href="/messages">
-                      <MessageSquare />
-                    </Link>
-                  </Button>
-                </li>
+            <div className="flex items-center gap-4 border-l-4 border-swiss-black pl-8">
+              <button
+                onClick={() => setShowSearch(true)}
+                className="p-2 hover:bg-swiss-black hover:text-swiss-white transition-colors"
+                title="Search (Cmd+K)"
+              >
+                <Search className="h-6 w-6" />
+              </button>
 
-                {session && (
-                  <li>
-                    <Button
-                      variant={`${
-                        pathname === "/api-dashboard" && theme === "light"
-                          ? "outline"
-                          : "ghost"
-                      }`}
-                      asChild
-                      className="xl:block hidden"
-                    >
-                      <Link href="/api-dashboard">
-                        <span>API</span>
-                      </Link>
-                    </Button>
-                    <Button
-                      variant={`${
-                        pathname === "/api-dashboard" && theme === "light"
-                          ? "outline"
-                          : "ghost"
-                      }`}
-                      asChild
-                      size="icon"
-                      className="xl:hidden flex items-center"
-                    >
-                      <Link href="/api-dashboard">
-                        <Key />
-                      </Link>
-                    </Button>
-                  </li>
-                )}
+              {session ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="flex items-center border-4 border-swiss-black p-1 hover:shadow-[4px_4px_0_0_rgba(255,0,0,1)] transition-all outline-none">
+                      <Image
+                        height={40}
+                        width={40}
+                        src={session.user.image || "/placeholder.svg"}
+                        alt={session.user.name || ""}
+                        className="w-10 h-10 grayscale object-cover"
+                      />
+                      <ChevronDown className="h-4 w-4 mx-2" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-64 bg-swiss-white border-4 border-swiss-black rounded-none shadow-[8px_8px_0_0_rgba(0,0,0,1)] p-0">
+                    <DropdownMenuLabel className="p-6 border-b-4 border-swiss-black bg-swiss-black text-swiss-white">
+                      <p className="text-xl font-black uppercase italic tracking-tighter leading-none">{session.user.name}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 mt-2">@{session.user.githubUsername}</p>
+                    </DropdownMenuLabel>
 
-                <li>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="px-1 py-[18px] rounded-lg"
-                    onClick={() => setShowSearch(true)}
-                  >
-                    <Search className="h-5 w-5 ml-2" />
-                    <span className="mx-4">Search</span>
-                    <div className="border rounded-md p-1 flex text-center items-center justify-center gap-1 mr-0.5 bg-muted text-muted-foreground">
-                      <Command className="h-5 w-5 inline-block" /> K
-                    </div>
-                  </Button>
-                </li>
-                <li>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="flex items-center gap-2 h-fit"
-                      >
-                        <Image
-                          height={20}
-                          width={20}
-                          src={session.user.image || "/placeholder.svg"}
-                          alt={session.user.name || ""}
-                          className="w-8 h-8 rounded-full"
-                        />
-                        <div className="text-left">
-                          <p className="text-sm">{session.user.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            @{session.user.githubUsername}
-                          </p>
-                        </div>
-                        <div className="flex  flex-col items-center">
-                          <ChevronUp size={5} />
-                          <ChevronDown size={5} />
-                        </div>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56">
-                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      {/* profile */}
-                      <DropdownMenuItem asChild>
-                        <Link href="/profile">
-                          <User />
-                          <span>Profile</span>
-                        </Link>
+                    <div className="p-2 space-y-1">
+                      <DropdownMenuItem asChild className="p-4 focus:bg-swiss-black focus:text-swiss-white cursor-pointer rounded-none uppercase font-black text-xs italic tracking-widest outline-none">
+                        <Link href="/profile"><User className="mr-3 h-4 w-4" /> PROFILE_NODE</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="p-4 focus:bg-swiss-black focus:text-swiss-white cursor-pointer rounded-none uppercase font-black text-xs italic tracking-widest outline-none">
+                        <Link href="/messages"><MessagesSquare className="mr-3 h-4 w-4" /> COMMS_LINK</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="p-4 focus:bg-swiss-black focus:text-swiss-white cursor-pointer rounded-none uppercase font-black text-xs italic tracking-widest outline-none">
+                        <Link href="/requests"><Users className="mr-3 h-4 w-4" /> PEER_REQUESTS</Link>
                       </DropdownMenuItem>
 
-                      {/* messages */}
-                      <DropdownMenuItem asChild>
-                        <Link href="/messages">
-                          <MessagesSquare />
-                          <span>Messages</span>
-                        </Link>
+                      <DropdownMenuSeparator className="bg-swiss-black/10 h-1 mx-2" />
+
+                      <DropdownMenuItem asChild className="p-4 focus:bg-swiss-black focus:text-swiss-white cursor-pointer rounded-none uppercase font-black text-xs italic tracking-widest outline-none">
+                        <Link href="/api-dashboard"><Key className="mr-3 h-4 w-4" /> API_MASTER</Link>
                       </DropdownMenuItem>
-                      {/* Requests */}
-                      <DropdownMenuItem asChild>
-                        <Link href="/requests">
-                          <Users />
-                          <span>Requests</span>
-                        </Link>
+                      <DropdownMenuItem asChild className="p-4 focus:bg-swiss-black focus:text-swiss-white cursor-pointer rounded-none uppercase font-black text-xs italic tracking-widest outline-none">
+                        <Link href="/upgrade"><Zap className="mr-3 h-4 w-4" /> UPGRADE_SYNC</Link>
                       </DropdownMenuItem>
 
-                      <DropdownMenuSeparator />
+                      <DropdownMenuSeparator className="bg-swiss-black/10 h-1 mx-2" />
 
-                      {/* API Dashboard */}
-                      <DropdownMenuItem asChild>
-                        <Link href="/api-dashboard">
-                          <Key />
-                          <span>API Dashboard</span>{" "}
-                          <span className="text-[0.6rem] px-1  bg-orange-600 rounded-md text-white font-semibold">
-                            NEW
-                          </span>
-                        </Link>
-                      </DropdownMenuItem>
-
-                      {/* API Documentation */}
-                      <DropdownMenuItem asChild>
-                        <Link href="/api-docs">
-                          <Book />
-                          <span>API Docs</span>
-                        </Link>
-                      </DropdownMenuItem>
-
-                      {/* Upgrade */}
-                      <DropdownMenuItem asChild>
-                        <Link href="/upgrade">
-                          <Zap />
-                          <span>Upgrade</span>
-                        </Link>
-                      </DropdownMenuItem>
-
-                      {/* Projects */}
-
-                      {/* Edit Profile */}
-
-                      {/* apperance */}
-                      <DropdownMenuSeparator />
                       <DropdownMenuSub>
-                        <DropdownMenuSubTrigger>
-                          {/* Dynamically changing the icon based on the theme */}
-                          {currentTheme === "dark" && <MoonIcon size={16} />}
-                          {currentTheme === "light" && (
-                            <SunMediumIcon size={16} />
-                          )}
-                          {currentTheme === "system" && <Monitor size={16} />}
-                          <span>Appearance</span>
+                        <DropdownMenuSubTrigger className="p-4 focus:bg-swiss-black focus:text-swiss-white cursor-pointer rounded-none uppercase font-black text-xs italic tracking-widest outline-none">
+                          {currentTheme === "dark" && <MoonIcon className="mr-3 h-4 w-4" />}
+                          {currentTheme === "light" && <SunMediumIcon className="mr-3 h-4 w-4" />}
+                          {currentTheme === "system" && <Monitor className="mr-3 h-4 w-4" />}
+                          VISUAL_MODE
                         </DropdownMenuSubTrigger>
                         <DropdownMenuPortal>
-                          <DropdownMenuSubContent>
-                            <DropdownMenuRadioGroup
-                              value={currentTheme}
-                              onValueChange={toggleMode}
-                            >
-                              <DropdownMenuRadioItem
-                                value="system"
-                                className="flex items-center gap-2"
-                              >
-                                <Monitor size={16} />
-                                <span>System</span>
-                              </DropdownMenuRadioItem>
-                              <DropdownMenuRadioItem
-                                value="light"
-                                className="flex items-center gap-2"
-                              >
-                                <SunMediumIcon size={16} />
-                                <span>Light</span>
-                              </DropdownMenuRadioItem>
-                              <DropdownMenuRadioItem
-                                value="dark"
-                                className="flex items-center gap-2"
-                              >
-                                <MoonIcon size={16} />
-                                <span>Dark</span>
-                              </DropdownMenuRadioItem>
+                          <DropdownMenuSubContent className="bg-swiss-white border-4 border-swiss-black rounded-none shadow-[8px_8px_0_0_rgba(0,0,0,1)] p-2">
+                            <DropdownMenuRadioGroup value={currentTheme} onValueChange={toggleMode}>
+                              <DropdownMenuRadioItem value="light" className="p-3 font-black uppercase text-[10px] tracking-widest cursor-pointer hover:bg-swiss-black hover:text-swiss-white outline-none">LIGHT_ARRAY</DropdownMenuRadioItem>
+                              <DropdownMenuRadioItem value="dark" className="p-3 font-black uppercase text-[10px] tracking-widest cursor-pointer hover:bg-swiss-black hover:text-swiss-white outline-none">VOID_DOMAIN</DropdownMenuRadioItem>
+                              <DropdownMenuRadioItem value="system" className="p-3 font-black uppercase text-[10px] tracking-widest cursor-pointer hover:bg-swiss-black hover:text-swiss-white outline-none">SYSTEM_SYNC</DropdownMenuRadioItem>
                             </DropdownMenuRadioGroup>
                           </DropdownMenuSubContent>
                         </DropdownMenuPortal>
                       </DropdownMenuSub>
-                      {/* invite */}
-                      <DropdownMenuSub>
-                        <DropdownMenuSubTrigger>
-                          <UserPlus />
-                          <span>Invite users</span>
-                        </DropdownMenuSubTrigger>
-                        <DropdownMenuPortal>
-                          <DropdownMenuSubContent>
-                            <DropdownMenuItem
-                              onClick={handleInviteUsersViaEmail}
-                            >
-                              <Mail />
-                              <span>Email</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={handleInviteUsersViaWhatsApp}
-                            >
-                              <MessageSquare />
-                              <span>WhatsApp</span>
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={handleInviteUsersViaLink}
-                            >
-                              <PlusCircle />
-                              <span>More...</span>
-                            </DropdownMenuItem>
-                          </DropdownMenuSubContent>
-                        </DropdownMenuPortal>
-                      </DropdownMenuSub>
-                      {/* sign out */}
-                      <DropdownMenuSeparator />
+
+                      <DropdownMenuSeparator className="bg-swiss-black/10 h-1 mx-2" />
 
                       <DropdownMenuItem
                         onClick={() => signOut({ callbackUrl: "/" })}
+                        className="p-4 focus:bg-swiss-red focus:text-swiss-white cursor-pointer rounded-none uppercase font-black text-xs italic tracking-widest text-swiss-red outline-none"
                       >
-                        <LogOut />
-                        <span>Log out</span>
+                        <LogOut className="mr-3 h-4 w-4" /> TERMINATE_UPLINK
                       </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </li>
-                {/* <li>
-                  <Link href="/profile">
-                    <Image
-                      height={32}
-                      width={32}
-                      src={session.user.image || "/placeholder.svg"}
-                      alt={session.user.name || ""}
-                      className="w-8 h-8 rounded-full"
-                    />
-                  </Link>
-                </li>
-                <li>
-                  <Button variant="outline" onClick={() => signOut()}>
-                    Logout
-                  </Button>
-                </li> */}
-              </>
-            ) : (
-              <>
-                <li>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                  >
-                    <Link href="/about">About</Link>
-                  </Button>
-                </li>
-                <li>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                  >
-                    <Link href="/explore">Explore</Link>
-                  </Button>
-                </li>
-                <li>
-                  <RainbowButton onClick={() => signIn("github")}>
-                    Login with GitHub
-                  </RainbowButton>
-                </li>
-              </>
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <SwissButton variant="primary" onClick={() => signIn("github")}>
+                  LOGIN_GITHUB
+                </SwissButton>
+              )}
+            </div>
+          </nav>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            className="lg:hidden p-2 border-4 border-swiss-black"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="h-8 w-8" /> : <Menu className="h-8 w-8" />}
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile Menu Backdrop */}
+      {mobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-swiss-black/95 backdrop-blur-xl z-[100] lg:hidden flex flex-col items-center justify-center p-12 text-center"
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          <ul className="space-y-8">
+            {navItems.map((item) => (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className="text-5xl font-black uppercase tracking-tighter italic text-swiss-white hover:text-swiss-red transition-colors"
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+            {!session && (
+              <li>
+                <button
+                  onClick={() => signIn("github")}
+                  className="text-5xl font-black uppercase tracking-tighter italic text-swiss-red"
+                >
+                  INITIALIZE_AUTH
+                </button>
+              </li>
+            )}
+            {session && (
+              <li>
+                <button
+                  onClick={() => signOut()}
+                  className="text-5xl font-black uppercase tracking-tighter italic text-swiss-red"
+                >
+                  TERMINATE_SESSION
+                </button>
+              </li>
             )}
           </ul>
-        </nav>
-        <div className="lg:hidden flex items-center space-x-2">
-          {/* <ThemeToggle /> */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onSelect={() => setShowSearch(true)}>
-                <Search className="mr-2 h-4 w-4" />
-                <span>Search</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => router.push("/explore")}>
-                Explore
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => router.push("/discover")}>
-                Discover
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => router.push("/feed")}>
-                Feed
-              </DropdownMenuItem>
-              {session ? (
-                <>
-                  <DropdownMenuItem onSelect={() => router.push("/ai-connect")}>
-                    AI Connect{" "}
-                    <span className="text-[0.6rem] px-1  bg-orange-600 rounded-md text-white font-semibold">
-                      NEW
-                    </span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onSelect={() => router.push("/api-dashboard")}
-                  >
-                    API Dashboard{" "}
-                    <span className="text-[0.6rem] px-1  bg-orange-600 rounded-md text-white font-semibold">
-                      NEW
-                    </span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => router.push("/gathering")}>
-                    Gathering
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => router.push("/requests")}>
-                    Requests
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => router.push("/messages")}>
-                    Messages
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => router.push("/profile")}>
-                    Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onSelect={() => signOut()}>
-                    Logout
-                  </DropdownMenuItem>
-                </>
-              ) : (
-                <DropdownMenuItem onSelect={() => signIn("github")}>
-                  Login with GitHub
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
-      </div>
+      )}
+
       {showSearch && (
         <SearchOverlay
           onClose={() => setShowSearch(false)}
           onSearch={handleSearch}
         />
       )}
-    </header>
+    </>
   );
 }

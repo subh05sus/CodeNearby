@@ -1,17 +1,33 @@
-import { AuroraText } from "./magicui/aurora-text";
-import { Jersey_10 } from "next/font/google";
+import { cn } from "@/lib/utils";
 
-const jersey = Jersey_10({
-  subsets: ["latin"],
-  weight: "400",
-});
-
-function logo() {
-  return (
-    <h1 className={`text-5xl tracking-wide ${jersey.className}`}>
-      Code<AuroraText>Nearby</AuroraText>
-    </h1>
-  );
+interface LogoProps {
+  className?: string;
+  variant?: "black" | "white" | "red";
 }
 
-export default logo;
+export default function Logo({ className, variant = "black" }: LogoProps) {
+  return (
+    <div className={cn("flex items-center gap-1 bg-none", className)}>
+      <div
+        className={cn(
+          "px-2 py-0.5 font-black uppercase tracking-tighter text-3xl italic leading-none border-4",
+          variant === "black" && "bg-swiss-black text-swiss-white border-swiss-black",
+          variant === "white" && "bg-swiss-white text-swiss-black border-swiss-white",
+          variant === "red" && "bg-swiss-red text-swiss-white border-swiss-red"
+        )}
+      >
+        CODE
+      </div>
+      <div
+        className={cn(
+          "font-black uppercase tracking-tighter text-3xl italic leading-none",
+          variant === "black" && "text-swiss-black",
+          variant === "white" && "text-swiss-white",
+          variant === "red" && "text-swiss-red"
+        )}
+      >
+        NEARBY
+      </div>
+    </div>
+  );
+}

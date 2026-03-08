@@ -2,18 +2,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
 import { Github } from "lucide-react";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import SwissCard from "./swiss/SwissCard";
+import SwissButton from "./swiss/SwissButton";
 
 interface InviteContentProps {
   referrer: string;
@@ -42,44 +36,52 @@ export default function InviteContent({ referrer }: InviteContentProps) {
     }
   }, [referrer]);
 
-  if (loading) return <p>Loading...</p>;
-  if (!referrerData) return <p>Referrer not found</p>;
+  if (loading) return (
+    <div className="flex items-center justify-center min-h-[50vh]">
+      <p className="text-2xl font-black uppercase tracking-[0.5em] animate-pulse">Loading...</p>
+    </div>
+  );
+  if (!referrerData) return (
+    <div className="flex items-center justify-center min-h-[50vh]">
+      <p className="text-2xl font-black uppercase tracking-[0.5em] text-swiss-red">Referrer not found</p>
+    </div>
+  );
+
   return (
-    <div className="container flex items-center justify-center min-h-[calc(100vh-20rem)]">
-      <Card className="w-full max-w-md p-4">
-        <CardHeader>
-          <CardTitle className="text-3xl font-semibold text-center">
+    <div className="container flex items-center justify-center min-h-[calc(100vh-20rem)] py-24">
+      <SwissCard variant="white" pattern="grid" className="w-full max-w-md p-12">
+        <div className="flex flex-col items-center text-center">
+          <div className="mb-8 relative">
             <Image
               src={referrerData.image}
-              height={32}
-              width={32}
+              height={80}
+              width={80}
               alt={""}
-              className="inline mr-2"
+              className="rounded-none border-4 border-black shadow-[8px_8px_0_0_rgba(0,0,0,1)]"
             />
-            <span className="font-bold">{referrerData.name || "Someone"}</span>{" "}
-            invited you to join CodeNearby
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="text-center">
-          <p className="mb-4">
-            Discover GitHub developers in your area or search for specific users
-            worldwide.
+          </div>
+          <p className="text-xs font-black uppercase tracking-[0.4em] text-swiss-red mb-4 italic">Invitation Received</p>
+          <h2 className="text-4xl font-black uppercase tracking-tighter leading-none mb-8">
+            <span className="text-swiss-red">{referrerData.name || "Someone"}</span> invited you to join CodeNearby
+          </h2>
+          <p className="font-medium text-lg leading-tight mb-12">
+            Discover GitHub developers in your area or search for specific users worldwide.
           </p>
-        </CardContent>
-        <CardFooter className="flex justify-center">
-          <Button
-            variant="secondary"
+          <SwissButton
+            variant="accent"
+            size="lg"
+            className="w-full"
             onClick={async () => {
               await signIn("github", {
                 callbackUrl: `/user/${referrerData.githubId as string}`,
               });
             }}
           >
-            <Github className="inline mr-2" />
-            Login with GitHub
-          </Button>
-        </CardFooter>
-      </Card>
+            <Github className="inline mr-4" />
+            LOGIN WITH GITHUB
+          </SwissButton>
+        </div>
+      </SwissCard>
     </div>
   );
 }

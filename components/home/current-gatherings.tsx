@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Users } from "lucide-react";
 import Link from "next/link";
 import { ScrollArea } from "../ui/scroll-area";
+import SwissCard from "../swiss/SwissCard";
+import SwissButton from "../swiss/SwissButton";
 
 interface Gathering {
   _id: string;
@@ -36,49 +35,51 @@ export function CurrentGatherings() {
   }, []);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Current Gatherings</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-[160px] portrait:h-fit pr-4">
+    <SwissCard variant="white" pattern="dots">
+      <div className="mb-6 border-b-2 border-black dark:border-white pb-2">
+        <h2 className="text-xl font-black uppercase tracking-widest flex items-center gap-2 text-black dark:text-white">
+          <Users size={20} className="text-swiss-red" />
+          Current Gatherings
+        </h2>
+      </div>
+      <div>
+        <ScrollArea className="h-[200px] pr-4">
           {loading ? (
-            <div className="space-y-2">
+            <div className="space-y-4">
               {[...Array(3)].map((_, i) => (
-                <Skeleton key={i} className="h-10 w-full" />
+                <div key={i} className="h-12 w-full bg-muted dark:bg-neutral-800 border-2 border-black dark:border-white animate-pulse" />
               ))}
             </div>
           ) : gatherings.length > 0 ? (
-            <ul className="space-y-2">
+            <ul className="space-y-4">
               {gatherings.map((gathering) => (
                 <li
                   key={gathering._id}
-                  className="flex items-center justify-between"
+                  className="flex flex-col border-2 border-black dark:border-white p-4 bg-white dark:bg-black relative group"
                 >
-                  <div>
-                    <h3 className="font-semibold md:text-base text-sm">
+                  <div className="mb-4">
+                    <h3 className="font-black uppercase text-lg leading-tight group-hover:text-swiss-red transition-colors text-black dark:text-white">
                       {gathering.name}
                     </h3>
-                    <p className=" text-xs md:text-sm text-muted-foreground">
-                      Expires: {new Date(gathering.expiresAt).toLocaleString()}
+                    <p className="text-[10px] font-black uppercase tracking-widest opacity-50 dark:opacity-40 italic mt-1 text-black dark:text-white">
+                      EXPIRES: {new Date(gathering.expiresAt).toLocaleString().split(",")[0]}
                     </p>
                   </div>
-                  <Button asChild>
+                  <SwissButton variant="accent" size="sm" className="w-full" asChild>
                     <Link href={`/gathering/${gathering.slug}`}>
-                      <Users className="h-4 w-4 mr-2" />
-                      View
+                      JOIN GATHERING
                     </Link>
-                  </Button>
+                  </SwissButton>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-muted-foreground text-sm">
-              No current gatherings
+            <p className="text-sm font-black uppercase tracking-widest opacity-30 dark:opacity-20 italic py-8 border-2 border-dashed border-black/20 dark:border-white/20 text-center text-black dark:text-white">
+              NO CURRENT GATHERINGS
             </p>
           )}
         </ScrollArea>
-      </CardContent>
-    </Card>
+      </div>
+    </SwissCard>
   );
 }

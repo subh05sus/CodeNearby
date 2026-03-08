@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { GitCommit, GitBranch, GitPullRequest, Star } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
+import SwissCard from "../swiss/SwissCard";
 
 interface GitHubEvent {
   id: string;
@@ -49,15 +48,15 @@ export function GitHubEvents({ username }: { username: string }) {
   const getEventIcon = (type: string) => {
     switch (type) {
       case "PushEvent":
-        return <GitCommit className="h-4 w-4" />;
+        return <GitCommit size={14} className="text-swiss-red" />;
       case "CreateEvent":
-        return <GitBranch className="h-4 w-4" />;
+        return <GitBranch size={14} className="text-swiss-red" />;
       case "PullRequestEvent":
-        return <GitPullRequest className="h-4 w-4" />;
+        return <GitPullRequest size={14} className="text-swiss-red" />;
       case "WatchEvent":
-        return <Star className="h-4 w-4" />;
+        return <Star size={14} className="text-swiss-red" />;
       default:
-        return null;
+        return <span className="text-swiss-red">✽</span>;
     }
   };
 
@@ -77,36 +76,43 @@ export function GitHubEvents({ username }: { username: string }) {
   };
 
   return (
-    <Card className="h-full">
-      <CardHeader>
-        <CardTitle>Your GitHub Activity</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <SwissCard variant="white" pattern="grid" className="h-full">
+      <div className="mb-6 border-b-2 border-black dark:border-white pb-2">
+        <h2 className="text-xl font-black uppercase tracking-widest text-black dark:text-white">
+          System Logs
+        </h2>
+      </div>
+      <div>
         <ScrollArea
-          className={`h-[160px] ${events.length < 1 && " portrait:h-fit"} pr-4`}
+          className={`h-[240px] pr-4`}
         >
           {loading ? (
-            <div className="space-y-2">
+            <div className="space-y-4">
               {[...Array(5)].map((_, i) => (
-                <Skeleton key={i} className="h-12 w-full" />
+                <div key={i} className="h-10 w-full bg-muted dark:bg-neutral-800 border-2 border-black dark:border-white animate-pulse" />
               ))}
             </div>
           ) : events.length > 0 ? (
-            <ul className="space-y-2">
+            <ul className="space-y-3">
               {events.map((event) => (
-                <li key={event.id} className="flex items-center space-x-2">
-                  {getEventIcon(event.type)}
-                  <span className="text-sm">{getEventDescription(event)}</span>
+                <li key={event.id} className="flex gap-4 p-3 border-2 border-black dark:border-white bg-white dark:bg-black hover:bg-muted dark:hover:bg-neutral-900 transition-colors">
+                  <div className="mt-1">{getEventIcon(event.type)}</div>
+                  <div className="flex flex-col">
+                    <span className="text-xs font-black uppercase leading-tight text-black dark:text-white">{getEventDescription(event)}</span>
+                    <span className="text-[10px] uppercase font-bold tracking-widest opacity-30 dark:opacity-40 mt-1 italic text-black dark:text-white">
+                      {new Date(event.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-muted-foreground text-sm">
-              No recent GitHub activity
+            <p className="text-sm font-black uppercase tracking-widest opacity-30 dark:opacity-20 italic py-8 border-2 border-dashed border-black/20 dark:border-white/20 text-center text-black dark:text-white">
+              NO SYSTEM ACTIVITY
             </p>
           )}
         </ScrollArea>
-      </CardContent>
-    </Card>
+      </div>
+    </SwissCard>
   );
 }

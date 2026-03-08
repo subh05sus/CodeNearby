@@ -4,9 +4,8 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
+import SwissCard from "@/components/swiss/SwissCard";
+import SwissButton from "@/components/swiss/SwissButton";
 import {
   Loader2,
   Users,
@@ -25,8 +24,11 @@ import {
   Calendar,
   Pin,
   GitFork,
+  Settings,
+  Share2,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import type { UserProfile } from "@/types";
 import { PostCard } from "@/components/post-card";
 import { Session } from "next-auth";
@@ -34,7 +36,6 @@ import { fetchGitHubActivities } from "@/lib/github";
 import { formatDistanceToNow } from "date-fns";
 import LoginButton from "@/components/login-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import {
   HoverCard,
   HoverCardContent,
@@ -45,6 +46,7 @@ import { MasonryGrid } from "@/components/masonry-grid";
 import { toast } from "sonner";
 import { Spotlight } from "@/components/ui/spotlight-new";
 import { ActivityHeatmap } from "@/components/activity-heatmap";
+import { cn } from "@/lib/utils";
 
 interface Post {
   _id: string;
@@ -92,6 +94,7 @@ export default function ProfilePage() {
   const [stats, setStats] = useState<any>(null);
   const [posts, setPosts] = useState<Post[]>(() => []);
   const [activities, setActivities] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState("activities");
   const [appearance, setAppearance] = useState<{
     theme: "default" | "blue" | "green" | "purple" | "orange";
     showActivity: boolean;
@@ -452,604 +455,350 @@ export default function ProfilePage() {
       />
 
       <div className="max-w-6xl mx-auto px-4">
-        <div className="pt-20 pb-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="pt-24 pb-12 border-b-8 border-swiss-black">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
             <div>
-              <h1 className="text-3xl font-bold">{session.user.name}</h1>
-              <div className="flex items-center gap-2 text-muted-foreground portrait:text-xs">
-                <span>@{session.user.githubUsername}</span>
+              <h1 className="text-7xl font-black uppercase tracking-tighter leading-[0.8]">
+                {session.user.name?.split(' ').map((word, i) => (
+                  <span key={i} className="block">{word}</span>
+                ))}
+              </h1>
+
+              <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2">
+                <div className="bg-swiss-black text-swiss-white px-3 py-1 font-black text-sm tracking-widest">
+                  @{session.user.githubUsername?.toUpperCase()}
+                </div>
+
                 {stats?.location && (
-                  <>
-                    <span>•</span>
-                    <MapPin className="h-4 w-4" />
+                  <div className="flex items-center gap-2 font-bold uppercase text-xs tracking-tight opacity-60">
+                    <MapPin className="h-4 w-4 stroke-[3]" />
                     <span>{stats.location}</span>
-                  </>
+                  </div>
                 )}
+
                 {stats?.company && (
-                  <>
-                    <span>•</span>
-                    <Building className="h-4 w-4" />
+                  <div className="flex items-center gap-2 font-bold uppercase text-xs tracking-tight opacity-60">
+                    <Building className="h-4 w-4 stroke-[3]" />
                     <span>{stats.company}</span>
-                  </>
+                  </div>
                 )}
               </div>
-              <div className="flex items-center gap-2 text-muted-foreground text-sm portrait:text-xs">
-                {profile?.githubBio && <span>{profile?.githubBio}</span>}
-              </div>
+
+              {profile?.githubBio && (
+                <p className="mt-6 max-w-2xl font-bold uppercase tracking-tight text-lg leading-tight opacity-80 italic">
+                  "{profile.githubBio}"
+                </p>
+              )}
             </div>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant={
-                  appearance?.theme !== "default" ? "default" : "outline"
-                }
-                className={
-                  appearance?.theme !== "default"
-                    ? `${
-                        appearance?.theme === "blue"
-                          ? "dark:bg-blue-900 dark:hover:bg-blue-950 text-white  bg-blue-500 hover:bg-blue-600 "
-                          : appearance?.theme === "green"
-                          ? "dark:bg-green-900 dark:hover:bg-green-950 text-white  bg-green-500 hover:bg-green-600 "
-                          : appearance?.theme === "purple"
-                          ? "dark:bg-purple-900 dark:hover:bg-purple-950 text-white  bg-purple-500 hover:bg-purple-600 "
-                          : appearance?.theme === "orange"
-                          ? "dark:bg-orange-900 dark:hover:bg-orange-950 text-white  bg-orange-500 hover:bg-orange-600 "
-                          : ""
-                      } `
-                    : ""
-                }
-                size="sm"
-                asChild
-              >
+
+            <div className="flex flex-wrap gap-4">
+              <SwissButton variant="secondary" size="sm" asChild>
                 <Link
                   href={`https://github.com/${session.user.githubUsername}`}
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="flex items-center gap-2"
                 >
-                  <Github className="h-4 w-4 mr-2" />
-                  GitHub
+                  <Github className="h-4 w-4" />
+                  GITHUB_ID
                 </Link>
-              </Button>
+              </SwissButton>
+
               {stats?.twitter_username && (
-                <Button
-                  variant={
-                    appearance?.theme !== "default" ? "default" : "outline"
-                  }
-                  className={
-                    appearance?.theme !== "default"
-                      ? `${
-                          appearance?.theme === "blue"
-                            ? "dark:bg-blue-900 dark:hover:bg-blue-950 text-white  bg-blue-500 hover:bg-blue-600 "
-                            : appearance?.theme === "green"
-                            ? "dark:bg-green-900 dark:hover:bg-green-950 text-white  bg-green-500 hover:bg-green-600 "
-                            : appearance?.theme === "purple"
-                            ? "dark:bg-purple-900 dark:hover:bg-purple-950 text-white  bg-purple-500 hover:bg-purple-600 "
-                            : appearance?.theme === "orange"
-                            ? "dark:bg-orange-900 dark:hover:bg-orange-950 text-white  bg-orange-500 hover:bg-orange-600 "
-                            : ""
-                        } `
-                      : ""
-                  }
-                  size="sm"
-                  asChild
-                >
+                <SwissButton variant="secondary" size="sm" asChild>
                   <Link
                     href={`https://twitter.com/${stats.twitter_username}`}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="flex items-center gap-2"
                   >
-                    <Twitter className="h-4 w-4 mr-2" />
-                    Twitter
+                    <Twitter className="h-4 w-4" />
+                    SIGNAL_X
                   </Link>
-                </Button>
+                </SwissButton>
               )}
+
               {stats?.blog && (
-                <Button
-                  variant={
-                    appearance?.theme !== "default" ? "default" : "outline"
-                  }
-                  className={
-                    appearance?.theme !== "default"
-                      ? `${
-                          appearance?.theme === "blue"
-                            ? "dark:bg-blue-900 dark:hover:bg-blue-950 text-white  bg-blue-500 hover:bg-blue-600 "
-                            : appearance?.theme === "green"
-                            ? "dark:bg-green-900 dark:hover:bg-green-950 text-white  bg-green-500 hover:bg-green-600 "
-                            : appearance?.theme === "purple"
-                            ? "dark:bg-purple-900 dark:hover:bg-purple-950 text-white  bg-purple-500 hover:bg-purple-600 "
-                            : appearance?.theme === "orange"
-                            ? "dark:bg-orange-900 dark:hover:bg-orange-950 text-white  bg-orange-500 hover:bg-orange-600 "
-                            : ""
-                        } `
-                      : ""
-                  }
-                  size="sm"
-                  asChild
-                >
+                <SwissButton variant="secondary" size="sm" asChild>
                   <Link
                     href={stats.blog}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="flex items-center gap-2"
                   >
-                    <LinkIcon className="h-4 w-4 mr-2" />
-                    Website
+                    <LinkIcon className="h-4 w-4" />
+                    DOMAIN_LINK
                   </Link>
-                </Button>
+                </SwissButton>
               )}
             </div>
           </div>
-          {profile?.skills && profile.skills.length > 0 && (
-            <div className="mt-4">
-              <div className="flex flex-wrap gap-1.5">
-                {profile.skills.map((skill: string, index: number) => (
-                  <Badge
-                    key={index}
-                    variant="secondary"
-                    className={`bg-primary/10 hover:bg-primary/15 text-primary cursor-default font-semibold ${
-                      appearance?.theme === "blue"
-                        ? "bg-blue-500/10 hover:bg-blue-500/15 text-blue-500"
-                        : appearance?.theme === "green"
-                        ? "bg-green-500/10 hover:bg-green-500/15 text-green-500"
-                        : appearance?.theme === "purple"
-                        ? "bg-purple-500/10 hover:bg-purple-500/15 text-purple-500"
-                        : appearance?.theme === "orange"
-                        ? "bg-orange-500/10 hover:bg-orange-500/15 text-orange-500"
-                        : ""
-                    }`}
-                  >
-                    {skill}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-            <Card
-              className={
-                appearance?.theme !== "default"
-                  ? `${
-                      appearance?.theme === "blue"
-                        ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : appearance?.theme === "green"
-                        ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : appearance?.theme === "purple"
-                        ? "dark:bg-purple-500 bg-purple-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : appearance?.theme === "orange"
-                        ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : ""
-                    } transition-all duration-200`
-                  : ""
-              }
-            >
-              <CardContent className="pt-6">
-                <div className="flex flex-col items-center">
-                  <Users
-                    className={`h-5 w-5 mb-2 text-primary ${
-                      appearance?.theme === "blue"
-                        ? "text-blue-500"
-                        : appearance?.theme === "green"
-                        ? "text-green-500"
-                        : appearance?.theme === "purple"
-                        ? "text-purple-500"
-                        : appearance?.theme === "orange"
-                        ? "text-orange-500"
-                        : ""
-                    }`}
-                  />
-                  <span className="text-2xl font-bold">
-                    {profile?.friends?.length || 0}
-                  </span>
-                  <span className="text-sm dark:text-muted-foreground">
-                    Friends
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-            <Card
-              className={
-                appearance?.theme !== "default"
-                  ? `${
-                      appearance?.theme === "blue"
-                        ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : appearance?.theme === "green"
-                        ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : appearance?.theme === "purple"
-                        ? "dark:bg-purple-500 bg-purple-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : appearance?.theme === "orange"
-                        ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : ""
-                    } transition-all duration-200`
-                  : ""
-              }
-            >
-              <CardContent className="pt-6">
-                <div className="flex flex-col items-center">
-                  <GitBranch
-                    className={`h-5 w-5 mb-2 text-primary ${
-                      appearance?.theme === "blue"
-                        ? "text-blue-500"
-                        : appearance?.theme === "green"
-                        ? "text-green-500"
-                        : appearance?.theme === "purple"
-                        ? "text-purple-500"
-                        : appearance?.theme === "orange"
-                        ? "text-orange-500"
-                        : ""
-                    }`}
-                  />
-                  <span className="text-2xl font-bold">
-                    {stats?.public_repos || 0}
-                  </span>
-                  <span className="text-sm dark:text-muted-foreground">
-                    Repositories
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-            <Card
-              className={
-                appearance?.theme !== "default"
-                  ? `${
-                      appearance?.theme === "blue"
-                        ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : appearance?.theme === "green"
-                        ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : appearance?.theme === "purple"
-                        ? "dark:bg-purple-500 bg-purple-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : appearance?.theme === "orange"
-                        ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : ""
-                    } transition-all duration-200`
-                  : ""
-              }
-            >
-              <CardContent className="pt-6">
-                <div className="flex flex-col items-center">
-                  <Star
-                    className={`h-5 w-5 mb-2 text-primary ${
-                      appearance?.theme === "blue"
-                        ? "text-blue-500"
-                        : appearance?.theme === "green"
-                        ? "text-green-500"
-                        : appearance?.theme === "purple"
-                        ? "text-purple-500"
-                        : appearance?.theme === "orange"
-                        ? "text-orange-500"
-                        : ""
-                    }`}
-                  />
-                  <span className="text-2xl font-bold">
-                    {stats?.followers || 0}
-                  </span>
-                  <span className="text-sm dark:text-muted-foreground">
-                    Followers
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-            <Card
-              className={
-                appearance?.theme !== "default"
-                  ? `${
-                      appearance?.theme === "blue"
-                        ? "dark:bg-blue-500 bg-blue-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : appearance?.theme === "green"
-                        ? "dark:bg-green-500 bg-green-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : appearance?.theme === "purple"
-                        ? "dark:bg-purple-500 bg-purple-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : appearance?.theme === "orange"
-                        ? "dark:bg-orange-500 bg-orange-300 bg-opacity-10 hover:bg-opacity-20 dark:bg-opacity-10 dark:hover:bg-opacity-20"
-                        : ""
-                    } transition-all duration-200`
-                  : ""
-              }
-            >
-              <CardContent className="pt-6">
-                <div className="flex flex-col items-center">
-                  <Calendar
-                    className={`h-5 w-5 mb-2 text-primary ${
-                      appearance?.theme === "blue"
-                        ? "text-blue-500"
-                        : appearance?.theme === "green"
-                        ? "text-green-500"
-                        : appearance?.theme === "purple"
-                        ? "text-purple-500"
-                        : appearance?.theme === "orange"
-                        ? "text-orange-500"
-                        : ""
-                    }`}
-                  />
-                  <span className="text-2xl font-bold">
-                    {new Date(stats?.created_at || Date.now()).getFullYear()}
-                  </span>
-                  <span className="text-sm dark:text-muted-foreground">
-                    Joined GitHub
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
 
-          {/* Pinned Repositories Section */}
-          {profile?.pinnedRepos && profile.pinnedRepos.length > 0 && (
-            <div className="mt-8">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold">Pinned Repositories</h2>
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/profile/edit?tab=repositories">
-                    <Pin className="h-4 w-4 mr-2" />
-                    Edit Pins
-                  </Link>
-                </Button>
-              </div>
-              <div className="grid md:grid-cols-2 gap-4">
-                {profile.pinnedRepos.map((repo) => (
-                  <Card key={repo.id}>
-                    <CardContent className="p-5">
-                      <div className="flex flex-col h-full">
-                        <div className="flex items-start gap-3 mb-3">
-                          <div>
-                            <h3 className="font-medium hover:underline">
-                              <Link
-                                href={repo.html_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="hover:text-primary transition-colors"
-                              >
-                                {repo.name}
-                              </Link>
-                            </h3>
-                            <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                              {repo.description || "No description available"}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3 text-sm mt-auto">
-                          {repo.language && (
-                            <div className="flex items-center">
-                              <span
-                                className={`h-3 w-3 rounded-full bg-${appearance?.theme}-500/70 mr-1.5`}
-                              ></span>
-                              <span>{repo.language}</span>
-                            </div>
-                          )}
-                          <div className="flex items-center">
-                            <Star className="h-4 w-4 mr-1" />
-                            <span>{repo.stargazers_count}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <GitFork className="h-4 w-4 mr-1" />
-                            <span>{repo.forks_count}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+          {profile?.skills && profile.skills.length > 0 && (
+            <div className="mt-12 flex flex-wrap gap-3">
+              {profile.skills.map((skill: string, index: number) => (
+                <div
+                  key={index}
+                  className="px-4 py-2 border-4 border-swiss-black font-black uppercase text-xs tracking-widest hover:bg-swiss-black hover:text-swiss-white transition-all cursor-default"
+                >
+                  {skill}
+                </div>
+              ))}
             </div>
           )}
         </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
+          <SwissCard className="p-8 group hover:bg-swiss-black transition-all duration-300">
+            <div className="flex flex-col items-center">
+              <Users className="h-6 w-6 mb-4 group-hover:text-swiss-white" />
+              <span className="text-6xl font-black tracking-tighter group-hover:text-swiss-white leading-none">
+                {profile?.friends?.length || 0}
+              </span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] mt-2 opacity-40 group-hover:text-swiss-white group-hover:opacity-100">
+                FRIENDS_NODE
+              </span>
+            </div>
+          </SwissCard>
 
-        <Tabs defaultValue="friends" className="space-y-4">
-          <TabsList className="w-fit justify-start">
-            <TabsTrigger value="friends" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Friends
-            </TabsTrigger>
-            <TabsTrigger value="posts" className="flex items-center gap-2">
-              <Activity className="h-4 w-4" />
-              Posts
-            </TabsTrigger>
-            {appearance?.showActivity && (
-              <TabsTrigger value="activity" className="flex items-center gap-2">
-                <Github className="h-4 w-4" />
-                GitHub Activity
-              </TabsTrigger>
-            )}
-          </TabsList>
+          <SwissCard className="p-8 group hover:bg-swiss-red transition-all duration-300">
+            <div className="flex flex-col items-center">
+              <GitBranch className="h-6 w-6 mb-4 group-hover:text-swiss-white" />
+              <span className="text-6xl font-black tracking-tighter group-hover:text-swiss-white leading-none">
+                {stats?.public_repos || 0}
+              </span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] mt-2 opacity-40 group-hover:text-swiss-white group-hover:opacity-100">
+                REPO_SYNC
+              </span>
+            </div>
+          </SwissCard>
 
-          <TabsContent value="friends" className="space-y-4">
-            {profile?.friends?.length === 0 ? (
-              <Card>
-                <CardContent className="py-8 text-center">
-                  <Users className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-medium mb-2">No Friends Yet</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Start connecting with other developers!
-                  </p>
-                  <Button asChild>
-                    <Link href="/discover">
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      Find Friends
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid md:grid-cols-2 gap-4">
-                {profile?.friends?.map((friend) => (
-                  <Card key={friend.githubId} className="overflow-hidden">
-                    <CardContent className="p-6">
-                      <div className="flex items-start gap-4">
-                        <Avatar className="h-12 w-12">
-                          <AvatarImage src={friend.image} />
-                          <AvatarFallback>
-                            {friend.githubUsername[0]}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <HoverCard>
-                            <HoverCardTrigger asChild>
-                              <Link
-                                href={`https://github.com/${friend.githubUsername}`}
-                                className="font-medium hover:underline truncate block"
-                                target="_blank"
-                              >
-                                {friend.githubUsername}
-                              </Link>
-                            </HoverCardTrigger>
-                            <HoverCardContent className="w-80">
-                              <div className="flex space-x-4">
-                                <Avatar className="h-12 w-12">
-                                  <AvatarImage src={friend.image} />
-                                  <AvatarFallback>
-                                    {friend.githubUsername[0]}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <div className="flex-1">
-                                  <h4 className="text-sm font-semibold">
-                                    {friend.name}
-                                  </h4>
-                                  <p className="text-xs text-muted-foreground">
-                                    @{friend.githubUsername}
-                                  </p>
-                                  <p className="text-xs text-muted-foreground">
-                                    {friend.githubBio}
-                                  </p>
-                                  {friend.githubLocation && (
-                                    <p className="text-xs text-muted-foreground">
-                                      <MapPin className=" h-3 w-3 inline-block mr-2" />
-                                      {friend.githubLocation}
-                                    </p>
-                                  )}
-                                </div>
-                              </div>
-                            </HoverCardContent>
-                          </HoverCard>
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-4">
-                            <Button variant="secondary" size="sm" asChild>
-                              <Link href={`/user/${friend.githubId}`}>
-                                <Eye className="h-4 w-4 mr-2" />
-                                View Profile
-                              </Link>
-                            </Button>
-                            <Button variant="secondary" size="sm" asChild>
-                              <Link href={`/messages/${friend.githubId}`}>
-                                <MessageSquare className="h-4 w-4 mr-2" />
-                                Message
-                              </Link>
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              onClick={() => removeFriend(friend.githubId)}
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Remove
-                            </Button>
-                          </div>
-                        </div>
+          <SwissCard className="p-8 group hover:bg-swiss-black transition-all duration-300">
+            <div className="flex flex-col items-center">
+              <Star className="h-6 w-6 mb-4 group-hover:text-swiss-white" />
+              <span className="text-6xl font-black tracking-tighter group-hover:text-swiss-white leading-none">
+                {stats?.followers || 0}
+              </span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] mt-2 opacity-40 group-hover:text-swiss-white group-hover:opacity-100">
+                FOLLOWERS
+              </span>
+            </div>
+          </SwissCard>
+
+          <SwissCard className="p-8 group hover:bg-swiss-red transition-all duration-300">
+            <div className="flex flex-col items-center">
+              <Calendar className="h-6 w-6 mb-4 group-hover:text-swiss-white" />
+              <span className="text-6xl font-black tracking-tighter group-hover:text-swiss-white leading-none">
+                {stats?.created_at ? new Date(stats.created_at).getFullYear().toString().slice(-2) : "00"}
+              </span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] mt-2 opacity-40 group-hover:text-swiss-white group-hover:opacity-100">
+                ESTO_MARK
+              </span>
+            </div>
+          </SwissCard>
+        </div>
+
+        {/* Pinned Repositories Section */}
+        {profile?.pinnedRepos && profile.pinnedRepos.length > 0 && (
+          <div className="mt-24">
+            <div className="flex items-center justify-between mb-8 border-b-4 border-swiss-black pb-4">
+              <h2 className="text-3xl font-black uppercase tracking-tighter">PINNED_REPOSITORIES</h2>
+              <SwissButton variant="secondary" size="sm" asChild>
+                <Link href="/profile/edit?tab=repositories" className="flex items-center gap-2">
+                  <Pin className="h-4 w-4" />
+                  MODIFY_PINS
+                </Link>
+              </SwissButton>
+            </div>
+            <div className="grid md:grid-cols-2 gap-6">
+              {profile.pinnedRepos.map((repo) => (
+                <SwissCard key={repo.id} className="p-8 hover:bg-swiss-muted transition-colors">
+                  <div className="flex flex-col h-full">
+                    <div className="flex items-start justify-between mb-4">
+                      <Link
+                        href={repo.html_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-2xl font-black uppercase tracking-tight hover:text-swiss-red transition-colors"
+                      >
+                        {repo.name}
+                      </Link>
+                      <GitFork className="h-5 w-5 opacity-40" />
+                    </div>
+                    <p className="text-sm font-bold uppercase tracking-tight leading-tight opacity-60 mb-8 line-clamp-2">
+                      {repo.description || "NO_DESCRIPTION_AVAILABLE"}
+                    </p>
+                    <div className="mt-auto flex items-center gap-6">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-swiss-red" />
+                        <span className="font-black text-[10px] tracking-widest">{repo.language?.toUpperCase() || "DATA"}</span>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      <div className="flex items-center gap-2 opacity-40">
+                        <Star className="h-3 w-3 fill-current" />
+                        <span className="font-black text-[10px] tracking-widest">{repo.stargazers_count}</span>
+                      </div>
+                    </div>
+                  </div>
+                </SwissCard>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Swiss Custom Tabs Implementation */}
+        <div className="mt-24">
+          <div className="flex flex-wrap gap-4 mb-12 border-b-8 border-swiss-black pb-8">
+            {[
+              { id: "activities", label: "NODE_ACTIVITIES", icon: Activity },
+              { id: "posts", label: "USER_ENTRIES", icon: MessageSquare },
+              { id: "friends", label: "CONNECTION_GRID", icon: Users },
+              { id: "settings", label: "TERMINAL_CONFIG", icon: Settings },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  "px-8 py-4 border-4 border-swiss-black font-black uppercase tracking-widest text-sm flex items-center gap-3 transition-all",
+                  activeTab === tab.id
+                    ? "bg-swiss-black text-swiss-white shadow-[8px_8px_0_0_rgba(255,0,0,1)] -translate-y-2"
+                    : "bg-swiss-white text-swiss-black hover:bg-swiss-muted"
+                )}
+              >
+                <tab.icon className="h-5 w-5" />
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="min-h-[500px] mb-24">
+            {activeTab === "activities" && (
+              <div className="space-y-12">
+                <SwissCard className="p-8">
+                  <h3 className="text-2xl font-black uppercase tracking-tighter mb-8 border-b-4 border-swiss-black pb-4">HEATMAP_VISUALIZATION</h3>
+                  <ActivityHeatmap data={{ posts: posts as any, themeColor: appearance?.theme || 'green' }} />
+                </SwissCard>
+
+                <div className="grid gap-4">
+                  {activities.map((activity, i) => (
+                    <div key={i} className="group border-l-8 border-swiss-black hover:border-swiss-red pl-6 py-4 transition-all">
+                      <div className="flex items-center gap-4 mb-1">
+                        <span className="font-black text-[10px] tracking-widest text-swiss-red uppercase">{activity.type.replace('Event', '')}</span>
+                        <span className="text-[10px] font-bold opacity-30 uppercase">{formatDistanceToNow(new Date(activity.createdAt || activity.created_at || Date.now()))} AGO</span>
+                      </div>
+                      <p className="font-bold uppercase tracking-tight text-lg group-hover:translate-x-2 transition-transform">
+                        {activity.repo.name}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
-          </TabsContent>
 
-          <TabsContent value="posts">
-            <div className="space-y-6">
-              {posts.length === 0 ? (
-                <Card>
-                  <CardContent className="py-8 text-center">
-                    <Activity className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                    <h3 className="text-lg font-medium mb-2">No Posts Yet</h3>
-                    <p className="text-muted-foreground">
-                      Share your thoughts with the community!
-                    </p>
-                  </CardContent>
-                </Card>
-              ) : (
-                <MasonryGrid>
-                  {posts.map((post) => (
-                    <PostCard
-                      key={post._id}
-                      post={post}
-                      onVote={handleVote}
-                      onAddComment={handleAddComment}
-                      onVotePoll={handleVotePoll}
-                      onCommentVote={handleCommentVote}
-                      compactView={appearance?.compactPosts}
-                    />
-                  ))}
-                </MasonryGrid>
-              )}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="activity">
-            <Card>
-              <CardContent className="p-6">
-                {activities.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Github className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                    <h3 className="text-lg font-medium mb-2">
-                      No Recent Activity
-                    </h3>
-                    <p className="text-muted-foreground">
-                      Your GitHub activity will appear here
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    {activities.map((activity) => (
-                      <div
-                        key={activity.id}
-                        className="flex items-start gap-4 pb-6 border-b last:border-0 last:pb-0"
-                      >
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <Badge variant="secondary">
-                              {activity.type.replace("Event", "")}
-                            </Badge>
-                            <span className="text-sm text-muted-foreground">
-                              {formatDistanceToNow(
-                                new Date(activity.created_at),
-                                { addSuffix: true }
-                              )}
-                            </span>
-                          </div>
-                          <Link
-                            href={`https://github.com/${activity.repo.name}`}
-                            className="text-sm font-medium hover:underline"
-                            target="_blank"
-                          >
-                            {activity.repo.name}
-                          </Link>
-                          {activity.payload?.commits && (
-                            <div className="mt-2 space-y-2">
-                              {activity.payload.commits.map((commit: any) => (
-                                <div key={commit.sha} className="text-sm">
-                                  <Link
-                                    href={`https://github.com/${activity.repo.name}/commit/${commit.sha}`}
-                                    className="font-mono text-xs text-muted-foreground hover:underline"
-                                    target="_blank"
-                                  >
-                                    {commit.sha.substring(0, 7)}
-                                  </Link>
-                                  <span className="ml-2 text-muted-foreground">
-                                    {commit.message}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
+            {activeTab === "posts" && (
+              <div className="space-y-12">
+                {posts.length > 0 ? (
+                  <MasonryGrid>
+                    {posts.map((post) => (
+                      <PostCard
+                        key={post._id}
+                        post={post as any}
+                        onVote={handleVote}
+                        onAddComment={handleAddComment}
+                        onVotePoll={handleVotePoll}
+                        onCommentVote={handleCommentVote}
+                      />
                     ))}
+                  </MasonryGrid>
+                ) : (
+                  <div className="border-8 border-swiss-black p-12 text-center bg-swiss-muted/20">
+                    <p className="font-black text-4xl uppercase tracking-tighter opacity-20 leading-none">EMPTY_NODE_BUFFER<br />NO_POSTS_DETECTED</p>
                   </div>
                 )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-        <div className="mt-8">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">
-            Activity Overview
-          </h1>
-          <ActivityHeatmap
-            data={{ posts, themeColor: appearance?.theme || "green" }}
-          />
+              </div>
+            )}
+
+            {activeTab === "friends" && (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {profile?.friends?.map((friend: any) => (
+                  <SwissCard key={friend.githubId} className="p-6 group hover:bg-swiss-black transition-all">
+                    <div className="flex items-center gap-6">
+                      <div className="w-16 h-16 border-4 border-swiss-black grayscale group-hover:grayscale-0 transition-all overflow-hidden bg-swiss-white">
+                        <Image src={friend.image || "/placeholder.svg"} width={64} height={64} alt={friend.name} className="object-cover" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-black uppercase tracking-tight truncate group-hover:text-swiss-white text-sm">{friend.name}</h4>
+                        <p className="font-bold text-[10px] tracking-widest uppercase opacity-40 group-hover:text-swiss-white group-hover:opacity-100">@{friend.githubUsername}</p>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <SwissButton variant="secondary" size="icon" className="h-10 w-10" asChild>
+                          <Link href={`/messages/${friend.githubId}`}>
+                            <MessageSquare className="h-4 w-4" />
+                          </Link>
+                        </SwissButton>
+                        <SwissButton variant="secondary" size="icon" className="h-10 w-10 text-swiss-red border-swiss-red hover:bg-swiss-red hover:text-swiss-white" onClick={() => removeFriend(friend.githubId)}>
+                          <Trash2 className="h-4 w-4" />
+                        </SwissButton>
+                      </div>
+                    </div>
+                  </SwissCard>
+                ))}
+                {(!profile?.friends || profile.friends.length === 0) && (
+                  <div className="col-span-full border-8 border-swiss-black p-12 text-center bg-swiss-muted/20">
+                    <p className="font-black text-4xl uppercase tracking-tighter opacity-20">NO_CONNECTIONS_ESTABLISHED</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === "settings" && (
+              <div className="max-w-2xl">
+                <SwissCard className="p-12">
+                  <h3 className="text-3xl font-black uppercase tracking-tighter mb-8 bg-swiss-black text-swiss-white inline-block px-4 py-1">APPEARANCE_CORE</h3>
+                  <div className="space-y-12">
+                    <div className="flex items-center justify-between group pb-8 border-b-4 border-swiss-muted">
+                      <div>
+                        <p className="font-black uppercase tracking-widest text-sm">SPOTLIGHT_OVERLAY</p>
+                        <p className="text-[10px] font-bold uppercase opacity-40 mt-1">EMIT_VISUAL_ENERGY_PARTICLES</p>
+                      </div>
+                      <button
+                        className={cn(
+                          "w-20 h-10 border-4 border-swiss-black relative transition-all",
+                          appearance?.showSpotlight ? "bg-swiss-red" : "bg-swiss-muted"
+                        )}
+                        onClick={() => setAppearance(prev => ({ ...prev!, showSpotlight: !prev?.showSpotlight }))}
+                      >
+                        <div className={cn("absolute top-0 bottom-0 w-8 bg-swiss-black transition-all", appearance?.showSpotlight ? "right-0" : "left-0")} />
+                      </button>
+                    </div>
+
+                    <div className="flex items-center justify-between group pb-8 border-b-4 border-swiss-muted">
+                      <div>
+                        <p className="font-black uppercase tracking-widest text-sm">GITHUB_PULSE</p>
+                        <p className="text-[10px] font-bold uppercase opacity-40 mt-1">REALTIME_ACTIVITY_MIRRORING</p>
+                      </div>
+                      <button
+                        className={cn(
+                          "w-20 h-10 border-4 border-swiss-black relative transition-all",
+                          appearance?.showActivity ? "bg-swiss-red" : "bg-swiss-muted"
+                        )}
+                        onClick={() => setAppearance(prev => ({ ...prev!, showActivity: !prev?.showActivity }))}
+                      >
+                        <div className={cn("absolute top-0 bottom-0 w-8 bg-swiss-black transition-all", appearance?.showActivity ? "right-0" : "left-0")} />
+                      </button>
+                    </div>
+
+                    <div className="pt-8 flex gap-4">
+                      <SwissButton variant="primary" className="flex-1 h-16 shadow-[8px_8px_0_0_rgba(255,0,0,1)]">
+                        SAVE_SYSTEM_PARAMETERS
+                      </SwissButton>
+                      <SwissButton variant="secondary" size="icon" className="h-16 w-16">
+                        <Share2 className="h-6 w-6" />
+                      </SwissButton>
+                    </div>
+                  </div>
+                </SwissCard>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

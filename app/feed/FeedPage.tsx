@@ -10,6 +10,7 @@ import { PostCard } from "@/components/post-card";
 import { MasonryGrid } from "@/components/masonry-grid";
 import LoginButton from "@/components/login-button";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import {
   Tooltip,
@@ -109,7 +110,7 @@ export default function FeedPage() {
           mq.removeListener(handleChange as any);
         }
       };
-    } catch {}
+    } catch { }
   }, []);
 
   useEffect(() => {
@@ -125,7 +126,7 @@ export default function FeedPage() {
         "feed:showGithubEvents",
         showGithubEvents ? "1" : "0"
       );
-    } catch {}
+    } catch { }
     // Reset and refetch from page 1
     setPosts([]);
     setPage(1);
@@ -139,8 +140,7 @@ export default function FeedPage() {
     setLoading(true);
     try {
       const response = await fetch(
-        `/api/feed?page=${force ? 1 : page}&includeGithub=${
-          showGithubEvents ? "1" : "0"
+        `/api/feed?page=${force ? 1 : page}&includeGithub=${showGithubEvents ? "1" : "0"
         }`
       );
       const newPosts = await response.json();
@@ -439,12 +439,18 @@ export default function FeedPage() {
 
   if (!session) {
     return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)]">
-        <p className="text-lg text-center">
-          You must be logged in to view the feed
-        </p>
-
-        <LoginButton />
+      <div className="flex flex-col items-center justify-center h-[calc(100vh-10rem)] p-8">
+        <div className="border-8 border-swiss-black p-12 bg-swiss-white text-center shadow-[12px_12px_0_0_rgba(0,0,0,1)]">
+          <h1 className="font-black text-6xl uppercase tracking-tighter mb-6 leading-none">
+            ACCESS<br />DENIED
+          </h1>
+          <p className="font-bold uppercase tracking-tight text-xl mb-8 opacity-60">
+            AUTHORIZATION REQUIRED TO VIEW FEED
+          </p>
+          <div className="flex justify-center">
+            <LoginButton />
+          </div>
+        </div>
       </div>
     );
   }
@@ -452,73 +458,68 @@ export default function FeedPage() {
   const effectiveColumns = isMobile ? 1 : columns;
 
   return (
-    <div className="max-w-6xl mx-auto px-4">
-      <div className="relative mb-8">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 blur-3xl -z-10" />
-        <CreatePost onSubmit={handleCreatePost} />
-        <div className="flex justify-end items-center gap-2 mt-2">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="flex items-center gap-2 cursor-default select-none">
-                  <span className="text-sm text-muted-foreground">
-                    More personalized mode
-                  </span>
-                  <Switch
-                    checked={showGithubEvents}
-                    onCheckedChange={(v) => setShowGithubEvents(!!v)}
-                    aria-label="Toggle GitHub events"
-                  />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                Show GitHub received events from people you follow mixed into
-                your feed.
-              </TooltipContent>
-            </Tooltip>
-            {/* Column slider */}
-            <div className="hidden md:flex items-center gap-2 md:ml-4">
-              <span className="text-sm text-muted-foreground">Columns</span>
-              <div className="w-40">
-                <Slider
-                  min={1}
-                  max={4}
-                  step={1}
-                  value={[columns]}
-                  onValueChange={(vals: number[]) => {
-                    const n = Math.min(4, Math.max(1, vals[0] ?? columns));
-                    setColumns(n);
-                    try {
-                      localStorage.setItem("feed:columns", String(n));
-                    } catch {}
-                  }}
-                />
-              </div>
-              <span className="text-sm w-5 text-center">{columns}</span>
+    <div className="bg-swiss-white min-h-screen">
+      {/* Swiss Header */}
+      <div className="border-b-8 border-swiss-black bg-swiss-white sticky top-0 z-20">
+        <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <h1 className="font-black text-8xl uppercase tracking-tighter leading-[0.8] mb-2">
+              THE<br />FEED
+            </h1>
+            <p className="font-bold uppercase tracking-[0.2em] text-xs text-swiss-red">
+              CORE / REALTIME_CONNECTIVITY / V_2.0
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-6">
+            {/* Columns Control */}
+            <div className="flex items-center gap-4">
+              <span className="font-black uppercase tracking-widest text-[10px]">COLUMNS / {columns}</span>
+              <input
+                type="range"
+                min="1"
+                max="4"
+                step="1"
+                value={columns}
+                onChange={(e) => {
+                  const n = parseInt(e.target.value);
+                  setColumns(n);
+                  localStorage.setItem("feed:columns", String(n));
+                }}
+                className="appearance-none w-32 h-6 bg-swiss-muted border-2 border-swiss-black cursor-pointer accent-swiss-black"
+              />
             </div>
-          </TooltipProvider>
+
+            {/* GitHub Toggle */}
+            <button
+              onClick={() => setShowGithubEvents(!showGithubEvents)}
+              className={cn(
+                "h-12 px-6 border-4 border-swiss-black font-black uppercase tracking-tighter text-sm transition-all flex items-center gap-3",
+                showGithubEvents ? "bg-swiss-black text-swiss-white" : "bg-swiss-white text-swiss-black hover:bg-swiss-muted"
+              )}
+            >
+              <div className={cn(
+                "w-4 h-4 border-2 border-current transition-colors",
+                showGithubEvents ? "bg-swiss-red border-swiss-red" : "bg-transparent"
+              )} />
+              GITHUB_SYNDICATION
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="mt-6">
-        <MasonryGrid columns={effectiveColumns}>
-          {posts.map((post) => {
-            // Scale cards a bit smaller at higher column counts to prevent overflow
-            const scaleClass =
-              effectiveColumns >= 6
-                ? "scale-[0.9] origin-top-left"
-                : effectiveColumns >= 5
-                ? "scale-[0.95] origin-top-left"
-                : effectiveColumns >= 4
-                ? "scale-[0.98] origin-top-left"
-                : "";
-            return (
-              <div
-                key={post._id}
-                className={`${scaleClass} ${
-                  effectiveColumns >= 5 ? "text-sm" : ""
-                }`}
-              >
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="mb-16">
+          <CreatePost onSubmit={handleCreatePost} />
+        </div>
+
+        <div className="relative">
+          {/* Visual Grid Lines - Optional aesthetic touch */}
+          <div className="absolute inset-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pointer-events-none opacity-5 divide-x-2 divide-swiss-black" />
+
+          <MasonryGrid columns={effectiveColumns} className="relative z-10">
+            {posts.map((post) => (
+              <div key={post._id} className="mb-8">
                 <PostCard
                   post={post}
                   compactView={effectiveColumns >= 4}
@@ -530,18 +531,18 @@ export default function FeedPage() {
                   column={effectiveColumns}
                 />
               </div>
-            );
-          })}
-        </MasonryGrid>
-      </div>
-
-      {loading && (
-        <div className="flex justify-center my-4">
-          <Loader2 className="h-6 w-6 animate-spin" />
+            ))}
+          </MasonryGrid>
         </div>
-      )}
 
-      <div ref={ref} className="h-10" />
+        {loading && (
+          <div className="flex justify-center my-12">
+            <div className="h-12 w-12 border-8 border-swiss-muted border-t-swiss-red animate-spin" />
+          </div>
+        )}
+
+        <div ref={ref} className="h-20" />
+      </div>
     </div>
   );
 }

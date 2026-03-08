@@ -4,28 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
   Copy,
   Coins,
   Zap,
@@ -42,12 +20,11 @@ import { toast } from "sonner";
 import { UserRecord } from "@/lib/user-tiers";
 import type { Session } from "next-auth";
 import Link from "next/link";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "framer-motion";
+import SwissSection from "@/components/swiss/SwissSection";
+import SwissCard from "@/components/swiss/SwissCard";
+import SwissButton from "@/components/swiss/SwissButton";
 
 interface ApiKey {
   id: string;
@@ -230,482 +207,338 @@ export default function TokenAPIPage() {
     }
   };
 
+  const [activeTab, setActiveTab] = useState("keys");
+
   if (!session) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Please sign in</h1>
-          <p className="text-muted-foreground mb-4">
-            You need to be signed in to access the API dashboard.
-          </p>
-          <Button onClick={() => router.push("/auth/signin")}>Sign In</Button>
+      <div className="flex items-center justify-center min-h-[60vh] bg-swiss-white">
+        <div className="text-center p-12 border-8 border-swiss-black bg-swiss-white shadow-[16px_16px_0_0_rgba(255,0,0,1)] relative overflow-hidden">
+          <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
+          <div className="relative z-10 space-y-8">
+            <h1 className="text-5xl font-black uppercase tracking-tighter italic leading-none">
+              LOGIN_REQUIRED
+            </h1>
+            <p className="text-xl font-bold uppercase tracking-tight opacity-60 max-w-md mx-auto">
+              ESTABLISH A SECURE UPLINK TO ACCESS THE API CONTROL INTERFACE. TERMINAL ACCESS RESTRICTED.
+            </p>
+            <SwissButton variant="primary" size="lg" className="h-20 px-12 text-xl" onClick={() => router.push("/auth/signin")}>
+              INITIALIZE_UPLINK
+            </SwissButton>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <TooltipProvider>
-      <div className="container mx-auto w-full max-w-6xl px-4 md:px-6 py-6 overflow-x-hidden">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold">API Dashboard</h1>
-            <p className="text-muted-foreground">
-              Manage your API keys and monitor token usage
+    <div className="bg-swiss-white min-h-screen pb-20">
+      {/* Header */}
+      <SwissSection title="API_CONTROL_PROTOCOL" number="01" variant="white">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8 border-b-8 border-swiss-black pb-12 relative">
+          <div className="absolute -top-4 -left-4 w-16 h-16 bg-swiss-red -z-10" />
+          <div className="space-y-4">
+            <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter italic leading-none">
+              DASHBOARD_V4.0
+            </h1>
+            <p className="text-2xl font-bold uppercase tracking-tight opacity-40 italic">
+              MANAGE_AUTHENTICATION_KEYS // MONITOR_TELEMETRY
             </p>
           </div>
-          <div className="flex flex-wrap gap-2 sm:gap-3">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" asChild>
-                  <Link href="/api-docs">
-                    <Book className="h-4 w-4 mr-2" />
-                    <span>API Docs</span>
-                  </Link>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Open API Docs</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button asChild>
-                  <Link href="/upgrade">
-                    <Zap className="h-4 w-4 mr-2" />
-                    <span>Upgrade</span>
-                  </Link>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Upgrade your plan</TooltipContent>
-            </Tooltip>
+          <div className="flex flex-wrap gap-6">
+            <SwissButton variant="secondary" size="lg" className="h-16 px-8 border-4" asChild>
+              <Link href="/api-docs">
+                <Book className="h-6 w-6 mr-3" />
+                TERMINAL_DOCS
+              </Link>
+            </SwissButton>
+            <SwissButton variant="primary" size="lg" className="h-16 px-8 shadow-[8px_8px_0_0_rgba(0,0,0,1)]" asChild>
+              <Link href="/upgrade">
+                <Zap className="h-6 w-6 mr-3" />
+                UPGRADE_UPLINK
+              </Link>
+            </SwissButton>
           </div>
         </div>
+      </SwissSection>
 
-        {/* User Tier Overview */}
-        <div className="grid gap-6 mb-8">
-          <Card className="shadow-sm border-muted/40">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Coins className="h-5 w-5" />
-                Account Overview
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="text-center rounded-lg border border-muted/40 p-4 bg-muted/30">
-                      <div className="text-3xl font-bold tracking-tight">
-                        {userTierData?.tokenBalance.total || 0}
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        Total Tokens
-                      </p>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    Total available tokens across plan + purchases
-                  </TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="text-center rounded-lg border border-muted/40 p-4 bg-muted/30">
-                      <div className="text-3xl font-bold tracking-tight">
-                        {userTierData?.usage.today.tokens || 0}
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        Used Today
-                      </p>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    Tokens consumed in the last 24 hours
-                  </TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="text-center rounded-lg border border-muted/40 p-4 bg-muted/30">
-                      <Badge
-                        className={getTierBadgeColor(
-                          userTierData?.tier || "free"
-                        )}
-                      >
-                        {(userTierData?.tier || "free").toUpperCase()} TIER
-                      </Badge>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Current Plan
-                      </p>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    Your current subscription tier
-                  </TooltipContent>
-                </Tooltip>
+      {/* Account Overview Tiles */}
+      <SwissSection title="TELEMETRY_STATUS" number="02" variant="white">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            { label: "TOKEN_BALANCE", value: userTierData?.tokenBalance.total || 0, sub: "AVAILABLE_RESOURCES", color: "swiss-black" },
+            { label: "DAILY_LOAD", value: userTierData?.usage.today.tokens || 0, sub: "TELEMETRY_CONSUMED", color: "swiss-black" },
+            { label: "PROTOCOL_TIER", value: (userTierData?.tier || "free").toUpperCase(), sub: "SYSTEM_LEVEL", color: "swiss-red" }
+          ].map((tile) => (
+            <div key={tile.label} className={cn(
+              "p-8 border-4 border-swiss-black shadow-[8px_8px_0_0_rgba(0,0,0,1)] flex flex-col justify-between aspect-video relative group overflow-hidden bg-swiss-white",
+              tile.color === "swiss-red" ? "hover:bg-swiss-red text-swiss-black hover:text-swiss-white" : "hover:invert"
+            )}>
+              <div className="absolute top-0 right-0 p-4 opacity-10">
+                <div className="w-12 h-1 bg-current mb-1" />
+                <div className="w-8 h-1 bg-current" />
               </div>
-            </CardContent>
-          </Card>
+              <span className="text-xs font-black uppercase tracking-[0.4em] opacity-40">{tile.label}</span>
+              <div>
+                <div className="text-6xl font-black uppercase tracking-tighter italic leading-none truncate">
+                  {tile.value}
+                </div>
+                <div className="mt-2 text-[10px] font-black uppercase tracking-widest italic opacity-60">{tile.sub}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </SwissSection>
+
+      {/* Main Tabs Interaction */}
+      <SwissSection title="SYSTEM_BRANCHES" number="03" variant="white">
+        <div className="flex gap-4 mb-12 border-b-4 border-swiss-black/10 overflow-x-auto pb-4 scrollbar-hide">
+          {["keys", "usage", "billing"].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={cn(
+                "px-8 py-3 text-xl font-black uppercase tracking-tighter italic transition-all",
+                activeTab === tab
+                  ? "bg-swiss-black text-swiss-white shadow-[6px_6px_0_0_rgba(255,0,0,1)]"
+                  : "bg-swiss-white text-swiss-black border-2 border-swiss-black/10 hover:border-swiss-black"
+              )}
+            >
+              {tab === "keys" ? "AUTH_KEYS" : tab === "usage" ? "LOAD_METRICS" : "RESOURCE_MGMT"}
+            </button>
+          ))}
         </div>
 
-        <Tabs defaultValue="keys" className="space-y-6">
-          <TabsList>
-            <TabsTrigger className="flex-shrink-0 min-w-[120px]" value="keys">
-              API Keys
-            </TabsTrigger>
-            <TabsTrigger className="flex-shrink-0 min-w-[140px]" value="usage">
-              Usage
-            </TabsTrigger>
-            <TabsTrigger
-              className="flex-shrink-0 min-w-[100px]"
-              value="billing"
-            >
-              Billing
-            </TabsTrigger>
-          </TabsList>
-
-          {/* API Keys Tab */}
-          <TabsContent value="keys" className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <h2 className="text-xl font-semibold">Your API Keys</h2>
-              <Dialog
-                open={showNewKeyDialog}
-                onOpenChange={(open) => {
-                  if (open) {
-                    if (canCreateKey) {
-                      setShowNewKeyDialog(true);
-                    } else {
-                      toast.error(
-                        apiKeyLimitInfo?.reason || "Cannot create API key"
-                      );
-                    }
-                  } else {
-                    setShowNewKeyDialog(false);
-                  }
+        {activeTab === "keys" && (
+          <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+              <h2 className="text-4xl font-black uppercase tracking-tighter italic leading-none underline decoration-8 decoration-swiss-red">
+                ACTIVE_CREDENTIALS
+              </h2>
+              <SwissButton
+                variant="primary"
+                size="lg"
+                className="h-16 px-10 shadow-[8px_8px_0_0_rgba(0,0,0,1)]"
+                onClick={() => {
+                  if (canCreateKey) setShowNewKeyDialog(true);
+                  else toast.error(apiKeyLimitInfo?.reason || "LOAD_LIMIT_EXCEEDED");
                 }}
+                disabled={!canCreateKey}
               >
-                <DialogTrigger asChild>
-                  <span>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          disabled={!canCreateKey}
-                          onClick={(e) => {
-                            if (!canCreateKey) {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              toast.error(
-                                apiKeyLimitInfo?.reason ||
-                                  "Cannot create API key"
-                              );
-                            }
-                          }}
-                        >
-                          <Plus className="h-4 w-4 mr-2" />
-                          <span>Create API Key</span>
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        {canCreateKey
-                          ? "Create a new API key"
-                          : apiKeyLimitInfo?.reason || "Cannot create API key"}
-                      </TooltipContent>
-                    </Tooltip>
-                  </span>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Create New API Key</DialogTitle>
-                    <DialogDescription>
-                      Give your API key a descriptive name to help you remember
-                      what it&apos;s for.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="keyName">Key Name</Label>
-                      <Input
-                        id="keyName"
-                        placeholder="e.g., My App Production"
-                        value={newKeyName}
-                        onChange={(e) => setNewKeyName(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowNewKeyDialog(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button onClick={createApiKey}>Create API Key</Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+                <Plus className="h-6 w-6 mr-3" />
+                GENERATE_KEY
+              </SwissButton>
             </div>
 
             {!canCreateKey && apiKeyLimitInfo && (
-              <Alert>
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription>
-                  {apiKeyLimitInfo.reason} ({apiKeyLimitInfo.current}/
-                  {apiKeyLimitInfo.max} keys used)
-                </AlertDescription>
-              </Alert>
+              <div className="bg-swiss-red text-swiss-white p-6 border-4 border-swiss-black flex items-center gap-6">
+                <AlertTriangle className="h-10 w-10 shrink-0" />
+                <div>
+                  <h4 className="text-xl font-black uppercase tracking-tighter italic">LOAD_LIMIT_EXCEEDED</h4>
+                  <p className="font-bold uppercase tracking-tight opacity-80">{apiKeyLimitInfo.reason} // {apiKeyLimitInfo.current}/{apiKeyLimitInfo.max} ACTIVE</p>
+                </div>
+              </div>
             )}
 
-            {/* Newly Created Key */}
+            {/* Newly Created Key Display */}
             {newlyCreatedKey && (
-              <Alert className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/30">
-                <Key className="h-4 w-4 text-green-600 dark:text-green-400" />
-                <AlertDescription>
-                  <div className="space-y-3">
-                    <p className="font-medium text-green-800 dark:text-green-300">
-                      Your new API key has been created!
-                    </p>
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                      <div className="flex-1 min-w-0">
-                        <div className="max-w-full overflow-x-auto rounded border border-green-100 dark:border-green-800 bg-white dark:bg-slate-900 px-2 py-1">
-                          <code
-                            className="block whitespace-nowrap font-mono text-sm text-green-700 dark:text-green-300 select-text"
-                            aria-label={showKey ? "API key" : "Hidden API key"}
-                          >
-                            {showKey ? newlyCreatedKey : "•".repeat(32)}
-                          </code>
-                        </div>
-                      </div>
-                      <div className="flex flex-wrap sm:flex-nowrap items-center gap-2">
-                        <Button
-                          variant="default"
-                          size="sm"
-                          onClick={() => copyToClipboard(newlyCreatedKey)}
-                        >
-                          <Copy className="h-4 w-4 mr-2" /> Copy
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setShowKey(!showKey)}
-                        >
-                          {showKey ? (
-                            <>
-                              <EyeOff className="h-4 w-4 mr-2" /> Hide
-                            </>
-                          ) : (
-                            <>
-                              <Eye className="h-4 w-4 mr-2" /> Reveal
-                            </>
-                          )}
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setNewlyCreatedKey(null)}
-                        >
-                          Dismiss
-                        </Button>
-                      </div>
+              <div className="p-10 border-8 border-swiss-black bg-swiss-black text-swiss-white shadow-[16px_16px_0_0_rgba(255,0,0,1)] relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-swiss-red -rotate-45 translate-x-16 -translate-y-16" />
+                <div className="space-y-8 relative z-10">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-swiss-red">
+                      <Key className="h-8 w-8" />
                     </div>
-                    <p className="text-sm text-green-700 dark:text-green-400">
-                      Make sure to copy this key now. You won&apos;t be able to
-                      see it again!
-                    </p>
+                    <h3 className="text-3xl font-black uppercase tracking-tighter italic">CREDENTIAL_SYNTHESIZED</h3>
                   </div>
-                </AlertDescription>
-              </Alert>
+
+                  <div className="bg-swiss-white/10 border-4 border-swiss-white/20 p-8 flex flex-col md:flex-row items-center gap-6">
+                    <code className="text-2xl font-black tracking-widest break-all flex-grow">
+                      {showKey ? newlyCreatedKey : "•".repeat(32)}
+                    </code>
+                    <div className="flex gap-4 shrink-0">
+                      <SwissButton variant="secondary" size="md" className="bg-swiss-white text-swiss-black border-0" onClick={() => copyToClipboard(newlyCreatedKey)}>
+                        <Copy className="h-5 w-5 mr-2" /> COPY
+                      </SwissButton>
+                      <SwissButton variant="secondary" size="md" className="bg-swiss-white/20 border-0" onClick={() => setShowKey(!showKey)}>
+                        {showKey ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      </SwissButton>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center gap-6">
+                    <p className="text-sm font-black uppercase tracking-widest text-swiss-red italic">
+                      WARNING: KEY WILL NOT BE SHOWN AGAIN. MINIMIZE EXPOSURE.
+                    </p>
+                    <button className="text-swiss-white uppercase font-black tracking-widest italic hover:underline" onClick={() => setNewlyCreatedKey(null)}>
+                      DISMISS_LOGS
+                    </button>
+                  </div>
+                </div>
+              </div>
             )}
 
-            <div className="space-y-4">
+            {/* Keys List */}
+            <div className="grid grid-cols-1 gap-6">
               {loading ? (
-                <p>Loading API keys...</p>
+                <div className="h-40 flex items-center justify-center border-4 border-dashed border-swiss-black/20">
+                  <span className="text-xl font-black uppercase tracking-[1em] opacity-20">PENDING_SYNC...</span>
+                </div>
               ) : apiKeys.length === 0 ? (
-                <Card className="shadow-sm">
-                  <CardContent className="text-center py-8 space-y-4">
-                    <Key className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-medium mb-2">
-                      No API keys yet
-                    </h3>
-                    <p className="text-muted-foreground">
-                      Create your first API key to start using the CodeNearby
-                      API.
-                    </p>
-                    <div>
-                      <Button
-                        onClick={() => {
-                          if (canCreateKey) {
-                            setShowNewKeyDialog(true);
-                          } else {
-                            toast.error(
-                              apiKeyLimitInfo?.reason || "Cannot create API key"
-                            );
-                          }
-                        }}
-                      >
-                        <Plus className="h-4 w-4 mr-2" /> Create API Key
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="text-center py-24 border-8 border-swiss-black border-dashed bg-swiss-muted/5">
+                  <Key className="h-20 w-20 mx-auto text-swiss-black/10 mb-8" />
+                  <h3 className="text-4xl font-black uppercase tracking-tighter italic opacity-20 leading-none">NO_ACTIVE_CREDENTIALS</h3>
+                </div>
               ) : (
                 apiKeys.map((key) => (
-                  <Card key={key.id} className="shadow-sm border-muted/40">
-                    <CardContent className="pt-6">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div className="space-y-1 min-w-0">
-                          <h3 className="font-medium truncate">{key.name}</h3>
-                          <p className="text-sm text-muted-foreground font-mono truncate">
-                            {key.keyPreview}
-                          </p>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <Badge variant="secondary" className="text-xs">
-                              {key.tier}
-                            </Badge>
-                            <span className="text-xs text-muted-foreground">
-                              Created{" "}
-                              {new Date(key.createdAt).toLocaleDateString()}
-                            </span>
-                            {key.lastUsed && (
-                              <span className="text-xs text-muted-foreground">
-                                Last used{" "}
-                                {new Date(key.lastUsed).toLocaleDateString()}
-                              </span>
-                            )}
-                          </div>
+                  <SwissCard key={key.id} className="p-8 border-4 border-swiss-black shadow-[8px_8px_0_0_rgba(0,0,0,0.1)] hover:shadow-[8px_8px_0_0_rgba(255,0,0,1)] transition-all">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+                      <div className="space-y-4 flex-grow">
+                        <div className="flex items-center gap-4">
+                          <h3 className="text-3xl font-black uppercase tracking-tighter italic leading-none">{key.name}</h3>
+                          <span className="bg-swiss-black text-swiss-white px-3 py-1 text-[10px] font-black uppercase tracking-widest">
+                            {key.tier}
+                          </span>
                         </div>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => deleteApiKey(key.id)}
-                              className="text-red-600 hover:text-red-700 self-start sm:self-auto"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Delete API key</TooltipContent>
-                        </Tooltip>
+                        <code className="block text-xl font-bold opacity-40 font-mono tracking-tighter truncate max-w-xl">
+                          {key.keyPreview}
+                        </code>
+                        <div className="flex flex-wrap gap-8 text-[10px] font-black uppercase tracking-widest opacity-60 italic">
+                          <span>CREATED: {new Date(key.createdAt).toLocaleDateString()}</span>
+                          {key.lastUsed && <span>LAST_ACCESS: {new Date(key.lastUsed).toLocaleDateString()}</span>}
+                        </div>
                       </div>
-                    </CardContent>
-                  </Card>
+                      <SwissButton
+                        variant="secondary"
+                        size="md"
+                        className="bg-transparent hover:bg-swiss-red border-4 border-swiss-black text-swiss-black hover:text-swiss-white py-4 h-16 w-16"
+                        onClick={() => deleteApiKey(key.id)}
+                      >
+                        <Trash2 className="h-6 w-6" />
+                      </SwissButton>
+                    </div>
+                  </SwissCard>
                 ))
               )}
             </div>
-          </TabsContent>
+          </div>
+        )}
 
-          {/* Usage Analytics Tab */}
-          <TabsContent value="usage" className="space-y-6">
-            <Card className="shadow-sm border-muted/40">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5" />
-                  Usage Statistics
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <h3 className="font-medium mb-4">Today&apos;s Usage</h3>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span>Tokens Used:</span>
-                        <span className="font-medium">
-                          {userTierData?.usage.today.tokens || 0}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>API Requests:</span>
-                        <span className="font-medium">
-                          {userTierData?.usage.today.requests || 0}
-                        </span>
-                      </div>
-                    </div>
+        {activeTab === "usage" && (
+          <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-black uppercase tracking-tighter italic leading-none underline decoration-8 decoration-swiss-red mb-12">
+              TELEMETRY_LOGS
+            </h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+              <div className="p-10 border-8 border-swiss-black bg-swiss-black text-swiss-white space-y-8">
+                <h3 className="text-3xl font-black uppercase tracking-tighter italic text-swiss-red border-b-4 border-swiss-red/20 pb-4">REAL_TIME_LOAD</h3>
+                <div className="space-y-6">
+                  <div className="flex justify-between items-end border-b-2 border-white/10 pb-4">
+                    <span className="text-xs font-black uppercase tracking-widest opacity-60">TOKENS_CONSUMED</span>
+                    <span className="text-4xl font-black italic">{userTierData?.usage.today.tokens || 0}</span>
                   </div>
-                  <div>
-                    <h3 className="font-medium mb-4">Total Usage</h3>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span>Total Tokens:</span>
-                        <span className="font-medium">
-                          {userTierData?.usage.total.tokens || 0}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Total Requests:</span>
-                        <span className="font-medium">
-                          {userTierData?.usage.total.requests || 0}
-                        </span>
-                      </div>
-                    </div>
+                  <div className="flex justify-between items-end border-b-2 border-white/10 pb-4">
+                    <span className="text-xs font-black uppercase tracking-widest opacity-60">PROTOCOL_REQUESTS</span>
+                    <span className="text-4xl font-black italic">{userTierData?.usage.today.requests || 0}</span>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              </div>
+              <div className="p-10 border-8 border-swiss-black bg-swiss-white space-y-8 shadow-[16px_16px_0_0_rgba(0,0,0,1)]">
+                <h3 className="text-3xl font-black uppercase tracking-tighter italic border-b-4 border-swiss-black/10 pb-4">ACCUMULATED_DATA</h3>
+                <div className="space-y-6">
+                  <div className="flex justify-between items-end border-b-2 border-swiss-black/10 pb-4">
+                    <span className="text-xs font-black uppercase tracking-widest opacity-60">LIFETIME_TOKENS</span>
+                    <span className="text-4xl font-black italic">{userTierData?.usage.total.tokens || 0}</span>
+                  </div>
+                  <div className="flex justify-between items-end border-b-2 border-swiss-black/10 pb-4">
+                    <span className="text-xs font-black uppercase tracking-widest opacity-60">LIFETIME_REQUESTS</span>
+                    <span className="text-4xl font-black italic">{userTierData?.usage.total.requests || 0}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
-          {/* Billing Tab */}
-          <TabsContent value="billing" className="space-y-6">
-            <Card className="shadow-sm border-muted/40">
-              <CardHeader>
-                <CardTitle>Token Balance</CardTitle>
-                <CardDescription>
-                  Manage your token balance and purchase more tokens
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-3 gap-6 mb-6">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold">
-                      {userTierData?.tokenBalance.daily || 0}
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Daily Tokens
-                    </p>
+        {activeTab === "billing" && (
+          <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-4xl font-black uppercase tracking-tighter italic leading-none underline decoration-8 decoration-swiss-red mb-12">
+              RESOURCES_POOL
+            </h2>
+            <SwissCard className="p-12 border-8 border-swiss-black overflow-hidden relative">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-swiss-muted/5 -rotate-12 translate-x-20 -translate-y-10 pointer-events-none" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+                {[
+                  { l: "PLAN_QUOTA", v: userTierData?.tokenBalance.daily || 0 },
+                  { l: "PURCHASED_BUFF", v: userTierData?.tokenBalance.purchased || 0 },
+                  { l: "TOTAL_ALLOCATION", v: userTierData?.tokenBalance.total || 0, c: "swiss-red" }
+                ].map(stat => (
+                  <div key={stat.l} className="space-y-2">
+                    <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-40">{stat.l}</p>
+                    <p className={cn("text-6xl font-black italic", stat.c === "swiss-red" ? "text-swiss-red" : "text-swiss-black")}>{stat.v}</p>
                   </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold">
-                      {userTierData?.tokenBalance.purchased || 0}
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Purchased Tokens
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-2xl font-bold">
-                      {userTierData?.tokenBalance.total || 0}
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      Total Available
-                    </p>
-                  </div>
+                ))}
+              </div>
+              <div className="flex flex-wrap gap-8 pt-12 border-t-8 border-swiss-black/5">
+                <SwissButton variant="primary" size="lg" className="h-20 px-12 text-xl" asChild>
+                  <Link href="/upgrade">
+                    <Coins className="h-6 w-6 mr-3" /> PURCHASE_TOKENS
+                  </Link>
+                </SwissButton>
+                <SwissButton variant="secondary" size="lg" className="h-20 px-12 text-xl" asChild>
+                  <Link href="/upgrade">
+                    <Zap className="h-6 w-5 mr-3" /> UPGRADE_SYSTEM_TIER
+                  </Link>
+                </SwissButton>
+              </div>
+            </SwissCard>
+          </div>
+        )}
+      </SwissSection>
+
+      {/* New Key Dialog Redesign (Styled Modal) */}
+      <AnimatePresence>
+        {showNewKeyDialog && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-swiss-black/80">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-swiss-white border-8 border-swiss-black shadow-[24px_24px_0_0_rgba(255,0,0,1)] w-full max-w-2xl p-12 relative overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 p-4 opacity-5">
+                <Book className="h-32 w-32 -rotate-12" />
+              </div>
+
+              <div className="space-y-8 relative z-10">
+                <div className="space-y-2">
+                  <h3 className="text-5xl font-black uppercase tracking-tighter italic leading-none">NEW_CREDENTIAL</h3>
+                  <p className="text-xl font-bold uppercase tracking-tight opacity-60">DEFINE IDENTIFIER FOR NEURAL UPLINK.</p>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button asChild>
-                        <Link href="/upgrade">
-                          <Coins className="h-4 w-4 mr-2" />
-                          <span>Buy Tokens</span>
-                        </Link>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Purchase additional tokens</TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="outline" asChild>
-                        <Link href="/upgrade">
-                          <Zap className="h-4 w-4 mr-2" />
-                          <span>Upgrade Tier</span>
-                        </Link>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Upgrade subscription tier</TooltipContent>
-                  </Tooltip>
+
+                <div className="space-y-4">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-swiss-red italic">IDENTIFIER_LABEL</label>
+                  <input
+                    placeholder="E.G. PRODUCTION_NODE_V1"
+                    value={newKeyName}
+                    onChange={(e) => setNewKeyName(e.target.value)}
+                    className="w-full h-20 bg-swiss-muted/10 border-4 border-swiss-black px-8 text-2xl font-black uppercase tracking-tighter italic placeholder:opacity-10 focus:outline-none"
+                    autoFocus
+                  />
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </TooltipProvider>
+
+                <div className="flex gap-6 pt-4">
+                  <SwissButton variant="secondary" size="lg" className="h-20 flex-1 text-xl" onClick={() => setShowNewKeyDialog(false)}>
+                    CANCEL_PROTOCOL
+                  </SwissButton>
+                  <SwissButton variant="primary" size="lg" className="h-20 flex-1 text-xl shadow-[8px_8px_0_0_rgba(0,0,0,1)]" onClick={createApiKey}>
+                    GENERATE_UPLINK
+                  </SwissButton>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

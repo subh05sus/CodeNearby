@@ -1,33 +1,22 @@
 function SVGblob() {
   return (
-    <div className="absolute inset-0 animate-in">
-      <svg
-        className="blur-3xl filter opacity-20"
-        style={{ filter: "blur(64px)" }}
-        width="444"
-        height="536"
-        viewBox="0 0 444 536"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M225.919 112.719C343.98 64.6648 389.388 -70.487 437.442 47.574C485.496 165.635 253.266 481.381 135.205 529.435C17.1445 577.488 57.9596 339.654 9.9057 221.593C-38.1482 103.532 107.858 160.773 225.919 112.719Z"
-          fill="url(#c)"
-        />
-        <defs>
-          <linearGradient
-            id="c"
-            x1="82.7339"
-            y1="550.792"
-            x2="-39.945"
-            y2="118.965"
-            gradientUnits="userSpaceOnUse"
-          >
-            <stop offset="0%" style={{ stopColor: "#06b6d4" }} />
-            <stop offset="100%" style={{ stopColor: "#a855f7" }} />
-          </linearGradient>
-        </defs>
-      </svg>
+    <div className="absolute inset-0 z-0 opacity-10 pointer-events-none overflow-hidden">
+      <div className="absolute top-0 right-0 w-1/2 h-full border-l-2 border-black/20 dark:border-white/20 swiss-grid-pattern" />
+      <div className="absolute top-1/4 -right-20 w-80 h-80 border-8 border-swiss-red rotate-45" />
+      <div className="absolute bottom-1/4 left-1/4 w-40 h-40 bg-swiss-red opacity-20" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-px bg-black/10 dark:bg-white/10" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-full w-px bg-black/10 dark:bg-white/10" />
+
+      {/* Decorative Crosses */}
+      <div className="absolute top-20 left-20">
+        <div className="w-8 h-2 bg-swiss-red absolute top-3 -left-3" />
+        <div className="w-2 h-8 bg-swiss-red absolute -top-0 left-0" />
+      </div>
+
+      <div className="absolute bottom-40 right-40 rotate-45">
+        <div className="w-12 h-3 bg-black dark:bg-white absolute top-5 -left-5" />
+        <div className="w-3 h-12 bg-black dark:bg-white absolute -top-0 left-0" />
+      </div>
     </div>
   );
 }

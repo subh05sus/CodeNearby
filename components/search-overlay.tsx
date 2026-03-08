@@ -1,7 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
   Search,
   X,
@@ -10,11 +8,11 @@ import {
   Bell,
   MessageSquare,
   User,
-  Command,
   Users,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import SwissCard from "./swiss/SwissCard";
 
 interface SearchOverlayProps {
   onClose: () => void;
@@ -37,37 +35,37 @@ export function SearchOverlay({ onClose, onSearch }: SearchOverlayProps) {
   const navigationItems: NavigationItem[] = [
     {
       icon: <Home className="h-5 w-5" />,
-      label: "Feed",
+      label: "FEED_STREAM",
       shortcut: "F",
       path: "/feed",
     },
     {
       icon: <Globe className="h-5 w-5" />,
-      label: "Discover",
+      label: "DISCOVER_NODES",
       shortcut: "D",
       path: "/discover",
     },
     {
       icon: <Bell className="h-5 w-5" />,
-      label: "View Requests",
+      label: "PEER_REQUESTS",
       shortcut: "R",
       path: "/requests",
     },
     {
       icon: <Users className="h-5 w-5" />,
-      label: "View Gatherings",
+      label: "GATHERING_LIST",
       shortcut: "G",
       path: "/gathering",
     },
     {
       icon: <MessageSquare className="h-5 w-5" />,
-      label: "Open Messages",
+      label: "COMM_TERMINAL",
       shortcut: "M",
       path: "/messages",
     },
     {
       icon: <User className="h-5 w-5" />,
-      label: "Your Profile",
+      label: "CORE_PROFILE",
       shortcut: "P",
       path: "/profile",
     },
@@ -103,26 +101,12 @@ export function SearchOverlay({ onClose, onSearch }: SearchOverlayProps) {
           router.push(`/search?q=${encodeURIComponent(query.trim())}`);
           onClose();
         }
-      } else if (
-        (e.metaKey || e.ctrlKey) &&
-        navigationItems.some(
-          (item) => item.shortcut.toLowerCase() === e.key.toLowerCase()
-        )
-      ) {
-        e.preventDefault();
-        const item = navigationItems.find(
-          (item) => item.shortcut.toLowerCase() === e.key.toLowerCase()
-        );
-        if (item) {
-          router.push(item.path);
-          onClose();
-        }
       }
     };
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [onClose, selectedIndex, router, navigationItems, query, filteredItems]);
+  }, [onClose, selectedIndex, router, query, filteredItems]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -136,94 +120,105 @@ export function SearchOverlay({ onClose, onSearch }: SearchOverlayProps) {
   }, [query]);
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm">
-      <div className="fixed inset-x-0 top-4 mx-auto max-w-2xl overflow-hidden rounded-xl border bg-background shadow-2xl">
-        <div className="flex items-center w-full p-4">
-          <Search className="mr-2 h-5 w-5 shrink-0 text-muted-foreground" />
-          <form onSubmit={handleSubmit} className="flex-1">
-            <Input
-              ref={inputRef}
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search for commands..."
-              className="w-full border-0 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none shadow-none focus-visible:ring-0"
-            />
-          </form>
-          <Button
-            onClick={onClose}
-            variant="ghost"
-            className="shrink-0 text-muted-foreground hover:text-foreground"
-          >
-            <X className="h-5 w-5" />
-          </Button>
-        </div>
-        <div className="border-t" />
-        <div className="max-h-[60vh] overflow-y-auto px-2 pb-0">
-          {filteredItems.map((item, index) => (
+    <div className="fixed inset-0 z-[100] bg-swiss-black/90 backdrop-blur-md p-4 md:p-24">
+      <div
+        className="absolute inset-0 opacity-[0.05] pointer-events-none"
+        style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '32px 32px' }}
+      />
+
+      <div className="max-w-3xl mx-auto relative h-full flex flex-col">
+        <SwissCard className="p-0 border-8 border-swiss-black shadow-[16px_16px_0_0_rgba(255,0,0,1)] bg-swiss-white overflow-hidden flex flex-col h-fit max-h-full">
+          {/* Search Input Area */}
+          <div className="flex items-center p-8 border-b-8 border-swiss-black bg-swiss-black">
+            <Search className="h-10 w-10 text-swiss-red mr-6 shrink-0" />
+            <form onSubmit={handleSubmit} className="flex-1">
+              <input
+                ref={inputRef}
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="INITIALIZE_SEARCH_QUERY..."
+                className="w-full bg-transparent text-4xl font-black uppercase tracking-tighter italic text-swiss-white placeholder:text-swiss-white/20 outline-none"
+              />
+            </form>
             <button
-              key={index}
-              onClick={() => {
-                router.push(item.path);
-                onClose();
-              }}
-              onMouseEnter={() => setSelectedIndex(index)}
-              className={cn(
-                "flex w-full my-1.5 items-center justify-between rounded-lg px-3 py-2 text-sm text-foreground transition-colors",
-                selectedIndex === index
-                  ? "bg-accent text-accent-foreground"
-                  : "hover:bg-accent hover:text-accent-foreground"
-              )}
+              onClick={onClose}
+              className="ml-6 p-2 hover:bg-swiss-red text-swiss-white transition-colors border-4 border-swiss-white/10"
             >
-              <div className="flex items-center gap-3">
-                {item.icon}
-                <span>{item.label}</span>
+              <X className="h-8 w-8" />
+            </button>
+          </div>
+
+          {/* Results / Commands Area */}
+          <div className="flex-1 overflow-y-auto bg-swiss-white p-4">
+            <div className="space-y-2">
+              <div className="px-4 py-2 text-[10px] font-black uppercase tracking-[0.4em] opacity-40 mb-2">
+                SYSTEM_COMMANDS // {filteredItems.length}_FOUND
               </div>
-              <div className="flex items-center gap-2">
-                <kbd
+
+              {filteredItems.map((item, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    router.push(item.path);
+                    onClose();
+                  }}
+                  onMouseEnter={() => setSelectedIndex(index)}
                   className={cn(
-                    "hidden rounded px-1.5 py-0.5 text-xs font-medium sm:inline-block",
+                    "flex w-full items-center justify-between p-6 transition-all border-4",
                     selectedIndex === index
-                      ? "bg-accent-foreground/10 text-accent-foreground"
-                      : "bg-muted text-muted-foreground"
+                      ? "bg-swiss-black text-swiss-white border-swiss-black shadow-[8px_8px_0_0_rgba(255,0,0,1)] translate-x-1 -translate-y-1"
+                      : "bg-transparent text-swiss-black border-transparent hover:bg-swiss-muted/30"
                   )}
                 >
-                  <Command className="h-3 w-3 inline-block mr-1" />{" "}
-                  {item.shortcut}
-                </kbd>
-              </div>
-            </button>
-          ))}
-        </div>
-        <div className="border-t p-2">
-          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <kbd className="rounded bg-muted px-1.5 py-0.5 text-xs font-medium">
-                alt
-              </kbd>
-              <span>+</span>
-              <kbd className="rounded bg-muted px-1.5 py-0.5 text-xs font-medium">
-                ↑
-              </kbd>
-              <span>/</span>
-              <kbd className="rounded bg-muted px-1.5 py-0.5 text-xs font-medium">
-                ↓
-              </kbd>
-              <span className="hidden sm:inline">to navigate</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <kbd className="rounded bg-muted px-1.5 py-0.5 text-xs font-medium">
-                enter
-              </kbd>
-              <span className="hidden sm:inline">to select</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <kbd className="rounded bg-muted px-1.5 py-0.5 text-xs font-medium">
-                esc
-              </kbd>
-              <span className="hidden sm:inline">to close</span>
+                  <div className="flex items-center gap-6">
+                    <div className={cn(
+                      "p-3 border-4 transition-colors",
+                      selectedIndex === index ? "border-swiss-white bg-swiss-red" : "border-swiss-black bg-swiss-white"
+                    )}>
+                      {item.icon}
+                    </div>
+                    <span className="text-2xl font-black uppercase tracking-tight italic">
+                      {item.label}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <kbd className={cn(
+                      "px-3 py-1 font-black text-xs border-4",
+                      selectedIndex === index ? "border-swiss-white text-swiss-white" : "border-swiss-black text-swiss-black opacity-20"
+                    )}>
+                      {item.shortcut}
+                    </kbd>
+                  </div>
+                </button>
+              ))}
+
+              {query && filteredItems.length === 0 && (
+                <div className="p-12 text-center">
+                  <p className="text-xl font-black uppercase tracking-widest opacity-20 italic">
+                    NO_MATCHING_COMMANDS_FOR: "{query}"
+                  </p>
+                </div>
+              )}
             </div>
           </div>
-        </div>
+
+          {/* Shortcuts Footer */}
+          <div className="p-6 border-t-8 border-swiss-black bg-swiss-muted/50 flex flex-wrap gap-8 items-center justify-center">
+            <div className="flex items-center gap-3">
+              <kbd className="px-2 py-0.5 border-2 border-swiss-black text-[10px] font-black uppercase">ESC</kbd>
+              <span className="text-[10px] font-black uppercase tracking-widest opacity-40">TERMINATE</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <kbd className="px-2 py-0.5 border-2 border-swiss-black text-[10px] font-black uppercase">ENTER</kbd>
+              <span className="text-[10px] font-black uppercase tracking-widest opacity-40">EXECUTE</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <kbd className="px-2 py-0.5 border-2 border-swiss-black text-[10px] font-black uppercase">ALT + ↑↓</kbd>
+              <span className="text-[10px] font-black uppercase tracking-widest opacity-40">NAVIGATE</span>
+            </div>
+          </div>
+        </SwissCard>
       </div>
     </div>
   );

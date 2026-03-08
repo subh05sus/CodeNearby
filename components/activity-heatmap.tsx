@@ -30,17 +30,14 @@ interface ActivityHeatmapProps {
   data: ActivityData;
 }
 
-// Tailwind-safe color classes mapped by themeColor
-const colorClassMap: Record<
-  ActivityData['themeColor'],
-  string[]
-> = {
-  default: ['fill-gray-400', 'fill-gray-500', 'fill-gray-700', 'fill-gray-800'],
-  blue: ['fill-blue-400', 'fill-blue-500', 'fill-blue-700', 'fill-blue-800'],
-  green: ['fill-green-400', 'fill-green-500', 'fill-green-700', 'fill-green-800'],
-  purple: ['fill-purple-400', 'fill-purple-500', 'fill-purple-700', 'fill-purple-800'],
-  orange: ['fill-orange-400', 'fill-orange-500', 'fill-orange-700', 'fill-orange-800'],
-};
+// Swiss Red Intensity Colors
+const swissIntensityClasses = [
+  'fill-muted border-black/5',
+  'fill-swiss-red/20',
+  'fill-swiss-red/40',
+  'fill-swiss-red/70',
+  'fill-swiss-red'
+];
 
 // Activity heatmap main component
 export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
@@ -73,37 +70,53 @@ export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
 
   // Get Tailwind fill class based on intensity
   const getClassForValue = (value: HeatmapValue) => {
-    if (!value || value.count === 0) return 'fill-gray-200 dark:fill-gray-800';
+    if (!value || value.count === 0) return 'fill-[#EEEEEE]';
 
     const intensity = Math.min(Math.ceil((value.count / maxCount) * 4), 4);
-    return colorClassMap[data.themeColor][intensity - 1];
+    return swissIntensityClasses[intensity];
   };
 
   // Render heatmap with tooltips
   return (
-    <div className="w-full py-6">
-      <CalendarHeatmap
-        startDate={startDate}
-        endDate={endDate}
-        values={activityData}
-        classForValue={(value: any) => getClassForValue(value)}
-        gutterSize={3}
-        tooltipDataAttrs={(value): TooltipDataAttrs => {
-          const val = value as HeatmapValue;
-          if (!val?.date) {
+    <div className="w-full py-12 px-8 border-4 border-black bg-white swiss-noise">
+      <div className="mb-8 border-b-2 border-black pb-4 flex justify-between items-end">
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-swiss-red mb-1">System Audit</p>
+          <h3 className="text-3xl font-black uppercase tracking-tightest">Activity Heatmap</h3>
+        </div>
+        <div className="text-right">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50">Sync Status</p>
+          <p className="text-xs font-black uppercase tracking-widest">LIVE / ENCRYPTED</p>
+        </div>
+      </div>
+      <div className="swiss-heatmap-container">
+        <CalendarHeatmap
+          startDate={startDate}
+          endDate={endDate}
+          values={activityData}
+          classForValue={(value: any) => getClassForValue(value)}
+          gutterSize={4}
+          tooltipDataAttrs={(value): TooltipDataAttrs => {
+            const val = value as HeatmapValue;
+            if (!val?.date) {
+              return {
+                'data-tooltip-id': 'activity-tooltip',
+                'data-tooltip-content': 'NO ACTIVITY',
+              };
+            }
+
             return {
               'data-tooltip-id': 'activity-tooltip',
-              'data-tooltip-content': 'No activity',
+              'data-tooltip-content': `${format(parseISO(val.date), 'MMM d, yyyy')}: ${val.count} CONTRIBUTION${val.count > 1 ? 'S' : ''}`,
             };
-          }
-
-          return {
-            'data-tooltip-id': 'activity-tooltip',
-            'data-tooltip-content': `${format(parseISO(val.date), 'MMM d, yyyy')}: ${val.count} post${val.count > 1 ? 's' : ''}`,
-          };
-        }}
+          }}
+        />
+      </div>
+      <Tooltip
+        id="activity-tooltip"
+        place="top"
+        className="!rounded-none !bg-black !text-white !font-black !uppercase !tracking-widest !text-[10px] !p-2 !opacity-100"
       />
-      <Tooltip id="activity-tooltip" place="top" />
     </div>
   );
 }

@@ -6,7 +6,8 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import SwissButton from "@/components/swiss/SwissButton";
+import SwissCard from "@/components/swiss/SwissCard";
 import {
   Loader2,
   Send,
@@ -14,6 +15,7 @@ import {
   BarChart,
   MapPin,
   Calendar,
+  Zap,
 } from "lucide-react";
 import Image from "next/image";
 import { ref, push, onChildAdded, off } from "firebase/database";
@@ -23,6 +25,7 @@ import { db as database } from "@/lib/firebase";
 import LoginButton from "@/components/login-button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface Message {
   id: string;
@@ -58,8 +61,8 @@ export default function MessagePage() {
     setMessages([]);
 
     const roomId =
-      minimum(params.id as string, session.user.githubId) +
-      maximum(params.id as string, session.user.githubId);
+      minimum(params.id as string, session.user.githubId.toString()) +
+      maximum(params.id as string, session.user.githubId.toString());
 
     const messagesRef = ref(database, `messages/${roomId}`);
 
@@ -94,7 +97,7 @@ export default function MessagePage() {
       const data = await response.json();
       setFriend(data);
     } catch {
-      toast.error("Failed to fetch friend details. Please try again.");
+      toast.error("MISSION_FAILURE", { description: "FAILED_TO_FETCH_NODE_IDENTITY." });
     }
   };
 
@@ -102,11 +105,11 @@ export default function MessagePage() {
     if (inputMessage.trim() === "" || !session?.user?.githubId || !params.id)
       return;
 
-    const roomId = [session.user.githubId, params.id].sort().join("");
+    const roomId = [session.user.githubId.toString(), params.id as string].sort().join("");
 
     const messagesRef = ref(database, `messages/${roomId}`);
     push(messagesRef, {
-      senderId: session.user.githubId,
+      senderId: session.user.githubId.toString(),
       content: inputMessage,
       timestamp: Date.now(),
     });
@@ -118,13 +121,16 @@ export default function MessagePage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(scrollToBottom, [messages]); // Updated useEffect dependency
+  useEffect(scrollToBottom, [messages]);
 
   if (!session) {
     return (
-      <div className="flex flex-col items-center justify-center h-full p-4">
-        <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
-        <p>You need to be signed in to view messages.</p>
+      <div className="flex flex-col items-center justify-center h-full p-12 text-center bg-swiss-white border-8 border-swiss-black shadow-[16px_16px_0_0_rgba(0,0,0,1)] m-8">
+        <Zap className="h-24 w-24 mb-6 text-swiss-red animate-pulse" />
+        <h1 className="text-4xl font-black uppercase tracking-tighter mb-4 italic">ACCESS_RESTRICTED</h1>
+        <p className="text-xl font-bold uppercase tracking-tight max-w-sm opacity-60 mb-8">
+          AUTHENTICATION_REQUIRED_TO_ACCESS_SECURE_COMMUNICATION_CHANNELS.
+        </p>
         <LoginButton />
       </div>
     );
@@ -132,131 +138,165 @@ export default function MessagePage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-full">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className="flex flex-col justify-center items-center h-full gap-8">
+        <Loader2 className="h-16 w-16 animate-spin text-swiss-red" />
+        <h2 className="text-4xl font-black uppercase tracking-tighter italic">CONNECTING_NODE...</h2>
       </div>
     );
   }
 
   return (
-    <>
-      <div className="border-b border-gray-200 dark:border-gray-800 p-4 flex items-center">
-        <Button
-          variant="ghost"
-          className="mr-2 md:hidden"
-          onClick={() => router.push("/messages")}
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <Image
-          src={friend?.image || "/placeholder.svg"}
-          alt={friend?.name || ""}
-          className="w-10 h-10 rounded-full mr-4"
-          width={40}
-          height={40}
-        />
-        <h2 className="text-xl font-semibold">{friend?.name || "Chat"}</h2>
+    <div className="flex flex-col h-full bg-swiss-white">
+      {/* Header */}
+      <div className="border-b-8 border-swiss-black p-6 bg-swiss-white flex items-center justify-between z-10 sticky top-0">
+        <div className="flex items-center">
+          <SwissButton
+            variant="secondary"
+            className="mr-6 md:hidden h-12 w-12 p-0"
+            onClick={() => router.push("/messages")}
+          >
+            <ArrowLeft className="h-6 w-6" />
+          </SwissButton>
+          <div className="relative">
+            <div className="absolute inset-0 bg-swiss-red translate-x-1 translate-y-1 -z-10" />
+            <Image
+              src={friend?.image || "/placeholder.svg"}
+              alt={friend?.name || ""}
+              className="w-16 h-16 border-4 border-swiss-black grayscale object-cover"
+              width={64}
+              height={64}
+            />
+          </div>
+          <div className="ml-6 text-left">
+            <h2 className="text-3xl font-black uppercase tracking-tighter italic leading-none text-swiss-black underline decoration-4 decoration-swiss-red">
+              {friend?.name || "ENCRYPTED_ID"}
+            </h2>
+            <p className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-40 mt-1">
+              STATUS: SECURE_UPLINK_ESTABLISHED
+            </p>
+          </div>
+        </div>
       </div>
-      <div className="flex-grow overflow-y-auto portrait:max-h-[65vh] no-scrollbar p-4">
-        <ScrollArea className="h-full w-full pr-3">
-          {messages.map((message) => {
-            return (
-              <div
-                key={message.id}
-                className={`mb-4  flex ${
-                  message.senderId === session.user.githubId
-                    ? "justify-end"
-                    : "justify-start"
-                }`}
-              >
+
+      {/* Messages */}
+      <div className="flex-grow overflow-hidden relative">
+        <ScrollArea className="h-full w-full">
+          <div className="p-8 space-y-8 max-w-5xl mx-auto">
+            {messages.map((message) => {
+              const isMe = message.senderId === session.user.githubId.toString();
+              return (
                 <div
-                  className={`max-w-[70%] p-3 rounded-lg ${
-                    message.senderId === session.user.githubId
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 dark:bg-zinc-800"
-                  }`}
+                  key={message.id}
+                  className={cn(
+                    "flex flex-col group",
+                    isMe ? "items-end" : "items-start"
+                  )}
                 >
-                  {(() => {
-                    try {
-                      const jsonContent = JSON.parse(message.content);
-                      if (jsonContent.type === "post") {
-                        return (
-                          <div
-                            className="text-inherit bg-black p-2 rounded-lg cursor-pointer mb-2"
-                            onClick={() =>
-                              router.push(`/posts/${jsonContent.postId}`)
-                            }
-                          >
-                            <p className="text-sm mb-2 line-clamp-2">
-                              {jsonContent.postContent}
-                            </p>
-                            {jsonContent.postImage && (
-                              <div className="relative w-full aspect-video h-32 ">
-                                <Image
-                                  src={
-                                    jsonContent.postImage || "/placeholder.svg"
-                                  }
-                                  alt="Post image"
-                                  fill
-                                  className="rounded-md object-cover"
-                                />
+                  <div
+                    className={cn(
+                      "max-w-[85%] md:max-w-[70%] text-lg font-bold p-6 border-4 border-swiss-black shadow-[8px_8px_0_0_rgba(0,0,0,1)] relative transition-all duration-200 group-hover:translate-x-1 group-hover:translate-y-1 group-hover:shadow-none",
+                      isMe
+                        ? "bg-swiss-red text-swiss-white text-right"
+                        : "bg-swiss-white text-swiss-black text-left"
+                    )}
+                  >
+                    {(() => {
+                      try {
+                        const jsonContent = JSON.parse(message.content);
+                        if (jsonContent.type === "post") {
+                          return (
+                            <div
+                              className="bg-swiss-black text-swiss-white p-4 border-4 border-swiss-white mb-4 hover:bg-swiss-red transition-all duration-300"
+                              onClick={() => router.push(`/posts/${jsonContent.postId}`)}
+                            >
+                              <div className="flex items-center gap-2 mb-3 border-b-2 border-swiss-white/20 pb-2">
+                                <Zap className="h-4 w-4" />
+                                <span className="text-[10px] uppercase font-black tracking-widest italic">EXTERNAL_OBJECT_LINK</span>
                               </div>
-                            )}
-                            {jsonContent.postPoll && (
-                              <div className="flex items-center text-sm opacity-70">
-                                <BarChart className="h-4 w-4 mr-1" />
-                                Poll: {jsonContent.postPoll.question}
+                              <p className="text-base font-black uppercase tracking-tight mb-4 italic leading-tight line-clamp-2">
+                                {jsonContent.postContent}
+                              </p>
+                              {jsonContent.postImage && (
+                                <div className="relative w-full aspect-video border-2 border-swiss-white mb-4 overflow-hidden">
+                                  <Image
+                                    src={jsonContent.postImage || "/placeholder.svg"}
+                                    alt="Post image"
+                                    fill
+                                    className="object-cover grayscale hover:grayscale-0 transition-all duration-500"
+                                  />
+                                </div>
+                              )}
+                              <div className="flex flex-wrap gap-4 text-[10px] font-black uppercase tracking-widest opacity-60">
+                                {jsonContent.postPoll && (
+                                  <div className="flex items-center">
+                                    <BarChart className="h-3 w-3 mr-1" />
+                                    POLL_DATA
+                                  </div>
+                                )}
+                                {jsonContent.postLocation && (
+                                  <div className="flex items-center">
+                                    <MapPin className="h-3 w-3 mr-1" />
+                                    LOC_SIGNAL
+                                  </div>
+                                )}
+                                {jsonContent.postSchedule && (
+                                  <div className="flex items-center">
+                                    <Calendar className="h-3 w-3 mr-1" />
+                                    COORD_TIME
+                                  </div>
+                                )}
                               </div>
-                            )}
-                            {jsonContent.postLocation && (
-                              <div className="flex items-center text-sm opacity-70">
-                                <MapPin className="h-4 w-4 mr-1" />
-                                Location attached
-                              </div>
-                            )}
-                            {jsonContent.postSchedule && (
-                              <div className="flex items-center text-sm text-muted-foreground">
-                                <Calendar className="h-4 w-4 mr-1" />
-                                {jsonContent.postSchedule &&
-                                  format(
-                                    new Date(jsonContent.postSchedule),
-                                    "PPp"
-                                  )}
-                              </div>
-                            )}
-                          </div>
-                        );
+                            </div>
+                          );
+                        }
+                      } catch {
+                        return <p className="uppercase leading-tight">{message.content}</p>;
                       }
-                    } catch {
-                      // If parsing fails, treat as regular message
-                      return <p>{message.content}</p>;
-                    }
-                  })()}
-                  <p className="text-xs mt-1 opacity-70">
-                    {format(new Date(message.timestamp), "HH:mm")}
-                  </p>
+                    })()}
+                    <div className={cn(
+                      "mt-4 text-[10px] font-black uppercase tracking-widest opacity-40 italic",
+                      isMe ? "text-right" : "text-left"
+                    )}>
+                      {format(new Date(message.timestamp), "HH:mm")}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-          <div ref={messagesEndRef} />
+              );
+            })}
+            <div ref={messagesEndRef} />
+          </div>
         </ScrollArea>
-        {/* <div ref={messagesEndRef} className="h-2" /> */}
       </div>
-      <div className="border-t border-gray-200 dark:border-gray-800 p-4 flex relative">
-        <Input
-          type="text"
-          placeholder="Type a message..."
-          value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-          className="flex-grow mr-2"
-        />
-        <Button onClick={sendMessage}>
-          <Send className="h-4 w-4 mr-2" />
-          Send
-        </Button>
+
+      {/* Input Area */}
+      <div className="p-8 border-t-8 border-swiss-black bg-swiss-white z-20">
+        <div className="max-w-5xl mx-auto flex gap-6">
+          <div className="flex-grow relative group">
+            <div className="absolute inset-0 bg-swiss-red translate-x-2 translate-y-2 -z-10 transition-transform group-focus-within:translate-x-1 group-focus-within:translate-y-1" />
+            <Input
+              type="text"
+              placeholder="ENTER_MESSAGE_ENCRYPTION..."
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+              className="h-20 bg-swiss-white border-4 border-swiss-black rounded-none px-8 text-2xl font-black uppercase tracking-tighter italic placeholder:text-swiss-black/20 focus-visible:ring-0 focus-visible:ring-offset-0"
+            />
+          </div>
+          <SwissButton
+            variant="primary"
+            className="h-20 w-32 shadow-[8px_8px_0_0_rgba(0,0,0,1)]"
+            onClick={sendMessage}
+          >
+            <Send className="h-8 w-8 italic" />
+          </SwissButton>
+        </div>
+        <div className="max-w-5xl mx-auto mt-4 flex justify-between items-center px-2">
+          <p className="text-[10px] font-black uppercase tracking-[0.5em] opacity-20">
+            SECURE_KEY_EXCHANGE_ACTIVE
+          </p>
+          <div className="w-32 h-1 bg-swiss-black opacity-10" />
+        </div>
       </div>
-    </>
+    </div>
   );
 }

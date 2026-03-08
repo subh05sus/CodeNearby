@@ -2,15 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { API_TOKEN_COSTS } from "@/consts/pricing";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import SwissSection from "@/components/swiss/SwissSection";
+import SwissCard from "@/components/swiss/SwissCard";
+import SwissButton from "@/components/swiss/SwissButton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Copy, Play, Code, Book, Zap, Key, AlertCircle } from "lucide-react";
+import { Book, Key, AlertCircle, ChevronRight, Loader2, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -32,17 +26,18 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 const API_BASE_URL =
   process.env.NODE_ENV === "production"
     ? "https://codenearby.space"
-    : "http://localhost:3069";
+    : "http://localhost:3001";
 
 function tokenCostLabel(endpoint: string) {
   const cost = API_TOKEN_COSTS[endpoint as keyof typeof API_TOKEN_COSTS];
   if (cost) return `${cost.min}-${cost.max}`;
   if (endpoint === "/api/v1/pricing") return "0";
-  return "varies";
+  return "VARIES";
 }
 
 const API_ENDPOINTS = [
@@ -256,9 +251,8 @@ const CODE_TEMPLATES = {
   -H "x-api-key: ${apiKey}" \\
   -H "Content-Type: application/json"`;
     } else {
-      return `curl -X ${endpoint.method} "${API_BASE_URL}${
-        endpoint.endpoint
-      }" \\
+      return `curl -X ${endpoint.method} "${API_BASE_URL}${endpoint.endpoint
+        }" \\
   -H "x-api-key: ${apiKey}" \\
   -H "Content-Type: application/json" \\
   -d '${JSON.stringify(params, null, 2)}'`;
@@ -277,9 +271,8 @@ const CODE_TEMPLATES = {
 const data = await response.json();
 console.log(data);`;
     } else {
-      return `const response = await fetch('${API_BASE_URL}${
-        endpoint.endpoint
-      }', {
+      return `const response = await fetch('${API_BASE_URL}${endpoint.endpoint
+        }', {
   method: '${endpoint.method}',
   headers: {
     'x-api-key': '${apiKey}',
@@ -382,7 +375,7 @@ export default function ApiDocsPage() {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard!");
+    toast.success("COPIED_TO_CLIPBOARD");
   };
 
   const handlePlaygroundTest = async () => {
@@ -432,485 +425,311 @@ export default function ApiDocsPage() {
 
   return (
     <TooltipProvider>
-      <div className="container mx-auto w-full max-w-7xl ">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center justify-between mb-4">
-            <div>
-              <h1 className="text-4xl font-bold mb-2">API Documentation</h1>
-              <p className="text-xl text-muted-foreground">
-                AI-powered developer search and GitHub integration API
+      <div className="w-full">
+        {/* Header Section */}
+        <SwissSection variant="white" className="border-b-8 border-swiss-black py-20">
+          <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
+            <div className="space-y-4">
+              <h1 className="text-6xl md:text-9xl font-black uppercase tracking-tighter italic leading-none">
+                API_<span className="text-swiss-red">DOCS</span>
+              </h1>
+              <p className="text-xl font-bold uppercase tracking-tight opacity-40 italic">
+                AI_POWERED_INTEGRATION_NETWORKS // NEURAL_RESOURCES
               </p>
             </div>
-            <div className="flex flex-wrap gap-2 sm:gap-3">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="outline" asChild>
-                    <Link href="/api-dashboard">
-                      <Key className="h-4 w-4 mr-2" />
-                      <span>Dashboard</span>
-                    </Link>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Open API Dashboard</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button asChild>
-                    <Link href="/upgrade">
-                      <Zap className="h-4 w-4 mr-2" />
-                      <span>Get API Tokens</span>
-                    </Link>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Upgrade your API plan</TooltipContent>
-              </Tooltip>
+            <div className="flex flex-wrap gap-4">
+              <SwissButton variant="secondary" asChild className="h-16 px-8">
+                <Link href="/api-dashboard">
+                  <Key className="h-6 w-6 mr-3" />
+                  DASHBOARD
+                </Link>
+              </SwissButton>
+              <SwissButton variant="primary" asChild className="h-16 px-8">
+                <Link href="/upgrade">
+                  <Zap className="h-6 w-6 mr-3 text-swiss-white fill-swiss-white" />
+                  GET_TOKENS
+                </Link>
+              </SwissButton>
             </div>
           </div>
+        </SwissSection>
 
-          {/* Quick Start */}
-          <Card className="mb-6 shadow-sm border-muted/40">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Book className="h-5 w-5" />
-                Quick Start
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <ol className="list-decimal list-inside space-y-2">
-                  <li>
-                    <Link
-                      href="/api-dashboard"
-                      className="text-blue-600 hover:underline"
-                    >
-                      Create an API key
-                    </Link>{" "}
-                    in your dashboard
-                  </li>
-                  <li>
-                    Include your API key in the{" "}
-                    <code className="bg-muted px-1 rounded">x-api-key</code>{" "}
-                    header
-                  </li>
-                  <li>
-                    Make requests to{" "}
-                    <code className="bg-muted px-1 rounded">
-                      {API_BASE_URL}/api/v1/*
-                    </code>
-                  </li>
-                  <li>Monitor your token usage in the dashboard</li>
-                </ol>
-
-                <div className="mt-4 p-4 bg-muted rounded-lg">
-                  <h4 className="font-medium mb-2">Base URL:</h4>
-                  <code className="text-sm">{API_BASE_URL}/api/v1</code>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Quick Start Bar */}
+        <div className="bg-swiss-black text-swiss-white py-6 overflow-hidden border-b-8 border-swiss-black">
+          <div className="container mx-auto px-4 flex items-center gap-8 whitespace-nowrap">
+            <span className="text-swiss-red font-black uppercase italic tracking-widest text-sm">QUICK_START:</span>
+            <div className="flex gap-12 text-[10px] font-black uppercase tracking-[0.3em] opacity-80 italic animate-marquee">
+              <span>1. GENERATE_KEY</span>
+              <span>2. DEFINE_X-API-KEY</span>
+              <span>3. REQUEST_TO_{API_BASE_URL}/API/V1/*</span>
+              <span>4. MONITOR_THROUGHPUT</span>
+            </div>
+          </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6 lg:w-full w-[calc(100vw-2rem)]">
-          {/* Sidebar - Endpoint List */}
-          <div className="lg:col-span-1 lg:sticky lg:top-24 lg:w-full">
-            <Card className="shadow-sm border-muted/40">
-              <CardHeader>
-                <CardTitle>API Endpoints</CardTitle>
-              </CardHeader>
-              <CardContent className="p-0 lg:max-h-[60vh] lg:overflow-auto">
-                <div className="space-y-1">
+        <div className="container mx-auto px-4 py-12">
+          <div className="grid lg:grid-cols-4 gap-12">
+            {/* Sidebar Navigation */}
+            <div className="lg:col-span-1 space-y-8">
+              <div className="space-y-4">
+                <h3 className="text-xs font-black uppercase tracking-[0.5em] text-swiss-black/40 border-l-4 border-swiss-red pl-4">ENDPOINTS_LIBRARY</h3>
+                <div className="space-y-4">
                   {API_ENDPOINTS.map((endpoint) => (
                     <button
                       key={endpoint.id}
                       onClick={() => setSelectedEndpoint(endpoint)}
-                      className={`w-full text-left p-3 hover:bg-muted/50 transition-colors ${
-                        selectedEndpoint.id === endpoint.id ? "bg-muted" : ""
-                      }`}
+                      className={cn(
+                        "w-full text-left p-6 border-4 transition-all flex flex-col gap-2 group",
+                        selectedEndpoint.id === endpoint.id
+                          ? "bg-swiss-black text-swiss-white border-swiss-black shadow-[8px_8px_0_0_rgba(255,0,0,1)]"
+                          : "bg-swiss-white text-swiss-black border-swiss-black hover:bg-swiss-muted"
+                      )}
                     >
-                      <div className="flex items-center gap-2 mb-1">
-                        <Badge
-                          variant={
-                            endpoint.method === "GET" ? "secondary" : "default"
-                          }
-                        >
+                      <div className="flex items-center justify-between">
+                        <span className={cn(
+                          "text-[10px] font-black px-2 py-0.5 border-2",
+                          selectedEndpoint.id === endpoint.id ? "border-swiss-white" : "border-swiss-black"
+                        )}>
                           {endpoint.method}
-                        </Badge>
-                        <span className="font-medium text-sm">
-                          {endpoint.name}
                         </span>
+                        <ChevronRight className={cn(
+                          "h-4 w-4 transition-transform group-hover:translate-x-1",
+                          selectedEndpoint.id === endpoint.id ? "text-swiss-red" : "opacity-20"
+                        )} />
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        {endpoint.tokenCost} tokens
-                      </p>
+                      <span className="font-black uppercase tracking-tighter italic text-sm">{endpoint.name}</span>
+                      <span className="text-[8px] font-black uppercase tracking-widest opacity-40">{endpoint.tokenCost}_TOKENS</span>
                     </button>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
 
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Endpoint Details */}
-            <Card className="shadow-sm border-muted/40">
-              <CardHeader>
+              <SwissCard className="p-6 border-4 border-swiss-black bg-swiss-muted/30 italic">
                 <div className="flex items-center gap-2 mb-2">
-                  <Badge
-                    variant={
-                      selectedEndpoint.method === "GET"
-                        ? "secondary"
-                        : "default"
-                    }
-                  >
-                    {selectedEndpoint.method}
-                  </Badge>
-                  <code className="text-sm bg-muted px-2 py-1 rounded">
+                  < Book className="h-4 w-4 text-swiss-red" />
+                  <span className="text-[10px] font-black uppercase tracking-widest">PROTOCOL_INFO</span>
+                </div>
+                <p className="text-[10px] font-bold uppercase tracking-tight leading-relaxed">
+                  ALL_REQUESTS_MUST_INCLUDE_AUTHENTICATION_IDENTIFIERS_AND_CONTENT-TYPE_DEFINITIONS.
+                </p>
+              </SwissCard>
+            </div>
+
+            {/* Main Content Area */}
+            <div className="lg:col-span-3 space-y-12">
+              <div className="space-y-8 pb-12 border-b-4 border-swiss-black border-dotted">
+                <div className="flex items-center gap-4">
+                  <span className="text-2xl font-black uppercase px-4 py-1 bg-swiss-black text-swiss-white italic">{selectedEndpoint.method}</span>
+                  <code className="text-xl font-black tracking-tighter italic bg-swiss-muted px-4 py-1 border-2 border-swiss-black">
                     {selectedEndpoint.endpoint}
                   </code>
                 </div>
-                <CardTitle>{selectedEndpoint.name}</CardTitle>
-                <CardDescription>
+                <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic underline decoration-swiss-red decoration-8 underline-offset-8">
+                  {selectedEndpoint.name}
+                </h2>
+                <p className="text-xl font-bold uppercase tracking-tight opacity-40 italic">
                   {selectedEndpoint.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <Zap className="h-4 w-4 text-yellow-500" />
-                      <span className="text-sm font-medium">Token Cost:</span>
-                      <Badge variant="outline">
-                        {selectedEndpoint.tokenCost}
-                      </Badge>
+                </p>
+
+                {/* Parameters Table */}
+                {selectedEndpoint.parameters.length > 0 && (
+                  <div className="space-y-4 pt-8">
+                    <h4 className="text-xs font-black uppercase tracking-[0.4em]">PARAMETER_DEFINITIONS:</h4>
+                    <div className="border-4 border-swiss-black divide-y-4 divide-swiss-black overflow-hidden">
+                      {selectedEndpoint.parameters.map((param) => (
+                        <div key={param.name} className="flex flex-col md:flex-row divide-y-4 md:divide-y-0 md:divide-x-4 divide-swiss-black bg-swiss-white">
+                          <div className="p-6 md:w-1/4 bg-swiss-muted/30">
+                            <div className="flex flex-col gap-2">
+                              <code className="font-black text-lg italic">{param.name}</code>
+                              <span className={cn(
+                                "text-[8px] font-black uppercase px-2 py-0.5 border-2 w-fit",
+                                param.required ? "bg-swiss-red text-swiss-white border-swiss-red" : "border-swiss-black opacity-40"
+                              )}>
+                                {param.required ? "REQUIRED" : "OPTIONAL"}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="p-6 md:w-1/2 flex flex-col justify-center">
+                            <p className="text-xs font-black uppercase tracking-widest leading-relaxed">{param.description}</p>
+                          </div>
+                          <div className="p-6 md:w-1/4 bg-swiss-muted/10 flex flex-col justify-center">
+                            <span className="text-[8px] font-black uppercase opacity-20 mb-1">EXAMPLE</span>
+                            <code className="text-[10px] font-black italic">{JSON.stringify(param.example)}</code>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
+                )}
+              </div>
 
-                  {/* Parameters */}
-                  {selectedEndpoint.parameters.length > 0 && (
-                    <div>
-                      <h4 className="font-medium mb-3">Parameters</h4>
-                      <div className="space-y-3">
-                        {selectedEndpoint.parameters.map((param) => (
-                          <div key={param.name} className="border rounded p-3">
-                            <div className="flex items-center gap-2 mb-1">
-                              <code className="font-mono text-sm">
-                                {param.name}
-                              </code>
-                              <Badge
-                                variant={
-                                  param.required ? "destructive" : "secondary"
-                                }
-                              >
-                                {param.required ? "Required" : "Optional"}
-                              </Badge>
-                              <Badge variant="outline">{param.type}</Badge>
-                            </div>
-                            <p className="text-sm text-muted-foreground mb-1">
-                              {param.description}
-                            </p>
-                            <code className="text-xs bg-muted px-2 py-1 rounded">
-                              Example: {JSON.stringify(param.example)}
-                            </code>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+              {/* Code Examples & Playground */}
+              {/* Interaction Center */}
+              <Tabs defaultValue="playground" className="space-y-8">
 
-            {/* Code Examples & Playground */}
-            <Tabs defaultValue="playground" className="space-y-4">
-              <TabsList className="flex w-fit gap-2">
-                <TabsTrigger
-                  className="flex-shrink-0 min-w-[140px]"
-                  value="playground"
-                >
-                  API Playground
-                </TabsTrigger>
-                <TabsTrigger
-                  className="flex-shrink-0 min-w-[130px]"
-                  value="examples"
-                >
-                  Code Examples
-                </TabsTrigger>
-              </TabsList>
+                <TabsList className="flex bg-transparent p-0 gap-4 mb-8">
+                  <TabsTrigger
+                    value="playground"
+                    className="flex-1 h-14 border-4 border-swiss-black font-black uppercase tracking-widest italic data-[state=active]:bg-swiss-red data-[state=active]:text-swiss-white transition-all rounded-none"
+                  >
+                    NEURAL_PLAYGROUND
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="examples"
+                    className="flex-1 h-14 border-4 border-swiss-black font-black uppercase tracking-widest italic data-[state=active]:bg-swiss-black data-[state=active]:text-swiss-white transition-all rounded-none"
+                  >
+                    CODE_FRAGMENTS
+                  </TabsTrigger>
+                </TabsList>
 
-              {/* Playground */}
-              <TabsContent value="playground">
-                <Card className="shadow-sm border-muted/40">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Play className="h-5 w-5" />
-                      Try it out
-                    </CardTitle>
-                    <CardDescription>
-                      Test the API endpoint with your own parameters
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {/* API Key Input */}
-                    <div>
-                      <Label htmlFor="apiKey">API Key</Label>
+                {/* Playground */}
+                <TabsContent value="playground" className="mt-0 ring-offset-swiss-white focus-visible:ring-0">
+                  <SwissCard className="p-10 border-4 border-swiss-black shadow-[16px_16px_0_0_rgba(0,0,0,1)] bg-swiss-white space-y-10">
+                    <div className="space-y-2">
+                      <Label className="text-xs font-black uppercase tracking-[0.3em]">AUTHENTICATION_IDENTIFIER</Label>
                       <Input
-                        id="apiKey"
                         type="password"
-                        placeholder="Enter your API key"
+                        placeholder="ENTER_API_KEY..."
                         value={apiKey}
                         onChange={(e) => setApiKey(e.target.value)}
+                        className="h-16 px-6 text-xl font-black uppercase border-4 border-swiss-black bg-swiss-muted focus-visible:bg-swiss-white focus-visible:ring-0 transition-all rounded-none"
                       />
                     </div>
 
-                    {/* Parameters */}
                     {selectedEndpoint.parameters.length > 0 && (
-                      <div>
-                        <Label>Parameters</Label>
-                        <div className="space-y-2 mt-2">
-                          {selectedEndpoint.parameters.map((param) => (
-                            <div key={param.name}>
-                              <Label htmlFor={param.name} className="text-sm">
-                                {param.name}{" "}
-                                {param.required && (
-                                  <span className="text-red-500">*</span>
-                                )}
-                              </Label>
-                              <Input
-                                id={param.name}
-                                placeholder={`Enter ${param.name}`}
-                                value={playgroundParams[param.name] || ""}
-                                onChange={(e) =>
-                                  setPlaygroundParams((prev) => ({
-                                    ...prev,
-                                    [param.name]: e.target.value,
-                                  }))
-                                }
-                              />
-                            </div>
-                          ))}
-                        </div>
+                      <div className="grid md:grid-cols-2 gap-8">
+                        {selectedEndpoint.parameters.map((param) => (
+                          <div key={param.name} className="space-y-2">
+                            <Label className="text-xs font-black uppercase tracking-[0.3em] flex justify-between">
+                              {param.name}
+                              {param.required && <span className="text-swiss-red italic">REQUIRED</span>}
+                            </Label>
+                            <Input
+                              placeholder={`SPECIFY_${param.name}...`}
+                              value={playgroundParams[param.name] || ""}
+                              onChange={(e) =>
+                                setPlaygroundParams((prev) => ({
+                                  ...prev,
+                                  [param.name]: e.target.value,
+                                }))
+                              }
+                              className="h-14 px-4 font-black uppercase border-2 border-swiss-black bg-swiss-white focus-visible:ring-0 rounded-none"
+                            />
+                          </div>
+                        ))}
                       </div>
                     )}
 
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          onClick={handlePlaygroundTest}
-                          disabled={isLoading}
-                          className="w-full"
-                        >
-                          {isLoading ? "Testing..." : "Send Request"}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        Execute request with provided values
-                      </TooltipContent>
-                    </Tooltip>
+                    <SwissButton
+                      onClick={handlePlaygroundTest}
+                      disabled={isLoading}
+                      className="w-full h-20 text-2xl"
+                    >
+                      {isLoading ? <Loader2 className="h-8 w-8 animate-spin text-swiss-white" /> : "EXECUTE_NETWORK_TEST"}
+                    </SwissButton>
 
-                    {/* Response */}
                     {playgroundResponse && (
-                      <div>
-                        <Label>Response</Label>
-                        <div className="mt-2 relative overflow-x-auto rounded-md border border-muted/40">
+                      <div className="space-y-4 pt-10 border-t-4 border-swiss-black border-dotted">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-xs font-black uppercase tracking-[0.2em]">
+                            OUTPUT_STREAM // STATUS_{playgroundResponse.status}
+                          </h4>
+                          <SwissButton size="sm" variant="secondary" onClick={() => copyToClipboard(JSON.stringify(playgroundResponse, null, 2))}>COPY</SwissButton>
+                        </div>
+                        <div className="p-6 bg-swiss-black border-4 border-swiss-black overflow-x-auto shadow-[8px_8px_0_0_rgba(255,0,0,1)]">
                           <SyntaxHighlighter
                             language="json"
                             style={vscDarkPlus}
-                            className="min-w-max"
+                            customStyle={{ background: 'transparent', margin: 0, padding: 0 }}
                           >
                             {JSON.stringify(playgroundResponse, null, 2)}
                           </SyntaxHighlighter>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="absolute top-2 right-2"
-                                onClick={() =>
-                                  copyToClipboard(
-                                    JSON.stringify(playgroundResponse, null, 2)
-                                  )
-                                }
-                              >
-                                <Copy className="h-4 w-4 mr-2" /> Copy
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Copy response</TooltipContent>
-                          </Tooltip>
                         </div>
                       </div>
                     )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
+                  </SwissCard>
+                </TabsContent>
 
-              {/* Code Examples */}
-              <TabsContent value="examples">
-                <Card className="shadow-sm border-muted/40">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Code className="h-5 w-5" />
-                      Code Examples
-                    </CardTitle>
-                    <CardDescription>
-                      Copy and paste these examples into your application
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div>
-                        <Label>Language</Label>
+                {/* Code Examples */}
+                <TabsContent value="examples" className="mt-0 border-0 ring-offset-swiss-white focus-visible:ring-0">
+                  <SwissCard className="p-10 border-4 border-swiss-black shadow-[16px_16px_0_0_rgba(0,0,0,1)] bg-swiss-black space-y-8">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                      <div className="space-y-2 flex-1">
+                        <Label className="text-xs font-black uppercase tracking-[0.3em] text-swiss-white/40">LANGUAGE_SELECTOR</Label>
                         <Select
                           value={selectedLanguage}
                           onValueChange={setSelectedLanguage}
                         >
-                          <SelectTrigger className="w-48">
+                          <SelectTrigger className="h-14 px-6 text-lg font-black uppercase border-2 border-swiss-white bg-transparent text-swiss-white rounded-none focus:ring-0">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="curl">cURL</SelectItem>
-                            <SelectItem value="javascript">
-                              JavaScript
-                            </SelectItem>
-                            <SelectItem value="python">Python</SelectItem>
-                            <SelectItem value="node">Node.js</SelectItem>
+                          <SelectContent className="bg-swiss-black border-2 border-swiss-white text-swiss-white rounded-none">
+                            <SelectItem value="curl" className="focus:bg-swiss-red">CURL</SelectItem>
+                            <SelectItem value="javascript" className="focus:bg-swiss-red">JAVASCRIPT</SelectItem>
+                            <SelectItem value="python" className="focus:bg-swiss-red">PYTHON</SelectItem>
+                            <SelectItem value="node" className="focus:bg-swiss-red">NODE_JS</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
-
-                      <div className="relative overflow-x-auto p-0 rounded-md border border-muted/40 lg:w-auto w-[calc(100vw-4rem)]">
-                        <SyntaxHighlighter
-                          language={
-                            selectedLanguage === "curl"
-                              ? "bash"
-                              : selectedLanguage
-                          }
-                          customStyle={{
-                            margin: 0,
-                          }}
-                          style={vscDarkPlus}
-                          className="overflow-x-scroll rounded-md my-0"
-                        >
-                          {generateCodeSnippet()}
-                        </SyntaxHighlighter>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="absolute top-2 right-2"
-                              onClick={() =>
-                                copyToClipboard(generateCodeSnippet())
-                              }
-                            >
-                              <Copy className="h-4 w-4 mr-2" /> Copy
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Copy code</TooltipContent>
-                        </Tooltip>
-                      </div>
-
-                      <div>
-                        <Label>Example Response</Label>
-                        <div className="mt-2 relative overflow-x-auto rounded-md border border-muted/40 lg:w-auto w-[calc(100vw-4rem)]">
-                          <SyntaxHighlighter
-                            language="json"
-                            style={vscDarkPlus}
-                            className="rounded-md overscroll-x-scroll my-0"
-                            customStyle={{
-                              margin: 0,
-                            }}
-                          >
-                            {JSON.stringify(
-                              selectedEndpoint.example.response,
-                              null,
-                              2
-                            )}
-                          </SyntaxHighlighter>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="absolute top-2 right-2"
-                                onClick={() =>
-                                  copyToClipboard(
-                                    JSON.stringify(
-                                      selectedEndpoint.example.response,
-                                      null,
-                                      2
-                                    )
-                                  )
-                                }
-                              >
-                                <Copy className="h-4 w-4 mr-2" /> Copy
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Copy response</TooltipContent>
-                          </Tooltip>
-                        </div>
-                      </div>
+                      <SwissButton variant="secondary" onClick={() => copyToClipboard(generateCodeSnippet())}>COPY_FRAGMENT</SwissButton>
                     </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
 
-            {/* Authentication & Errors */}
-            <div className="grid md:grid-cols-2 gap-6">
-              <Card className="shadow-sm border-muted/40">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Key className="h-5 w-5" />
-                    Authentication
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <p className="text-sm text-muted-foreground">
-                    Include your API key in the request header:
-                  </p>
-                  <code className="block bg-muted p-2 rounded text-sm">
-                    x-api-key: your-api-key-here
-                  </code>
-                  <div className="flex items-start gap-2 mt-4">
-                    <AlertCircle className="h-4 w-4 text-yellow-500 mt-0.5" />
-                    <p className="text-sm text-muted-foreground">
-                      Keep your API key secure and never expose it in
-                      client-side code.
+                    <div className="p-6 bg-swiss-black/50 border-2 border-swiss-white/10 overflow-x-auto">
+                      <SyntaxHighlighter
+                        language={selectedLanguage === "curl" ? "bash" : selectedLanguage}
+                        style={vscDarkPlus}
+                        customStyle={{ background: 'transparent', margin: 0, padding: 0 }}
+                        className="min-h-[200px]"
+                      >
+                        {generateCodeSnippet()}
+                      </SyntaxHighlighter>
+                    </div>
+                  </SwissCard>
+                </TabsContent>
+              </Tabs>
+
+              {/* Authentication & Errors Cluster */}
+              <div className="grid md:grid-cols-2 gap-8 pt-12">
+                <SwissCard className="p-8 border-4 border-swiss-black bg-swiss-white">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="p-3 bg-swiss-black text-swiss-white">
+                      <Key className="h-6 w-6" />
+                    </div>
+                    <h3 className="text-xl font-black uppercase tracking-tighter italic">NEURAL_ACCESS</h3>
+                  </div>
+                  <div className="space-y-4">
+                    <p className="text-xs font-bold uppercase tracking-tight opacity-60">
+                      REQUEST_HEADERS_REQUIRE_AUTHENTICATION_TOKENS:
                     </p>
+                    <code className="block bg-swiss-muted p-4 border-2 border-swiss-black font-black text-xs italic">
+                      X-API-KEY: YOUR_IDENTIFIER
+                    </code>
+                    <div className="flex items-start gap-3 mt-4 p-4 bg-swiss-red/10 border-l-4 border-swiss-red">
+                      <AlertCircle className="h-5 w-5 text-swiss-red mt-0.5" />
+                      <p className="text-[10px] font-black uppercase tracking-tight text-swiss-red italic">
+                        SECURITY_WARNING: NEVER_EXPOSE_TOKENS_IN_CLIENT-SIDE_ENVIRONMENTS.
+                      </p>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
+                </SwissCard>
 
-              <Card className="shadow-sm border-muted/40">
-                <CardHeader>
-                  <CardTitle>Common Error Codes</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
+                <SwissCard className="p-8 border-4 border-swiss-black bg-swiss-black text-swiss-white">
+                  <h3 className="text-xl font-black uppercase tracking-tighter italic mb-6">PROTOCOL_ERRORS</h3>
                   <div className="space-y-3">
-                    <div>
-                      <Badge variant="destructive">401</Badge>
-                      <span className="ml-2 text-sm">
-                        Invalid or missing API key
-                      </span>
-                    </div>
-                    <div>
-                      <Badge variant="destructive">402</Badge>
-                      <span className="ml-2 text-sm">Insufficient tokens</span>
-                    </div>
-                    <div>
-                      <Badge variant="destructive">429</Badge>
-                      <span className="ml-2 text-sm">Rate limit exceeded</span>
-                    </div>
-                    <div>
-                      <Badge variant="destructive">400</Badge>
-                      <span className="ml-2 text-sm">
-                        Invalid request parameters
-                      </span>
-                    </div>
+                    {[
+                      { code: "401", msg: "INVALID_IDENTIFIER" },
+                      { code: "402", msg: "INSUFFICIENT_RESOURCE_ALLOCATION" },
+                      { code: "429", msg: "THROUGHPUT_LIMIT_EXCEEDED" },
+                      { code: "400", msg: "MALFORMED_INPUT_PARAMETERS" },
+                    ].map((err) => (
+                      <div key={err.code} className="flex items-center gap-4 border-b border-swiss-white/10 pb-2">
+                        <span className="text-swiss-red font-black text-lg italic">{err.code}</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest opacity-60">{err.msg}</span>
+                      </div>
+                    ))}
                   </div>
-                </CardContent>
-              </Card>
+                </SwissCard>
+              </div>
             </div>
           </div>
         </div>

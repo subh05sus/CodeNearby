@@ -2,21 +2,21 @@ import { Badge } from "../ui/badge";
 
 function Details() {
   return (
-    <div>
-      <div className="flex gap-4 flex-col items-start">
-        <div>
-          <Badge>Platform</Badge>
+    <div className="py-24 border-y-4 border-black dark:border-white swiss-grid-pattern dark:opacity-20 swiss-noise">
+      <div className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row gap-16 items-start">
+        <div className="md:w-1/3">
+          <p className="text-xs font-black uppercase tracking-[0.5em] text-swiss-red mb-4">Core Mission</p>
+          <h2 className="text-6xl md:text-8xl font-black uppercase leading-[0.85] tracking-tightest text-black dark:text-white">
+            THE START OF<br />SOMETHING<br />NEW
+          </h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="flex gap-2 flex-col">
-            <h2 className="text-xl md:text-3xl lg:text-5xl tracking-tighter lg:max-w-xl font-regular text-left">
-              This is the start of something new
-            </h2>
-            <p className="text-lg max-w-xl lg:max-w-full leading-relaxed tracking-tight text-muted-foreground text-left">
-              Finding the right developer to work with should be easy. Whether
-              you want a coding partner, to share ideas, or join a project,
-              Codenearby makes it simple. Our goal is to make developer
-              connections quick and easy.
+        <div className="md:w-2/3 flex flex-col gap-12 pt-4">
+          <p className="text-2xl md:text-4xl font-medium uppercase tracking-tight leading-none text-black/80 dark:text-white/80">
+            Finding the right developer to work with should be easy. Our goal is to make developer connections quick and objective.
+          </p>
+          <div className="p-8 border-4 border-black dark:border-white bg-white dark:bg-black shadow-[16px_16px_0_0_rgba(0,0,0,1)] dark:shadow-[16px_16px_0_0_rgba(255,255,255,1)]">
+            <p className="text-xl font-bold uppercase tracking-widest leading-relaxed text-black dark:text-white">
+              WHETHER YOU WANT A CODING PARTNER, TO SHARE IDEAS, OR JOIN A PROJECT, CODENEARBY MAKES IT SIMPLE. UNIVERSAL CONNECTIVITY.
             </p>
           </div>
         </div>

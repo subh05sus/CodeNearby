@@ -3,23 +3,23 @@
 
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Loader2, Send, MapPin, BarChart, Calendar } from "lucide-react";
+import { Loader2, Send, MapPin, BarChart, Calendar, Users, Heart } from "lucide-react";
 import type { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Card, CardContent } from "./ui/card";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import SwissCard from "./swiss/SwissCard";
+import SwissButton from "./swiss/SwissButton";
+import { cn } from "@/lib/utils";
 
 interface Friend {
   id: string;
@@ -27,10 +27,6 @@ interface Friend {
   githubUsername: string;
   image: string;
   githubId: number;
-  lastMessage?: {
-    content: string;
-    timestamp: number;
-  };
 }
 
 interface Gathering {
@@ -69,26 +65,14 @@ export function SharePost({ post }: SharePostProps) {
   const [gatherings, setGatherings] = useState<Gathering[]>([]);
   const [sharing, setSharing] = useState(false);
 
-  const [canShare, setCanShare] = useState(false);
   useEffect(() => {
     if (session && isOpen) {
-      // Only fetch when the dialog is actually opened
-      if (friends.length === 0) {
-        fetchFriends();
-      }
-      if (gatherings.length === 0) {
-        fetchGatherings();
-      }
-      setCanShare(true);
-    } else if (session) {
-      // Just set canShare to true when session exists but dialog is closed
-      setCanShare(true);
+      if (friends.length === 0) fetchFriends();
+      if (gatherings.length === 0) fetchGatherings();
     }
-  }, [session, isOpen, friends.length, gatherings.length]);
+  }, [session, isOpen]);
 
-  if (!session) {
-    return null;
-  }
+  if (!session) return null;
 
   const fetchFriends = async () => {
     try {
@@ -97,7 +81,7 @@ export function SharePost({ post }: SharePostProps) {
       const data = await response.json();
       setFriends(data);
     } catch {
-      toast.error("Error", { description: "Failed to fetch friends." });
+      toast.error("Failed to fetch friends.");
     } finally {
       setLoadingFriends(false);
     }
@@ -107,15 +91,10 @@ export function SharePost({ post }: SharePostProps) {
     try {
       setLoadingGatherings(true);
       const response = await fetch("/api/gathering");
-      if (!response.ok) {
-        throw new Error("Failed to fetch gatherings");
-      }
       const data = await response.json();
       setGatherings(data);
     } catch {
-      toast.error("Error", {
-        description: "Failed to fetch gatherings.",
-      });
+      toast.error("Failed to fetch gatherings.");
     } finally {
       setLoadingGatherings(false);
     }
@@ -126,9 +105,7 @@ export function SharePost({ post }: SharePostProps) {
     try {
       const response = await fetch("/api/share", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           postId: post._id,
           recipientId: friendId,
@@ -136,16 +113,11 @@ export function SharePost({ post }: SharePostProps) {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to share post");
-      }
-
-      toast.success("Post shared successfully!");
+      if (!response.ok) throw new Error();
+      toast.success("Post successfully shared with node.");
       setIsOpen(false);
     } catch {
-      toast.error("Error", {
-        description: "Failed to share post. Please try again.",
-      });
+      toast.error("Packet transmission failed.");
     } finally {
       setSharing(false);
     }
@@ -156,9 +128,7 @@ export function SharePost({ post }: SharePostProps) {
     try {
       const response = await fetch("/api/share", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           postId: post._id,
           recipientId: `gathering_${gatheringId}`,
@@ -166,16 +136,11 @@ export function SharePost({ post }: SharePostProps) {
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to share post");
-      }
-
-      toast.success("Post shared successfully!");
+      if (!response.ok) throw new Error();
+      toast.success("Packet broadcasted to gathering stream.");
       setIsOpen(false);
     } catch {
-      toast.error("Error", {
-        description: "Failed to share post to the gathering. Please try again.",
-      });
+      toast.error("Broadcast protocol failure.");
     } finally {
       setSharing(false);
     }
@@ -184,117 +149,137 @@ export function SharePost({ post }: SharePostProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button size={"icon"} variant={"ghost"} disabled={!canShare}>
-          <Send className="h-4 w-4" />
-        </Button>
+        <button className="p-2 hover:bg-swiss-red hover:text-swiss-white transition-colors group">
+          <Send className="h-4 w-4 grayscale group-hover:grayscale-0 transition-all" />
+        </button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Share Post To</DialogTitle>
-          <DialogDescription>
-            Share your posts to your friends and gatherings
-          </DialogDescription>
-        </DialogHeader>
-        <Card className="mb-4">
-          <CardContent className="p-4">
-            <p className="text-sm mb-2 line-clamp-2">{post.content}</p>
-            {post.imageUrl && (
-              <div className="relative w-full h-32 mb-2">
-                <Image
-                  src={post.imageUrl || "/placeholder.svg"}
-                  alt="Post image"
-                  layout="fill"
-                  objectFit="cover"
-                  className="rounded-md"
-                />
+      <DialogContent className="max-w-xl p-0 border-0 bg-transparent shadow-none">
+        <SwissCard className="p-0 border-8 border-swiss-black shadow-[24px_24px_0_0_rgba(255,0,0,1)] bg-swiss-white overflow-hidden flex flex-col">
+          <DialogHeader className="p-8 border-b-8 border-swiss-black bg-swiss-black text-swiss-white">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="bg-swiss-red p-1.5 border-2 border-swiss-white">
+                <Send className="h-4 w-4 text-swiss-white" />
               </div>
-            )}
-            {post.poll && (
-              <div className="flex items-center text-sm text-muted-foreground">
-                <BarChart className="h-4 w-4 mr-1" />
-                Poll: {post.poll.question}
-              </div>
-            )}
-            {post.location && (
-              <div className="flex items-center text-sm text-muted-foreground">
-                <MapPin className="h-4 w-4 mr-1" />
-                Location attached
-              </div>
-            )}
-            {post.schedule && (
-              <div className="flex items-center text-sm text-muted-foreground">
-                <Calendar className="h-4 w-4 mr-1" />
-                {post.schedule && format(new Date(post.schedule), "PPp")}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-        <div className="space-y-4 overflow-x-scroll">
-          <div>
-            <h4 className="mb-2 text-sm font-medium">Friends</h4>
-            <div className="flex space-x-2 overflow-x-scroll w pb-2">
-              {friends.length > 0 ? (
-                friends.map((friend) => (
-                  <div
-                    key={friend.id}
-                    onClick={() =>
-                      handleShareToFriend(friend.githubId.toString())
-                    }
-                    className="flex-shrink-0 flex flex-col items-center cursor-pointer"
-                  >
-                    <Image
-                      height={48}
-                      width={48}
-                      src={friend.image || "/placeholder.svg"}
-                      alt={friend.name}
-                      className="h-12 w-12 rounded-full"
-                    />
-                    <span className="text-xs mt-1 max-w-[60px] truncate">
-                      {friend.name}
-                    </span>
+              <span className="text-[10px] font-black uppercase tracking-[0.3em]">SHARE_PROTOCOL // OUTBOUND</span>
+            </div>
+            <DialogTitle className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic leading-none">
+              BROADCAST_CONTENT
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="p-8 space-y-8 max-h-[70vh] overflow-y-auto">
+            {/* Post Preview */}
+            <div className="border-4 border-swiss-black p-6 bg-swiss-muted/10 relative overflow-hidden group">
+              <div className="absolute top-0 left-0 w-2 h-full bg-swiss-red" />
+              <p className="text-sm font-bold uppercase tracking-tight italic leading-relaxed line-clamp-2 mb-4 pl-4">
+                {post.content}
+              </p>
+
+              <div className="flex flex-wrap gap-4 pl-4">
+                {post.imageUrl && (
+                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest bg-swiss-black text-swiss-white px-2 py-1">
+                    <Heart className="h-3 w-3 fill-swiss-red text-swiss-red" /> VISUAL_DATA
                   </div>
-                ))
-              ) : loadingFriends ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <p className="text-sm text-gray-500">No friends found</p>
-              )}
+                )}
+                {post.poll && (
+                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest bg-swiss-black text-swiss-white px-2 py-1">
+                    <BarChart className="h-3 w-3" /> POLL_ARRAY
+                  </div>
+                )}
+                {post.location && (
+                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest bg-swiss-black text-swiss-white px-2 py-1">
+                    <MapPin className="h-3 w-3" /> GEO_SYNC
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-          <div>
-            <h4 className="mb-2 text-sm font-medium">Gatherings</h4>
-            <div className="flex space-x-2 overflow-x-auto pb-2">
-              {gatherings.length > 0 ? (
-                gatherings.map((gathering) => {
-                  return (
-                    <div
-                      key={gathering.id}
-                      onClick={() => handleShareToGathering(gathering.slug)}
-                      className="flex-shrink-0 flex flex-col items-center cursor-pointer"
-                    >
-                      <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                        {gathering.name[0]}
-                      </div>
-                      <span className="text-xs mt-1 max-w-[60px] truncate">
-                        {gathering.name}
-                      </span>
+
+            {/* Recipient Selection */}
+            <div className="space-y-8">
+              {/* Friends */}
+              <div>
+                <h4 className="text-[10px] font-black uppercase tracking-[0.4em] mb-4 border-b-4 border-swiss-black pb-2">
+                  TARGET_USER_NODES
+                </h4>
+                <div className="grid grid-cols-4 sm:grid-cols-5 gap-4">
+                  {friends.length > 0 ? (
+                    friends.map((friend) => (
+                      <button
+                        key={friend.id}
+                        onClick={() => handleShareToFriend(friend.githubId.toString())}
+                        className="flex flex-col items-center group gap-2"
+                      >
+                        <div className="w-16 h-16 border-4 border-swiss-black bg-swiss-white grayscale group-hover:grayscale-0 transition-all shadow-[4px_4px_0_0_rgba(0,0,0,1)] group-hover:shadow-[4px_4px_0_0_rgba(255,0,0,1)] group-hover:-translate-y-1 group-hover:translate-x-1 overflow-hidden">
+                          <Image
+                            height={64}
+                            width={64}
+                            src={friend.image || "/placeholder.svg"}
+                            alt={friend.name}
+                            className="object-cover h-full w-full"
+                          />
+                        </div>
+                        <span className="text-[8px] font-black uppercase tracking-widest truncate w-16 text-center">
+                          {friend.name}
+                        </span>
+                      </button>
+                    ))
+                  ) : loadingFriends ? (
+                    <div className="col-span-full flex justify-center py-4">
+                      <Loader2 className="h-8 w-8 animate-spin text-swiss-red" />
                     </div>
-                  );
-                })
-              ) : loadingGatherings ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <p className="text-sm text-gray-500">No Gatherings found</p>
-              )}
+                  ) : (
+                    <p className="col-span-full text-[10px] font-bold uppercase tracking-widest opacity-20 text-center py-4">
+                      NO_ACTIVE_UPLINKS_FOUND
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Gatherings */}
+              <div>
+                <h4 className="text-[10px] font-black uppercase tracking-[0.4em] mb-4 border-b-4 border-swiss-black pb-2">
+                  COLLECTIVE_STREAMS
+                </h4>
+                <div className="grid grid-cols-2 gap-4">
+                  {gatherings.length > 0 ? (
+                    gatherings.map((gathering) => (
+                      <button
+                        key={gathering.id}
+                        onClick={() => handleShareToGathering(gathering.slug)}
+                        className="flex items-center gap-4 p-4 border-4 border-swiss-black hover:bg-swiss-black hover:text-swiss-white transition-all shadow-[4px_4px_0_0_rgba(0,0,0,1)] hover:shadow-[8px_8px_0_0_rgba(0,0,0,1)] group"
+                      >
+                        <div className="w-10 h-10 bg-swiss-red border-2 border-swiss-black flex items-center justify-center font-black italic text-swiss-white group-hover:border-swiss-white">
+                          {gathering.name[0].toUpperCase()}
+                        </div>
+                        <span className="text-xs font-black uppercase tracking-tight truncate flex-1 text-left italic">
+                          {gathering.name}
+                        </span>
+                      </button>
+                    ))
+                  ) : loadingGatherings ? (
+                    <div className="col-span-full flex justify-center py-4">
+                      <Loader2 className="h-8 w-8 animate-spin text-swiss-red" />
+                    </div>
+                  ) : (
+                    <p className="col-span-full text-[10px] font-bold uppercase tracking-widest opacity-20 text-center py-4">
+                      NO_STREAMS_AVAILABLE
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        {sharing && (
-          <div className="flex items-center justify-center">
-            <Loader2 className="h-6 w-6 animate-spin" />
-            <span className="ml-2">Sharing...</span>
+
+          <div className="p-8 bg-swiss-muted/30 border-t-8 border-swiss-black mt-auto">
+            <SwissButton
+              variant="secondary"
+              className="w-full h-16"
+              onClick={() => setIsOpen(false)}
+            >
+              TERMINATE_PROTOCOL
+            </SwissButton>
           </div>
-        )}
+        </SwissCard>
       </DialogContent>
     </Dialog>
   );

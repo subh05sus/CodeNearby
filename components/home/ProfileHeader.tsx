@@ -1,14 +1,10 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
-
 import Link from "next/link";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import Image from "next/image";
-import { Button } from "../ui/button";
+import SwissButton from "../swiss/SwissButton";
 import { Pencil } from "lucide-react";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface ProfileHeaderProps {
   imageUrl: string;
@@ -31,18 +27,13 @@ const ProfileHeader = ({
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [previewId, setPreviewId] = useState<string | null>(null);
 
-  const getThemeGradient = () => {
+  const getThemeColor = () => {
     switch (appearance?.theme) {
-      case "blue":
-        return "from-blue-500/30 via-blue-400/20 to-blue-600/10";
-      case "green":
-        return "from-green-500/30 via-green-400/20 to-green-600/10";
-      case "purple":
-        return "from-purple-500/30 via-purple-400/20 to-purple-600/10";
-      case "orange":
-        return "from-orange-500/30 via-orange-400/20 to-orange-600/10";
-      default:
-        return "from-primary/30 via-primary/20 to-primary/10";
+      case "blue": return "bg-blue-600";
+      case "green": return "bg-green-600";
+      case "purple": return "bg-purple-600";
+      case "orange": return "bg-orange-600";
+      default: return "bg-swiss-red";
     }
   };
 
@@ -58,128 +49,101 @@ const ProfileHeader = ({
 
   return (
     <>
-      <div className={`h-48 rounded-xl relative`}>
+      <div className="h-64 relative border-8 border-black dark:border-white bg-muted dark:bg-neutral-900 overflow-visible mb-24 swiss-noise">
         {editable && (
-          <Button
-            variant="outline"
-            size="icon"
-            asChild
-            className="absolute top-4 right-4 z-10 rounded-full bg-background/70 backdrop-blur-md hover:bg-background/100 transition-all duration-300 ease-in-out"
-          >
-            <Link href="/profile/edit">
-              <Pencil className="h-4 w-4" />
-            </Link>
-          </Button>
+          <div className="absolute top-6 right-6 z-10">
+            <SwissButton variant="primary" size="sm" asChild className="shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
+              <Link href="/profile/edit" className="flex items-center gap-2">
+                <Pencil className="h-4 w-4" />
+                <span className="font-black">EDIT_PROFILE</span>
+              </Link>
+            </SwissButton>
+          </div>
         )}
-        <div className="absolute -bottom-16 left-8">
-          <Avatar
-            className="h-32 w-32 border-4 border-background cursor-pointer"
-            onClick={() =>
-              handleOpenPreview(imageUrl || "/placeholder.svg", "avatar")
-            }
+
+        {/* Profile Avatar Container */}
+        <div className="absolute -bottom-20 left-12 z-20">
+          <div
+            className="w-40 h-40 border-8 border-black dark:border-white bg-white dark:bg-black shadow-[12px_12px_0_0_rgba(0,0,0,1)] dark:shadow-[12px_12px_0_0_rgba(255,255,255,1)] cursor-pointer group overflow-hidden flex items-center justify-center p-0"
+            onClick={() => handleOpenPreview(imageUrl || "/placeholder.svg", "avatar")}
           >
-            <motion.div layoutId="avatar">
-              <AvatarImage src={imageUrl || "/placeholder.svg"} alt="Profile" />
-              <AvatarFallback>P</AvatarFallback>
+            <motion.div layoutId="avatar" className="w-full h-full grayscale group-hover:grayscale-0 transition-all duration-500 relative">
+              <Image
+                src={imageUrl || "/placeholder.svg"}
+                alt="Profile"
+                fill
+                className="object-cover"
+              />
             </motion.div>
-          </Avatar>
+          </div>
         </div>
-        <div className="absolute w-full h-full left-0 overflow-hidden -z-20 rounded-2xl">
+
+        {/* Banner Container */}
+        <div className="absolute inset-0 overflow-hidden">
           {bannerUrl ? (
             <motion.div
               layoutId="banner"
-              className="w-full h-full"
+              className="w-full h-full grayscale hover:grayscale-0 transition-all duration-700 cursor-pointer"
               onClick={() => handleOpenPreview(bannerUrl, "banner")}
-              style={{ cursor: "pointer" }}
             >
               <Image
                 src={bannerUrl}
                 alt="Background"
-                layout="fill"
-                objectFit="cover"
-                objectPosition="center"
+                fill
+                className="object-cover"
               />
             </motion.div>
           ) : (
-            <div
-              className={`w-full h-full bg-gradient-to-br ${getThemeGradient()}`}
-            ></div>
+            <div className={cn("w-full h-full flex items-end p-8 border-b-4 border-black dark:border-white", getThemeColor())}>
+              <div className="opacity-40 dark:opacity-20 font-black text-8xl uppercase tracking-tighter text-white select-none leading-none">
+                PROFILE_NODE<br />COORDINATES
+              </div>
+            </div>
           )}
         </div>
-        <style jsx>
-          {`
-            @keyframes blurAnimation {
-              0% {
-                filter: blur(15px);
-              }
-              25% {
-                filter: blur(10px);
-              }
-              50% {
-                filter: blur(6px);
-              }
-              75% {
-                filter: blur(10px);
-              }
-              100% {
-                filter: blur(15px);
-              }
-            }
-          `}
-        </style>
       </div>
 
-      {/* Image Preview Modal */}
+      {/* Image Preview Modal (Swiss Style) */}
       <AnimatePresence>
         {previewImage && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 dark:bg-black p-8"
             onClick={handleClosePreview}
           >
             <motion.div
               layoutId={previewId || undefined}
-              className="relative max-w-[90vw] max-h-[90vh]"
+              className="relative max-w-[90vw] max-h-[90vh] border-8 border-white dark:border-swiss-red shadow-[20px_20px_0_0_rgba(255,0,0,1)] dark:shadow-[20px_20px_0_0_rgba(0,0,0,1)]"
               onClick={(e) => e.stopPropagation()}
             >
               <motion.div
-                initial={{ scale: 0.8 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                className="relative w-full h-full overflow-hidden rounded-lg"
+                initial={{ scale: 0.9, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                className="relative w-full h-full bg-black"
               >
                 <Image
                   src={previewImage}
                   alt="Preview"
-                  width={1000}
-                  height={1000}
+                  width={1200}
+                  height={1200}
                   className="object-contain"
-                  style={{ maxHeight: "90vh", width: "auto" }}
+                  style={{ maxHeight: "80vh", width: "auto" }}
                 />
+                <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-black p-4 border-t-4 border-black dark:border-white">
+                  <p className="font-black uppercase tracking-widest text-black dark:text-white text-xs text-center">
+                    VISUAL_DATA_INTERCEPT / {previewId?.toUpperCase()}
+                  </p>
+                </div>
               </motion.div>
-              <motion.button
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1, transition: { delay: 0.2 } }}
-                className="absolute top-4 right-4 p-2 bg-black/60 rounded-full text-white"
+
+              <button
+                className="absolute -top-6 -right-6 w-12 h-12 bg-swiss-red text-white flex items-center justify-center font-black text-2xl border-4 border-white dark:border-black hover:scale-110 transition-transform"
                 onClick={handleClosePreview}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </motion.button>
+                ×
+              </button>
             </motion.div>
           </motion.div>
         )}

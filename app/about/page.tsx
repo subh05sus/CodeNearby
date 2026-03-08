@@ -1,130 +1,116 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import SwissButton from "@/components/swiss/SwissButton";
+import SwissSection from "@/components/swiss/SwissSection";
+import SwissCard from "@/components/swiss/SwissCard";
 import Features from "@/components/home/Features";
-import { AuroraText } from "@/components/magicui/aurora-text";
-import { Jersey_10 } from "next/font/google";
 import ProductHunt from "@/components/ProductHunt";
 import FeatureBigPreview from "@/components/FeatureBigPreview";
 
-const jersey = Jersey_10({
-  subsets: ["latin"],
-  weight: "400",
-});
-
 export default function AboutPage() {
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="md:text-5xl text-2xl font-bold mb-6">
-        👋 Welcome to{" "}
-        <span
-          className={` tracking-wide md:text-6xl text-3xl ${jersey.className}`}
-        >
-          Code<AuroraText>Nearby</AuroraText>
-        </span>
-      </h1>
-      <p className="text-lg mb-6 text-muted-foreground">
-        Codenearby is a social networking platform designed specifically for
-        developers. Our mission is to help developers connect, share ideas,
-        collaborate on projects, and stay updated with the coding community.
-      </p>
-      <ProductHunt />
-      <div className="text-center my-20">
-        <h2 className="text-3xl font-bold text-primary relative">
-          Features
-          <span className="absolute -z-50 text-primary/5 left-1/2 transform -translate-x-1/2 -translate-y-1/3 font-extrabold text-8xl">
-            Features
-          </span>
-        </h2>
-      </div>
-
-      <Features />
-
-      {/* AI-Connect Feature Spotlight */}
-      <div className="my-16">
-        <FeatureBigPreview />
-      </div>
-
-      <section>
-        <div className="text-center my-20">
-          <h2 className="text-3xl font-bold text-primary relative">
-            Why Codenearby?
-            <span className="absolute -z-50 text-primary/5 left-1/2 transform -translate-x-1/2 -translate-y-1/3 font-extrabold text-8xl">
-              Why
-            </span>
-          </h2>
-        </div>
-        <div className="grid gap-6 text-left">
-          <div className="space-y-2">
-            <ul className="list-disc pl-6 space-y-4 text-muted-foreground">
-              <li>
-                Connect with developers who share your interests and tech stack
-              </li>
-              <li>Find potential collaborators for your next big project</li>
-              <li>
-                Share your coding journey and learn from others&apos;
-                experiences
-              </li>
-              <li>
-                Stay updated with the latest trends in your preferred
-                technologies
-              </li>
-              <li>
-                Build meaningful professional relationships in the tech
-                community
-              </li>
-              <li>Discover local coding events and meetups</li>
-            </ul>
+    <div className="bg-swiss-white min-h-screen">
+      <SwissSection
+        number="01"
+        title="ABOUT"
+        variant="white"
+        pattern="grid"
+      >
+        <div className="grid md:grid-cols-12 gap-12">
+          <div className="md:col-span-8">
+            <h3 className="text-4xl font-black uppercase mb-8 tracking-tighter">
+              A SYSTEM FOR UNIVERSAL COLLABORATION
+            </h3>
+            <p className="text-2xl text-swiss-black mb-12 leading-tight">
+              CodeNearby is a social networking platform designed specifically for
+              developers. Our mission is to help developers connect, share ideas,
+              collaborate on projects, and stay updated with the coding community.
+            </p>
+            <ProductHunt />
           </div>
         </div>
-      </section>
+      </SwissSection>
 
-      <section className="mt-12">
-        <div className="text-center my-20">
-          <h2 className="text-3xl font-bold text-primary relative">
-            What Can You Do?
-            <span className="absolute -z-50 text-primary/5 left-1/2 transform -translate-x-1/2 -translate-y-1/3 font-extrabold text-8xl">
-              We Offer
-            </span>
-          </h2>
+      <SwissSection
+        number="02"
+        title="FEATURES"
+        variant="muted"
+      >
+        <Features />
+        <div className="mt-24">
+          <FeatureBigPreview />
         </div>
+      </SwissSection>
 
-        <ul className="text-neutral-600 dark:text-neutral-400 space-y-4 text-lg">
-          <li>🔍 Discover - Find developers based on location & skills.</li>
-          <li>💬 Chat - Connect and collaborate in real-time.</li>
-          <li>📢 Feed - Share thoughts, code snippets & tech ideas.</li>
-          <li>🎭 Gatherings - Host meetups, anonymous polls & discussions.</li>
-          <li>🤖 AI-Connect - Use AI to find the perfect developers.</li>
-          <li>🐙 GitHub Integration - Auto-fetch profile & activity.</li>
-        </ul>
-      </section>
+      <SwissSection
+        number="03"
+        title="METHODOLOGY"
+        variant="white"
+        pattern="dots"
+      >
+        <div className="grid md:grid-cols-2 gap-12">
+          <SwissCard variant="white" hoverEffect="invert">
+            <h4 className="text-2xl font-black uppercase mb-4">Why Codenearby?</h4>
+            <ul className="space-y-4 font-bold uppercase tracking-tight">
+              <li className="flex gap-4 items-start">
+                <span className="text-swiss-red">/</span> Connect with developers sharing interests
+              </li>
+              <li className="flex gap-4 items-start">
+                <span className="text-swiss-red">/</span> Find potential collaborators
+              </li>
+              <li className="flex gap-4 items-start">
+                <span className="text-swiss-red">/</span> Share your coding journey
+              </li>
+              <li className="flex gap-4 items-start">
+                <span className="text-swiss-red">/</span> Stay updated with tech trends
+              </li>
+              <li className="flex gap-4 items-start">
+                <span className="text-swiss-red">/</span> Build professional relationships
+              </li>
+            </ul>
+          </SwissCard>
 
-      {/* Vision Section */}
-      <section className="mt-16 ">
-        <div className="text-center my-20">
-          <h2 className="text-3xl font-bold text-primary relative">
-            Our Vision
-            <span className="absolute -z-50 text-primary/5 left-1/2 transform -translate-x-1/2 -translate-y-1/3 font-extrabold text-8xl">
-              Vision
-            </span>
-          </h2>
-        </div>{" "}
-        <p className="text-lg text-muted-foreground mt-4">
-          We believe that networking should be effortless for developers.
-          Whether you&apos;re looking for an open-source collaborator, a mentor,
-          or a hackathon buddy, Codenearby makes it simple and effective.
-        </p>
-      </section>
-      <div className="mt-16 text-center flex flex-col items-center">
-        <p className="text-sm mb-6 text-muted-foreground mt-10">
-          Join Codenearby today and become part of a vibrant community of
-          developers, where collaboration and innovation thrive!
-        </p>
-        <div className="flex space-x-4">
-          <Button asChild>
-            <Link href="/">Back to Home</Link>
-          </Button>
+          <SwissCard variant="accent">
+            <h4 className="text-2xl font-black uppercase mb-4">What Can You Do?</h4>
+            <ul className="space-y-4 font-bold uppercase tracking-tight">
+              <li className="flex gap-4 items-start">
+                <span className="text-swiss-white">/</span> 🔍 Discover - Find developers
+              </li>
+              <li className="flex gap-4 items-start">
+                <span className="text-swiss-white">/</span> 💬 Chat - Connect in real-time
+              </li>
+              <li className="flex gap-4 items-start">
+                <span className="text-swiss-white">/</span> 📢 Feed - Share thoughts
+              </li>
+              <li className="flex gap-4 items-start">
+                <span className="text-swiss-white">/</span> 🎭 Gatherings - Host meetups
+              </li>
+              <li className="flex gap-4 items-start">
+                <span className="text-swiss-white">/</span> 🤖 AI-Connect - Perfect matches
+              </li>
+            </ul>
+          </SwissCard>
         </div>
-      </div>
+      </SwissSection>
+
+      <SwissSection
+        number="04"
+        title="VISION"
+        variant="muted"
+      >
+        <div className="max-w-3xl">
+          <p className="text-3xl font-bold uppercase tracking-tighter leading-none mb-12">
+            Networking should be effortless for developers. Whether you&apos;re looking for an open-source collaborator, a mentor, or a hackathon buddy, Codenearby makes it simple and effective.
+          </p>
+          <div className="border-t-4 border-swiss-black pt-12">
+            <p className="text-lg font-bold mb-12 uppercase tracking-widest">
+              Join Codenearby today and become part of a vibrant community of developers.
+            </p>
+            <SwissButton variant="primary" size="xl" asChild>
+              <Link href="/">INITIALIZE ACCESS</Link>
+            </SwissButton>
+          </div>
+        </div>
+      </SwissSection>
     </div>
   );
 }

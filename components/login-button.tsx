@@ -1,10 +1,10 @@
 import { Github } from "lucide-react";
 import { signIn } from "next-auth/react";
-import { Button } from "./ui/button";
+import SwissButton from "./swiss/SwissButton";
 
 function LoginButton() {
   return (
-    <Button
+    <SwissButton
       variant="secondary"
       className="my-2"
       onClick={async () => {
@@ -14,8 +14,8 @@ function LoginButton() {
       }}
     >
       <Github className="inline mr-2" />
-      Login with GitHub
-    </Button>
+      LOGIN WITH GITHUB
+    </SwissButton>
   );
 }
 

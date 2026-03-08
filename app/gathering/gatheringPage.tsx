@@ -3,8 +3,8 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import SwissButton from "@/components/swiss/SwissButton";
+import { cn } from "@/lib/utils";
 import { Loader2, Plus } from "lucide-react";
 import Link from "next/link";
 import { GatheringList } from "@/components/gathering-list";
@@ -50,58 +50,81 @@ export default function GatheringPage() {
 
   if (!session) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
-        <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
-        <p>You need to be signed in to view and create gatherings.</p>
-        <LoginButton />
+      <div className="flex flex-col items-center justify-center min-h-[70vh] p-8">
+        <div className="border-8 border-swiss-black p-12 bg-swiss-white text-center shadow-[12px_12px_0_0_rgba(0,0,0,1)]">
+          <h1 className="font-black text-6xl uppercase tracking-tighter mb-6 leading-none">
+            ACCESS<br />RESTRICTED
+          </h1>
+          <p className="font-bold uppercase tracking-tight text-xl mb-8 opacity-60">
+            SIGN IN TO ACCESS GATHERINGS
+          </p>
+          <div className="flex justify-center">
+            <LoginButton />
+          </div>
+        </div>
       </div>
     );
   }
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className="flex flex-col items-center justify-center min-h-[70vh]">
+        <div className="w-32 h-32 bg-swiss-black animate-pulse border-8 border-swiss-muted" />
+        <p className="font-black mt-6 uppercase tracking-widest text-xs">SYNCHRONIZING_NODES...</p>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Gatherings</h1>
-        {gatherings.length !== 0 && (
-          <Button asChild>
-            <Link href="/gathering/create">
-              <Plus className="mr-2 h-4 w-4" /> Create Gathering
-            </Link>
-          </Button>
-        )}
+    <div className="bg-swiss-white min-h-screen pb-24">
+      {/* Swiss Header */}
+      <div className="border-b-8 border-swiss-black bg-swiss-white sticky top-0 z-20">
+        <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div>
+            <h1 className="font-black text-8xl uppercase tracking-tighter leading-[0.8] mb-2">
+              GATHERINGS<br />EVENTS
+            </h1>
+            <p className="font-bold uppercase tracking-[0.2em] text-xs text-swiss-red">
+              COMMUNITY / PEER_TO_PEER / V_1.0
+            </p>
+          </div>
+
+          {gatherings.length !== 0 && (
+            <SwissButton asChild className="h-16 px-10 text-xl">
+              <Link href="/gathering/create">
+                <Plus className="mr-3 h-6 w-6 stroke-[3]" /> CREATE_GATHERING
+              </Link>
+            </SwissButton>
+          )}
+        </div>
       </div>
 
-      {gatherings.length === 0 ? (
-        <Card className="bg-background">
-          <CardHeader>
-            <CardTitle className="text-xl font-semibold text-center">
-              No Gatherings Yet
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-center text-muted-foreground">
-              You are not part of any gatherings yet. Create one to get started!
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        {gatherings.length === 0 ? (
+          <div className="border-8 border-swiss-black p-16 bg-swiss-white text-center shadow-[16px_16px_0_0_rgba(0,0,0,1)] max-w-2xl mx-auto mt-12">
+            <h2 className="font-black text-5xl uppercase tracking-tighter mb-6">NO_GATHERINGS_FOUND</h2>
+            <p className="font-bold uppercase tracking-tight text-lg mb-10 opacity-60 leading-tight">
+              YOU ARE NOT CURRENTLY PARTICIPATING IN ANY LOCAL EVENTS.
+              INITIATE A NEW GATHER_POINT TO CONNECT WITH OTHERS.
             </p>
-            <div className="mt-4 flex justify-center">
-              <Button asChild>
+            <div className="flex justify-center">
+              <SwissButton asChild className="h-16 px-10 text-xl">
                 <Link href="/gathering/create">
-                  <Plus className="mr-2 h-4 w-4" /> Create Your First Gathering
+                  <Plus className="mr-3 h-6 w-6 stroke-[3]" /> CREATE_FIRST_EVENT
                 </Link>
-              </Button>
+              </SwissButton>
             </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <GatheringList gatherings={gatherings} />
-      )}
+          </div>
+        ) : (
+          <div className="space-y-12">
+            <div className="border-l-8 border-swiss-black pl-8">
+              <p className="font-bold uppercase tracking-widest text-xs text-swiss-red mb-2">ACTIVE_SESSIONS</p>
+              <h3 className="font-black text-4xl uppercase tracking-tighter">SURROUNDING_EVENTS</h3>
+            </div>
+            <GatheringList gatherings={gatherings} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

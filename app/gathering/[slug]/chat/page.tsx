@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import type React from "react";
@@ -7,8 +5,7 @@ import type React from "react";
 import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import SwissButton from "@/components/swiss/SwissButton";
 import { Input } from "@/components/ui/input";
 import {
   Loader2,
@@ -20,6 +17,8 @@ import {
   MapPin,
   MessageSquare,
   EyeOff,
+  User,
+  Zap,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { db } from "@/lib/firebase";
@@ -27,21 +26,14 @@ import { ref, onChildAdded, onChildChanged, get } from "firebase/database";
 import type { Session } from "next-auth";
 import { CreateGatheringPoll } from "@/components/gatheringPoll";
 import Image from "next/image";
-import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
 import { AnonymousSwitch } from "@/components/ui/AnonymousSwitch";
 import { format } from "date-fns";
 import LoginButton from "@/components/login-button";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface Message {
   id: string;
@@ -114,7 +106,6 @@ export default function GatheringChatPage() {
         return prevMessages;
       });
 
-      // If it's a poll message, fetch the poll data
       if (message.content.startsWith('{"type":"poll"')) {
         const pollContent = JSON.parse(message.content);
         fetchPollData(pollContent.pollId);
@@ -167,7 +158,6 @@ export default function GatheringChatPage() {
       setIsHostOnly(data.hostOnly || false);
       setGathering(data);
       setParticipants(data.participants);
-      setIsHostOnly(data.hostOnly || false);
     } catch {
       console.error("Error checking host status");
     }
@@ -177,7 +167,7 @@ export default function GatheringChatPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(scrollToBottom, [messages]); // Updated dependency
+  useEffect(scrollToBottom, [messages]);
 
   const handleSendMessage = async (pollMessage?: string) => {
     if ((!inputMessage.trim() && !pollMessage) || !session) return;
@@ -224,7 +214,6 @@ export default function GatheringChatPage() {
 
       const { imageUrl } = await response.json();
 
-      // Send message with image URL
       await fetch(`/api/gathering/${params.slug}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -238,40 +227,22 @@ export default function GatheringChatPage() {
     }
   };
 
-  const handlePinMessage = async (messageId: string) => {
+  const handlePinAction = async (messageId: string, action: "pin" | "unpin") => {
     try {
-      const response = await fetch(`/api/gathering/${params.slug}/chat/pin`, {
+      const response = await fetch(`/api/gathering/${params.slug}/chat/${action}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messageId }),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to pin message");
+        throw new Error(`Failed to ${action} message`);
       }
 
-      toast.success("Message pinned successfully.");
+      toast.success(`Message ${action}ned successfully.`);
+      if (action === "unpin") setPinnedMessageId(null);
     } catch {
-      toast.error("Failed to pin message. Please try again.");
-    }
-  };
-
-  const handleUnpinMessage = async (messageId: string) => {
-    try {
-      const response = await fetch(`/api/gathering/${params.slug}/chat/unpin`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messageId }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to unpin message");
-      }
-
-      toast.success("Message unpinned successfully.");
-      setPinnedMessageId(null);
-    } catch {
-      toast.error("Failed to unpin message. Please try again.");
+      toast.error(`Failed to ${action} message. Please try again.`);
     }
   };
 
@@ -292,22 +263,18 @@ export default function GatheringChatPage() {
         throw new Error("Failed to vote on poll");
       }
 
-      // Update local state
       setPolls((prevPolls) => {
         const updatedPoll = { ...prevPolls[pollId] };
         const userId = session.user.id;
 
-        // Initialize votes array if it doesn't exist
         if (!Array.isArray(updatedPoll.votes)) {
           updatedPoll.votes = Array(updatedPoll.options.length).fill([]);
         }
 
-        // Remove previous vote if exists
         updatedPoll.votes = updatedPoll.votes.map((voters: any) =>
           voters.filter((voterId: string) => voterId !== userId)
         );
 
-        // Add new vote
         updatedPoll.votes[optionIndex] = [
           ...(updatedPoll.votes[optionIndex] || []),
           userId,
@@ -339,7 +306,7 @@ export default function GatheringChatPage() {
     if (lastWord.startsWith("@") && lastWord.length > 1) {
       const query = lastWord.slice(1).toLowerCase();
       const suggestions = participants
-        .filter((participant: any) =>
+        ?.filter((participant: any) =>
           participant.githubUsername?.toLowerCase().includes(query)
         )
         .map((participant: any) => participant.githubUsername)
@@ -348,7 +315,7 @@ export default function GatheringChatPage() {
             username !== undefined
         )
         .slice(0, 3);
-      setMentionSuggestions(suggestions);
+      setMentionSuggestions(suggestions || []);
     } else {
       setMentionSuggestions([]);
     }
@@ -362,52 +329,36 @@ export default function GatheringChatPage() {
   };
 
   const renderMessageContent = (content: string) => {
-    // Try to parse as JSON first
     try {
       const jsonContent = JSON.parse(content);
       if (jsonContent.type === "post") {
         return (
           <div
-            className="text-inherit bg-black p-2 rounded-lg cursor-pointer mt-2"
+            className="bg-swiss-black text-swiss-white p-4 border-2 border-swiss-white cursor-pointer mt-2 hover:bg-swiss-red transition-colors"
             onClick={() => router.push(`/posts/${jsonContent.postId}`)}
           >
-            <p className="text-sm mb-2 line-clamp-2">
+            <p className="font-bold text-xs uppercase tracking-tight mb-2 line-clamp-2">
               {jsonContent.postContent}
             </p>
             {jsonContent.postImage && (
-              <div className="relative w-full aspect-video h-32 ">
+              <div className="relative w-full aspect-video h-32 border-2 border-swiss-white grayscale mb-2">
                 <Image
                   src={jsonContent.postImage || "/placeholder.svg"}
                   alt="Post image"
                   fill
-                  className="rounded-md object-cover"
+                  className="object-cover"
                 />
               </div>
             )}
-            {jsonContent.postPoll && (
-              <div className="flex items-center text-sm opacity-70">
-                <BarChart className="h-4 w-4 mr-1" />
-                Poll: {jsonContent.postPoll.question}
-              </div>
-            )}
-            {jsonContent.postLocation && (
-              <div className="flex items-center text-sm opacity-70">
-                <MapPin className="h-4 w-4 mr-1" />
-                Location attached
-              </div>
-            )}
-            {jsonContent.postSchedule && (
-              <div className="flex items-center text-sm text-muted-foreground">
-                <Calendar className="h-4 w-4 mr-1" />
-                {jsonContent.postSchedule &&
-                  format(new Date(jsonContent.postSchedule), "PPp")}
-              </div>
-            )}
+            <div className="flex flex-col gap-1 font-black text-[8px] uppercase tracking-widest opacity-70">
+              {jsonContent.postPoll && <span>POLL_ATTACHED: {jsonContent.postPoll.question}</span>}
+              {jsonContent.postLocation && <span>GEODATA_SIGNAL_DETECTED</span>}
+              {jsonContent.postSchedule && <span>SCHEDULED: {format(new Date(jsonContent.postSchedule), "PPp")}</span>}
+            </div>
           </div>
         );
       }
     } catch {
-      // If parsing fails, handle as regular message with mentions
       const mentionRegex = /@(\w+)/g;
       const parts = content.split(mentionRegex);
 
@@ -417,9 +368,9 @@ export default function GatheringChatPage() {
             <Link
               key={index}
               href={`/u/${part}`}
-              className="font-bold text-primary hover:underline"
+              className="font-black text-swiss-red hover:underline"
             >
-              @{part}
+              @{part.toUpperCase()}
             </Link>
           );
         }
@@ -430,270 +381,187 @@ export default function GatheringChatPage() {
 
   if (!session) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
-        <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
-        <p>You need to be signed in to view this chat.</p>
-        <LoginButton />
+      <div className="flex flex-col items-center justify-center min-h-[70vh] p-8">
+        <div className="border-8 border-swiss-black p-12 bg-swiss-white text-center shadow-[12px_12px_0_0_rgba(0,0,0,1)]">
+          <h1 className="font-black text-6xl uppercase tracking-tighter mb-6 leading-none">
+            ACCESS<br />RESTRICTED
+          </h1>
+          <p className="font-bold uppercase tracking-tight text-xl mb-8 opacity-60">
+            SIGN IN TO ACCESS CHAT
+          </p>
+          <div className="flex justify-center">
+            <LoginButton />
+          </div>
+        </div>
       </div>
     );
   }
 
-  if (!gathering) {
+  if (isLoading || !gathering) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
-        <h1 className="text-2xl font-bold mb-4">Gathering Not Found</h1>
-        <p>The gathering you are looking for does not exist.</p>
-      </div>
-    );
-  }
-
-  if (
-    gathering.participants &&
-    !gathering.participants.some(
-      (participant: any) => participant._id === session.user.id
-    )
-  ) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
-        <h1 className="text-2xl font-bold mb-4">Unauthorized</h1>
-        <p>You are not a participant of this gathering.</p>
-        <p className="mb-4">Would you like to join this gathering?</p>
-        <Button asChild>
-          <Link href={`/gathering/join/${params.slug}`}>Join Gathering</Link>
-        </Button>
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className="flex flex-col items-center justify-center min-h-[70vh]">
+        <div className="w-32 h-32 bg-swiss-black animate-pulse border-8 border-swiss-muted" />
+        <p className="font-black mt-6 uppercase tracking-widest text-xs">SYNCING_NODE...</p>
       </div>
     );
   }
 
   if (gathering.blockedUsers?.includes(session.user.id)) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
-        <h1 className="text-2xl font-bold mb-4">You are blocked</h1>
-        <p>You are blocked from this gathering.</p>
+      <div className="flex flex-col items-center justify-center min-h-[70vh] p-8">
+        <div className="border-8 border-swiss-black p-12 bg-swiss-white text-center shadow-[12px_12px_0_0_rgba(0,0,0,1)]">
+          <h1 className="font-black text-6xl uppercase tracking-tighter mb-6">BLOCKED</h1>
+          <p className="font-bold uppercase tracking-tight text-xl opacity-60">ACCESS_PERMANENTLY_TERMINATED</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="px-1 w-full mx-auto">
-      <Card className="relative overflow-hidden">
-        <div className="absolute inset-0 " />
-
-        <CardHeader className="relative border-b portrait:p-3 ">
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5 portrait:h-4 portrait:w-4 text-primary" />
-              Chat Room
-            </CardTitle>
-            {pinnedMessageId && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={scrollToPinnedMessage}
-                className="gap-2"
-              >
-                <Pin className="h-4 w-4" />
-                View Pinned
-              </Button>
-            )}
+    <div className="bg-swiss-white min-h-screen flex flex-col">
+      {/* Swiss Chat Header */}
+      <div className="border-b-8 border-swiss-black bg-swiss-white sticky top-0 z-20">
+        <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <div className="bg-swiss-black text-swiss-white p-3 rotate-[-3deg] shadow-[4px_4px_0_0_rgba(255,0,0,1)]">
+              <MessageSquare className="h-8 w-8" />
+            </div>
+            <div>
+              <h1 className="font-black text-4xl uppercase tracking-tighter leading-none">
+                {gathering.name}_ROOM
+              </h1>
+              <p className="font-bold uppercase tracking-[0.2em] text-[10px] text-swiss-red mt-1">
+                SECURE_CHANNEL / V_4.2 / ACTIVE_STREAM
+              </p>
+            </div>
           </div>
-        </CardHeader>
 
-        <CardContent className="relative p-0">
-          <ScrollArea className="h-[calc(100vh-20rem)] w-full">
-            <div className="flex flex-col space-y-4 p-4">
+          {pinnedMessageId && (
+            <button
+              onClick={scrollToPinnedMessage}
+              className="bg-swiss-red text-swiss-white px-6 py-3 font-black uppercase tracking-widest text-xs flex items-center gap-3 hover:translate-y-[-2px] transition-transform shadow-[4px_4px_0_0_rgba(0,0,0,1)]"
+            >
+              <Pin className="h-4 w-4 fill-swiss-white" /> VIEW_PINNED_NODE
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="flex-1 max-w-7xl mx-auto w-full px-6 py-8 flex flex-col min-h-[calc(100vh-250px)]">
+        <div className="flex-1 border-8 border-swiss-black bg-swiss-white shadow-[16px_16px_0_0_rgba(0,0,0,1)] flex flex-col overflow-hidden">
+          <ScrollArea className="flex-1 bg-swiss-muted/10 p-8">
+            <div className="space-y-12">
               <AnimatePresence initial={false}>
                 {messages.map((message) => {
                   const isPoll = message.content.startsWith('{"type":"poll"');
-                  const pollContent = isPoll
-                    ? JSON.parse(message.content)
-                    : null;
-                  const pollData = pollContent
-                    ? polls[pollContent.pollId]
-                    : null;
+                  const pollData = isPoll && polls[JSON.parse(message.content).pollId];
                   const isOwnMessage = message.senderId === session?.user?.id;
 
                   return (
                     <motion.div
                       key={message.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
+                      initial={{ opacity: 0, x: isOwnMessage ? 20 : -20 }}
+                      animate={{ opacity: 1, x: 0 }}
                       id={`message-${message.id}`}
-                      className={`flex items-start space-x-3 ${
-                        isOwnMessage ? "flex-row-reverse space-x-reverse" : ""
-                      }`}
+                      className={cn("flex items-start gap-4", isOwnMessage ? "flex-row-reverse" : "flex-row")}
                     >
-                      {(!message.isAnonymous ||
-                        (isHost && message.realSenderInfo)) && (
-                        <Avatar className="h-8 w-8 border-2 border-background">
-                          <AvatarImage
-                            src={
-                              isHost && message.realSenderInfo
-                                ? message.realSenderInfo.image
-                                : message.senderImage
-                            }
-                            alt={
-                              isHost && message.realSenderInfo
-                                ? message.realSenderInfo.name
-                                : message.senderName
-                            }
-                          />
-                          <AvatarFallback>
-                            {(isHost && message.realSenderInfo
-                              ? message.realSenderInfo.name
-                              : message.senderName
-                            ).charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                      )}
+                      <div className="shrink-0 relative">
+                        <div className={cn("w-14 h-14 border-4 border-swiss-black grayscale group-hover:grayscale-0 transition-all", isOwnMessage ? "bg-swiss-black" : "bg-swiss-white")}>
+                          <Avatar className="w-full h-full rounded-none">
+                            <AvatarImage
+                              src={isHost && message.realSenderInfo ? message.realSenderInfo.image : message.senderImage}
+                              className="rounded-none object-cover"
+                            />
+                            <AvatarFallback className="rounded-none font-black">
+                              {(isHost && message.realSenderInfo ? message.realSenderInfo.name : message.senderName).charAt(0)}
+                            </AvatarFallback>
+                          </Avatar>
+                        </div>
+                        {message.isAnonymous && <div className="absolute -top-2 -right-2 bg-swiss-red p-1 border-2 border-swiss-black"><EyeOff className="h-3 w-3 text-swiss-white" /></div>}
+                      </div>
 
-                      <div
-                        className={`group relative max-w-[75%] space-y-1 ${
-                          isOwnMessage ? "items-end" : "items-start"
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 px-2">
-                          <span
-                            className={`text-sm font-medium ${
-                              message.isAnonymous ? "text-muted-foreground" : ""
-                            }`}
-                          >
-                            {message.isAnonymous ? (
-                              <span className="flex items-center gap-1">
-                                <EyeOff className="h-3 w-3" />
-                                Anonymous
-                                {isHost && message.realSenderInfo && (
-                                  <span className="text-xs opacity-50">
-                                    ({message.realSenderInfo.name})
-                                  </span>
-                                )}
-                              </span>
-                            ) : (
-                              message.senderName
-                            )}
+                      <div className={cn("max-w-[70%] group", isOwnMessage ? "text-right" : "text-left")}>
+                        <div className="mb-2 flex items-center gap-3 px-1">
+                          <span className="font-black text-[10px] uppercase tracking-widest">
+                            {message.isAnonymous ? "ANONYMOUS_USER" : message.senderName}
+                            {isHost && message.realSenderInfo && <span className="text-swiss-red ml-2">[ID: {message.realSenderInfo.name.toUpperCase()}]</span>}
                           </span>
+                          <span className="font-bold text-[8px] opacity-30 uppercase">{format(message.timestamp, "HH:mm")}</span>
                         </div>
 
-                        <div
-                          className={`relative rounded-lg bg-muted p-3 ${
-                            message.isPinned ? "ring-2 ring-yellow-500/50" : ""
-                          }`}
-                        >
+                        <div className={cn(
+                          "relative p-6 border-4 border-swiss-black shadow-[8px_8px_0_0_rgba(0,0,0,1)]",
+                          isOwnMessage ? "bg-swiss-black text-swiss-white rounded-l-2xl" : "bg-swiss-white text-swiss-black rounded-r-2xl",
+                          message.isPinned && "border-swiss-red"
+                        )}>
                           {isPoll && pollData ? (
-                            <div className="space-y-3">
-                              <p className="font-medium">{pollData.question}</p>
-                              {pollData.options.map((option, index) => (
-                                <div key={index} className="space-y-1">
-                                  <Button
-                                    variant={
-                                      isOwnMessage ? "secondary" : "outline"
-                                    }
-                                    size="sm"
-                                    className="w-full justify-between"
-                                    onClick={() =>
-                                      handlePollVote(pollData.pollId, index)
-                                    }
-                                    disabled={
-                                      pollData.votes &&
-                                      Object.values(pollData.votes).some(
-                                        (voters) =>
-                                          (voters as any).includes(
-                                            session?.user?.id
-                                          )
-                                      )
-                                    }
-                                  >
-                                    <span>{option}</span>
-                                    <span>
-                                      {(pollData.votes?.[index] || []).length}{" "}
-                                      votes
-                                    </span>
-                                  </Button>
-                                  <Progress
-                                    value={
-                                      ((pollData.votes?.[index] || []).length /
-                                        (pollData?.totalVotes || 1)) *
-                                      100
-                                    }
-                                    className="h-1"
-                                  />
-                                </div>
-                              ))}
+                            <div className="space-y-6 min-w-[300px]">
+                              <div className="border-l-4 border-swiss-red pl-4">
+                                <h3 className="font-black text-xl uppercase tracking-tighter">{pollData.question}</h3>
+                                <p className="font-bold text-[8px] uppercase tracking-widest opacity-60">POLL_PROTOCOL_ACTIVE</p>
+                              </div>
+                              <div className="space-y-3">
+                                {pollData.options.map((option, index) => {
+                                  const votes = (pollData.votes?.[index] || []).length;
+                                  const percent = (votes / (pollData?.totalVotes || 1)) * 100;
+                                  return (
+                                    <div key={index} className="space-y-2">
+                                      <button
+                                        onClick={() => handlePollVote(pollData.pollId, index)}
+                                        disabled={pollData.votes && Object.values(pollData.votes).some((v: any) => v.includes(session?.user?.id))}
+                                        className={cn(
+                                          "w-full flex justify-between p-3 font-black uppercase text-xs border-2 border-swiss-black transition-all",
+                                          isOwnMessage ? "bg-swiss-white text-swiss-black hover:bg-swiss-red hover:text-swiss-white" : "bg-swiss-muted/20 hover:bg-swiss-black hover:text-swiss-white"
+                                        )}
+                                      >
+                                        <span>{option}</span>
+                                        <span>{votes} V_SYNC</span>
+                                      </button>
+                                      <div className="h-2 bg-swiss-muted/30 border border-swiss-black">
+                                        <div
+                                          className="h-full bg-swiss-red transition-all duration-500"
+                                          style={{ width: `${percent}%` }}
+                                        />
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
                             </div>
                           ) : message.content.startsWith("[Image](") ? (
-                            <div className="rounded-md overflow-hidden">
+                            <div className="border-4 border-swiss-black grayscale hover:grayscale-0 transition-all cursor-pointer">
                               <Image
-                                height={200}
-                                width={200}
-                                src={
-                                  message.content.match(
-                                    /\[Image\]\((.*?)\)/
-                                  )?.[1] || "/placeholder.svg"
-                                }
+                                height={300}
+                                width={300}
+                                src={message.content.match(/\[Image\]\((.*?)\)/)?.[1] || "/placeholder.svg"}
                                 alt="Shared image"
-                                className="max-w-[200px] rounded-lg"
+                                className="w-full h-auto"
                               />
                             </div>
                           ) : (
-                            <p className="whitespace-pre-wrap break-words">
+                            <div className="font-bold text-sm uppercase tracking-tight leading-relaxed">
                               {renderMessageContent(message.content)}
-                            </p>
+                            </div>
                           )}
 
                           {message.isPinned && (
-                            <div className="absolute -top-2 -right-2">
-                              <Badge variant="secondary" className="gap-1">
-                                <Pin className="h-3 w-3" />
-                                Pinned
-                              </Badge>
+                            <div className="absolute -top-4 -right-4 bg-swiss-red text-swiss-white p-2 border-2 border-swiss-black">
+                              <Pin className="h-4 w-4 fill-swiss-white" />
                             </div>
                           )}
-                        </div>
 
-                        {isHost && (
-                          <div
-                            className={`absolute ${
-                              isOwnMessage ? "-left-12" : "-right-12"
-                            } top-8 opacity-0 transition-opacity group-hover:opacity-100`}
-                          >
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-8 w-8 p-0"
-                                    onClick={() =>
-                                      message.isPinned
-                                        ? handleUnpinMessage(message.id)
-                                        : handlePinMessage(message.id)
-                                    }
-                                  >
-                                    <Pin
-                                      className={`h-4 w-4 ${
-                                        message.isPinned
-                                          ? "text-yellow-500"
-                                          : ""
-                                      }`}
-                                    />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  {message.isPinned ? "Unpin" : "Pin"} message
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </div>
-                        )}
+                          {isHost && (
+                            <button
+                              onClick={() => handlePinAction(message.id, message.isPinned ? "unpin" : "pin")}
+                              className={cn(
+                                "absolute top-0 opacity-0 group-hover:opacity-100 transition-all w-10 h-10 flex items-center justify-center bg-swiss-white border-2 border-swiss-black text-swiss-black hover:bg-swiss-red hover:text-swiss-white",
+                                isOwnMessage ? "-left-14" : "-right-14"
+                              )}
+                            >
+                              <Pin className={cn("h-5 w-5", message.isPinned && "fill-current")} />
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </motion.div>
                   );
@@ -703,174 +571,107 @@ export default function GatheringChatPage() {
             </div>
           </ScrollArea>
 
-          <div className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="relative mx-4 my-4 flex flex-col space-y-4">
-              <div className="relative flex items-end space-x-2 z-30">
-                <Input
-                  value={inputMessage}
-                  onChange={handleInputChange}
-                  placeholder="Type your message..."
-                  className="pr-16"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleSendMessage();
-                    } else if (
-                      e.key === "Tab" &&
-                      mentionSuggestions.length > 0
-                    ) {
-                      e.preventDefault();
-                      handleMentionSelect(mentionSuggestions[0]);
-                    }
-                  }}
-                  disabled={
-                    (isHostOnly && !isHost) ||
-                    gathering?.mutedUsers?.includes(session.user.id)
-                  }
-                />
-                {/* <div className="flex items-center h-full "></div> */}
+          {/* Input Console */}
+          <div className="p-6 border-t-8 border-swiss-black bg-swiss-white">
+            <div className="relative flex flex-col gap-6">
+              {mentionSuggestions.length > 0 && (
+                <div className="absolute bottom-full left-0 mb-4 bg-swiss-white border-4 border-swiss-black shadow-[8px_8px_0_0_rgba(0,0,0,1)] z-30 min-w-[200px]">
+                  {mentionSuggestions.map((name, index) => (
+                    <button
+                      key={name}
+                      onClick={() => handleMentionSelect(name)}
+                      className={cn(
+                        "w-full px-6 py-3 text-left font-black uppercase tracking-widest text-xs border-b-2 border-swiss-black last:border-b-0 transition-colors",
+                        index === 0 ? "bg-swiss-red text-swiss-white" : "hover:bg-swiss-black hover:text-swiss-white"
+                      )}
+                    >
+                      @{name}
+                    </button>
+                  ))}
+                </div>
+              )}
 
-                {(!isHostOnly || isHost) && (
-                  <div className=" space-x-2 mt-2  md:flex hidden">
-                    <Button
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={
-                        (isHostOnly && !isHost) ||
-                        gathering?.mutedUsers?.includes(session.user.id)
+              <div className="flex gap-4">
+                <div className="flex-1 relative">
+                  <Input
+                    value={inputMessage}
+                    onChange={handleInputChange}
+                    placeholder="ENTER_MESSAGE_COORDINATES..."
+                    className="h-20 px-8 bg-swiss-white border-4 border-swiss-black rounded-none font-black uppercase tracking-tight text-xl outline-none focus:bg-swiss-muted transition-all"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSendMessage();
+                      else if (e.key === "Tab" && mentionSuggestions.length > 0) {
+                        e.preventDefault();
+                        handleMentionSelect(mentionSuggestions[0]);
                       }
-                      variant={"secondary"}
-                    >
-                      <ImageIcon className="h-4 w-4" />
-                    </Button>
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleImageUpload}
-                      accept="image/*"
-                      style={{ display: "none" }}
-                    />
-                    <Button
-                      asChild
-                      disabled={
-                        (isHostOnly && !isHost) ||
-                        gathering?.mutedUsers?.includes(session.user.id)
-                      }
-                    >
-                      <CreateGatheringPoll
-                        gatheringSlug={params.slug as string}
-                        onPollCreated={(pollMessage) =>
-                          handleSendMessage(pollMessage)
-                        }
-                        canCreatePoll={
-                          (isHostOnly && !isHost) ||
-                          gathering?.mutedUsers?.includes(session.user.id)
-                        }
-                      />
-                    </Button>
-                  </div>
-                )}
-                <div className="flex space-x-2 mt-2 relative">
-                  <Button
-                    onClick={() => handleSendMessage()}
-                    disabled={
-                      (isHostOnly && !isHost) ||
-                      gathering?.mutedUsers?.includes(session.user.id)
-                    }
-                  >
-                    <Send className="h-4 w-4" />
-                  </Button>
-                  <AnonymousSwitch
-                    checked={isAnonymous}
-                    onCheckedChange={setIsAnonymous}
-                    id="anonymous-mode"
-                    className="absolute md:-left-[380%] -left-[150%] top-0 mt-1.5"
+                    }}
+                    disabled={(isHostOnly && !isHost) || gathering?.mutedUsers?.includes(session.user.id)}
                   />
+                  <div className="absolute right-6 top-1/2 -translate-y-1/2 flex gap-3">
+                    <AnonymousSwitch
+                      checked={isAnonymous}
+                      onCheckedChange={setIsAnonymous}
+                      id="anonymous-mode"
+                      className="scale-125 data-[state=checked]:bg-swiss-red"
+                    />
+                    <span className="font-black text-[8px] uppercase tracking-widest self-center opacity-40">ANON_PROTO</span>
+                  </div>
                 </div>
 
-                {mentionSuggestions.length > 0 && (
-                  <div className="absolute bottom-full left-0 bg-background border rounded-md shadow-lg">
-                    {Array.from(new Set(mentionSuggestions))
-                      .filter((name) => name.toLowerCase() !== "anonymous")
-                      .map((name, index) => (
-                        <div
-                          key={name}
-                          className={`px-4 py-2 hover:bg-muted cursor-pointer ${
-                            index === 0 ? "bg-muted" : ""
-                          }`}
-                          onClick={() => handleMentionSelect(name)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Tab" && index === 0) {
-                              e.preventDefault();
-                              handleMentionSelect(name);
-                            }
-                          }}
-                        >
-                          {name}
-                        </div>
-                      ))}
-                  </div>
-                )}
-                {isAnonymous && (
-                  <motion.p
-                    className="text-xs absolute bottom-9 text-muted-foreground p-1"
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                  >
-                    You&apos;re anonymous, but the host sees everything.
-                  </motion.p>
-                )}
-                {!isAnonymous && (
-                  <motion.p
-                    className="text-xs absolute bottom-9 text-muted-foreground p-1"
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                  >
-                    Be respectful… or atleast try to be.
-                  </motion.p>
-                )}
+                <SwissButton
+                  onClick={() => handleSendMessage()}
+                  disabled={(isHostOnly && !isHost) || gathering?.mutedUsers?.includes(session.user.id)}
+                  className="h-20 px-10"
+                >
+                  <Send className="h-8 w-8 stroke-[3]" />
+                </SwissButton>
               </div>
-              <div className="md:hidden gap-2 grid grid-cols-2">
-                <Button
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={
-                    (isHostOnly && !isHost) ||
-                    gathering?.mutedUsers?.includes(session.user.id)
-                  }
-                  variant={"secondary"}
-                >
-                  <ImageIcon className="h-4 w-4" />
-                </Button>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleImageUpload}
-                  accept="image/*"
-                  style={{ display: "none" }}
-                />
-                <Button
-                  asChild
-                  disabled={
-                    (isHostOnly && !isHost) ||
-                    gathering?.mutedUsers?.includes(session.user.id)
-                  }
-                >
+
+              <div className="flex items-center justify-between border-t-4 border-swiss-black pt-6">
+                <div className="flex gap-4">
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={(isHostOnly && !isHost) || gathering?.mutedUsers?.includes(session.user.id)}
+                    className="h-14 px-6 border-4 border-swiss-black font-black uppercase text-xs flex items-center gap-3 hover:bg-swiss-black hover:text-swiss-white transition-all active:translate-y-1"
+                  >
+                    <ImageIcon className="h-5 w-5" /> UPLOAD_DATA
+                  </button>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    accept="image/*"
+                    className="hidden"
+                  />
+
                   <CreateGatheringPoll
                     gatheringSlug={params.slug as string}
-                    onPollCreated={(pollMessage) =>
-                      handleSendMessage(pollMessage)
-                    }
-                    canCreatePoll={
-                      (isHostOnly && !isHost) ||
-                      gathering?.mutedUsers?.includes(session.user.id)
-                    }
-                  />
-                </Button>
+                    onPollCreated={(pollMessage) => handleSendMessage(pollMessage)}
+                    canCreatePoll={!isHostOnly || isHost}
+                  >
+                    <button className="h-14 px-6 border-4 border-swiss-black font-black uppercase text-xs flex items-center gap-3 hover:bg-swiss-black hover:text-swiss-white transition-all active:translate-y-1">
+                      <BarChart className="h-5 w-5" /> INITIATE_POLL
+                    </button>
+                  </CreateGatheringPoll>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <div className="flex -space-x-2 grayscale">
+                    {gathering.participants.slice(0, 5).map((p: any) => (
+                      <div key={p.id} className="w-8 h-8 border-2 border-swiss-black overflow-hidden bg-swiss-white">
+                        <Image src={p.image} width={32} height={32} alt={p.name} />
+                      </div>
+                    ))}
+                  </div>
+                  <span className="font-black text-[10px] uppercase tracking-widest text-swiss-red animate-pulse">
+                    {gathering.participants.length}_NODE_STREAM_ACTIVE
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
