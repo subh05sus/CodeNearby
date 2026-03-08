@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SwissCard from "@/components/swiss/SwissCard";
 import SwissButton from "@/components/swiss/SwissButton";
-import { Code, MapPin, Loader2, Info, UserPlus, Check, X } from "lucide-react";
+import { Code, MapPin, Loader2, Info } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Tooltip,
@@ -38,7 +38,7 @@ export default function DevelopersStep({
 }: DevelopersStepProps) {
   const [filteredDevelopers, setFilteredDevelopers] = useState<Developer[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
   const [isRandomDevelopers, setIsRandomDevelopers] = useState(false);
   const [pendingRequests, setPendingRequests] = useState<{
     [key: string]: string;
@@ -154,6 +154,7 @@ export default function DevelopersStep({
           setIsRandomDevelopers(data.isRandom || false);
         }
       } catch (err) {
+        console.error(err)
         setFilteredDevelopers(formatDevelopers(availableDevelopersRef.current).slice(0, 6));
         setIsRandomDevelopers(true);
       } finally {

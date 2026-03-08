@@ -5,13 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import SwissCard from "@/components/swiss/SwissCard";
 import SwissButton from "@/components/swiss/SwissButton";
 import { Input } from "@/components/ui/input";
-import { Search, X, Plus, AlertCircle } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Search, X, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SkillsStepProps {
@@ -39,7 +33,7 @@ export default function SkillsStep({
   const [filteredSkills, setFilteredSkills] = useState(popularSkills);
   const [customSkill, setCustomSkill] = useState("");
   const [animateList, setAnimateList] = useState(false);
-  const [noResults, setNoResults] = useState(false);
+  const [, setNoResults] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const customInputRef = useRef<HTMLInputElement>(null);
 

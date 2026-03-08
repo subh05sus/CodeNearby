@@ -24,7 +24,6 @@ import { toast } from "sonner";
 import SwissSection from "@/components/swiss/SwissSection";
 import SwissCard from "@/components/swiss/SwissCard";
 import SwissButton from "@/components/swiss/SwissButton";
-import { cn } from "@/lib/utils";
 
 interface ExtendedDeveloper extends Developer {
   distance?: string;

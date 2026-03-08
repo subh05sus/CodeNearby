@@ -10,13 +10,9 @@ import {
   Send,
   User,
   Bot,
-  ExternalLink,
   Github,
-  Info,
-  MessageCircle,
   Zap,
 } from "lucide-react";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -62,7 +58,6 @@ export default function AIChatInterface() {
   const [loadingMessage, setLoadingMessage] = useState("Processing...");
   const [lastFoundDevelopers, setLastFoundDevelopers] = useState<any[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { data: session } = useSession();
 
   useEffect(() => {
     scrollToBottom();
@@ -1164,7 +1159,7 @@ ${existingDev.followers ? `Followers: ${existingDev.followers}` : ""}`,
                       <Zap className="h-6 w-6" /> DATA_REPOSITORIES
                     </h4>
                     <div className="grid grid-cols-1 gap-6">
-                      {message.repositories.map((repo, index) => (
+                      {message.repositories.map((repo) => (
                         <SwissCard
                           key={repo.id}
                           variant="white"

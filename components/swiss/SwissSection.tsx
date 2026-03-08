@@ -13,27 +13,28 @@ interface SwissSectionProps extends React.HTMLAttributes<HTMLDivElement> {
 const SwissSection = React.forwardRef<HTMLDivElement, SwissSectionProps>(
     ({ className, number, title, variant = "white", pattern = "none", children, ...props }, ref) => {
         const variants = {
-            white: "bg-swiss-white dark:bg-black",
-            muted: "bg-swiss-muted dark:bg-neutral-900",
+            white: "bg-white dark:bg-black text-black dark:text-white border-4 border-black dark:border-white transition-colors duration-300",
+            muted: "bg-gray-100 dark:bg-neutral-900 text-black dark:text-white border-4 border-black dark:border-white transition-colors duration-300",
+            accent: "bg-swiss-red text-white border-4 border-black dark:border-white transition-colors duration-300",
         };
 
         const patterns = {
-            grid: "swiss-grid-pattern dark:opacity-20",
-            dots: "swiss-dots dark:opacity-20",
+            grid: "swiss-grid-pattern",
+            dots: "swiss-dots",
             none: "",
         };
 
         return (
             <section
                 ref={ref}
-                className={cn("w-full py-24 px-8 border-b-4 border-swiss-black dark:border-swiss-white swiss-noise", variants[variant], patterns[pattern], className)}
+                className={cn("w-full py-24 px-8 border-b-4 border-black dark:border-white transition-colors duration-300 swiss-noise", variants[variant], patterns[pattern], className)}
                 {...props}
             >
                 <div className="max-w-7xl mx-auto">
                     {(number || title) && (
                         <div className="flex items-baseline gap-4 mb-24">
                             {number && <span className="text-swiss-red font-black text-2xl tracking-widest">{number}.</span>}
-                            {title && <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none text-swiss-black dark:text-swiss-white">{title}</h2>}
+                            {title && <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none text-black dark:text-white transition-colors">{title}</h2>}
                         </div>
                     )}
                     {children}

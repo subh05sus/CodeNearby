@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import SwissCard from "@/components/swiss/SwissCard";
-import SwissButton from "@/components/swiss/SwissButton";
 import { Home, UserCog, Users, MessageSquare, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -93,10 +92,10 @@ export default function FinalStep() {
             className="w-full h-full"
           >
             <SwissCard
-              className="h-full border-4 border-swiss-black dark:border-white p-8 bg-swiss-white dark:bg-black hover:bg-swiss-black dark:hover:bg-white hover:text-swiss-white dark:hover:text-black group transition-all cursor-pointer shadow-[12px_12px_0_0_rgba(0,0,0,1)] dark:shadow-[12px_12px_0_0_rgba(255,255,255,1)] hover:shadow-[12px_12px_0_0_rgba(255,0,0,1)] flex flex-col items-start"
+              className="h-full border-4 border-black dark:border-white p-8 bg-white dark:bg-black hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black group transition-all cursor-pointer shadow-[12px_12px_0_0_rgba(0,0,0,1)] dark:shadow-[12px_12px_0_0_rgba(255,255,255,1)] hover:shadow-[12px_12px_0_0_rgba(255,0,0,1)] flex flex-col items-start"
               onClick={() => completeOnboarding(path.path)}
             >
-              <div className="mb-6 p-4 border-2 border-swiss-black dark:border-white group-hover:border-swiss-white dark:group-hover:border-black transition-colors">
+              <div className="mb-6 p-4 border-2 border-black dark:border-white group-hover:border-white dark:group-hover:border-black transition-colors">
                 {path.icon}
               </div>
               <div className="flex-1 space-y-2">
@@ -105,7 +104,7 @@ export default function FinalStep() {
                   {path.description}
                 </p>
               </div>
-              <div className="mt-8 flex items-center gap-2 font-black uppercase text-[10px] tracking-[0.4em] border-b-2 border-swiss-red group-hover:border-swiss-white dark:group-hover:border-black transition-colors text-black dark:text-white group-hover:text-inherit">
+              <div className="mt-8 flex items-center gap-2 font-black uppercase text-[10px] tracking-[0.4em] border-b-2 border-swiss-red group-hover:border-white dark:group-hover:border-black transition-colors text-black dark:text-white group-hover:text-inherit">
                 INITIALIZE_BOOT_SEQUENCE
               </div>
             </SwissCard>
@@ -117,10 +116,12 @@ export default function FinalStep() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="fixed inset-0 bg-swiss-black/90 dark:bg-black/95 backdrop-blur-xl z-[9999] flex flex-col items-center justify-center text-swiss-white dark:text-white space-y-4"
+          className="fixed inset-0 bg-black/90 dark:bg-black/95 backdrop-blur-xl z-[9999] flex flex-col items-center justify-center text-white space-y-4 transition-colors"
         >
-          <Loader2 className="h-16 w-16 animate-spin text-swiss-red" />
-          <h2 className="text-4xl font-black uppercase tracking-tighter italic">FINALIZING_SYSTEM_SYNC...</h2>
+          <div className="p-8 border-8 border-white bg-black shadow-[16px_16px_0_0_rgba(255,0,0,1)] text-center">
+            <Loader2 className="h-16 w-16 animate-spin text-swiss-red mx-auto mb-6" />
+            <h2 className="text-4xl font-black uppercase tracking-tighter italic">FINALIZING_SYSTEM_SYNC...</h2>
+          </div>
         </motion.div>
       )}
     </div>

@@ -11,7 +11,6 @@ import {
   CheckCircle,
   HelpCircle,
   Package,
-  ArrowRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useCurrency } from "@/hooks/use-currency";
@@ -20,7 +19,6 @@ import { CurrencyToggle } from "@/components/currency-toggle";
 import RazorpayPayment from "@/components/razorpay-payment";
 import SwissSection from "@/components/swiss/SwissSection";
 import SwissCard from "@/components/swiss/SwissCard";
-import SwissButton from "@/components/swiss/SwissButton";
 import { cn } from "@/lib/utils";
 
 export default function TokenStorePage() {

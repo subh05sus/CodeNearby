@@ -12,9 +12,9 @@ interface SwissCardProps extends React.HTMLAttributes<HTMLDivElement> {
 const SwissCard = React.forwardRef<HTMLDivElement, SwissCardProps>(
     ({ className, variant = "white", hoverEffect = "none", pattern = "none", ...props }, ref) => {
         const variants = {
-            white: "bg-swiss-white dark:bg-black text-swiss-black dark:text-swiss-white border-4 border-swiss-black dark:border-swiss-white",
-            muted: "bg-swiss-muted dark:bg-neutral-900 text-swiss-black dark:text-swiss-white border-4 border-swiss-black dark:border-swiss-white",
-            accent: "bg-swiss-red text-swiss-white border-4 border-swiss-black dark:border-swiss-white",
+            white: "bg-white dark:bg-black text-black dark:text-white border-4 border-black dark:border-white transition-colors duration-300",
+            muted: "bg-gray-100 dark:bg-neutral-900 text-black dark:text-white border-4 border-black dark:border-white transition-colors duration-300",
+            accent: "bg-swiss-red text-white border-4 border-black dark:border-white transition-colors duration-300",
         };
 
         const patterns = {
@@ -26,7 +26,7 @@ const SwissCard = React.forwardRef<HTMLDivElement, SwissCardProps>(
 
         const hovers = {
             none: "",
-            invert: "hover:bg-swiss-black dark:hover:bg-swiss-white hover:text-swiss-white dark:hover:text-swiss-black transition-colors duration-150 ease-linear",
+            invert: "",
             lift: "hover:-translate-y-1 transition-transform duration-150 ease-linear",
         };
 

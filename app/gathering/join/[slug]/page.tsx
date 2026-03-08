@@ -5,7 +5,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
-import { Loader2, Users, Clock, ArrowRight, Sparkles, MapPin } from "lucide-react";
+import { Loader2, Users, Clock, ArrowRight, Sparkles } from "lucide-react";
 import LoginButton from "@/components/login-button";
 import { formatDistanceToNow } from "date-fns";
 import confetti from "canvas-confetti";
@@ -91,13 +91,13 @@ export default function JoinGatheringPage() {
 
   if (!session) {
     return (
-      <SwissSection variant="white" className="py-24">
+      <SwissSection variant="white" className="py-24 bg-white dark:bg-black transition-colors duration-300">
         <div className="flex flex-col items-center justify-center min-h-[50vh] max-w-2xl mx-auto text-center">
-          <SwissCard className="p-12 border-8 border-swiss-black shadow-[24px_24px_0_0_rgba(0,0,0,1)] bg-swiss-white">
-            <h1 className="text-5xl font-black uppercase tracking-tighter italic leading-none border-b-8 border-swiss-red pb-4 mb-6">
+          <SwissCard className="p-12 border-8 border-black dark:border-white shadow-[24px_24px_0_0_rgba(0,0,0,1)] dark:shadow-[24px_24px_0_0_rgba(255,255,255,1)] bg-white dark:bg-black transition-colors">
+            <h1 className="text-5xl font-black uppercase tracking-tighter italic leading-none border-b-8 border-swiss-red pb-4 mb-6 text-black dark:text-white">
               RESTRICTED_ACCESS
             </h1>
-            <p className="text-sm font-bold uppercase tracking-widest opacity-40 mb-12">
+            <p className="text-sm font-bold uppercase tracking-widest opacity-40 mb-12 text-black dark:text-white">
               AUTHENTICATION_REQUIRED_FOR_NODE_ENTRY
             </p>
             <div className="flex justify-center">
@@ -111,9 +111,9 @@ export default function JoinGatheringPage() {
 
   if (loading) {
     return (
-      <SwissSection variant="white" className="py-24">
+      <SwissSection variant="white" className="py-24 bg-white dark:bg-black transition-colors duration-300">
         <div className="flex justify-center items-center min-h-[50vh]">
-          <Loader2 className="h-12 w-12 animate-spin text-swiss-black" />
+          <Loader2 className="h-12 w-12 animate-spin text-black dark:text-white" />
         </div>
       </SwissSection>
     );
@@ -121,11 +121,11 @@ export default function JoinGatheringPage() {
 
   if (!gathering) {
     return (
-      <SwissSection variant="white" className="py-24">
+      <SwissSection variant="white" className="py-24 bg-white dark:bg-black transition-colors duration-300">
         <div className="flex flex-col items-center justify-center min-h-[50vh] max-w-2xl mx-auto text-center">
-          <SwissCard className="p-12 border-4 border-swiss-black bg-swiss-muted/10 opacity-50">
-            <h1 className="text-4xl font-black uppercase tracking-tighter italic mb-4">NODE_NOT_FOUND</h1>
-            <p className="font-bold uppercase tracking-widest text-xs opacity-60 mb-8 italic leading-relaxed">
+          <SwissCard className="p-12 border-4 border-black dark:border-white bg-gray-100/50 dark:bg-gray-900/50 opacity-50 transition-colors">
+            <h1 className="text-4xl font-black uppercase tracking-tighter italic mb-4 text-black dark:text-white">NODE_NOT_FOUND</h1>
+            <p className="font-bold uppercase tracking-widest text-xs opacity-60 mb-8 italic leading-relaxed text-black dark:text-white">
               THE_REQUESTED_GATHERING_DOES_NOT_EXIST<br />OR_HAS_BEEN_TERMINATED
             </p>
             <SwissButton variant="secondary" onClick={() => router.push("/gathering")}>
@@ -143,11 +143,11 @@ export default function JoinGatheringPage() {
     )
   ) {
     return (
-      <SwissSection variant="white" className="py-24">
+      <SwissSection variant="white" className="py-24 bg-white dark:bg-black transition-colors duration-300">
         <div className="flex flex-col items-center justify-center min-h-[50vh] max-w-2xl mx-auto text-center">
-          <SwissCard className="p-12 border-8 border-swiss-black shadow-[16px_16px_0_0_rgba(0,0,0,1)]">
-            <h1 className="text-5xl font-black uppercase tracking-tighter italic border-b-8 border-swiss-black pb-4 mb-6">ALREADY_SYNCED</h1>
-            <p className="font-bold uppercase tracking-widest text-xs opacity-40 mb-12">YOUR_NODE_IS_ALREADY_CONNECTED_TO_THIS_STREAM</p>
+          <SwissCard className="p-12 border-8 border-black dark:border-white shadow-[16px_16px_0_0_rgba(0,0,0,1)] dark:shadow-[16px_16px_0_0_rgba(255,255,255,1)] transition-colors">
+            <h1 className="text-5xl font-black uppercase tracking-tighter italic border-b-8 border-black dark:border-white pb-4 mb-6 text-black dark:text-white transition-colors">ALREADY_SYNCED</h1>
+            <p className="font-bold uppercase tracking-widest text-xs opacity-40 mb-12 text-black dark:text-white">YOUR_NODE_IS_ALREADY_CONNECTED_TO_THIS_STREAM</p>
             <SwissButton variant="primary" className="h-16 px-12" onClick={() => router.push(`/gathering/${gathering.slug}`)}>
               ACCESS_GATHERING_DATA
             </SwissButton>
@@ -161,14 +161,14 @@ export default function JoinGatheringPage() {
   const isExpired = timeLeft <= 0;
 
   return (
-    <SwissSection variant="white" className="py-24">
+    <SwissSection variant="white" className="py-24 bg-white dark:bg-black transition-colors duration-300">
       <div className="max-w-2xl mx-auto px-4">
-        <SwissCard className="relative overflow-hidden p-0 border-8 border-swiss-black shadow-[32px_32px_0_0_rgba(255,0,0,1)] bg-swiss-white">
+        <SwissCard className="relative overflow-hidden p-0 border-8 border-black dark:border-white shadow-[32px_32px_0_0_rgba(255,0,0,1)] bg-white dark:bg-black transition-colors">
           {/* Header Region */}
-          <div className="p-10 border-b-8 border-swiss-black bg-swiss-black text-swiss-white">
+          <div className="p-10 border-b-8 border-black dark:border-white bg-black dark:bg-white text-white dark:text-black transition-colors">
             <div className="flex items-center gap-3 mb-6">
-              <div className="bg-swiss-red p-2 border-2 border-swiss-white">
-                <Sparkles className="h-5 w-5 text-swiss-white" />
+              <div className="bg-swiss-red p-2 border-2 border-white dark:border-black transition-colors">
+                <Sparkles className="h-5 w-5 text-white" />
               </div>
               <span className="text-[10px] font-black uppercase tracking-[0.3em]">LIVE_PROTOCOL // ACTIVE</span>
             </div>
@@ -184,9 +184,9 @@ export default function JoinGatheringPage() {
           </div>
 
           {/* Metadata Region */}
-          <div className="p-10 space-y-12">
+          <div className="p-10 space-y-12 text-black dark:text-white">
             <div className="flex items-center gap-6">
-              <div className="w-20 h-20 border-8 border-swiss-black overflow-hidden grayscale contrast-125">
+              <div className="w-20 h-20 border-8 border-black dark:border-white overflow-hidden grayscale contrast-125 transition-colors">
                 <Image src={gathering.host?.image} width={80} height={80} alt={gathering.host?.name} className="object-cover" />
               </div>
               <div>
@@ -196,7 +196,7 @@ export default function JoinGatheringPage() {
             </div>
 
             <div className="space-y-6">
-              <div className="flex items-center justify-between border-b-4 border-swiss-muted pb-4">
+              <div className="flex items-center justify-between border-b-4 border-gray-100 dark:border-gray-900 pb-4 transition-colors">
                 <div className="flex items-center gap-3">
                   <Users className="h-5 w-5 text-swiss-red" />
                   <span className="text-xs font-black uppercase tracking-widest">PARTICIPANT_LOAD</span>
@@ -206,12 +206,12 @@ export default function JoinGatheringPage() {
 
               <div className="flex flex-wrap gap-3">
                 {gathering.participants?.slice(0, 10).map((participant, i) => (
-                  <div key={i} className="w-12 h-12 border-4 border-swiss-black grayscale hover:grayscale-0 transition-all cursor-crosshair overflow-hidden bg-swiss-muted">
+                  <div key={i} className="w-12 h-12 border-4 border-black dark:border-white grayscale hover:grayscale-0 transition-all cursor-crosshair overflow-hidden bg-gray-100 dark:bg-gray-900">
                     <Image src={participant.image} width={48} height={48} alt={participant.name} className="object-cover" />
                   </div>
                 ))}
                 {gathering.participants?.length > 10 && (
-                  <div className="h-12 px-3 border-4 border-swiss-black flex items-center justify-center font-black text-xs bg-swiss-black text-swiss-white">
+                  <div className="h-12 px-3 border-4 border-black dark:border-white flex items-center justify-center font-black text-xs bg-black dark:bg-white text-white dark:text-black transition-colors">
                     +{gathering.participants.length - 10}
                   </div>
                 )}
@@ -220,10 +220,10 @@ export default function JoinGatheringPage() {
           </div>
 
           {/* Action Footer */}
-          <div className="p-10 bg-swiss-muted/10">
+          <div className="p-10 bg-gray-50/10 dark:bg-gray-950/10 transition-colors">
             <SwissButton
               onClick={handleJoinGathering}
-              className="w-full h-24 text-2xl border-8 shadow-[8px_8px_0_0_rgba(0,0,0,1)] hover:shadow-[16px_16px_0_0_rgba(0,0,0,1)]"
+              className="w-full h-24 text-2xl border-8 shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)] hover:shadow-[16px_16px_0_0_rgba(1,1,1,1)] dark:hover:shadow-[16px_16px_0_0_rgba(255,255,255,1)] transition-all"
               variant="primary"
               disabled={joining || isExpired}
             >

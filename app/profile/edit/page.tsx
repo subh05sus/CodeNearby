@@ -4,12 +4,9 @@
 import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import SwissCard from "@/components/swiss/SwissCard";
 import SwissButton from "@/components/swiss/SwissButton";
-import SwissSection from "@/components/swiss/SwissSection";
 import { cn } from "@/lib/utils";
 import {
   Loader2,
@@ -23,19 +20,14 @@ import {
   Pin,
   Search,
   Star,
-  GitFork,
   Code as CodeIcon,
-  Github,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { UserProfile, PinnedRepo } from "@/types";
 import ReactCrop, { type Crop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 import { fetchUserRepositories } from "@/lib/github";
-import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
 import { AnimatePresence, motion } from "framer-motion";
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";

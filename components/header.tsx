@@ -152,7 +152,7 @@ export default function Header() {
   return (
     <>
       <header className={cn(
-        "sticky top-0 z-50 bg-swiss-white border-b-8 border-swiss-black transition-all",
+        "sticky top-0 z-50 bg-swiss-white dark:bg-swiss-black border-b-8 border-swiss-black transition-all",
         pathname === "/" && "border-b-0"
       )}>
         <div className="max-w-7xl mx-auto px-6 h-24 flex justify-between items-center">

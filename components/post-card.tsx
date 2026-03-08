@@ -5,14 +5,11 @@ import {
   MessageSquare,
   Calendar,
   Share2,
-  Twitter,
   ArrowUp,
   ArrowDown,
-  User,
   Clock,
   ExternalLink,
 } from "lucide-react";
-import { motion } from "framer-motion";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
@@ -21,17 +18,14 @@ import { LocationPreview } from "./location-preview";
 import { PollDisplay } from "./poll-display";
 import type { Session } from "next-auth";
 import { format, formatDistanceToNow } from "date-fns";
-import { EmojiPicker } from "./emoji-picker";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import WhatsappIcon from "./whatsapp-icon";
 import Link from "next/link";
 import { LinkPreview } from "./ui/link-preview";
-import { SharePost } from "./share-post";
 import { toast } from "sonner";
 import SwissButton from "./swiss/SwissButton";
 import SwissCard from "./swiss/SwissCard";
@@ -96,9 +90,6 @@ export function PostCard({
   onAddComment,
   onVotePoll,
   onCommentVote,
-  compactView = false,
-  isGithubEvent = false,
-  column,
 }: PostCardProps) {
   const { data: session } = useSession() as { data: Session | null };
   const [commentContent, setCommentContent] = useState("");
@@ -153,9 +144,6 @@ export function PostCard({
     window.open(googleCalendarUrl, "_blank");
   };
 
-  const handleEmojiSelect = (emoji: string) => {
-    setCommentContent((prev) => prev + emoji);
-  };
 
   const shareOnTwitter = () => {
     const text = encodeURIComponent(post.content);

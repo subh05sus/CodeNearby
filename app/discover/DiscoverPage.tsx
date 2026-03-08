@@ -4,9 +4,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
 import { Loader2, MapPin, X, Heart, SkipForward } from 'lucide-react';
 import Image from 'next/image';
 import type { Developer, UserProfile } from '@/types';
@@ -256,12 +254,12 @@ export default function DiscoverPage() {
 
   if (!session) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[70vh] p-8">
-        <div className="border-8 border-swiss-black p-12 bg-swiss-white text-center shadow-[12px_12px_0_0_rgba(0,0,0,1)]">
-          <h1 className="font-black text-6xl uppercase tracking-tighter mb-6 leading-none">
+      <div className="flex flex-col items-center justify-center min-h-[70vh] p-8 bg-white dark:bg-black transition-colors duration-300">
+        <div className="border-8 border-black dark:border-white p-12 bg-white dark:bg-black text-center shadow-[12px_12px_0_0_rgba(0,0,0,1)] dark:shadow-[12px_12px_0_0_rgba(255,255,255,1)]">
+          <h1 className="font-black text-6xl uppercase tracking-tighter mb-6 leading-none text-black dark:text-white">
             RESTRICTED<br />ACCESS
           </h1>
-          <p className="font-bold uppercase tracking-tight text-xl mb-8 opacity-60">
+          <p className="font-bold uppercase tracking-tight text-xl mb-8 opacity-60 text-black dark:text-white">
             SIGN IN TO DISCOVER DEVELOPERS
           </p>
           <div className="flex justify-center">
@@ -273,12 +271,12 @@ export default function DiscoverPage() {
   }
 
   return (
-    <div className="bg-swiss-white min-h-screen">
+    <div className="bg-white dark:bg-black min-h-screen transition-colors duration-300">
       {/* Swiss Header */}
-      <div className="border-b-8 border-swiss-black bg-swiss-white sticky top-0 z-20">
+      <div className="border-b-8 border-black dark:border-white bg-white dark:bg-black sticky top-0 z-20">
         <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <h1 className="font-black text-8xl uppercase tracking-tighter leading-[0.8] mb-2">
+            <h1 className="font-black text-8xl uppercase tracking-tighter leading-[0.8] mb-2 text-black dark:text-white">
               DISCOVER<br />PEOPLE
             </h1>
             <p className="font-bold uppercase tracking-[0.2em] text-xs text-swiss-red">
@@ -296,7 +294,7 @@ export default function DiscoverPage() {
                 placeholder="ENTER_LOCATION..."
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                className="h-14 px-6 bg-swiss-white border-4 border-swiss-black rounded-none font-black uppercase tracking-tight focus:bg-swiss-muted transition-colors outline-none w-64"
+                className="h-14 px-6 bg-white dark:bg-black border-4 border-black dark:border-white rounded-none font-black uppercase tracking-tight focus:bg-gray-100 dark:focus:bg-gray-900 transition-colors outline-none w-64 text-black dark:text-white"
               />
             </div>
             <SwissButton type="submit" disabled={loading} className="h-14 px-8">
@@ -321,9 +319,9 @@ export default function DiscoverPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           {/* Swiper Section */}
           <div className="lg:col-span-12 xl:col-span-5 space-y-8">
-            <div className="flex items-center justify-between border-b-4 border-swiss-black pb-4">
-              <h2 className="font-black text-4xl uppercase tracking-tighter">CONNECT</h2>
-              <span className="bg-swiss-red text-swiss-white px-3 py-1 font-black text-xs uppercase">
+            <div className="flex items-center justify-between border-b-4 border-black dark:border-white pb-4">
+              <h2 className="font-black text-4xl uppercase tracking-tighter text-black dark:text-white">CONNECT</h2>
+              <span className="bg-swiss-red text-white px-3 py-1 font-black text-xs uppercase">
                 {connectDevelopers.length} MATCHES
               </span>
             </div>
@@ -343,7 +341,7 @@ export default function DiscoverPage() {
                       className="absolute inset-0 select-none"
                       flickOnSwipe={true}
                     >
-                      <div className="w-full h-full border-8 border-swiss-black bg-swiss-white shadow-[12px_12px_0_0_rgba(0,0,0,1)] group overflow-hidden">
+                      <div className="w-full h-full border-8 border-black dark:border-white bg-white dark:bg-black shadow-[12px_12px_0_0_rgba(0,0,0,1)] dark:shadow-[12px_12px_0_0_rgba(255,255,255,1)] group overflow-hidden">
                         <div className="relative w-full h-full grayscale hover:grayscale-0 transition-all duration-500">
                           <Image
                             src={developer.avatar_url || '/placeholder.svg'}
@@ -353,8 +351,8 @@ export default function DiscoverPage() {
                             className="object-cover"
                           />
                           {/* Bold Label */}
-                          <div className="absolute inset-x-0 bottom-0 bg-swiss-black p-6">
-                            <h3 className="text-4xl font-black text-swiss-white uppercase tracking-tighter leading-none mb-4">
+                          <div className="absolute inset-x-0 bottom-0 bg-black dark:bg-white p-6 transition-colors">
+                            <h3 className="text-4xl font-black text-white dark:text-black uppercase tracking-tighter leading-none mb-4">
                               {developer.login}
                             </h3>
                             <button
@@ -370,9 +368,9 @@ export default function DiscoverPage() {
                   ))}
                 </div>
               ) : (
-                <div className="w-full aspect-[3/4] max-w-sm border-8 border-swiss-muted flex flex-col items-center justify-center p-8 text-center bg-swiss-muted/10">
-                  <p className="font-black text-2xl uppercase tracking-tighter opacity-40">NO_MORE_MATCHES</p>
-                  <p className="font-bold uppercase tracking-tight text-xs mt-4 opacity-40">EXPAND YOUR SEARCH AREA OR REFRESH LATER</p>
+                <div className="w-full aspect-[3/4] max-w-sm border-8 border-gray-100 dark:border-gray-900 flex flex-col items-center justify-center p-8 text-center bg-gray-50 dark:bg-gray-950">
+                  <p className="font-black text-2xl uppercase tracking-tighter opacity-40 text-black dark:text-white">NO_MORE_MATCHES</p>
+                  <p className="font-bold uppercase tracking-tight text-xs mt-4 opacity-40 text-black dark:text-white">EXPAND YOUR SEARCH AREA OR REFRESH LATER</p>
                 </div>
               )}
 
@@ -380,24 +378,24 @@ export default function DiscoverPage() {
                 <div className="flex justify-center gap-6">
                   <button
                     onClick={() => swipeCard('left')}
-                    className="w-20 h-20 bg-swiss-white border-4 border-swiss-black flex items-center justify-center hover:bg-swiss-black group transition-colors shadow-[6px_6px_0_0_rgba(0,0,0,1)] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                    className="w-20 h-20 bg-white dark:bg-black border-4 border-black dark:border-white flex items-center justify-center hover:bg-black dark:hover:bg-white group transition-colors shadow-[6px_6px_0_0_rgba(0,0,0,1)] dark:shadow-[6px_6px_0_0_rgba(255,255,255,1)] active:translate-x-1 active:translate-y-1 active:shadow-none"
                   >
-                    <X className="h-8 w-8 text-swiss-red group-hover:text-swiss-white" />
+                    <X className="h-8 w-8 text-swiss-red group-hover:text-white dark:group-hover:text-black" />
                   </button>
                   <button
                     onClick={() =>
                       connectDevelopers.length > 0 &&
                       setConnectDevelopers((prev) => prev.slice(0, -1))
                     }
-                    className="w-20 h-20 bg-swiss-white border-4 border-swiss-black flex items-center justify-center hover:bg-swiss-black group transition-colors shadow-[6px_6px_0_0_rgba(0,0,0,1)] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                    className="w-20 h-20 bg-white dark:bg-black border-4 border-black dark:border-white flex items-center justify-center hover:bg-black dark:hover:bg-white group transition-colors shadow-[6px_6px_0_0_rgba(0,0,0,1)] dark:shadow-[6px_6px_0_0_rgba(255,255,255,1)] active:translate-x-1 active:translate-y-1 active:shadow-none"
                   >
-                    <SkipForward className="h-8 w-8 group-hover:text-swiss-white" />
+                    <SkipForward className="h-8 w-8 text-black dark:text-white group-hover:text-white dark:group-hover:text-black" />
                   </button>
                   <button
                     onClick={() => swipeCard('right')}
-                    className="w-20 h-20 bg-swiss-white border-4 border-swiss-black flex items-center justify-center hover:bg-swiss-red hover:border-swiss-red group transition-colors shadow-[6px_6px_0_0_rgba(0,0,0,1)] active:translate-x-1 active:translate-y-1 active:shadow-none"
+                    className="w-20 h-20 bg-white dark:bg-black border-4 border-black dark:border-white flex items-center justify-center hover:bg-swiss-red hover:border-swiss-red group transition-colors shadow-[6px_6px_0_0_rgba(0,0,0,1)] dark:shadow-[6px_6px_0_0_rgba(255,255,255,1)] active:translate-x-1 active:translate-y-1 active:shadow-none"
                   >
-                    <Heart className="h-8 w-8 group-hover:text-swiss-white" />
+                    <Heart className="h-8 w-8 text-black dark:text-white group-hover:text-white" />
                   </button>
                 </div>
               )}
@@ -406,19 +404,19 @@ export default function DiscoverPage() {
 
           {/* Explore Section */}
           <div className="lg:col-span-12 xl:col-span-7 space-y-8">
-            <div className="flex items-center justify-between border-b-4 border-swiss-black pb-4">
-              <h2 className="font-black text-4xl uppercase tracking-tighter">EXPLORE</h2>
+            <div className="flex items-center justify-between border-b-4 border-black dark:border-white pb-4">
+              <h2 className="font-black text-4xl uppercase tracking-tighter text-black dark:text-white">EXPLORE</h2>
               <p className="font-bold uppercase tracking-widest text-[10px] text-swiss-red">REGION: {location || 'GLOBAL'}</p>
             </div>
 
-            <div className="relative border-4 border-swiss-black p-6 bg-swiss-muted/10 min-h-[60vh]">
+            <div className="relative border-4 border-black dark:border-white p-6 bg-gray-50 dark:bg-gray-950 min-h-[60vh]">
               <DeveloperGrid
                 session={session}
                 handleAddFriend={handleAddFriend}
                 developers={exploreDevelopers}
               />
               {exploreDevelopers.length > 10 && (
-                <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-swiss-white to-transparent pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white dark:from-black to-transparent pointer-events-none" />
               )}
             </div>
           </div>

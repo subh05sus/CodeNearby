@@ -5,7 +5,6 @@
 import { useEffect, useState } from "react";
 import { Check, X, UserSearch } from "lucide-react";
 import { toast } from "sonner";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import SwissCard from "../swiss/SwissCard";
 import SwissButton from "../swiss/SwissButton";
 import Image from "next/image";
@@ -69,12 +68,12 @@ export function ReceivedFriendRequests() {
 
   return (
     <SwissCard variant="accent" pattern="grid" className="mb-8">
-      <div className="flex justify-between items-center mb-6 border-b-4 border-black dark:border-white pb-2">
-        <h2 className="text-2xl font-black uppercase tracking-tightest flex items-center gap-2 text-white dark:text-black">
+      <div className="flex justify-between items-center mb-6 border-b-4 border-black dark:border-white pb-2 transition-colors">
+        <h2 className="text-2xl font-black uppercase tracking-tightest flex items-center gap-2 text-white transition-colors">
           <UserSearch size={24} />
           Incoming Signals
         </h2>
-        <span className="bg-black dark:bg-white text-white dark:text-black px-2 py-1 text-xs font-black">{requests.length} PENDING</span>
+        <span className="bg-black dark:bg-white text-white dark:text-black px-2 py-1 text-xs font-black transition-colors">{requests.length} PENDING</span>
       </div>
       <div>
         {loading ? (
@@ -88,7 +87,7 @@ export function ReceivedFriendRequests() {
             {requests.map((request) => (
               <li
                 key={request._id}
-                className="flex items-center justify-between p-4 border-4 border-black dark:border-white bg-white dark:bg-black group"
+                className="flex items-center justify-between p-4 border-4 border-black dark:border-white bg-white dark:bg-black group transition-colors"
               >
                 <div className="flex items-center space-x-4">
                   <div className="relative w-12 h-12 border-2 border-black dark:border-white overflow-hidden shadow-[3px_3px_0_0_rgba(0,0,0,1)] dark:shadow-[3px_3px_0_0_rgba(255,255,255,1)] flex-shrink-0">
@@ -99,9 +98,9 @@ export function ReceivedFriendRequests() {
                       className="object-cover"
                     />
                   </div>
-                  <div>
-                    <p className="font-black uppercase tracking-tight text-sm leading-none mb-1 text-black dark:text-white">{request.sender.name}</p>
-                    <p className="text-[10px] font-black uppercase tracking-widest opacity-40 dark:opacity-30 italic text-black dark:text-white">PENDING AUTHENTICATION</p>
+                  <div className="transition-colors">
+                    <p className="font-black uppercase tracking-tight text-sm leading-none mb-1 text-black dark:text-white transition-colors">{request.sender.name}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest opacity-40 dark:opacity-30 italic text-black dark:text-white transition-colors">PENDING AUTHENTICATION</p>
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -126,7 +125,7 @@ export function ReceivedFriendRequests() {
             ))}
           </ul>
         ) : (
-          <p className="text-center font-black uppercase tracking-widest opacity-50 dark:opacity-20 py-12 border-4 border-dashed border-black/10 dark:border-white/10 text-white dark:text-black">NO SIGNAL DETECTED</p>
+          <p className="text-center font-black uppercase tracking-widest opacity-50 dark:opacity-20 py-12 border-4 border-dashed border-black/10 dark:border-white/10 text-white transition-colors">NO SIGNAL DETECTED</p>
         )}
       </div>
     </SwissCard>

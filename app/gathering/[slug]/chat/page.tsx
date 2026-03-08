@@ -8,17 +8,12 @@ import { useParams, useRouter } from "next/navigation";
 import SwissButton from "@/components/swiss/SwissButton";
 import { Input } from "@/components/ui/input";
 import {
-  Loader2,
   Send,
   ImageIcon,
   Pin,
-  Calendar,
   BarChart,
-  MapPin,
   MessageSquare,
   EyeOff,
-  User,
-  Zap,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { db } from "@/lib/firebase";
@@ -334,14 +329,14 @@ export default function GatheringChatPage() {
       if (jsonContent.type === "post") {
         return (
           <div
-            className="bg-swiss-black text-swiss-white p-4 border-2 border-swiss-white cursor-pointer mt-2 hover:bg-swiss-red transition-colors"
+            className="bg-black dark:bg-white text-white dark:text-black p-4 border-2 border-white dark:border-black cursor-pointer mt-2 hover:bg-swiss-red dark:hover:bg-swiss-red hover:text-white transition-colors"
             onClick={() => router.push(`/posts/${jsonContent.postId}`)}
           >
             <p className="font-bold text-xs uppercase tracking-tight mb-2 line-clamp-2">
               {jsonContent.postContent}
             </p>
             {jsonContent.postImage && (
-              <div className="relative w-full aspect-video h-32 border-2 border-swiss-white grayscale mb-2">
+              <div className="relative w-full aspect-video h-32 border-2 border-white dark:border-black grayscale mb-2 transition-colors">
                 <Image
                   src={jsonContent.postImage || "/placeholder.svg"}
                   alt="Post image"
@@ -381,12 +376,12 @@ export default function GatheringChatPage() {
 
   if (!session) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[70vh] p-8">
-        <div className="border-8 border-swiss-black p-12 bg-swiss-white text-center shadow-[12px_12px_0_0_rgba(0,0,0,1)]">
-          <h1 className="font-black text-6xl uppercase tracking-tighter mb-6 leading-none">
+      <div className="flex flex-col items-center justify-center min-h-[70vh] p-8 bg-white dark:bg-black transition-colors duration-300">
+        <div className="border-8 border-black dark:border-white p-12 bg-white dark:bg-black text-center shadow-[12px_12px_0_0_rgba(0,0,0,1)] dark:shadow-[12px_12px_0_0_rgba(255,255,255,1)] transition-colors">
+          <h1 className="font-black text-6xl uppercase tracking-tighter mb-6 leading-none text-black dark:text-white">
             ACCESS<br />RESTRICTED
           </h1>
-          <p className="font-bold uppercase tracking-tight text-xl mb-8 opacity-60">
+          <p className="font-bold uppercase tracking-tight text-xl mb-8 opacity-60 text-black dark:text-white">
             SIGN IN TO ACCESS CHAT
           </p>
           <div className="flex justify-center">
@@ -399,35 +394,35 @@ export default function GatheringChatPage() {
 
   if (isLoading || !gathering) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[70vh]">
-        <div className="w-32 h-32 bg-swiss-black animate-pulse border-8 border-swiss-muted" />
-        <p className="font-black mt-6 uppercase tracking-widest text-xs">SYNCING_NODE...</p>
+      <div className="flex flex-col items-center justify-center min-h-[70vh] bg-white dark:bg-black transition-colors duration-300">
+        <div className="w-32 h-32 bg-black dark:bg-white animate-pulse border-8 border-gray-100 dark:border-gray-900 transition-colors" />
+        <p className="font-black mt-6 uppercase tracking-widest text-xs text-black dark:text-white transition-colors">SYNCING_NODE...</p>
       </div>
     );
   }
 
   if (gathering.blockedUsers?.includes(session.user.id)) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[70vh] p-8">
-        <div className="border-8 border-swiss-black p-12 bg-swiss-white text-center shadow-[12px_12px_0_0_rgba(0,0,0,1)]">
-          <h1 className="font-black text-6xl uppercase tracking-tighter mb-6">BLOCKED</h1>
-          <p className="font-bold uppercase tracking-tight text-xl opacity-60">ACCESS_PERMANENTLY_TERMINATED</p>
+      <div className="flex flex-col items-center justify-center min-h-[70vh] p-8 bg-white dark:bg-black transition-colors duration-300">
+        <div className="border-8 border-black dark:border-white p-12 bg-white dark:bg-black text-center shadow-[12px_12px_0_0_rgba(0,0,0,1)] dark:shadow-[12px_12px_0_0_rgba(255,255,255,1)] transition-colors">
+          <h1 className="font-black text-6xl uppercase tracking-tighter mb-6 text-black dark:text-white">BLOCKED</h1>
+          <p className="font-bold uppercase tracking-tight text-xl opacity-60 text-black dark:text-white">ACCESS_PERMANENTLY_TERMINATED</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-swiss-white min-h-screen flex flex-col">
+    <div className="bg-white dark:bg-black min-h-screen flex flex-col transition-colors duration-300">
       {/* Swiss Chat Header */}
-      <div className="border-b-8 border-swiss-black bg-swiss-white sticky top-0 z-20">
+      <div className="border-b-8 border-black dark:border-white bg-white dark:bg-black sticky top-0 z-20 transition-colors">
         <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <div className="bg-swiss-black text-swiss-white p-3 rotate-[-3deg] shadow-[4px_4px_0_0_rgba(255,0,0,1)]">
+            <div className="bg-black dark:bg-white text-white dark:text-black p-3 rotate-[-3deg] shadow-[4px_4px_0_0_rgba(255,0,0,1)] transition-colors">
               <MessageSquare className="h-8 w-8" />
             </div>
             <div>
-              <h1 className="font-black text-4xl uppercase tracking-tighter leading-none">
+              <h1 className="font-black text-4xl uppercase tracking-tighter leading-none text-black dark:text-white">
                 {gathering.name}_ROOM
               </h1>
               <p className="font-bold uppercase tracking-[0.2em] text-[10px] text-swiss-red mt-1">
@@ -448,8 +443,8 @@ export default function GatheringChatPage() {
       </div>
 
       <div className="flex-1 max-w-7xl mx-auto w-full px-6 py-8 flex flex-col min-h-[calc(100vh-250px)]">
-        <div className="flex-1 border-8 border-swiss-black bg-swiss-white shadow-[16px_16px_0_0_rgba(0,0,0,1)] flex flex-col overflow-hidden">
-          <ScrollArea className="flex-1 bg-swiss-muted/10 p-8">
+        <div className="flex-1 border-8 border-black dark:border-white bg-white dark:bg-black shadow-[16px_16px_0_0_rgba(0,0,0,1)] dark:shadow-[16px_16px_0_0_rgba(255,255,255,1)] flex flex-col overflow-hidden transition-colors">
+          <ScrollArea className="flex-1 bg-gray-50/10 dark:bg-gray-950/10 p-8 transition-colors">
             <div className="space-y-12">
               <AnimatePresence initial={false}>
                 {messages.map((message) => {
@@ -466,22 +461,22 @@ export default function GatheringChatPage() {
                       className={cn("flex items-start gap-4", isOwnMessage ? "flex-row-reverse" : "flex-row")}
                     >
                       <div className="shrink-0 relative">
-                        <div className={cn("w-14 h-14 border-4 border-swiss-black grayscale group-hover:grayscale-0 transition-all", isOwnMessage ? "bg-swiss-black" : "bg-swiss-white")}>
+                        <div className={cn("w-14 h-14 border-4 border-black dark:border-white grayscale group-hover:grayscale-0 transition-all", isOwnMessage ? "bg-black dark:bg-white" : "bg-white dark:bg-black")}>
                           <Avatar className="w-full h-full rounded-none">
                             <AvatarImage
                               src={isHost && message.realSenderInfo ? message.realSenderInfo.image : message.senderImage}
                               className="rounded-none object-cover"
                             />
-                            <AvatarFallback className="rounded-none font-black">
+                            <AvatarFallback className="rounded-none font-black text-black dark:text-white">
                               {(isHost && message.realSenderInfo ? message.realSenderInfo.name : message.senderName).charAt(0)}
                             </AvatarFallback>
                           </Avatar>
                         </div>
-                        {message.isAnonymous && <div className="absolute -top-2 -right-2 bg-swiss-red p-1 border-2 border-swiss-black"><EyeOff className="h-3 w-3 text-swiss-white" /></div>}
+                        {message.isAnonymous && <div className="absolute -top-2 -right-2 bg-swiss-red p-1 border-2 border-black dark:border-white transition-colors"><EyeOff className="h-3 w-3 text-white" /></div>}
                       </div>
 
                       <div className={cn("max-w-[70%] group", isOwnMessage ? "text-right" : "text-left")}>
-                        <div className="mb-2 flex items-center gap-3 px-1">
+                        <div className="mb-2 flex items-center gap-3 px-1 text-black dark:text-white">
                           <span className="font-black text-[10px] uppercase tracking-widest">
                             {message.isAnonymous ? "ANONYMOUS_USER" : message.senderName}
                             {isHost && message.realSenderInfo && <span className="text-swiss-red ml-2">[ID: {message.realSenderInfo.name.toUpperCase()}]</span>}
@@ -490,8 +485,8 @@ export default function GatheringChatPage() {
                         </div>
 
                         <div className={cn(
-                          "relative p-6 border-4 border-swiss-black shadow-[8px_8px_0_0_rgba(0,0,0,1)]",
-                          isOwnMessage ? "bg-swiss-black text-swiss-white rounded-l-2xl" : "bg-swiss-white text-swiss-black rounded-r-2xl",
+                          "relative p-6 border-4 border-black dark:border-white shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)] transition-colors",
+                          isOwnMessage ? "bg-black dark:bg-white text-white dark:text-black rounded-l-2xl" : "bg-white dark:bg-black text-black dark:text-white rounded-r-2xl",
                           message.isPinned && "border-swiss-red"
                         )}>
                           {isPoll && pollData ? (
@@ -510,14 +505,14 @@ export default function GatheringChatPage() {
                                         onClick={() => handlePollVote(pollData.pollId, index)}
                                         disabled={pollData.votes && Object.values(pollData.votes).some((v: any) => v.includes(session?.user?.id))}
                                         className={cn(
-                                          "w-full flex justify-between p-3 font-black uppercase text-xs border-2 border-swiss-black transition-all",
-                                          isOwnMessage ? "bg-swiss-white text-swiss-black hover:bg-swiss-red hover:text-swiss-white" : "bg-swiss-muted/20 hover:bg-swiss-black hover:text-swiss-white"
+                                          "w-full flex justify-between p-3 font-black uppercase text-xs border-2 border-black dark:border-white transition-all",
+                                          isOwnMessage ? "bg-white dark:bg-black text-black dark:text-white hover:bg-swiss-red hover:text-white" : "bg-gray-100 dark:bg-gray-900 text-black dark:text-white hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black"
                                         )}
                                       >
                                         <span>{option}</span>
                                         <span>{votes} V_SYNC</span>
                                       </button>
-                                      <div className="h-2 bg-swiss-muted/30 border border-swiss-black">
+                                      <div className="h-2 bg-gray-200 dark:bg-gray-800 border border-black dark:border-white transition-colors">
                                         <div
                                           className="h-full bg-swiss-red transition-all duration-500"
                                           style={{ width: `${percent}%` }}
@@ -529,7 +524,7 @@ export default function GatheringChatPage() {
                               </div>
                             </div>
                           ) : message.content.startsWith("[Image](") ? (
-                            <div className="border-4 border-swiss-black grayscale hover:grayscale-0 transition-all cursor-pointer">
+                            <div className="border-4 border-black dark:border-white grayscale hover:grayscale-0 transition-all cursor-pointer">
                               <Image
                                 height={300}
                                 width={300}
@@ -545,8 +540,8 @@ export default function GatheringChatPage() {
                           )}
 
                           {message.isPinned && (
-                            <div className="absolute -top-4 -right-4 bg-swiss-red text-swiss-white p-2 border-2 border-swiss-black">
-                              <Pin className="h-4 w-4 fill-swiss-white" />
+                            <div className="absolute -top-4 -right-4 bg-swiss-red text-white p-2 border-2 border-black dark:border-white transition-colors">
+                              <Pin className="h-4 w-4 fill-white" />
                             </div>
                           )}
 
@@ -554,7 +549,7 @@ export default function GatheringChatPage() {
                             <button
                               onClick={() => handlePinAction(message.id, message.isPinned ? "unpin" : "pin")}
                               className={cn(
-                                "absolute top-0 opacity-0 group-hover:opacity-100 transition-all w-10 h-10 flex items-center justify-center bg-swiss-white border-2 border-swiss-black text-swiss-black hover:bg-swiss-red hover:text-swiss-white",
+                                "absolute top-0 opacity-0 group-hover:opacity-100 transition-all w-10 h-10 flex items-center justify-center bg-white dark:bg-black border-2 border-black dark:border-white text-black dark:text-white hover:bg-swiss-red hover:text-white",
                                 isOwnMessage ? "-left-14" : "-right-14"
                               )}
                             >
@@ -572,17 +567,17 @@ export default function GatheringChatPage() {
           </ScrollArea>
 
           {/* Input Console */}
-          <div className="p-6 border-t-8 border-swiss-black bg-swiss-white">
+          <div className="p-6 border-t-8 border-black dark:border-white bg-white dark:bg-black transition-colors">
             <div className="relative flex flex-col gap-6">
               {mentionSuggestions.length > 0 && (
-                <div className="absolute bottom-full left-0 mb-4 bg-swiss-white border-4 border-swiss-black shadow-[8px_8px_0_0_rgba(0,0,0,1)] z-30 min-w-[200px]">
+                <div className="absolute bottom-full left-0 mb-4 bg-white dark:bg-black border-4 border-black dark:border-white shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)] z-30 min-w-[200px] transition-colors">
                   {mentionSuggestions.map((name, index) => (
                     <button
                       key={name}
                       onClick={() => handleMentionSelect(name)}
                       className={cn(
-                        "w-full px-6 py-3 text-left font-black uppercase tracking-widest text-xs border-b-2 border-swiss-black last:border-b-0 transition-colors",
-                        index === 0 ? "bg-swiss-red text-swiss-white" : "hover:bg-swiss-black hover:text-swiss-white"
+                        "w-full px-6 py-3 text-left font-black uppercase tracking-widest text-xs border-b-2 border-black dark:border-white last:border-b-0 transition-colors",
+                        index === 0 ? "bg-swiss-red text-white" : "hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black text-black dark:text-white"
                       )}
                     >
                       @{name}
@@ -597,7 +592,7 @@ export default function GatheringChatPage() {
                     value={inputMessage}
                     onChange={handleInputChange}
                     placeholder="ENTER_MESSAGE_COORDINATES..."
-                    className="h-20 px-8 bg-swiss-white border-4 border-swiss-black rounded-none font-black uppercase tracking-tight text-xl outline-none focus:bg-swiss-muted transition-all"
+                    className="h-20 px-8 bg-white dark:bg-black text-black dark:text-white border-4 border-black dark:border-white rounded-none font-black uppercase tracking-tight text-xl outline-none focus:bg-gray-100 dark:focus:bg-gray-900 transition-all"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") handleSendMessage();
                       else if (e.key === "Tab" && mentionSuggestions.length > 0) {
@@ -614,7 +609,7 @@ export default function GatheringChatPage() {
                       id="anonymous-mode"
                       className="scale-125 data-[state=checked]:bg-swiss-red"
                     />
-                    <span className="font-black text-[8px] uppercase tracking-widest self-center opacity-40">ANON_PROTO</span>
+                    <span className="font-black text-[8px] uppercase tracking-widest self-center opacity-40 text-black dark:text-white transition-colors">ANON_PROTO</span>
                   </div>
                 </div>
 
@@ -627,12 +622,12 @@ export default function GatheringChatPage() {
                 </SwissButton>
               </div>
 
-              <div className="flex items-center justify-between border-t-4 border-swiss-black pt-6">
+              <div className="flex items-center justify-between border-t-4 border-black dark:border-white pt-6 transition-colors">
                 <div className="flex gap-4">
                   <button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={(isHostOnly && !isHost) || gathering?.mutedUsers?.includes(session.user.id)}
-                    className="h-14 px-6 border-4 border-swiss-black font-black uppercase text-xs flex items-center gap-3 hover:bg-swiss-black hover:text-swiss-white transition-all active:translate-y-1"
+                    className="h-14 px-6 border-4 border-black dark:border-white font-black uppercase text-xs flex items-center gap-3 hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black text-black dark:text-white transition-all active:translate-y-1"
                   >
                     <ImageIcon className="h-5 w-5" /> UPLOAD_DATA
                   </button>
@@ -649,16 +644,16 @@ export default function GatheringChatPage() {
                     onPollCreated={(pollMessage) => handleSendMessage(pollMessage)}
                     canCreatePoll={!isHostOnly || isHost}
                   >
-                    <button className="h-14 px-6 border-4 border-swiss-black font-black uppercase text-xs flex items-center gap-3 hover:bg-swiss-black hover:text-swiss-white transition-all active:translate-y-1">
+                    <button className="h-14 px-6 border-4 border-black dark:border-white font-black uppercase text-xs flex items-center gap-3 hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black text-black dark:text-white transition-all active:translate-y-1">
                       <BarChart className="h-5 w-5" /> INITIATE_POLL
                     </button>
                   </CreateGatheringPoll>
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <div className="flex -space-x-2 grayscale">
+                  <div className="flex -space-x-2 grayscale transition-all">
                     {gathering.participants.slice(0, 5).map((p: any) => (
-                      <div key={p.id} className="w-8 h-8 border-2 border-swiss-black overflow-hidden bg-swiss-white">
+                      <div key={p.id} className="w-8 h-8 border-2 border-black dark:border-white overflow-hidden bg-white dark:bg-black">
                         <Image src={p.image} width={32} height={32} alt={p.name} />
                       </div>
                     ))}

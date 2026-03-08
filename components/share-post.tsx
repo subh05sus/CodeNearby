@@ -10,16 +10,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Loader2, Send, MapPin, BarChart, Calendar, Users, Heart } from "lucide-react";
+import { Loader2, Send, MapPin, BarChart, Heart } from "lucide-react";
 import type { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { format } from "date-fns";
 import { toast } from "sonner";
 import SwissCard from "./swiss/SwissCard";
 import SwissButton from "./swiss/SwissButton";
-import { cn } from "@/lib/utils";
 
 interface Friend {
   id: string;
@@ -63,7 +61,7 @@ export function SharePost({ post }: SharePostProps) {
   const [loadingGatherings, setLoadingGatherings] = useState(true);
   const [friends, setFriends] = useState<Friend[]>([]);
   const [gatherings, setGatherings] = useState<Gathering[]>([]);
-  const [sharing, setSharing] = useState(false);
+  const [, setSharing] = useState(false);
 
   useEffect(() => {
     if (session && isOpen) {

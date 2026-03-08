@@ -2,8 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
-import { ImageIcon, Loader2, X, MapPin, Calendar, Clock, Smile } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { ImageIcon, Loader2, X, MapPin, Calendar } from "lucide-react";
 import { CreatePoll } from "./create-poll";
 import { ShareLocation } from "./share-location";
 import { ShareSchedule } from "./share-schedule";

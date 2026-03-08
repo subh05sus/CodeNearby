@@ -77,8 +77,8 @@ export function GitHubEvents({ username }: { username: string }) {
 
   return (
     <SwissCard variant="white" pattern="grid" className="h-full">
-      <div className="mb-6 border-b-2 border-black dark:border-white pb-2">
-        <h2 className="text-xl font-black uppercase tracking-widest text-black dark:text-white">
+      <div className="mb-6 border-b-2 border-black dark:border-white pb-2 transition-colors">
+        <h2 className="text-xl font-black uppercase tracking-widest text-black dark:text-white transition-colors">
           System Logs
         </h2>
       </div>
@@ -107,7 +107,7 @@ export function GitHubEvents({ username }: { username: string }) {
               ))}
             </ul>
           ) : (
-            <p className="text-sm font-black uppercase tracking-widest opacity-30 dark:opacity-20 italic py-8 border-2 border-dashed border-black/20 dark:border-white/20 text-center text-black dark:text-white">
+            <p className="text-center font-black uppercase tracking-widest opacity-30 dark:opacity-20 italic py-8 border-2 border-dashed border-black/20 dark:border-white/20 text-black dark:text-white transition-colors">
               NO SYSTEM ACTIVITY
             </p>
           )}

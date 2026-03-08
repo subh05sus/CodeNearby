@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { BarChartIcon as ChartBar, Check } from "lucide-react";
 import { Session } from "next-auth";
-import SwissButton from "./swiss/SwissButton";
 import { cn } from "@/lib/utils";
 
 interface PollDisplayProps {

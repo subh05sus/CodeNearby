@@ -21,10 +21,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import Link from "next/link";
 import {
-  Tooltip,
-  TooltipContent,
   TooltipProvider,
-  TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
@@ -425,15 +422,15 @@ export default function ApiDocsPage() {
 
   return (
     <TooltipProvider>
-      <div className="w-full">
+      <div className="w-full bg-white dark:bg-black transition-colors duration-300">
         {/* Header Section */}
-        <SwissSection variant="white" className="border-b-8 border-swiss-black py-20">
+        <SwissSection variant="white" className="border-b-8 border-black dark:border-white py-20">
           <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
             <div className="space-y-4">
-              <h1 className="text-6xl md:text-9xl font-black uppercase tracking-tighter italic leading-none">
+              <h1 className="text-6xl md:text-9xl font-black uppercase tracking-tighter italic leading-none text-black dark:text-white">
                 API_<span className="text-swiss-red">DOCS</span>
               </h1>
-              <p className="text-xl font-bold uppercase tracking-tight opacity-40 italic">
+              <p className="text-xl font-bold uppercase tracking-tight opacity-40 italic text-black dark:text-white">
                 AI_POWERED_INTEGRATION_NETWORKS // NEURAL_RESOURCES
               </p>
             </div>
@@ -444,9 +441,9 @@ export default function ApiDocsPage() {
                   DASHBOARD
                 </Link>
               </SwissButton>
-              <SwissButton variant="primary" asChild className="h-16 px-8">
+              <SwissButton variant="primary" asChild className="h-16 px-8 dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
                 <Link href="/upgrade">
-                  <Zap className="h-6 w-6 mr-3 text-swiss-white fill-swiss-white" />
+                  <Zap className="h-6 w-6 mr-3 text-white dark:text-black fill-current" />
                   GET_TOKENS
                 </Link>
               </SwissButton>
@@ -455,7 +452,7 @@ export default function ApiDocsPage() {
         </SwissSection>
 
         {/* Quick Start Bar */}
-        <div className="bg-swiss-black text-swiss-white py-6 overflow-hidden border-b-8 border-swiss-black">
+        <div className="bg-black dark:bg-neutral-900 text-white py-6 overflow-hidden border-b-8 border-black dark:border-white">
           <div className="container mx-auto px-4 flex items-center gap-8 whitespace-nowrap">
             <span className="text-swiss-red font-black uppercase italic tracking-widest text-sm">QUICK_START:</span>
             <div className="flex gap-12 text-[10px] font-black uppercase tracking-[0.3em] opacity-80 italic animate-marquee">
@@ -472,7 +469,7 @@ export default function ApiDocsPage() {
             {/* Sidebar Navigation */}
             <div className="lg:col-span-1 space-y-8">
               <div className="space-y-4">
-                <h3 className="text-xs font-black uppercase tracking-[0.5em] text-swiss-black/40 border-l-4 border-swiss-red pl-4">ENDPOINTS_LIBRARY</h3>
+                <h3 className="text-xs font-black uppercase tracking-[0.5em] text-black dark:text-white opacity-40 border-l-4 border-swiss-red pl-4">ENDPOINTS_LIBRARY</h3>
                 <div className="space-y-4">
                   {API_ENDPOINTS.map((endpoint) => (
                     <button
@@ -481,14 +478,14 @@ export default function ApiDocsPage() {
                       className={cn(
                         "w-full text-left p-6 border-4 transition-all flex flex-col gap-2 group",
                         selectedEndpoint.id === endpoint.id
-                          ? "bg-swiss-black text-swiss-white border-swiss-black shadow-[8px_8px_0_0_rgba(255,0,0,1)]"
-                          : "bg-swiss-white text-swiss-black border-swiss-black hover:bg-swiss-muted"
+                          ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white shadow-[8px_8px_0_0_rgba(255,0,0,1)]"
+                          : "bg-white dark:bg-black text-black dark:text-white border-black dark:border-white hover:bg-neutral-100 dark:hover:bg-neutral-900"
                       )}
                     >
                       <div className="flex items-center justify-between">
                         <span className={cn(
                           "text-[10px] font-black px-2 py-0.5 border-2",
-                          selectedEndpoint.id === endpoint.id ? "border-swiss-white" : "border-swiss-black"
+                          selectedEndpoint.id === endpoint.id ? "border-white dark:border-black" : "border-black dark:border-white"
                         )}>
                           {endpoint.method}
                         </span>
@@ -504,12 +501,12 @@ export default function ApiDocsPage() {
                 </div>
               </div>
 
-              <SwissCard className="p-6 border-4 border-swiss-black bg-swiss-muted/30 italic">
+              <SwissCard className="p-6 border-4 border-black dark:border-white bg-neutral-100 dark:bg-neutral-900 italic">
                 <div className="flex items-center gap-2 mb-2">
                   < Book className="h-4 w-4 text-swiss-red" />
-                  <span className="text-[10px] font-black uppercase tracking-widest">PROTOCOL_INFO</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white">PROTOCOL_INFO</span>
                 </div>
-                <p className="text-[10px] font-bold uppercase tracking-tight leading-relaxed">
+                <p className="text-[10px] font-bold uppercase tracking-tight leading-relaxed text-black dark:text-white">
                   ALL_REQUESTS_MUST_INCLUDE_AUTHENTICATION_IDENTIFIERS_AND_CONTENT-TYPE_DEFINITIONS.
                 </p>
               </SwissCard>
@@ -517,44 +514,44 @@ export default function ApiDocsPage() {
 
             {/* Main Content Area */}
             <div className="lg:col-span-3 space-y-12">
-              <div className="space-y-8 pb-12 border-b-4 border-swiss-black border-dotted">
+              <div className="space-y-8 pb-12 border-b-4 border-black dark:border-white border-dotted">
                 <div className="flex items-center gap-4">
-                  <span className="text-2xl font-black uppercase px-4 py-1 bg-swiss-black text-swiss-white italic">{selectedEndpoint.method}</span>
-                  <code className="text-xl font-black tracking-tighter italic bg-swiss-muted px-4 py-1 border-2 border-swiss-black">
+                  <span className="text-2xl font-black uppercase px-4 py-1 bg-black dark:bg-white text-white dark:text-black italic">{selectedEndpoint.method}</span>
+                  <code className="text-xl font-black tracking-tighter italic bg-neutral-100 dark:bg-neutral-900 px-4 py-1 border-2 border-black dark:border-white text-black dark:text-white">
                     {selectedEndpoint.endpoint}
                   </code>
                 </div>
-                <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic underline decoration-swiss-red decoration-8 underline-offset-8">
+                <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter italic underline decoration-swiss-red decoration-8 underline-offset-8 text-black dark:text-white">
                   {selectedEndpoint.name}
                 </h2>
-                <p className="text-xl font-bold uppercase tracking-tight opacity-40 italic">
+                <p className="text-xl font-bold uppercase tracking-tight opacity-40 italic text-black dark:text-white">
                   {selectedEndpoint.description}
                 </p>
 
                 {/* Parameters Table */}
                 {selectedEndpoint.parameters.length > 0 && (
                   <div className="space-y-4 pt-8">
-                    <h4 className="text-xs font-black uppercase tracking-[0.4em]">PARAMETER_DEFINITIONS:</h4>
-                    <div className="border-4 border-swiss-black divide-y-4 divide-swiss-black overflow-hidden">
+                    <h4 className="text-xs font-black uppercase tracking-[0.4em] text-black dark:text-white">PARAMETER_DEFINITIONS:</h4>
+                    <div className="border-4 border-black dark:border-white divide-y-4 divide-black dark:divide-white overflow-hidden">
                       {selectedEndpoint.parameters.map((param) => (
-                        <div key={param.name} className="flex flex-col md:flex-row divide-y-4 md:divide-y-0 md:divide-x-4 divide-swiss-black bg-swiss-white">
-                          <div className="p-6 md:w-1/4 bg-swiss-muted/30">
+                        <div key={param.name} className="flex flex-col md:flex-row divide-y-4 md:divide-y-0 md:divide-x-4 divide-black dark:divide-white bg-white dark:bg-black">
+                          <div className="p-6 md:w-1/4 bg-neutral-100 dark:bg-neutral-900">
                             <div className="flex flex-col gap-2">
-                              <code className="font-black text-lg italic">{param.name}</code>
+                              <code className="font-black text-lg italic text-black dark:text-white">{param.name}</code>
                               <span className={cn(
                                 "text-[8px] font-black uppercase px-2 py-0.5 border-2 w-fit",
-                                param.required ? "bg-swiss-red text-swiss-white border-swiss-red" : "border-swiss-black opacity-40"
+                                param.required ? "bg-swiss-red text-white border-swiss-red" : "border-black dark:border-white opacity-40 text-black dark:text-white"
                               )}>
                                 {param.required ? "REQUIRED" : "OPTIONAL"}
                               </span>
                             </div>
                           </div>
                           <div className="p-6 md:w-1/2 flex flex-col justify-center">
-                            <p className="text-xs font-black uppercase tracking-widest leading-relaxed">{param.description}</p>
+                            <p className="text-xs font-black uppercase tracking-widest leading-relaxed text-black dark:text-white">{param.description}</p>
                           </div>
-                          <div className="p-6 md:w-1/4 bg-swiss-muted/10 flex flex-col justify-center">
-                            <span className="text-[8px] font-black uppercase opacity-20 mb-1">EXAMPLE</span>
-                            <code className="text-[10px] font-black italic">{JSON.stringify(param.example)}</code>
+                          <div className="p-6 md:w-1/4 bg-neutral-100/30 dark:bg-neutral-900/30 flex flex-col justify-center">
+                            <span className="text-[8px] font-black uppercase opacity-20 mb-1 text-black dark:text-white">EXAMPLE</span>
+                            <code className="text-[10px] font-black italic text-black dark:text-white">{JSON.stringify(param.example)}</code>
                           </div>
                         </div>
                       ))}
@@ -570,29 +567,29 @@ export default function ApiDocsPage() {
                 <TabsList className="flex bg-transparent p-0 gap-4 mb-8">
                   <TabsTrigger
                     value="playground"
-                    className="flex-1 h-14 border-4 border-swiss-black font-black uppercase tracking-widest italic data-[state=active]:bg-swiss-red data-[state=active]:text-swiss-white transition-all rounded-none"
+                    className="flex-1 h-14 border-4 border-black dark:border-white font-black uppercase tracking-widest italic data-[state=active]:bg-swiss-red data-[state=active]:text-white transition-all rounded-none text-black dark:text-white"
                   >
                     NEURAL_PLAYGROUND
                   </TabsTrigger>
                   <TabsTrigger
                     value="examples"
-                    className="flex-1 h-14 border-4 border-swiss-black font-black uppercase tracking-widest italic data-[state=active]:bg-swiss-black data-[state=active]:text-swiss-white transition-all rounded-none"
+                    className="flex-1 h-14 border-4 border-black dark:border-white font-black uppercase tracking-widest italic data-[state=active]:bg-black dark:data-[state=active]:bg-white data-[state=active]:text-white dark:data-[state=active]:text-black transition-all rounded-none text-black dark:text-white"
                   >
                     CODE_FRAGMENTS
                   </TabsTrigger>
                 </TabsList>
 
                 {/* Playground */}
-                <TabsContent value="playground" className="mt-0 ring-offset-swiss-white focus-visible:ring-0">
-                  <SwissCard className="p-10 border-4 border-swiss-black shadow-[16px_16px_0_0_rgba(0,0,0,1)] bg-swiss-white space-y-10">
+                <TabsContent value="playground" className="mt-0 ring-offset-white dark:ring-offset-black focus-visible:ring-0">
+                  <SwissCard className="p-10 border-4 border-black dark:border-white shadow-[16px_16px_0_0_rgba(0,0,0,1)] dark:shadow-[16px_16px_0_0_rgba(255,255,255,1)] bg-white dark:bg-black space-y-10">
                     <div className="space-y-2">
-                      <Label className="text-xs font-black uppercase tracking-[0.3em]">AUTHENTICATION_IDENTIFIER</Label>
+                      <Label className="text-xs font-black uppercase tracking-[0.3em] text-black dark:text-white">AUTHENTICATION_IDENTIFIER</Label>
                       <Input
                         type="password"
                         placeholder="ENTER_API_KEY..."
                         value={apiKey}
                         onChange={(e) => setApiKey(e.target.value)}
-                        className="h-16 px-6 text-xl font-black uppercase border-4 border-swiss-black bg-swiss-muted focus-visible:bg-swiss-white focus-visible:ring-0 transition-all rounded-none"
+                        className="h-16 px-6 text-xl font-black uppercase border-4 border-black dark:border-white bg-neutral-100 dark:bg-neutral-900 focus-visible:bg-white dark:focus-visible:bg-black focus-visible:ring-0 transition-all rounded-none text-black dark:text-white"
                       />
                     </div>
 
@@ -600,7 +597,7 @@ export default function ApiDocsPage() {
                       <div className="grid md:grid-cols-2 gap-8">
                         {selectedEndpoint.parameters.map((param) => (
                           <div key={param.name} className="space-y-2">
-                            <Label className="text-xs font-black uppercase tracking-[0.3em] flex justify-between">
+                            <Label className="text-xs font-black uppercase tracking-[0.3em] flex justify-between text-black dark:text-white">
                               {param.name}
                               {param.required && <span className="text-swiss-red italic">REQUIRED</span>}
                             </Label>
@@ -613,7 +610,7 @@ export default function ApiDocsPage() {
                                   [param.name]: e.target.value,
                                 }))
                               }
-                              className="h-14 px-4 font-black uppercase border-2 border-swiss-black bg-swiss-white focus-visible:ring-0 rounded-none"
+                              className="h-14 px-4 font-black uppercase border-2 border-black dark:border-white bg-white dark:bg-black focus-visible:ring-0 rounded-none text-black dark:text-white"
                             />
                           </div>
                         ))}
@@ -623,20 +620,20 @@ export default function ApiDocsPage() {
                     <SwissButton
                       onClick={handlePlaygroundTest}
                       disabled={isLoading}
-                      className="w-full h-20 text-2xl"
+                      className="w-full h-20 text-2xl dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]"
                     >
-                      {isLoading ? <Loader2 className="h-8 w-8 animate-spin text-swiss-white" /> : "EXECUTE_NETWORK_TEST"}
+                      {isLoading ? <Loader2 className="h-8 w-8 animate-spin text-white" /> : "EXECUTE_NETWORK_TEST"}
                     </SwissButton>
 
                     {playgroundResponse && (
-                      <div className="space-y-4 pt-10 border-t-4 border-swiss-black border-dotted">
+                      <div className="space-y-4 pt-10 border-t-4 border-black dark:border-white border-dotted">
                         <div className="flex items-center justify-between">
-                          <h4 className="text-xs font-black uppercase tracking-[0.2em]">
-                            OUTPUT_STREAM // STATUS_{playgroundResponse.status}
+                          <h4 className="text-xs font-black uppercase tracking-[0.2em] text-black dark:text-white">
+                            OUTPUT_STREAM {"//"} STATUS_{playgroundResponse.status}
                           </h4>
                           <SwissButton size="sm" variant="secondary" onClick={() => copyToClipboard(JSON.stringify(playgroundResponse, null, 2))}>COPY</SwissButton>
                         </div>
-                        <div className="p-6 bg-swiss-black border-4 border-swiss-black overflow-x-auto shadow-[8px_8px_0_0_rgba(255,0,0,1)]">
+                        <div className="p-6 bg-black dark:bg-neutral-900 border-4 border-black dark:border-white overflow-x-auto shadow-[8px_8px_0_0_rgba(255,0,0,1)]">
                           <SyntaxHighlighter
                             language="json"
                             style={vscDarkPlus}
@@ -651,19 +648,19 @@ export default function ApiDocsPage() {
                 </TabsContent>
 
                 {/* Code Examples */}
-                <TabsContent value="examples" className="mt-0 border-0 ring-offset-swiss-white focus-visible:ring-0">
-                  <SwissCard className="p-10 border-4 border-swiss-black shadow-[16px_16px_0_0_rgba(0,0,0,1)] bg-swiss-black space-y-8">
+                <TabsContent value="examples" className="mt-0 border-0 ring-offset-white dark:ring-offset-black focus-visible:ring-0">
+                  <SwissCard className="p-10 border-4 border-black dark:border-white shadow-[16px_16px_0_0_rgba(0,0,0,1)] dark:shadow-[16px_16px_0_0_rgba(255,255,255,1)] bg-black dark:bg-neutral-900 space-y-8">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                       <div className="space-y-2 flex-1">
-                        <Label className="text-xs font-black uppercase tracking-[0.3em] text-swiss-white/40">LANGUAGE_SELECTOR</Label>
+                        <Label className="text-xs font-black uppercase tracking-[0.3em] text-white/40">LANGUAGE_SELECTOR</Label>
                         <Select
                           value={selectedLanguage}
                           onValueChange={setSelectedLanguage}
                         >
-                          <SelectTrigger className="h-14 px-6 text-lg font-black uppercase border-2 border-swiss-white bg-transparent text-swiss-white rounded-none focus:ring-0">
+                          <SelectTrigger className="h-14 px-6 text-lg font-black uppercase border-2 border-white bg-transparent text-white rounded-none focus:ring-0">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent className="bg-swiss-black border-2 border-swiss-white text-swiss-white rounded-none">
+                          <SelectContent className="bg-black dark:bg-black border-2 border-white dark:border-white text-white rounded-none">
                             <SelectItem value="curl" className="focus:bg-swiss-red">CURL</SelectItem>
                             <SelectItem value="javascript" className="focus:bg-swiss-red">JAVASCRIPT</SelectItem>
                             <SelectItem value="python" className="focus:bg-swiss-red">PYTHON</SelectItem>
@@ -674,7 +671,7 @@ export default function ApiDocsPage() {
                       <SwissButton variant="secondary" onClick={() => copyToClipboard(generateCodeSnippet())}>COPY_FRAGMENT</SwissButton>
                     </div>
 
-                    <div className="p-6 bg-swiss-black/50 border-2 border-swiss-white/10 overflow-x-auto">
+                    <div className="p-6 bg-black/50 border-2 border-white/10 overflow-x-auto">
                       <SyntaxHighlighter
                         language={selectedLanguage === "curl" ? "bash" : selectedLanguage}
                         style={vscDarkPlus}
@@ -690,18 +687,18 @@ export default function ApiDocsPage() {
 
               {/* Authentication & Errors Cluster */}
               <div className="grid md:grid-cols-2 gap-8 pt-12">
-                <SwissCard className="p-8 border-4 border-swiss-black bg-swiss-white">
+                <SwissCard className="p-8 border-4 border-black dark:border-white bg-white dark:bg-black">
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="p-3 bg-swiss-black text-swiss-white">
+                    <div className="p-3 bg-black dark:bg-white text-white dark:text-black">
                       <Key className="h-6 w-6" />
                     </div>
-                    <h3 className="text-xl font-black uppercase tracking-tighter italic">NEURAL_ACCESS</h3>
+                    <h3 className="text-xl font-black uppercase tracking-tighter italic text-black dark:text-white">NEURAL_ACCESS</h3>
                   </div>
                   <div className="space-y-4">
-                    <p className="text-xs font-bold uppercase tracking-tight opacity-60">
+                    <p className="text-xs font-bold uppercase tracking-tight opacity-60 text-black dark:text-white">
                       REQUEST_HEADERS_REQUIRE_AUTHENTICATION_TOKENS:
                     </p>
-                    <code className="block bg-swiss-muted p-4 border-2 border-swiss-black font-black text-xs italic">
+                    <code className="block bg-neutral-100 dark:bg-neutral-900 p-4 border-2 border-black dark:border-white font-black text-xs italic text-black dark:text-white">
                       X-API-KEY: YOUR_IDENTIFIER
                     </code>
                     <div className="flex items-start gap-3 mt-4 p-4 bg-swiss-red/10 border-l-4 border-swiss-red">
@@ -713,7 +710,7 @@ export default function ApiDocsPage() {
                   </div>
                 </SwissCard>
 
-                <SwissCard className="p-8 border-4 border-swiss-black bg-swiss-black text-swiss-white">
+                <SwissCard className="p-8 border-4 border-black dark:border-white bg-black dark:bg-neutral-900 text-white">
                   <h3 className="text-xl font-black uppercase tracking-tighter italic mb-6">PROTOCOL_ERRORS</h3>
                   <div className="space-y-3">
                     {[
@@ -722,7 +719,7 @@ export default function ApiDocsPage() {
                       { code: "429", msg: "THROUGHPUT_LIMIT_EXCEEDED" },
                       { code: "400", msg: "MALFORMED_INPUT_PARAMETERS" },
                     ].map((err) => (
-                      <div key={err.code} className="flex items-center gap-4 border-b border-swiss-white/10 pb-2">
+                      <div key={err.code} className="flex items-center gap-4 border-b border-white/10 pb-2">
                         <span className="text-swiss-red font-black text-lg italic">{err.code}</span>
                         <span className="text-[10px] font-black uppercase tracking-widest opacity-60">{err.msg}</span>
                       </div>

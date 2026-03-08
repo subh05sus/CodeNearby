@@ -79,7 +79,7 @@ export default function ReportIssuePage() {
   };
 
   return (
-    <div className="bg-swiss-white min-h-screen">
+    <div className="bg-white dark:bg-black min-h-screen transition-colors duration-300">
       <SwissSection
         number="01"
         title="REPORT"
@@ -89,13 +89,13 @@ export default function ReportIssuePage() {
         <div className="grid md:grid-cols-12 gap-12">
           <div className="md:col-span-4 self-start">
             <SwissCard variant="accent" pattern="dots">
-              <AlertCircle className="h-12 w-12 mb-6" />
-              <h4 className="text-2xl font-black uppercase mb-4 tracking-tighter">System Integrity</h4>
-              <p className="text-lg font-bold uppercase leading-tight mb-8">
+              <AlertCircle className="h-12 w-12 mb-6 text-white transition-colors" />
+              <h4 className="text-2xl font-black uppercase mb-4 tracking-tighter text-white transition-colors">System Integrity</h4>
+              <p className="text-lg font-bold uppercase leading-tight mb-8 text-white transition-colors">
                 PLEASE PROVIDE PRECISE DETAILS REGARDING THE TECHNICAL ANOMALY DETECTED.
               </p>
-              <div className="border-t-4 border-swiss-white pt-6">
-                <p className="text-sm font-black uppercase tracking-widest">Protocol: Debug-01</p>
+              <div className="border-t-4 border-white/20 pt-6">
+                <p className="text-sm font-black uppercase tracking-widest text-white/80 transition-colors">Protocol: Debug-01</p>
               </div>
             </SwissCard>
           </div>
@@ -104,19 +104,19 @@ export default function ReportIssuePage() {
             <SwissCard variant="white">
               <form onSubmit={handleSubmit} className="space-y-8">
                 <div className="space-y-2">
-                  <label htmlFor="title" className="text-sm font-black uppercase tracking-widest">Title</label>
+                  <label htmlFor="title" className="text-sm font-black uppercase tracking-widest text-black dark:text-white">Title</label>
                   <input
                     id="title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     required
                     placeholder="ENTER ISSUE TITLE..."
-                    className="w-full bg-swiss-white border-4 border-swiss-black p-4 font-bold uppercase tracking-tight focus:bg-swiss-black focus:text-swiss-white transition-colors outline-none"
+                    className="w-full bg-white dark:bg-black border-4 border-black dark:border-white p-4 font-bold uppercase tracking-tight focus:bg-black focus:text-white dark:focus:bg-white dark:focus:text-black transition-colors outline-none text-black dark:text-white"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="description" className="text-sm font-black uppercase tracking-widest">Description</label>
+                  <label htmlFor="description" className="text-sm font-black uppercase tracking-widest text-black dark:text-white">Description</label>
                   <textarea
                     id="description"
                     value={description}
@@ -124,12 +124,12 @@ export default function ReportIssuePage() {
                     required
                     placeholder="DESCRIBE THE ANOMALY IN DETAIL..."
                     rows={5}
-                    className="w-full bg-swiss-white border-4 border-swiss-black p-4 font-bold uppercase tracking-tight focus:bg-swiss-black focus:text-swiss-white transition-colors outline-none resize-none"
+                    className="w-full bg-white dark:bg-black border-4 border-black dark:border-white p-4 font-bold uppercase tracking-tight focus:bg-black focus:text-white dark:focus:bg-white dark:focus:text-black transition-colors outline-none resize-none text-black dark:text-white"
                   />
                 </div>
 
                 <div className="space-y-4">
-                  <label className="text-sm font-black uppercase tracking-widest">Media Attachments (Optional)</label>
+                  <label className="text-sm font-black uppercase tracking-widest text-black dark:text-white">Media Attachments (Optional)</label>
                   <div className="flex flex-col gap-4">
                     <SwissButton
                       type="button"
@@ -153,7 +153,7 @@ export default function ReportIssuePage() {
                   {images.length > 0 && (
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
                       {images.map((image, index) => (
-                        <div className="relative border-4 border-swiss-black" key={index}>
+                        <div className="relative border-4 border-black dark:border-white" key={index}>
                           <Image
                             src={URL.createObjectURL(image)}
                             alt={`Preview ${index + 1}`}
@@ -163,7 +163,7 @@ export default function ReportIssuePage() {
                           />
                           <button
                             type="button"
-                            className="absolute -top-4 -right-4 w-8 h-8 bg-swiss-red text-swiss-white font-black border-4 border-swiss-black flex items-center justify-center hover:bg-swiss-black transition-colors"
+                            className="absolute -top-4 -right-4 w-8 h-8 bg-swiss-red text-white font-black border-4 border-black dark:border-white flex items-center justify-center hover:bg-black dark:hover:bg-white dark:hover:text-black transition-colors"
                             onClick={() => setImages(images.filter((_, i) => i !== index))}
                           >
                             ×
@@ -174,8 +174,8 @@ export default function ReportIssuePage() {
                   )}
                 </div>
 
-                <div className="pt-8 border-t-4 border-swiss-black">
-                  <SwissButton type="submit" disabled={isLoading} variant="primary" size="xl" className="w-full">
+                <div className="pt-8 border-t-4 border-black dark:border-white">
+                  <SwissButton type="submit" disabled={isLoading} variant="primary" size="xl" className="w-full dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
                     {isLoading ? (
                       <>
                         <Loader2 className="mr-2 h-6 w-6 animate-spin" />

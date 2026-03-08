@@ -14,12 +14,10 @@ import {
   LinkIcon,
   Github,
   Twitter,
-  Eye,
   MessageSquare,
   Building,
   MapPin,
   Activity,
-  UserPlus,
   Trash2,
   Calendar,
   Pin,
@@ -35,12 +33,6 @@ import { Session } from "next-auth";
 import { fetchGitHubActivities } from "@/lib/github";
 import { formatDistanceToNow } from "date-fns";
 import LoginButton from "@/components/login-button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/HoverCard";
 import ProfileHeader from "@/components/home/ProfileHeader";
 import { MasonryGrid } from "@/components/masonry-grid";
 import { toast } from "sonner";
@@ -486,7 +478,7 @@ export default function ProfilePage() {
 
               {profile?.githubBio && (
                 <p className="mt-6 max-w-2xl font-bold uppercase tracking-tight text-lg leading-tight opacity-80 italic">
-                  "{profile.githubBio}"
+                  &ldquo;{profile.githubBio}&ldquo;
                 </p>
               )}
             </div>

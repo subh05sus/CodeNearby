@@ -12,10 +12,8 @@ import {
   MapPin,
   Users,
   User,
-  MessageCircle,
   Bot,
   X,
-  Zap,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { AnimatePresence, motion } from "framer-motion";
@@ -91,7 +89,7 @@ export default function AIConnectAboutPage() {
             { icon: Search, title: "NEURAL_SEARCH", desc: "IDENTIFY DEVELOPERS BY STACK, LOGIC, OR INFRASTRUCTURE INTERESTS. SEARCH FOR EXPERTS IN REACT, PYTHON, AND NEURAL NETS." },
             { icon: MapPin, title: "GEOLOCATION_SYNC", desc: "LOCATE NODES WITHIN YOUR PHYSICAL PROXIMITY OR SPECIFIC GLOBAL COORDINATES. REMOTE COLLABORATION OPTIMIZED." },
             { icon: User, title: "INTEL_REPORTS", desc: "ACCESS COMPREHENSIVE DATA ON ENTITIES INCLUDING REPOSITORY METRICS, FOLLOWER VELOCITY, AND CONTRIBUTION LOAD." }
-          ].map((feature, i) => (
+          ].map((feature) => (
             <SwissCard key={feature.title} className="p-10 border-4 border-swiss-black shadow-[12px_12px_0_0_rgba(255,0,0,1)] hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all">
               <div className="space-y-6">
                 <div className="inline-block p-4 bg-swiss-black text-swiss-white">

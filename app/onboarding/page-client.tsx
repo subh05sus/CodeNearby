@@ -179,9 +179,9 @@ export default function OnboardingPage({
   };
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-6rem)] bg-swiss-white dark:bg-black transition-colors duration-300">
+    <div className="flex flex-col min-h-[calc(100vh-6rem)] bg-white dark:bg-black transition-colors duration-300">
       {/* Header with Step Indicator */}
-      <div className="py-12 px-4 md:px-8 border-b-8 border-swiss-black dark:border-white sticky top-0 z-10 bg-swiss-white dark:bg-black/95 backdrop-blur-md">
+      <div className="py-12 px-4 md:px-8 border-b-8 border-black dark:border-white sticky top-0 z-10 bg-white dark:bg-black/95 backdrop-blur-md">
         <div className="max-w-6xl mx-auto w-full">
           <div className="flex justify-between items-center mb-12">
             <div className="flex items-center gap-4">
@@ -206,10 +206,10 @@ export default function OnboardingPage({
                   className={cn(
                     "w-14 h-14 border-4 transition-all duration-300 flex items-center justify-center mb-3",
                     i < currentStep
-                      ? "bg-swiss-black dark:bg-white border-swiss-black dark:border-white text-swiss-white dark:text-black"
+                      ? "bg-black dark:bg-white border-black dark:border-white text-white dark:text-black"
                       : i === currentStep
-                        ? "bg-swiss-red border-swiss-black dark:border-white text-swiss-white dark:text-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] dark:shadow-[6px_6px_0_0_rgba(255,255,255,1)]"
-                        : "bg-swiss-white dark:bg-black border-swiss-muted dark:border-white/20 text-swiss-muted dark:text-white/20"
+                        ? "bg-swiss-red border-black dark:border-white text-white dark:text-black shadow-[6px_6px_0_0_rgba(0,0,0,1)] dark:shadow-[6px_6px_0_0_rgba(255,255,255,1)]"
+                        : "bg-white dark:bg-black border-neutral-200 dark:border-white/20 text-neutral-400 dark:text-white/20"
                   )}
                 >
                   {i < currentStep ? (
@@ -229,9 +229,9 @@ export default function OnboardingPage({
 
                 {/* Connecting Line Segment */}
                 {i < steps.length - 1 && (
-                  <div className="absolute top-7 left-[calc(50%+28px)] w-[calc(100%)] h-1 bg-swiss-muted -z-10 group-first:ml-0">
+                  <div className="absolute top-7 left-[calc(50%+28px)] w-[calc(100%)] h-1 bg-neutral-100 dark:bg-white/10 -z-10 group-first:ml-0">
                     <div
-                      className="h-full bg-swiss-black dark:bg-white transition-all duration-500"
+                      className="h-full bg-black dark:bg-white transition-all duration-500"
                       style={{ width: i < currentStep ? '100%' : '0%' }}
                     />
                   </div>
@@ -246,7 +246,7 @@ export default function OnboardingPage({
               <h2 className="text-3xl font-black uppercase tracking-tighter italic leading-none text-black dark:text-white">{steps[currentStep].name}</h2>
               <span className="font-black text-swiss-red italic">0{currentStep + 1}</span>
             </div>
-            <div className="w-full h-4 bg-swiss-muted dark:bg-white/10 border-2 border-swiss-black dark:border-white">
+            <div className="w-full h-4 bg-neutral-100 dark:bg-white/10 border-2 border-black dark:border-white">
               <div
                 className="h-full bg-swiss-red transition-all duration-500"
                 style={{ width: `${progress}%` }}
@@ -273,7 +273,7 @@ export default function OnboardingPage({
         </div>
 
         {/* Footer Actions */}
-        <div className="border-t-8 border-swiss-black dark:border-white py-12 px-4 md:px-8 bg-swiss-white dark:bg-black sticky bottom-0">
+        <div className="border-t-8 border-black dark:border-white py-12 px-4 md:px-8 bg-white dark:bg-black sticky bottom-0">
           <div className="max-w-6xl mx-auto w-full flex justify-between items-center">
             <div>
               {currentStep > 0 && (
@@ -300,7 +300,7 @@ export default function OnboardingPage({
                         BYPASS_FLOW <ArrowRight className="h-3 w-3" />
                       </button>
                     </DialogTrigger>
-                    <DialogContent className="border-8 border-swiss-black dark:border-white p-12 bg-swiss-white dark:bg-black rounded-none">
+                    <DialogContent className="border-8 border-black dark:border-white p-12 bg-white dark:bg-black rounded-none">
                       <DialogHeader className="p-0 space-y-6">
                         <DialogTitle className="text-5xl font-black uppercase tracking-tighter italic leading-tight text-black dark:text-white">ABORT_ONBOARDING?</DialogTitle>
                         <DialogDescription className="text-lg font-bold uppercase tracking-tight opacity-60 dark:opacity-80 italic text-black dark:text-white">
@@ -331,13 +331,13 @@ export default function OnboardingPage({
                       <TooltipTrigger asChild>
                         <SwissButton
                           onClick={nextStep}
-                          className="h-20 px-12 text-xl font-black uppercase tracking-widest border-4 bg-swiss-red text-swiss-white dark:text-black hover:shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0_0_rgba(255,255,255,1)] group"
+                          className="h-20 px-12 text-xl font-black uppercase tracking-widest border-4 bg-swiss-red text-white dark:text-black hover:shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0_0_rgba(255,255,255,1)] group"
                         >
                           <span>CONTINUE</span>
                           <ChevronRight className="h-6 w-6 ml-2 transition-transform group-hover:translate-x-1" />
                         </SwissButton>
                       </TooltipTrigger>
-                      <TooltipContent className="bg-swiss-black dark:bg-white text-swiss-white dark:text-black border-0 font-black uppercase tracking-widest p-4 italic">
+                      <TooltipContent className="bg-black dark:bg-white text-white dark:text-black border-0 font-black uppercase tracking-widest p-4 italic">
                         MOVE_TO: {steps[currentStep + 1]?.name}
                       </TooltipContent>
                     </Tooltip>
@@ -351,7 +351,7 @@ export default function OnboardingPage({
                 >
                   {isLoading ? (
                     <div className="flex items-center gap-4">
-                      <div className="animate-spin h-6 w-6 border-4 border-swiss-white dark:border-black border-t-transparent" />
+                      <div className="animate-spin h-6 w-6 border-4 border-white dark:border-black border-t-transparent" />
                       <span>SYNCHRONIZING...</span>
                     </div>
                   ) : (

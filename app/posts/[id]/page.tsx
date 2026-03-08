@@ -47,6 +47,8 @@ interface Poll {
   votes: Record<string, number>;
 }
 
+import SwissSection from "@/components/swiss/SwissSection";
+
 export default function FeedPage() {
   const { id } = useParams();
   const { data: session } = useSession();
@@ -263,29 +265,38 @@ export default function FeedPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto">
-      {loading ? (
-        <div className="flex justify-center my-4">
-          <Loader2 className="h-6 w-6 animate-spin" />
-        </div>
-      ) : (
-        <div>
-          {post ? (
-            <PostCard
-              key={post._id}
-              post={post}
-              onVote={handleVote}
-              onAddComment={handleAddComment}
-              onVotePoll={handleVotePoll}
-              onCommentVote={handleCommentVote}
-            />
+    <div className="bg-white dark:bg-black min-h-screen transition-colors duration-300">
+      <SwissSection
+        number="01"
+        title="POST_DETAIL"
+        variant="white"
+        pattern="grid"
+      >
+        <div className="max-w-4xl mx-auto">
+          {loading ? (
+            <div className="flex justify-center py-20">
+              <Loader2 className="h-16 w-16 animate-spin text-swiss-red" />
+            </div>
           ) : (
-            <div className="flex flex-col items-center justify-center min-h-[50vh]">
-              <h1 className="text-2xl font-bold mb-4">Post Not Found</h1>
+            <div className="pb-24">
+              {post ? (
+                <PostCard
+                  key={post._id}
+                  post={post}
+                  onVote={handleVote}
+                  onAddComment={handleAddComment}
+                  onVotePoll={handleVotePoll}
+                  onCommentVote={handleCommentVote}
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center min-h-[40vh] border-8 border-black dark:border-white p-12">
+                  <h1 className="text-6xl font-black uppercase tracking-tighter text-black dark:text-white opacity-20">POST_NOT_FOUND</h1>
+                </div>
+              )}
             </div>
           )}
         </div>
-      )}
+      </SwissSection>
     </div>
   );
 }

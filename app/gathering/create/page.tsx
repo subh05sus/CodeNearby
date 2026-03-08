@@ -18,7 +18,6 @@ import { Loader2, Users2, Clock, Sparkles } from "lucide-react";
 import LoginButton from "@/components/login-button";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 
 const expirationOptions = [
   { value: "1h", label: "1 HOUR" },
@@ -77,12 +76,12 @@ export default function CreateGatheringPage() {
 
   if (!session) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[70vh] p-8">
-        <div className="border-8 border-swiss-black p-12 bg-swiss-white text-center shadow-[12px_12px_0_0_rgba(0,0,0,1)]">
-          <h1 className="font-black text-6xl uppercase tracking-tighter mb-6 leading-none">
+      <div className="flex flex-col items-center justify-center min-h-[70vh] p-8 bg-white dark:bg-black transition-colors duration-300">
+        <div className="border-8 border-black dark:border-white p-12 bg-white dark:bg-black text-center shadow-[12px_12px_0_0_rgba(0,0,0,1)] dark:shadow-[12px_12px_0_0_rgba(255,255,255,1)] transition-colors">
+          <h1 className="font-black text-6xl uppercase tracking-tighter mb-6 leading-none text-black dark:text-white">
             ACCESS<br />RESTRICTED
           </h1>
-          <p className="font-bold uppercase tracking-tight text-xl mb-8 opacity-60">
+          <p className="font-bold uppercase tracking-tight text-xl mb-8 opacity-60 text-black dark:text-white">
             SIGN IN TO CREATE GATHERINGS
           </p>
           <div className="flex justify-center">
@@ -94,11 +93,11 @@ export default function CreateGatheringPage() {
   }
 
   return (
-    <div className="bg-swiss-white min-h-screen pb-24">
+    <div className="bg-white dark:bg-black min-h-screen pb-24 transition-colors duration-300">
       {/* Swiss Header */}
-      <div className="border-b-8 border-swiss-black bg-swiss-white sticky top-0 z-20">
+      <div className="border-b-8 border-black dark:border-white bg-white dark:bg-black sticky top-0 z-20 transition-colors">
         <div className="max-w-7xl mx-auto px-6 py-8">
-          <h1 className="font-black text-8xl uppercase tracking-tighter leading-[0.8] mb-2">
+          <h1 className="font-black text-8xl uppercase tracking-tighter leading-[0.8] mb-2 text-black dark:text-white">
             INITIATE<br />SESSION
           </h1>
           <p className="font-bold uppercase tracking-[0.2em] text-xs text-swiss-red">
@@ -108,14 +107,14 @@ export default function CreateGatheringPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-12 flex justify-center">
-        <div className="w-full max-w-2xl bg-swiss-white border-8 border-swiss-black p-12 shadow-[24px_24px_0_0_rgba(0,0,0,1)]">
-          <div className="mb-12 border-l-8 border-swiss-black pl-8">
-            <h2 className="font-black text-4xl uppercase tracking-tighter mb-2">GATHER_POINT_CONFIG</h2>
+        <div className="w-full max-w-2xl bg-white dark:bg-black border-8 border-black dark:border-white p-12 shadow-[24px_24px_0_0_rgba(0,0,0,1)] dark:shadow-[24px_24px_0_0_rgba(255,255,255,1)] transition-colors">
+          <div className="mb-12 border-l-8 border-black dark:border-white pl-8 transition-colors">
+            <h2 className="font-black text-4xl uppercase tracking-tighter mb-2 text-black dark:text-white">GATHER_POINT_CONFIG</h2>
             <p className="font-bold uppercase tracking-widest text-xs text-swiss-red">ESTABLISHING_PEER_NETWORK</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-10">
-            <div className="space-y-4">
+            <div className="space-y-4 text-black dark:text-white">
               <label htmlFor="name" className="font-black text-xs uppercase tracking-widest flex items-center gap-2">
                 <Users2 className="h-4 w-4 text-swiss-red" /> GATHERING_NAME
               </label>
@@ -125,21 +124,21 @@ export default function CreateGatheringPage() {
                 onChange={(e) => setName(e.target.value)}
                 required
                 placeholder="IDENTIFIER..."
-                className="h-16 px-6 bg-swiss-white border-4 border-swiss-black rounded-none font-black uppercase tracking-tight focus:bg-swiss-muted transition-colors outline-none text-xl"
+                className="h-16 px-6 bg-white dark:bg-black border-4 border-black dark:border-white rounded-none font-black uppercase tracking-tight focus:bg-gray-100 dark:focus:bg-gray-900 transition-colors outline-none text-xl"
               />
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-4 text-black dark:text-white">
               <label htmlFor="expiration" className="font-black text-xs uppercase tracking-widest flex items-center gap-2">
                 <Clock className="h-4 w-4 text-swiss-red" /> EXPIRATION_PROTOCOL
               </label>
               <Select value={expiration} onValueChange={setExpiration}>
-                <SelectTrigger className="h-16 px-6 bg-swiss-white border-4 border-swiss-black rounded-none font-black uppercase tracking-tight focus:bg-swiss-muted transition-colors outline-none text-xl">
+                <SelectTrigger className="h-16 px-6 bg-white dark:bg-black border-4 border-black dark:border-white rounded-none font-black uppercase tracking-tight focus:bg-gray-100 dark:focus:bg-gray-900 transition-colors outline-none text-xl">
                   <SelectValue placeholder="DURATION..." />
                 </SelectTrigger>
-                <SelectContent className="bg-swiss-white border-4 border-swiss-black rounded-none shadow-[10px_10px_0_0_rgba(0,0,0,1)]">
+                <SelectContent className="bg-white dark:bg-black border-4 border-black dark:border-white rounded-none shadow-[10px_10px_0_0_rgba(0,0,0,1)] dark:shadow-[10px_10px_0_0_rgba(255,255,255,0.4)] transition-colors">
                   {expirationOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value} className="font-black uppercase py-3 hover:bg-swiss-black hover:text-swiss-white transition-colors cursor-pointer rounded-none">
+                    <SelectItem key={option.value} value={option.value} className="font-black uppercase py-3 hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors cursor-pointer rounded-none">
                       {option.label}
                     </SelectItem>
                   ))}
@@ -150,7 +149,7 @@ export default function CreateGatheringPage() {
               </p>
             </div>
 
-            <div className="pt-8 border-t-8 border-swiss-black">
+            <div className="pt-8 border-t-8 border-black dark:border-white transition-colors">
               <SwissButton
                 type="submit"
                 disabled={loading}

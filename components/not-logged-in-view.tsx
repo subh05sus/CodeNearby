@@ -40,7 +40,7 @@ function NotLoggedInView() {
   return (
     <div className="bg-white dark:bg-black min-h-screen selection:bg-swiss-red selection:text-white transition-colors duration-300">
       {/* 01. NAVIGATION & HERO */}
-      <section className="relative h-screen flex flex-col justify-between p-8 border-b-4 border-black dark:border-white overflow-hidden swiss-grid-pattern dark:opacity-20 swiss-noise">
+      <section className="relative h-screen flex flex-col justify-between p-8 border-b-4 border-black dark:border-white overflow-hidden swiss-grid-pattern swiss-noise">
 
         <div className="mt-32 relative z-10 w-full">
           <div className="flex flex-col gap-2 mb-4">
@@ -188,7 +188,7 @@ function NotLoggedInView() {
               />
               <div className="absolute bottom-8 left-8 right-8 bg-white dark:bg-black p-6 border-t-4 border-swiss-red transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
                 <p className="font-black uppercase tracking-widest text-xs mb-2 text-black dark:text-white">Feature Preview</p>
-                <p className="font-bold italic text-lg text-black dark:text-white">"Find a web developers in Kolkata"</p>
+                <p className="font-bold italic text-lg text-black dark:text-white">&ldquo;Find a web developers in Kolkata&ldquo;</p>
               </div>
             </div>
           </div>
@@ -209,7 +209,7 @@ function NotLoggedInView() {
             <div className="md:pt-24">
               <p className="text-xs font-black uppercase tracking-[0.5em] mb-4 opacity-50 dark:opacity-40 italic text-black dark:text-white">I believe</p>
               <blockquote className="text-4xl lg:text-5xl font-black uppercase leading-[0.9] mb-12 text-black dark:text-white">
-                "Connections should be easy to make because <span className="text-swiss-red">great ideas</span> grow faster together..."
+                &ldquo;Connections should be easy to make because <span className="text-swiss-red">great ideas</span> grow faster together...&ldquo;
               </blockquote>
             </div>
           </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, MessageSquare, ChevronRight, Plus, User, Clock } from "lucide-react";
+import { ChevronDown, MessageSquare, Plus, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { formatDistanceToNow } from "date-fns";

@@ -64,7 +64,7 @@ export function ChatList() {
     : [];
 
   return (
-    <div className="divide-y-8 divide-swiss-black">
+    <div className="divide-y-8 divide-black dark:divide-white transition-colors">
       {sortedFriends.length > 0 ? (
         sortedFriends.map((friend) => {
           const isActive = params.id === friend.githubId.toString();
@@ -74,20 +74,20 @@ export function ChatList() {
                 className={cn(
                   "group flex items-center p-6 transition-all duration-200 relative overflow-hidden",
                   isActive
-                    ? "bg-swiss-red text-swiss-white"
-                    : "bg-swiss-white hover:bg-swiss-muted/10"
+                    ? "bg-swiss-red text-white"
+                    : "bg-white dark:bg-black hover:bg-gray-50 dark:hover:bg-gray-950"
                 )}
               >
                 {isActive && (
                   <div className="absolute top-0 right-0 p-2">
-                    <div className="w-2 h-2 bg-swiss-white rounded-full animate-pulse" />
+                    <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
                   </div>
                 )}
 
                 <div className="relative shrink-0 mr-6">
                   <div className={cn(
                     "absolute inset-0 translate-x-1 translate-y-1 -z-10",
-                    isActive ? "bg-swiss-black" : "bg-swiss-red"
+                    isActive ? "bg-black dark:bg-white" : "bg-swiss-red"
                   )} />
                   <Image
                     height={64}
@@ -95,7 +95,7 @@ export function ChatList() {
                     src={friend.image || "/placeholder.svg"}
                     alt={friend.name}
                     className={cn(
-                      "w-16 h-16 border-4 border-swiss-black object-cover transition-all duration-500",
+                      "w-16 h-16 border-4 border-black dark:border-white object-cover transition-all duration-500",
                       isActive ? "grayscale-0" : "grayscale group-hover:grayscale-0"
                     )}
                   />
@@ -105,14 +105,14 @@ export function ChatList() {
                   <div className="flex justify-between items-baseline gap-2">
                     <h3 className={cn(
                       "text-xl font-black uppercase tracking-tighter truncate italic",
-                      isActive ? "text-swiss-white" : "text-swiss-black"
+                      isActive ? "text-white" : "text-black dark:text-white"
                     )}>
                       {friend.name}
                     </h3>
                     {friend.lastMessage?.timestamp && (
                       <span className={cn(
                         "text-[10px] font-black uppercase tracking-widest whitespace-nowrap opacity-60",
-                        isActive ? "text-swiss-white" : "text-swiss-red"
+                        isActive ? "text-white" : "text-swiss-red"
                       )}>
                         {formatDistanceToNow(friend.lastMessage.timestamp, { addSuffix: false })}
                       </span>
@@ -121,7 +121,7 @@ export function ChatList() {
 
                   <p className={cn(
                     "text-xs font-bold uppercase tracking-tight truncate leading-none",
-                    isActive ? "text-swiss-white/80" : "text-swiss-black/40"
+                    isActive ? "text-white/80" : "text-black/40 dark:text-white/40"
                   )}>
                     {(() => {
                       try {
@@ -142,10 +142,10 @@ export function ChatList() {
         })
       ) : (
         <div className="p-12 text-center space-y-6">
-          <div className="inline-block p-4 border-4 border-dashed border-swiss-black opacity-20">
-            <MessageSquare className="h-12 w-12" />
+          <div className="inline-block p-4 border-4 border-dashed border-black dark:border-white opacity-20">
+            <MessageSquare className="h-12 w-12 text-black dark:text-white" />
           </div>
-          <p className="text-xl font-black uppercase tracking-tighter italic opacity-40 leading-tight">
+          <p className="text-xl font-black uppercase tracking-tighter italic opacity-40 leading-tight text-black dark:text-white">
             {
               [
                 "ZERO_CONNECTIONS_DETECTED_MODULE_ISOLATION_ACTIVE",

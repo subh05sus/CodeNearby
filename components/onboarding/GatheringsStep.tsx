@@ -54,8 +54,8 @@ export default function GatheringsStep({
         }}
       >
         <SwissCard className={cn(
-          "border-8 transition-all duration-500 bg-swiss-white dark:bg-black p-10 shadow-[24px_24px_0_0_rgba(0,0,0,1)] dark:shadow-[24px_24px_0_0_rgba(255,255,255,1)]",
-          isJoining ? "border-swiss-black dark:border-white" : "border-swiss-red shadow-[24px_24px_0_0_rgba(255,0,0,1)]"
+          "border-8 transition-all duration-500 bg-white dark:bg-black p-10 shadow-[24px_24px_0_0_rgba(0,0,0,1)] dark:shadow-[24px_24px_0_0_rgba(255,255,255,1)]",
+          isJoining ? "border-black dark:border-white" : "border-swiss-red shadow-[24px_24px_0_0_rgba(255,0,0,1)]"
         )}>
           <div className="flex flex-col gap-8">
             <div className="flex justify-between items-start flex-col md:flex-row md:items-center gap-4">
@@ -65,25 +65,25 @@ export default function GatheringsStep({
               </h3>
 
               <div className={cn(
-                "px-4 py-2 text-sm font-black uppercase tracking-widest border-4",
+                "px-4 py-2 text-sm font-black uppercase tracking-widest border-4 transition-colors",
                 isJoining
-                  ? "bg-swiss-black dark:bg-white text-swiss-white dark:text-black border-swiss-black dark:border-white"
-                  : "bg-swiss-white dark:bg-black text-swiss-red border-swiss-red"
+                  ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white"
+                  : "bg-white dark:bg-black text-swiss-red border-swiss-red"
               )}>
                 {isJoining ? "ACTIVE_MEMBER" : "INACTIVE_STATUS"}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-y-4 border-swiss-black dark:border-white py-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-y-4 border-black dark:border-white py-8 transition-colors">
               <div className="flex items-center gap-4 text-black dark:text-white">
-                <div className="bg-swiss-black dark:bg-white text-swiss-white dark:text-black p-2">
+                <div className="bg-black dark:bg-white text-white dark:text-black p-2 transition-colors">
                   <MapPin className="h-6 w-6" />
                 </div>
                 <span className="text-xl font-black uppercase tracking-tighter italic">GLOBAL // VIRTUAL</span>
               </div>
 
               <div className="flex items-center gap-4 text-black dark:text-white">
-                <div className="bg-swiss-black dark:bg-white text-swiss-white dark:text-black p-2">
+                <div className="bg-black dark:bg-white text-white dark:text-black p-2 transition-colors">
                   <Calendar className="h-6 w-6" />
                 </div>
                 <span className="text-xl font-black uppercase tracking-tighter italic">ALWAYS_ACTIVE</span>
@@ -112,13 +112,13 @@ export default function GatheringsStep({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8, duration: 0.5 }}
       >
-        <div className="flex items-center justify-center gap-8 bg-swiss-black dark:bg-white text-swiss-white dark:text-black p-8 border-4 border-swiss-black dark:border-white w-full shadow-[12px_12px_0_0_rgba(255,0,0,1)]">
+        <div className="flex items-center justify-center gap-8 bg-black dark:bg-white text-white dark:text-black p-8 border-4 border-black dark:border-white w-full shadow-[12px_12px_0_0_rgba(255,0,0,1)] transition-colors">
           <div className="flex items-center gap-4">
             <Switch
               id="join-gathering"
               checked={isJoining}
               onCheckedChange={onJoinChange}
-              className="data-[state=checked]:bg-swiss-red data-[state=unchecked]:bg-swiss-white dark:data-[state=unchecked]:bg-black h-8 w-14"
+              className="data-[state=checked]:bg-swiss-red data-[state=unchecked]:bg-white dark:data-[state=unchecked]:bg-black h-8 w-14"
             />
             <Label
               htmlFor="join-gathering"
@@ -131,11 +131,11 @@ export default function GatheringsStep({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="p-2 border-2 border-swiss-white dark:border-black hover:bg-swiss-white dark:hover:bg-black hover:text-swiss-black dark:hover:text-white transition-colors cursor-help">
+                <div className="p-2 border-2 border-white dark:border-black hover:bg-white dark:hover:bg-black hover:text-black dark:hover:text-white transition-colors cursor-help">
                   <InfoIcon className="h-6 w-6" />
                 </div>
               </TooltipTrigger>
-              <TooltipContent className="bg-swiss-black dark:bg-white text-swiss-white dark:text-black border-2 border-swiss-white dark:border-black p-4 max-w-xs rounded-none">
+              <TooltipContent className="bg-black dark:bg-white text-white dark:text-black border-2 border-white dark:border-black p-4 max-w-xs rounded-none transition-colors">
                 <p className="text-[10px] font-black uppercase tracking-widest">
                   MEMBERSHIP_STATUS_CAN_BE_MODIFIED_IN_CORE_NETWORK_SETTINGS_POST_ONBOARDING.
                 </p>

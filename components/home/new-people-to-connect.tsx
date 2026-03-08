@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { RefreshCw, UserPlus } from "lucide-react";
+import { RefreshCw, UserPlus, Globe } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -59,8 +59,9 @@ export function NewPeopleToConnect() {
 
   return (
     <SwissCard variant="white" pattern="dots" className="h-full">
-      <div className="flex justify-between items-center mb-6 border-b-2 border-black dark:border-white pb-2">
-        <h2 className="text-xl font-black uppercase tracking-widest text-black dark:text-white">
+      <div className="flex justify-between items-center mb-6 border-b-2 border-black dark:border-white pb-2 transition-colors">
+        <h2 className="text-xl font-black uppercase tracking-widest text-black dark:text-white transition-colors flex items-center gap-2">
+          <Globe size={20} className="text-swiss-red" />
           Global Discovery
         </h2>
         <SwissButton variant="secondary" size="sm" onClick={fetchUsers} className="w-10 h-10 p-0">
@@ -93,10 +94,10 @@ export function NewPeopleToConnect() {
                         />
                       </div>
                       <div className="flex flex-col">
-                        <Link href={`/user/${user.githubId}`} className="text-sm font-black uppercase tracking-tight hover:text-swiss-red transition-colors text-black dark:text-white">
-                          {user.name}
+                        <Link href={`/user/${user.githubId}`} className="text-sm font-black uppercase tracking-tight hover:text-swiss-red transition-colors text-black dark:text-white flex flex-col">
+                          <span>{user.name}</span>
+                          <span className="text-[10px] font-bold uppercase tracking-widest opacity-40 dark:opacity-30">@{user.githubUsername}</span>
                         </Link>
-                        <span className="text-[10px] font-bold uppercase tracking-widest opacity-40 dark:opacity-30 text-black dark:text-white">@{user.githubUsername}</span>
                       </div>
                     </div>
                     <SwissButton
@@ -119,7 +120,7 @@ export function NewPeopleToConnect() {
               })}
             </ul>
           ) : (
-            <p className="text-sm font-black uppercase tracking-widest opacity-30 dark:opacity-20 italic py-12 border-2 border-dashed border-black/20 dark:border-white/20 text-center text-black dark:text-white">
+            <p className="text-sm font-black uppercase tracking-widest opacity-30 dark:opacity-20 italic py-12 border-2 border-dashed border-black/20 dark:border-white/20 text-center text-black dark:text-white transition-colors">
               NO TARGETS IDENTIFIED
             </p>
           )}

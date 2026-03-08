@@ -9,24 +9,16 @@ import {
   Users,
   GitBranch,
   Star,
-  LinkIcon,
   Github,
   Twitter,
   MessageSquare,
   Plus,
   GitFork,
-  Calendar,
   Activity,
-  Settings,
-  Share2,
-  Eye,
-  Trash2,
   MapPin,
-  Building,
   Pin
 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import type { UserProfile } from "@/types";
 import { PostCard } from "@/components/post-card";
 import { formatDistanceToNow } from "date-fns";
@@ -429,10 +421,10 @@ export default function UserProfilePage() {
   }
 
   return (
-    <div className="w-full px-2 mx-auto max-w-6xl">
+    <div className="w-full px-2 mx-auto max-w-6xl py-12 transition-colors duration-300">
       {appearance?.showSpotlight && (
         <div className="absolute top-0 right-0 w-full -z-50">
-          <div className="w-full rounded-md -z-50 flex md:items-center md:justify-center antialiased dark:bg-transparent  relative overflow-hidden h-[calc(100vh-10rem)]">
+          <div className="w-full rounded-md -z-50 flex md:items-center md:justify-center antialiased dark:bg-transparent relative overflow-hidden h-[calc(100vh-10rem)]">
             <Spotlight themeColor={appearance?.theme} />
           </div>
         </div>
@@ -445,24 +437,24 @@ export default function UserProfilePage() {
       />
 
       {/* Profile Info & Actions Section */}
-      <SwissSection variant="white" className="mt-[-100px] relative z-10 p-12 mb-12 shadow-[16px_16px_0_0_rgba(0,0,0,1)]">
+      <SwissSection variant="white" className="mt-[-100px] relative z-10 p-12 mb-12 shadow-[16px_16px_0_0_rgba(0,0,0,1)] dark:shadow-[16px_16px_0_0_rgba(255,255,255,1)] border-4 border-black dark:border-white bg-white dark:bg-black">
         <div className="flex flex-col md:flex-row justify-between items-start gap-12">
           <div className="space-y-6 flex-1">
-            <h1 className="text-7xl font-black uppercase tracking-tighter leading-none italic underline decoration-8 decoration-swiss-red">
+            <h1 className="text-7xl font-black uppercase tracking-tighter leading-none italic underline decoration-8 decoration-swiss-red text-black dark:text-white">
               {profile.name}
             </h1>
             <div className="flex flex-wrap gap-4">
-              <span className="font-black bg-swiss-black text-swiss-white px-4 py-1 text-xl tracking-widest uppercase">
+              <span className="font-black bg-black dark:bg-white text-white dark:text-black px-4 py-1 text-xl tracking-widest uppercase">
                 @{profile.githubUsername}
               </span>
               {profile.githubLocation && (
-                <span className="font-bold border-4 border-swiss-black px-4 py-1 flex items-center gap-2 uppercase text-sm">
+                <span className="font-bold border-4 border-black dark:border-white px-4 py-1 flex items-center gap-2 uppercase text-sm text-black dark:text-white">
                   <MapPin className="h-4 w-4" /> {profile.githubLocation}
                 </span>
               )}
             </div>
             {profile.githubBio && (
-              <p className="text-2xl font-bold uppercase tracking-tight leading-tight max-w-2xl opacity-80 border-l-8 border-swiss-black pl-6">
+              <p className="text-2xl font-bold uppercase tracking-tight leading-tight max-w-2xl opacity-80 border-l-8 border-black dark:border-white pl-6 text-black dark:text-white">
                 {profile.githubBio}
               </p>
             )}
@@ -470,7 +462,7 @@ export default function UserProfilePage() {
             {profile.skills && profile.skills.length > 0 && (
               <div className="flex flex-wrap gap-2 pt-4">
                 {profile.skills.map((skill: string, index: number) => (
-                  <span key={index} className="px-3 py-1 bg-swiss-black text-swiss-white text-[10px] font-black uppercase tracking-[0.2em]">
+                  <span key={index} className="px-3 py-1 bg-black dark:bg-white text-white dark:text-black text-[10px] font-black uppercase tracking-[0.2em]">
                     {skill}
                   </span>
                 ))}
@@ -482,7 +474,7 @@ export default function UserProfilePage() {
             {profile.friends?.includes(
               session?.user?.githubId ? parseInt(session.user.githubId) : -1
             ) ? (
-              <SwissButton variant="primary" size="lg" className="h-20 text-2xl shadow-[8px_8px_0_0_rgba(255,0,0,1)]" asChild>
+              <SwissButton variant="primary" size="lg" className="h-20 text-2xl shadow-[8px_8px_0_0_rgba(255,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]" asChild>
                 <Link href={`/messages/${profile.githubId}`}>
                   <MessageSquare className="h-8 w-8 mr-4" /> SEND_MESSAGE
                 </Link>
@@ -491,7 +483,7 @@ export default function UserProfilePage() {
               <SwissButton
                 variant="primary"
                 size="lg"
-                className="h-20 text-2xl shadow-[8px_8px_0_0_rgba(255,0,0,1)]"
+                className="h-20 text-2xl shadow-[8px_8px_0_0_rgba(255,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]"
                 onClick={async () => {
                   await handleAddFriend();
                   const btn = document.getElementById(`add-friend-${profile?.githubId}`);
@@ -528,56 +520,56 @@ export default function UserProfilePage() {
         {/* Stats Column */}
         <div className="lg:col-span-4 space-y-12">
           <div className="grid grid-cols-1 gap-6">
-            <SwissCard variant="accent" className="p-8 group hover:-translate-y-2 transition-transform">
+            <SwissCard variant="accent" className="p-8 group hover:-translate-y-2 transition-transform border-4 border-black dark:border-white">
               <div className="flex justify-between items-start mb-4">
-                <Users className="h-10 w-10" />
-                <span className="text-6xl font-black italic">01</span>
+                <Users className="h-10 w-10 text-white" />
+                <span className="text-6xl font-black italic text-white/20">01</span>
               </div>
-              <p className="text-sm font-black tracking-[0.3em] opacity-60 mb-1 uppercase">ESTABLISHED_CONNECTIONS</p>
-              <h4 className="text-6xl font-black tracking-tighter leading-none">{profile?.friends?.length || 0}</h4>
+              <p className="text-sm font-black tracking-[0.3em] opacity-60 mb-1 uppercase text-white/80">ESTABLISHED_CONNECTIONS</p>
+              <h4 className="text-6xl font-black tracking-tighter leading-none text-white">{profile?.friends?.length || 0}</h4>
             </SwissCard>
 
-            <SwissCard className="p-8 group hover:-translate-y-2 transition-transform shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
+            <SwissCard className="p-8 group hover:-translate-y-2 transition-transform shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)] border-4 border-black dark:border-white bg-white dark:bg-black">
               <div className="flex justify-between items-start mb-4">
-                <GitBranch className="h-10 w-10" />
-                <span className="text-6xl font-black italic opacity-10">02</span>
+                <GitBranch className="h-10 w-10 text-black dark:text-white" />
+                <span className="text-6xl font-black italic opacity-10 text-black dark:text-white">02</span>
               </div>
-              <p className="text-sm font-black tracking-[0.3em] opacity-60 mb-1 uppercase">ACTIVE_REPOSITORIES</p>
-              <h4 className="text-6xl font-black tracking-tighter leading-none">{stats?.public_repos || 0}</h4>
+              <p className="text-sm font-black tracking-[0.3em] opacity-60 mb-1 uppercase text-black dark:text-white">ACTIVE_REPOSITORIES</p>
+              <h4 className="text-6xl font-black tracking-tighter leading-none text-black dark:text-white">{stats?.public_repos || 0}</h4>
             </SwissCard>
 
-            <SwissCard className="p-8 group hover:-translate-y-2 transition-transform shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
+            <SwissCard className="p-8 group hover:-translate-y-2 transition-transform shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)] border-4 border-black dark:border-white bg-white dark:bg-black">
               <div className="flex justify-between items-start mb-4">
-                <Star className="h-10 w-10" />
-                <span className="text-6xl font-black italic opacity-10">03</span>
+                <Star className="h-10 w-10 text-black dark:text-white" />
+                <span className="text-6xl font-black italic opacity-10 text-black dark:text-white">03</span>
               </div>
-              <p className="text-sm font-black tracking-[0.3em] opacity-60 mb-1 uppercase">TOTAL_FOLLOWERS</p>
-              <h4 className="text-6xl font-black tracking-tighter leading-none">{stats?.followers || 0}</h4>
+              <p className="text-sm font-black tracking-[0.3em] opacity-60 mb-1 uppercase text-black dark:text-white">TOTAL_FOLLOWERS</p>
+              <h4 className="text-6xl font-black tracking-tighter leading-none text-black dark:text-white">{stats?.followers || 0}</h4>
             </SwissCard>
           </div>
 
           {/* Pinned Repos */}
           {profile.pinnedRepos && profile.pinnedRepos.length > 0 && (
             <div className="space-y-6">
-              <h3 className="text-4xl font-black uppercase tracking-tighter border-b-8 border-swiss-black pb-4">PINNED_MODULES</h3>
+              <h3 className="text-4xl font-black uppercase tracking-tighter border-b-8 border-black dark:border-white pb-4 text-black dark:text-white">PINNED_MODULES</h3>
               <div className="space-y-4">
                 {profile.pinnedRepos.map((repo) => (
-                  <SwissCard key={repo.id} className="p-6 hover:bg-swiss-black hover:text-swiss-white transition-colors group">
+                  <SwissCard key={repo.id} className="p-6 hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black transition-colors group border-4 border-black dark:border-white bg-white dark:bg-black shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
                     <div className="flex items-start justify-between mb-4">
-                      <Pin className="h-5 w-5 rotate-45" />
+                      <Pin className="h-5 w-5 rotate-45 text-black dark:text-white group-hover:text-white dark:group-hover:text-black" />
                       <div className="flex gap-4">
-                        <span className="flex items-center gap-1 text-[10px] font-black"><Star className="h-3 w-3" /> {repo.stargazers_count}</span>
-                        <span className="flex items-center gap-1 text-[10px] font-black"><GitFork className="h-3 w-3" /> {repo.forks_count}</span>
+                        <span className="flex items-center gap-1 text-[10px] font-black text-black dark:text-white group-hover:text-white dark:group-hover:text-black"><Star className="h-3 w-3" /> {repo.stargazers_count}</span>
+                        <span className="flex items-center gap-1 text-[10px] font-black text-black dark:text-white group-hover:text-white dark:group-hover:text-black"><GitFork className="h-3 w-3" /> {repo.forks_count}</span>
                       </div>
                     </div>
-                    <Link href={repo.html_url} target="_blank" className="block text-xl font-black uppercase tracking-tight mb-2 group-hover:underline underline-offset-4">
+                    <Link href={repo.html_url} target="_blank" className="block text-xl font-black uppercase tracking-tight mb-2 group-hover:underline underline-offset-4 text-black dark:text-white group-hover:text-white dark:group-hover:text-black">
                       {repo.name}
                     </Link>
-                    <p className="text-xs font-bold leading-tight opacity-60 group-hover:opacity-100">{repo.description}</p>
+                    <p className="text-xs font-bold leading-tight opacity-60 group-hover:opacity-100 text-black dark:text-white group-hover:text-white dark:group-hover:text-black">{repo.description}</p>
                     {repo.language && (
                       <div className="mt-4 flex items-center gap-2">
                         <div className="w-3 h-3 bg-swiss-red" />
-                        <span className="text-[10px] font-black tracking-widest uppercase">{repo.language}</span>
+                        <span className="text-[10px] font-black tracking-widest uppercase text-black dark:text-white group-hover:text-white dark:group-hover:text-black">{repo.language}</span>
                       </div>
                     )}
                   </SwissCard>
@@ -598,10 +590,10 @@ export default function UserProfilePage() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  "px-8 py-4 border-4 border-swiss-black font-black uppercase tracking-widest text-sm flex items-center gap-3 transition-all",
+                  "px-8 py-4 border-4 border-black dark:border-white font-black uppercase tracking-widest text-sm flex items-center gap-3 transition-all",
                   activeTab === tab.id
-                    ? "bg-swiss-black text-swiss-white shadow-[8px_8px_0_0_rgba(255,0,0,1)] -translate-y-2"
-                    : "bg-swiss-white text-swiss-black hover:bg-swiss-muted"
+                    ? "bg-black dark:bg-white text-white dark:text-black shadow-[8px_8px_0_0_rgba(255,0,0,1)] -translate-y-2"
+                    : "bg-white dark:bg-black text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900"
                 )}
               >
                 <tab.icon className="h-5 w-5" />
@@ -637,25 +629,25 @@ export default function UserProfilePage() {
 
             {activeTab === "activity" && (
               <div className="space-y-12">
-                <SwissCard className="p-8 shadow-[8px_8px_0_0_rgba(0,0,0,1)]">
-                  <h3 className="text-2xl font-black uppercase tracking-tighter mb-8 border-b-4 border-swiss-black pb-4">HEATMAP_VISUALIZATION</h3>
+                <SwissCard className="p-8 shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)] border-4 border-black dark:border-white bg-white dark:bg-black">
+                  <h3 className="text-2xl font-black uppercase tracking-tighter mb-8 border-b-4 border-black dark:border-white pb-4 text-black dark:text-white">HEATMAP_VISUALIZATION</h3>
                   <ActivityHeatmap data={{ posts: posts as any, themeColor: appearance?.theme || 'green' }} />
                 </SwissCard>
 
                 <div className="grid gap-4">
                   {activities.map((activity, i) => (
-                    <div key={i} className="group border-l-8 border-swiss-black hover:border-swiss-red pl-6 py-4 transition-all bg-swiss-white">
+                    <div key={i} className="group border-l-8 border-black dark:border-white hover:border-swiss-red pl-6 py-4 transition-all bg-white dark:bg-black">
                       <div className="flex items-center gap-4 mb-1">
                         <span className="font-black text-[10px] tracking-widest text-swiss-red uppercase">{activity.type.replace('Event', '')}</span>
-                        <span className="text-[10px] font-bold opacity-30 uppercase">{formatDistanceToNow(new Date(activity.created_at || Date.now()), { addSuffix: true })}</span>
+                        <span className="text-[10px] font-bold opacity-30 uppercase text-black dark:text-white">{formatDistanceToNow(new Date(activity.created_at || Date.now()), { addSuffix: true })}</span>
                       </div>
-                      <p className="font-bold uppercase tracking-tight text-lg group-hover:translate-x-2 transition-transform">
+                      <p className="font-bold uppercase tracking-tight text-lg group-hover:translate-x-2 transition-transform text-black dark:text-white">
                         {activity.repo.name}
                       </p>
                     </div>
                   ))}
                   {activities.length === 0 && (
-                    <p className="text-center font-bold uppercase opacity-20 py-12">NO_ACTIVITY_LOGGED</p>
+                    <p className="text-center font-bold uppercase opacity-20 py-12 text-black dark:text-white">NO_ACTIVITY_LOGGED</p>
                   )}
                 </div>
               </div>

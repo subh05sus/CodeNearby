@@ -1,4 +1,4 @@
-import { Bot, ExternalLink, FastForward } from "lucide-react";
+import { Bot, ExternalLink } from "lucide-react";
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";

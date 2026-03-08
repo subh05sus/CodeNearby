@@ -87,9 +87,9 @@ export function GitHubReceivedEvents({ username }: { username: string }) {
           <p className="text-xs font-black uppercase tracking-[0.4em] text-swiss-red mb-1">Global Feed</p>
           <h2 className="text-4xl font-black uppercase tracking-tightest leading-none text-black dark:text-white">Received Activity</h2>
         </div>
-        <div className="text-right hidden md:block">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-30 dark:opacity-20 italic text-black dark:text-white">Target</p>
-          <p className="text-sm font-black uppercase tracking-widest leading-none text-black dark:text-white">@{username}</p>
+        <div className="text-right hidden md:block transition-colors">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-30 dark:opacity-20 italic text-black dark:text-white transition-colors">Target</p>
+          <p className="text-sm font-black uppercase tracking-widest leading-none text-black dark:text-white transition-colors">@{username}</p>
         </div>
       </div>
       <div>
@@ -127,7 +127,7 @@ export function GitHubReceivedEvents({ username }: { username: string }) {
                         {eventIcons[event.type]}
                       </span>
                     )}
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-30 dark:opacity-20 italic text-black dark:text-white">
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-30 dark:opacity-20 italic text-black dark:text-white transition-colors">
                       {new Date(event.created_at).toLocaleString()}
                     </p>
                   </div>
@@ -135,7 +135,7 @@ export function GitHubReceivedEvents({ username }: { username: string }) {
               </div>
             ))
           ) : (
-            <p className="text-center font-black uppercase tracking-[0.5em] opacity-20 dark:opacity-10 py-24 border-4 border-dashed border-black/10 dark:border-white/10 text-black dark:text-white">NO RECEIVED DATA</p>
+            <p className="text-center font-black uppercase tracking-[0.5em] opacity-20 dark:opacity-10 py-24 border-4 border-dashed border-black/10 dark:border-white/10 text-black dark:text-white transition-colors">NO RECEIVED DATA</p>
           )}
         </ScrollArea>
       </div>

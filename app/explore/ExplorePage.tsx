@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Loader2, MapPin, Search } from "lucide-react";
 import type { Developer } from "@/types";
 import { getLocationByIp } from "@/lib/location";
-import { motion } from "framer-motion";
 import { toast } from "sonner";
 import ExploreDeveloperGrid from "@/components/exploreDeveloperGrid";
 

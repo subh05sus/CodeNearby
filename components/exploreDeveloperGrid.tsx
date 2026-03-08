@@ -10,12 +10,9 @@ import {
   GithubIcon,
   LinkIcon,
   MapPin,
-  Twitter,
   X,
-  Zap,
 } from "lucide-react";
 import SwissButton from "./swiss/SwissButton";
-import { cn } from "@/lib/utils";
 
 interface DeveloperDetails {
   created_at: any;

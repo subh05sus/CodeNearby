@@ -196,7 +196,7 @@ export function SearchOverlay({ onClose, onSearch }: SearchOverlayProps) {
               {query && filteredItems.length === 0 && (
                 <div className="p-12 text-center">
                   <p className="text-xl font-black uppercase tracking-widest opacity-20 italic">
-                    NO_MATCHING_COMMANDS_FOR: "{query}"
+                    NO_MATCHING_COMMANDS_FOR: &quot;{query}&quot;
                   </p>
                 </div>
               )}

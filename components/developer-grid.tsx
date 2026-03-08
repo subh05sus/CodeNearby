@@ -5,9 +5,8 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import type { Developer } from "@/types";
-import { GithubIcon, X, Calendar, LinkIcon, MapPin, Twitter, Zap } from "lucide-react";
+import { GithubIcon, X, Calendar, LinkIcon, MapPin, Zap } from "lucide-react";
 import SwissButton from "./swiss/SwissButton";
-import { cn } from "@/lib/utils";
 
 interface DeveloperDetails {
   name: string;

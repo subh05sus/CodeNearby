@@ -4,21 +4,12 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useInView } from "react-intersection-observer";
-import { Loader2 } from "lucide-react";
 import { CreatePost } from "@/components/create-post";
 import { PostCard } from "@/components/post-card";
 import { MasonryGrid } from "@/components/masonry-grid";
 import LoginButton from "@/components/login-button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
-import { Switch } from "@/components/ui/switch";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Slider } from "@/components/ui/slider";
 
 interface Post {
   _id: string;
@@ -440,11 +431,11 @@ export default function FeedPage() {
   if (!session) {
     return (
       <div className="flex flex-col items-center justify-center h-[calc(100vh-10rem)] p-8">
-        <div className="border-8 border-swiss-black p-12 bg-swiss-white text-center shadow-[12px_12px_0_0_rgba(0,0,0,1)]">
-          <h1 className="font-black text-6xl uppercase tracking-tighter mb-6 leading-none">
+        <div className="border-8 border-black dark:border-white p-12 bg-white dark:bg-black text-center shadow-[12px_12px_0_0_rgba(0,0,0,1)] dark:shadow-[12px_12px_0_0_rgba(255,255,255,1)]">
+          <h1 className="font-black text-6xl uppercase tracking-tighter mb-6 leading-none text-black dark:text-white">
             ACCESS<br />DENIED
           </h1>
-          <p className="font-bold uppercase tracking-tight text-xl mb-8 opacity-60">
+          <p className="font-bold uppercase tracking-tight text-xl mb-8 opacity-60 text-black dark:text-white">
             AUTHORIZATION REQUIRED TO VIEW FEED
           </p>
           <div className="flex justify-center">
@@ -458,12 +449,12 @@ export default function FeedPage() {
   const effectiveColumns = isMobile ? 1 : columns;
 
   return (
-    <div className="bg-swiss-white min-h-screen">
+    <div className="bg-white dark:bg-black min-h-screen transition-colors duration-300">
       {/* Swiss Header */}
-      <div className="border-b-8 border-swiss-black bg-swiss-white sticky top-0 z-20">
+      <div className="border-b-8 border-black dark:border-white bg-white dark:bg-black sticky top-0 z-20">
         <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <h1 className="font-black text-8xl uppercase tracking-tighter leading-[0.8] mb-2">
+            <h1 className="font-black text-8xl uppercase tracking-tighter leading-[0.8] mb-2 text-black dark:text-white">
               THE<br />FEED
             </h1>
             <p className="font-bold uppercase tracking-[0.2em] text-xs text-swiss-red">
@@ -474,7 +465,7 @@ export default function FeedPage() {
           <div className="flex flex-wrap items-center gap-6">
             {/* Columns Control */}
             <div className="flex items-center gap-4">
-              <span className="font-black uppercase tracking-widest text-[10px]">COLUMNS / {columns}</span>
+              <span className="font-black uppercase tracking-widest text-[10px] text-black dark:text-white">COLUMNS / {columns}</span>
               <input
                 type="range"
                 min="1"
@@ -486,7 +477,7 @@ export default function FeedPage() {
                   setColumns(n);
                   localStorage.setItem("feed:columns", String(n));
                 }}
-                className="appearance-none w-32 h-6 bg-swiss-muted border-2 border-swiss-black cursor-pointer accent-swiss-black"
+                className="appearance-none w-32 h-6 bg-gray-100 dark:bg-gray-900 border-2 border-black dark:border-white cursor-pointer accent-black dark:accent-white"
               />
             </div>
 
@@ -494,8 +485,8 @@ export default function FeedPage() {
             <button
               onClick={() => setShowGithubEvents(!showGithubEvents)}
               className={cn(
-                "h-12 px-6 border-4 border-swiss-black font-black uppercase tracking-tighter text-sm transition-all flex items-center gap-3",
-                showGithubEvents ? "bg-swiss-black text-swiss-white" : "bg-swiss-white text-swiss-black hover:bg-swiss-muted"
+                "h-12 px-6 border-4 border-black dark:border-white font-black uppercase tracking-tighter text-sm transition-all flex items-center gap-3",
+                showGithubEvents ? "bg-black dark:bg-white text-white dark:text-black" : "bg-white dark:bg-black text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900"
               )}
             >
               <div className={cn(
@@ -515,7 +506,7 @@ export default function FeedPage() {
 
         <div className="relative">
           {/* Visual Grid Lines - Optional aesthetic touch */}
-          <div className="absolute inset-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pointer-events-none opacity-5 divide-x-2 divide-swiss-black" />
+          <div className="absolute inset-0 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pointer-events-none opacity-5 divide-x-2 divide-black dark:divide-white" />
 
           <MasonryGrid columns={effectiveColumns} className="relative z-10">
             {posts.map((post) => (
@@ -537,7 +528,7 @@ export default function FeedPage() {
 
         {loading && (
           <div className="flex justify-center my-12">
-            <div className="h-12 w-12 border-8 border-swiss-muted border-t-swiss-red animate-spin" />
+            <div className="h-12 w-12 border-8 border-gray-100 dark:border-gray-900 border-t-swiss-red animate-spin" />
           </div>
         )}
 
