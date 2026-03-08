@@ -85,11 +85,11 @@ export function GitHubReceivedEvents({ username }: { username: string }) {
       <div className="mb-8 border-b-4 border-black dark:border-white pb-4 flex justify-between items-end">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.4em] text-swiss-red mb-1">Global Feed</p>
-          <h2 className="text-4xl font-black uppercase tracking-tightest leading-none text-black dark:text-white">Received Activity</h2>
+          <h2 className="text-4xl font-black uppercase  leading-none text-black dark:text-white">Received Activity</h2>
         </div>
         <div className="text-right hidden md:block transition-colors">
           <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-30 dark:opacity-20 italic text-black dark:text-white transition-colors">Target</p>
-          <p className="text-sm font-black uppercase tracking-widest leading-none text-black dark:text-white transition-colors">@{username}</p>
+          <p className="text-sm font-black uppercase tracking- leading-none text-black dark:text-white transition-colors">@{username}</p>
         </div>
       </div>
       <div>

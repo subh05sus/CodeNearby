@@ -96,7 +96,7 @@ export function CommentThread({
               <span className="font-black uppercase tracking-tighter text-xs leading-none block">
                 {comment.user?.name || "Anonymous"}
               </span>
-              <span className="text-[8px] font-bold uppercase tracking-widest text-swiss-red flex items-center gap-1 mt-0.5">
+              <span className="text-[8px] font-bold uppercase  text-swiss-red flex items-center gap-1 mt-0.5">
                 <Clock className="h-2 w-2" />
                 {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
               </span>

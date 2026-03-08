@@ -454,7 +454,7 @@ export default function ApiDocsPage() {
         {/* Quick Start Bar */}
         <div className="bg-black dark:bg-neutral-900 text-white py-6 overflow-hidden border-b-8 border-black dark:border-white">
           <div className="container mx-auto px-4 flex items-center gap-8 whitespace-nowrap">
-            <span className="text-swiss-red font-black uppercase italic tracking-widest text-sm">QUICK_START:</span>
+            <span className="text-swiss-red font-black uppercase italic  text-sm">QUICK_START:</span>
             <div className="flex gap-12 text-[10px] font-black uppercase tracking-[0.3em] opacity-80 italic animate-marquee">
               <span>1. GENERATE_KEY</span>
               <span>2. DEFINE_X-API-KEY</span>
@@ -495,7 +495,7 @@ export default function ApiDocsPage() {
                         )} />
                       </div>
                       <span className="font-black uppercase tracking-tighter italic text-sm">{endpoint.name}</span>
-                      <span className="text-[8px] font-black uppercase tracking-widest opacity-40">{endpoint.tokenCost}_TOKENS</span>
+                      <span className="text-[8px] font-black uppercase  opacity-40">{endpoint.tokenCost}_TOKENS</span>
                     </button>
                   ))}
                 </div>
@@ -504,7 +504,7 @@ export default function ApiDocsPage() {
               <SwissCard className="p-6 border-4 border-black dark:border-white bg-neutral-100 dark:bg-neutral-900 italic">
                 <div className="flex items-center gap-2 mb-2">
                   < Book className="h-4 w-4 text-swiss-red" />
-                  <span className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white">PROTOCOL_INFO</span>
+                  <span className="text-[10px] font-black uppercase  text-black dark:text-white">PROTOCOL_INFO</span>
                 </div>
                 <p className="text-[10px] font-bold uppercase tracking-tight leading-relaxed text-black dark:text-white">
                   ALL_REQUESTS_MUST_INCLUDE_AUTHENTICATION_IDENTIFIERS_AND_CONTENT-TYPE_DEFINITIONS.
@@ -547,7 +547,7 @@ export default function ApiDocsPage() {
                             </div>
                           </div>
                           <div className="p-6 md:w-1/2 flex flex-col justify-center">
-                            <p className="text-xs font-black uppercase tracking-widest leading-relaxed text-black dark:text-white">{param.description}</p>
+                            <p className="text-xs font-black uppercase  leading-relaxed text-black dark:text-white">{param.description}</p>
                           </div>
                           <div className="p-6 md:w-1/4 bg-neutral-100/30 dark:bg-neutral-900/30 flex flex-col justify-center">
                             <span className="text-[8px] font-black uppercase opacity-20 mb-1 text-black dark:text-white">EXAMPLE</span>
@@ -567,13 +567,13 @@ export default function ApiDocsPage() {
                 <TabsList className="flex bg-transparent p-0 gap-4 mb-8">
                   <TabsTrigger
                     value="playground"
-                    className="flex-1 h-14 border-4 border-black dark:border-white font-black uppercase tracking-widest italic data-[state=active]:bg-swiss-red data-[state=active]:text-white transition-all rounded-none text-black dark:text-white"
+                    className="flex-1 h-14 border-4 border-black dark:border-white font-black uppercase  italic data-[state=active]:bg-swiss-red data-[state=active]:text-white transition-all rounded-none text-black dark:text-white"
                   >
                     NEURAL_PLAYGROUND
                   </TabsTrigger>
                   <TabsTrigger
                     value="examples"
-                    className="flex-1 h-14 border-4 border-black dark:border-white font-black uppercase tracking-widest italic data-[state=active]:bg-black dark:data-[state=active]:bg-white data-[state=active]:text-white dark:data-[state=active]:text-black transition-all rounded-none text-black dark:text-white"
+                    className="flex-1 h-14 border-4 border-black dark:border-white font-black uppercase  italic data-[state=active]:bg-black dark:data-[state=active]:bg-white data-[state=active]:text-white dark:data-[state=active]:text-black transition-all rounded-none text-black dark:text-white"
                   >
                     CODE_FRAGMENTS
                   </TabsTrigger>
@@ -721,7 +721,7 @@ export default function ApiDocsPage() {
                     ].map((err) => (
                       <div key={err.code} className="flex items-center gap-4 border-b border-white/10 pb-2">
                         <span className="text-swiss-red font-black text-lg italic">{err.code}</span>
-                        <span className="text-[10px] font-black uppercase tracking-widest opacity-60">{err.msg}</span>
+                        <span className="text-[10px] font-black uppercase  opacity-60">{err.msg}</span>
                       </div>
                     ))}
                   </div>

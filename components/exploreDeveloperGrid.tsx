@@ -115,7 +115,7 @@ export default function ExploreDeveloperGrid({
                     <h2 className="font-black text-5xl uppercase tracking-tighter leading-none mb-2">
                       {details?.name || active.login}
                     </h2>
-                    <span className="font-bold uppercase tracking-widest text-xs text-swiss-red">
+                    <span className="font-bold uppercase  text-xs text-swiss-red">
                       GITHUB / @{active.login}
                     </span>
                   </div>
@@ -142,15 +142,15 @@ export default function ExploreDeveloperGrid({
                       <div className="grid grid-cols-3 border-4 border-swiss-black divide-x-4 divide-swiss-black bg-swiss-black">
                         <div className="p-4 bg-swiss-white flex flex-col items-center">
                           <span className="font-black text-2xl">{details.followers}</span>
-                          <span className="font-bold uppercase text-[10px] tracking-widest text-swiss-red">FOLLOWERS</span>
+                          <span className="font-bold uppercase text-[10px]  text-swiss-red">FOLLOWERS</span>
                         </div>
                         <div className="p-4 bg-swiss-white flex flex-col items-center">
                           <span className="font-black text-2xl">{details.following}</span>
-                          <span className="font-bold uppercase text-[10px] tracking-widest text-swiss-red">FOLLOWING</span>
+                          <span className="font-bold uppercase text-[10px]  text-swiss-red">FOLLOWING</span>
                         </div>
                         <div className="p-4 bg-swiss-white flex flex-col items-center">
                           <span className="font-black text-2xl">{details.public_repos}</span>
-                          <span className="font-bold uppercase text-[10px] tracking-widest text-swiss-red">REPOS</span>
+                          <span className="font-bold uppercase text-[10px]  text-swiss-red">REPOS</span>
                         </div>
                       </div>
 
@@ -218,7 +218,7 @@ export default function ExploreDeveloperGrid({
                   {developer.login}
                 </h3>
                 <div className="pt-4 border-t-2 border-swiss-black opacity-20 group-hover:opacity-100 transition-opacity">
-                  <p className="font-bold uppercase tracking-widest text-[8px] text-swiss-red">
+                  <p className="font-bold uppercase  text-[8px] text-swiss-red">
                     NODE / INF_SYNC
                   </p>
                 </div>

@@ -210,7 +210,7 @@ export default function MessagePage() {
                             >
                               <div className="flex items-center gap-2 mb-3 border-b-2 border-white/20 dark:border-black/20 pb-2">
                                 <Zap className="h-4 w-4" />
-                                <span className="text-[10px] uppercase font-black tracking-widest italic">EXTERNAL_OBJECT_LINK</span>
+                                <span className="text-[10px] uppercase font-black  italic">EXTERNAL_OBJECT_LINK</span>
                               </div>
                               <p className="text-base font-black uppercase tracking-tight mb-4 italic leading-tight line-clamp-2">
                                 {jsonContent.postContent}
@@ -225,7 +225,7 @@ export default function MessagePage() {
                                   />
                                 </div>
                               )}
-                              <div className="flex flex-wrap gap-4 text-[10px] font-black uppercase tracking-widest opacity-60">
+                              <div className="flex flex-wrap gap-4 text-[10px] font-black uppercase  opacity-60">
                                 {jsonContent.postPoll && (
                                   <div className="flex items-center">
                                     <BarChart className="h-3 w-3 mr-1" />
@@ -253,7 +253,7 @@ export default function MessagePage() {
                       }
                     })()}
                     <div className={cn(
-                      "mt-4 text-[10px] font-black uppercase tracking-widest opacity-40 italic",
+                      "mt-4 text-[10px] font-black uppercase  opacity-40 italic",
                       isMe ? "text-right" : "text-left"
                     )}>
                       {format(new Date(message.timestamp), "HH:mm")}

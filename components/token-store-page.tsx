@@ -89,7 +89,7 @@ export default function TokenStorePage() {
             </p>
           </div>
           <div className="flex flex-col items-end gap-4 min-w-[200px]">
-            <p className="text-[10px] font-black uppercase tracking-widest opacity-40">SYSTEM_LOCALIZATION</p>
+            <p className="text-[10px] font-black uppercase  opacity-40">SYSTEM_LOCALIZATION</p>
             <CurrencyToggle currency={currency} onToggle={toggleCurrency} />
           </div>
         </div>
@@ -116,23 +116,23 @@ export default function TokenStorePage() {
                   {pkg.id === "standard" && <TrendingUp className="h-4 w-4 text-swiss-red" />}
                   {pkg.id === "pro" && <Gift className="h-4 w-4 text-swiss-red" />}
                   {pkg.id === "enterprise" && <CreditCard className="h-4 w-4 text-swiss-red" />}
-                  <span className="text-[10px] font-black uppercase tracking-widest opacity-60">PACKAGE_ID: {pkg.id.toUpperCase()}</span>
+                  <span className="text-[10px] font-black uppercase  opacity-60">PACKAGE_ID: {pkg.id.toUpperCase()}</span>
                 </div>
                 <h3 className="text-2xl font-black uppercase tracking-tighter leading-none">{pkg.name}</h3>
-                <p className="text-[9px] font-bold uppercase tracking-widest opacity-40 mt-2">{pkg.description}</p>
+                <p className="text-[9px] font-bold uppercase  opacity-40 mt-2">{pkg.description}</p>
               </div>
 
               <div className="p-8 space-y-8 flex-grow">
                 <div className="text-center pt-4">
                   <div className="text-5xl font-black tracking-tighter leading-none">{pkg.formattedPrice}</div>
-                  <div className="text-[9px] font-black uppercase tracking-widest opacity-40 mt-2 italic">
+                  <div className="text-[9px] font-black uppercase  opacity-40 mt-2 italic">
                     SINGLE_TRANSACTION_VALUE
                   </div>
                 </div>
 
                 <div className="space-y-4 pt-4">
                   <div className="flex justify-between items-baseline border-b-2 border-swiss-muted pb-2">
-                    <span className="text-[10px] font-black uppercase tracking-widest opacity-40">BASE_TOKENS</span>
+                    <span className="text-[10px] font-black uppercase  opacity-40">BASE_TOKENS</span>
                     <span className="font-black text-lg tracking-tighter">
                       {pkg.tokens.toLocaleString()}
                     </span>
@@ -140,7 +140,7 @@ export default function TokenStorePage() {
 
                   {pkg.bonus && (
                     <div className="flex justify-between items-baseline border-b-2 border-swiss-muted pb-2 text-swiss-red">
-                      <span className="text-[10px] font-black uppercase tracking-widest italic">BONUS_CREDIT</span>
+                      <span className="text-[10px] font-black uppercase  italic">BONUS_CREDIT</span>
                       <span className="font-black text-lg tracking-tighter">
                         +{pkg.bonus.toLocaleString()}
                       </span>
@@ -148,7 +148,7 @@ export default function TokenStorePage() {
                   )}
 
                   <div className="flex justify-between items-baseline pt-4 border-t-4 border-swiss-black">
-                    <span className="text-xs font-black uppercase tracking-widest">TOTAL_PAYLOAD</span>
+                    <span className="text-xs font-black uppercase ">TOTAL_PAYLOAD</span>
                     <span className="text-3xl font-black tracking-tighter text-swiss-red">
                       {pkg.totalTokens.toLocaleString()}
                     </span>
@@ -178,7 +178,7 @@ export default function TokenStorePage() {
                   }}
                   disabled={loading === pkg.id}
                   className={cn(
-                    "w-full h-16 text-lg font-black uppercase tracking-widest border-4 transition-all rounded-none",
+                    "w-full h-16 text-lg font-black uppercase  border-4 transition-all rounded-none",
                     pkg.popular
                       ? "bg-swiss-red border-swiss-black text-swiss-white hover:shadow-[8px_8px_0_0_rgba(0,0,0,1)]"
                       : "bg-swiss-black border-swiss-black text-swiss-white hover:bg-swiss-red"
@@ -208,7 +208,7 @@ export default function TokenStorePage() {
                 <div className="flex items-start justify-between mb-8">
                   <div>
                     <h3 className="text-4xl font-black uppercase tracking-tighter italic leading-none mb-2">{tier.name}</h3>
-                    <p className={cn("text-xs font-black uppercase tracking-widest opacity-40", tier.id === "premium" && "text-swiss-red opacity-100")}>{tier.description}</p>
+                    <p className={cn("text-xs font-black uppercase  opacity-40", tier.id === "premium" && "text-swiss-red opacity-100")}>{tier.description}</p>
                   </div>
                   <div className={cn("p-4 border-4", tier.id === "premium" ? "border-swiss-red" : "border-swiss-black")}>
                     {tier.id === "free" ? <Zap className="h-8 w-8" /> : <TrendingUp className="h-8 w-8 text-swiss-red" />}
@@ -217,12 +217,12 @@ export default function TokenStorePage() {
 
                 <div className="space-y-6">
                   <div className="flex justify-between items-baseline border-b-2 border-swiss-muted/20 pb-4">
-                    <span className="text-xs font-black uppercase tracking-widest opacity-60">DAILY_FREE_QUOTA</span>
+                    <span className="text-xs font-black uppercase  opacity-60">DAILY_FREE_QUOTA</span>
                     <span className="text-3xl font-black tracking-tighter">{tier.limits.dailyTokens.toLocaleString()}</span>
                   </div>
 
                   <div className="flex justify-between items-baseline border-b-2 border-swiss-muted/20 pb-4">
-                    <span className="text-xs font-black uppercase tracking-widest opacity-60">CONCURRENT_API_KEYS</span>
+                    <span className="text-xs font-black uppercase  opacity-60">CONCURRENT_API_KEYS</span>
                     <span className="text-3xl font-black tracking-tighter">{tier.limits.maxApiKeys}</span>
                   </div>
 
@@ -249,7 +249,7 @@ export default function TokenStorePage() {
             <div className="h-px bg-swiss-black flex-grow" />
             <div className="flex items-center gap-3">
               <HelpCircle className="h-6 w-6 text-swiss-red" />
-              <h2 className="text-3xl font-black uppercase tracking-widest">FAQ_PROTOCOL</h2>
+              <h2 className="text-3xl font-black uppercase ">FAQ_PROTOCOL</h2>
             </div>
             <div className="h-px bg-swiss-black flex-grow" />
           </div>

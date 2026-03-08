@@ -72,7 +72,7 @@ function GithubUsernameCard({ username }: { username: string }) {
               {githubUser.name || githubUser.login}
             </h2>
             <div className="flex justify-center gap-4">
-              <span className="font-black bg-swiss-black text-swiss-white px-4 py-1 text-xl tracking-widest uppercase">
+              <span className="font-black bg-swiss-black text-swiss-white px-4 py-1 text-xl  uppercase">
                 @{githubUser.login}
               </span>
             </div>
@@ -82,7 +82,7 @@ function GithubUsernameCard({ username }: { username: string }) {
               </p>
             )}
             {githubUser.location && (
-              <p className="flex items-center justify-center gap-2 font-black uppercase tracking-widest text-sm text-swiss-red">
+              <p className="flex items-center justify-center gap-2 font-black uppercase  text-sm text-swiss-red">
                 <MapPin className="h-4 w-4" /> {githubUser.location}
               </p>
             )}

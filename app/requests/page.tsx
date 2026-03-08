@@ -111,7 +111,7 @@ export default function RequestsPage() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
                 className={cn(
-                  "px-8 py-4 border-4 border-black dark:border-white font-black uppercase tracking-widest text-sm transition-all",
+                  "px-8 py-4 border-4 border-black dark:border-white font-black uppercase  text-sm transition-all",
                   activeTab === tab.id
                     ? "bg-black dark:bg-white text-white dark:text-black shadow-[8px_8px_0_0_rgba(255,0,0,1)] -translate-y-2"
                     : "bg-white dark:bg-black text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900"
@@ -146,7 +146,7 @@ export default function RequestsPage() {
                           String(session?.user?.githubId) &&
                           req.status === "pending"
                       )
-                      .map((request, index) => (
+                      .map((request) => (
                         <SwissCard key={request._id} className="p-8 border-4 border-black dark:border-white bg-white dark:bg-black shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
                           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
                             <div className="flex items-center gap-6">
@@ -164,7 +164,7 @@ export default function RequestsPage() {
                                 <h3 className="text-3xl font-black uppercase tracking-tighter text-black dark:text-white">
                                   {request.otherUser?.githubUsername || request.senderGithubUsername}
                                 </h3>
-                                <p className="text-xs font-black uppercase tracking-widest opacity-40 text-black dark:text-white">
+                                <p className="text-xs font-black uppercase  opacity-40 text-black dark:text-white">
                                   RECEIVED_ON: {format(new Date(request.createdAt), "yyyy.MM.dd | HH:mm")}
                                 </p>
                               </div>
@@ -209,7 +209,7 @@ export default function RequestsPage() {
                     .filter((req) => req.senderId === session?.user?.id).length > 0 ? (
                     requests
                       .filter((req) => req.senderId === session?.user?.id)
-                      .map((request, index) => (
+                      .map((request) => (
                         <SwissCard key={request._id} className="p-8 border-4 border-black dark:border-white bg-white dark:bg-black shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
                           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
                             <div className="flex items-center gap-6">
@@ -225,11 +225,11 @@ export default function RequestsPage() {
                                   {request.otherUser?.githubUsername || request.receiverGithubUsername}
                                 </h3>
                                 <div className="flex items-center gap-4">
-                                  <p className="text-xs font-black uppercase tracking-widest opacity-40 text-black dark:text-white">
+                                  <p className="text-xs font-black uppercase  opacity-40 text-black dark:text-white">
                                     SENT_ON: {format(new Date(request.createdAt), "yyyy.MM.dd | HH:mm")}
                                   </p>
                                   <span className={cn(
-                                    "px-2 py-0.5 text-[10px] font-black uppercase tracking-widest",
+                                    "px-2 py-0.5 text-[10px] font-black uppercase ",
                                     request.status === "pending" ? "bg-yellow-500 text-black" :
                                       request.status === "accepted" ? "bg-green-500 text-white" : "bg-swiss-red text-white"
                                   )}>

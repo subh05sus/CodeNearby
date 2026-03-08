@@ -34,7 +34,7 @@ export function ThemeSwitch() {
           {mode === "system" && <Monitor className="h-4 w-4" />}
           {mode === "light" && <Sun className="h-4 w-4" />}
           {mode === "dark" && <Moon className="h-4 w-4" />}
-          <span className="text-[10px] font-black uppercase tracking-widest hidden md:block">
+          <span className="text-[10px] font-black uppercase  hidden md:block">
             {mode}
           </span>
           {currentTheme === mode && (

@@ -71,7 +71,7 @@ export function PollDisplay({ poll, postId, onVote }: PollDisplayProps) {
                     {option}
                   </span>
                 </button>
-                <span className="font-black uppercase tracking-widest text-[10px] text-swiss-red tabular-nums">
+                <span className="font-black uppercase  text-[10px] text-swiss-red tabular-nums">
                   {votes} {votes === 1 ? "VOTE" : "VOTES"}
                 </span>
               </div>
@@ -88,11 +88,11 @@ export function PollDisplay({ poll, postId, onVote }: PollDisplayProps) {
       </div>
 
       <div className="mt-8 pt-4 border-t-2 border-swiss-black flex items-center justify-between">
-        <p className="text-[10px] font-black uppercase tracking-widest opacity-60">
+        <p className="text-[10px] font-black uppercase  opacity-60">
           METRIC / {totalVotes} TOTAL {totalVotes === 1 ? "VOTE" : "VOTES"}
         </p>
         {!hasVoted && !session && (
-          <p className="text-[8px] font-bold uppercase tracking-widest text-swiss-red">LOGIN TO PARTICIPATE</p>
+          <p className="text-[8px] font-bold uppercase  text-swiss-red">LOGIN TO PARTICIPATE</p>
         )}
       </div>
     </div>

@@ -158,7 +158,7 @@ export default function ExplorePage() {
 
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="border-l-8 border-swiss-black pl-8 mb-12">
-          <p className="font-bold uppercase tracking-widest text-xs text-swiss-red mb-2">RESULTS_FEED</p>
+          <p className="font-bold uppercase  text-xs text-swiss-red mb-2">RESULTS_FEED</p>
           <h2 className="font-black text-4xl uppercase tracking-tighter">
             {developers.length} DEVELOPERS FOUND {location && `IN ${location.toUpperCase()}`}
           </h2>

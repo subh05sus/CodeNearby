@@ -465,7 +465,7 @@ export default function FeedPage() {
           <div className="flex flex-wrap items-center gap-6">
             {/* Columns Control */}
             <div className="flex items-center gap-4">
-              <span className="font-black uppercase tracking-widest text-[10px] text-black dark:text-white">COLUMNS / {columns}</span>
+              <span className="font-black uppercase  text-[10px] text-black dark:text-white">COLUMNS / {columns}</span>
               <input
                 type="range"
                 min="1"

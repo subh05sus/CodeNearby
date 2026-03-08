@@ -56,26 +56,26 @@ export function CreatePoll({ onCreatePoll }: CreatePollProps) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] rounded-none border-4 border-black p-8">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-black uppercase tracking-tightest mb-4">Create a Poll</DialogTitle>
+          <DialogTitle className="text-2xl font-black uppercase  mb-4">Create a Poll</DialogTitle>
         </DialogHeader>
         <div className="grid gap-6 py-4 border-t-2 border-black/10">
           <div>
-            <p className="text-xs font-black uppercase tracking-widest text-swiss-red mb-2 italic">Poll Question</p>
+            <p className="text-xs font-black uppercase  text-swiss-red mb-2 italic">Poll Question</p>
             <input
               placeholder="ENTER YOUR QUESTION"
-              className="w-full bg-white border-2 border-black p-3 font-bold uppercase tracking-widest focus:bg-muted outline-none"
+              className="w-full bg-white border-2 border-black p-3 font-bold uppercase  focus:bg-muted outline-none"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
             />
           </div>
 
           <div className="flex flex-col gap-4">
-            <p className="text-xs font-black uppercase tracking-widest text-swiss-red mb-1 italic">Options</p>
+            <p className="text-xs font-black uppercase  text-swiss-red mb-1 italic">Options</p>
             {options.map((option, index) => (
               <div key={index} className="flex items-center gap-2">
                 <input
                   placeholder={`OPTION ${index + 1}`}
-                  className="flex-1 bg-white border-2 border-black p-3 font-bold uppercase tracking-widest focus:bg-muted outline-none"
+                  className="flex-1 bg-white border-2 border-black p-3 font-bold uppercase  focus:bg-muted outline-none"
                   value={option}
                   onChange={(e) => handleOptionChange(index, e.target.value)}
                 />

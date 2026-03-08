@@ -213,33 +213,33 @@ export default function Header() {
                   <DropdownMenuContent className="w-64 bg-swiss-white border-4 border-swiss-black rounded-none shadow-[8px_8px_0_0_rgba(0,0,0,1)] p-0">
                     <DropdownMenuLabel className="p-6 border-b-4 border-swiss-black bg-swiss-black text-swiss-white">
                       <p className="text-xl font-black uppercase italic tracking-tighter leading-none">{session.user.name}</p>
-                      <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 mt-2">@{session.user.githubUsername}</p>
+                      <p className="text-[10px] font-bold uppercase  opacity-60 mt-2">@{session.user.githubUsername}</p>
                     </DropdownMenuLabel>
 
                     <div className="p-2 space-y-1">
-                      <DropdownMenuItem asChild className="p-4 focus:bg-swiss-black focus:text-swiss-white cursor-pointer rounded-none uppercase font-black text-xs italic tracking-widest outline-none">
+                      <DropdownMenuItem asChild className="p-4 focus:bg-swiss-black focus:text-swiss-white cursor-pointer rounded-none uppercase font-black text-xs italic  outline-none">
                         <Link href="/profile"><User className="mr-3 h-4 w-4" /> PROFILE_NODE</Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild className="p-4 focus:bg-swiss-black focus:text-swiss-white cursor-pointer rounded-none uppercase font-black text-xs italic tracking-widest outline-none">
+                      <DropdownMenuItem asChild className="p-4 focus:bg-swiss-black focus:text-swiss-white cursor-pointer rounded-none uppercase font-black text-xs italic  outline-none">
                         <Link href="/messages"><MessagesSquare className="mr-3 h-4 w-4" /> COMMS_LINK</Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild className="p-4 focus:bg-swiss-black focus:text-swiss-white cursor-pointer rounded-none uppercase font-black text-xs italic tracking-widest outline-none">
+                      <DropdownMenuItem asChild className="p-4 focus:bg-swiss-black focus:text-swiss-white cursor-pointer rounded-none uppercase font-black text-xs italic  outline-none">
                         <Link href="/requests"><Users className="mr-3 h-4 w-4" /> PEER_REQUESTS</Link>
                       </DropdownMenuItem>
 
                       <DropdownMenuSeparator className="bg-swiss-black/10 h-1 mx-2" />
 
-                      <DropdownMenuItem asChild className="p-4 focus:bg-swiss-black focus:text-swiss-white cursor-pointer rounded-none uppercase font-black text-xs italic tracking-widest outline-none">
+                      <DropdownMenuItem asChild className="p-4 focus:bg-swiss-black focus:text-swiss-white cursor-pointer rounded-none uppercase font-black text-xs italic  outline-none">
                         <Link href="/api-dashboard"><Key className="mr-3 h-4 w-4" /> API_MASTER</Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild className="p-4 focus:bg-swiss-black focus:text-swiss-white cursor-pointer rounded-none uppercase font-black text-xs italic tracking-widest outline-none">
+                      <DropdownMenuItem asChild className="p-4 focus:bg-swiss-black focus:text-swiss-white cursor-pointer rounded-none uppercase font-black text-xs italic  outline-none">
                         <Link href="/upgrade"><Zap className="mr-3 h-4 w-4" /> UPGRADE_SYNC</Link>
                       </DropdownMenuItem>
 
                       <DropdownMenuSeparator className="bg-swiss-black/10 h-1 mx-2" />
 
                       <DropdownMenuSub>
-                        <DropdownMenuSubTrigger className="p-4 focus:bg-swiss-black focus:text-swiss-white cursor-pointer rounded-none uppercase font-black text-xs italic tracking-widest outline-none">
+                        <DropdownMenuSubTrigger className="p-4 focus:bg-swiss-black focus:text-swiss-white cursor-pointer rounded-none uppercase font-black text-xs italic  outline-none">
                           {currentTheme === "dark" && <MoonIcon className="mr-3 h-4 w-4" />}
                           {currentTheme === "light" && <SunMediumIcon className="mr-3 h-4 w-4" />}
                           {currentTheme === "system" && <Monitor className="mr-3 h-4 w-4" />}
@@ -248,9 +248,9 @@ export default function Header() {
                         <DropdownMenuPortal>
                           <DropdownMenuSubContent className="bg-swiss-white border-4 border-swiss-black rounded-none shadow-[8px_8px_0_0_rgba(0,0,0,1)] p-2">
                             <DropdownMenuRadioGroup value={currentTheme} onValueChange={toggleMode}>
-                              <DropdownMenuRadioItem value="light" className="p-3 font-black uppercase text-[10px] tracking-widest cursor-pointer hover:bg-swiss-black hover:text-swiss-white outline-none">LIGHT_ARRAY</DropdownMenuRadioItem>
-                              <DropdownMenuRadioItem value="dark" className="p-3 font-black uppercase text-[10px] tracking-widest cursor-pointer hover:bg-swiss-black hover:text-swiss-white outline-none">VOID_DOMAIN</DropdownMenuRadioItem>
-                              <DropdownMenuRadioItem value="system" className="p-3 font-black uppercase text-[10px] tracking-widest cursor-pointer hover:bg-swiss-black hover:text-swiss-white outline-none">SYSTEM_SYNC</DropdownMenuRadioItem>
+                              <DropdownMenuRadioItem value="light" className="p-3 font-black uppercase text-[10px]  cursor-pointer hover:bg-swiss-black hover:text-swiss-white outline-none">LIGHT_ARRAY</DropdownMenuRadioItem>
+                              <DropdownMenuRadioItem value="dark" className="p-3 font-black uppercase text-[10px]  cursor-pointer hover:bg-swiss-black hover:text-swiss-white outline-none">VOID_DOMAIN</DropdownMenuRadioItem>
+                              <DropdownMenuRadioItem value="system" className="p-3 font-black uppercase text-[10px]  cursor-pointer hover:bg-swiss-black hover:text-swiss-white outline-none">SYSTEM_SYNC</DropdownMenuRadioItem>
                             </DropdownMenuRadioGroup>
                           </DropdownMenuSubContent>
                         </DropdownMenuPortal>
@@ -260,7 +260,7 @@ export default function Header() {
 
                       <DropdownMenuItem
                         onClick={() => signOut({ callbackUrl: "/" })}
-                        className="p-4 focus:bg-swiss-red focus:text-swiss-white cursor-pointer rounded-none uppercase font-black text-xs italic tracking-widest text-swiss-red outline-none"
+                        className="p-4 focus:bg-swiss-red focus:text-swiss-white cursor-pointer rounded-none uppercase font-black text-xs italic  text-swiss-red outline-none"
                       >
                         <LogOut className="mr-3 h-4 w-4" /> TERMINATE_UPLINK
                       </DropdownMenuItem>

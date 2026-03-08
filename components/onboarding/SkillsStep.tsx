@@ -157,7 +157,7 @@ export default function SkillsStep({
             <AnimatePresence>
               {selectedSkills.length === 0 ? (
                 <div className="w-full flex items-center justify-center opacity-20 dark:opacity-30 italic">
-                  <p className="text-lg font-black uppercase tracking-widest text-black dark:text-white">AWAIT_INPUT_DATA...</p>
+                  <p className="text-lg font-black uppercase  text-black dark:text-white">AWAIT_INPUT_DATA...</p>
                 </div>
               ) : (
                 selectedSkills.map((skill) => (

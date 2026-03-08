@@ -9,12 +9,12 @@ export function Why() {
         <div className="mb-24 flex flex-col md:flex-row justify-between items-start md:items-end border-b-4 border-white dark:border-neutral-800 pb-8">
           <div>
             <p className="text-sm font-black uppercase tracking-[0.5em] text-swiss-red mb-4">Core Analysis</p>
-            <h2 className="text-7xl md:text-9xl font-black uppercase tracking-tightest leading-none">
+            <h2 className="text-7xl md:text-9xl font-black uppercase  leading-none">
               WHY<br />CODENEARBY.
             </h2>
           </div>
           <div className="mt-8 md:mt-0 max-w-sm text-right">
-            <p className="text-xl font-bold uppercase tracking-widest italic opacity-60 dark:opacity-40">Objective connectivity protocols for the modern developer.</p>
+            <p className="text-xl font-bold uppercase  italic opacity-60 dark:opacity-40">Objective connectivity protocols for the modern developer.</p>
           </div>
         </div>
 
@@ -23,8 +23,8 @@ export function Why() {
             <div key={index} className="bg-black dark:bg-black p-8 group hover:bg-swiss-red dark:hover:bg-swiss-red transition-colors relative overflow-hidden h-[500px] flex flex-col">
               <div className="relative z-10">
                 <p className="text-[10px] font-black uppercase tracking-[0.5em] text-swiss-red group-hover:text-black dark:group-hover:text-white mb-4 transition-colors">Section_{index + 1}</p>
-                <h3 className="text-3xl font-black uppercase tracking-tightest mb-6 leading-none text-white">{item.title}</h3>
-                <p className="text-sm font-bold uppercase tracking-widest opacity-60 dark:opacity-40 group-hover:opacity-100 transition-opacity leading-relaxed italic text-white">
+                <h3 className="text-3xl font-black uppercase  mb-6 leading-none text-white">{item.title}</h3>
+                <p className="text-sm font-bold uppercase  opacity-60 dark:opacity-40 group-hover:opacity-100 transition-opacity leading-relaxed italic text-white">
                   {item.description}
                 </p>
               </div>

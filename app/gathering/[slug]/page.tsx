@@ -175,7 +175,7 @@ export default function GatheringRoomPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[70vh] bg-white dark:bg-black transition-colors duration-300">
         <div className="w-32 h-32 bg-black dark:bg-white animate-pulse border-8 border-gray-100 dark:border-gray-900" />
-        <p className="font-black mt-6 uppercase tracking-widest text-xs text-black dark:text-white">JOINING_SESSION...</p>
+        <p className="font-black mt-6 uppercase  text-xs text-black dark:text-white">JOINING_SESSION...</p>
       </div>
     );
   }
@@ -256,7 +256,7 @@ export default function GatheringRoomPage() {
               )}
             </div>
 
-            <div className="flex flex-wrap gap-4 font-black text-[10px] uppercase tracking-widest mt-6">
+            <div className="flex flex-wrap gap-4 font-black text-[10px] uppercase  mt-6">
               <div className="px-3 py-1 bg-black dark:bg-white text-white dark:text-black flex items-center gap-2 transition-colors">
                 <Clock className="w-4 h-4 text-swiss-red" />
                 {hoursLeft}H {minutesLeft}M REMAINING
@@ -297,7 +297,7 @@ export default function GatheringRoomPage() {
             <h2 className="font-black text-3xl uppercase tracking-tighter text-black dark:text-white">PARTICIPANTS</h2>
             {isHost && (
               <div className="flex items-center gap-4 bg-white dark:bg-black border-4 border-black dark:border-white px-4 py-2 transition-colors">
-                <span className="font-black text-[10px] uppercase tracking-widest text-black dark:text-white">HOST_ONLY</span>
+                <span className="font-black text-[10px] uppercase  text-black dark:text-white">HOST_ONLY</span>
                 <Switch
                   checked={hostOnlyMode}
                   onCheckedChange={(checked) => handleModeration("hostOnly", undefined, checked)}
@@ -312,13 +312,13 @@ export default function GatheringRoomPage() {
               <TabsList className="grid grid-cols-2 rounded-none h-14 p-0 bg-black dark:bg-white border-b-8 border-black dark:border-white transition-colors">
                 <TabsTrigger
                   value="connect"
-                  className="rounded-none h-full font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-black data-[state=active]:text-black dark:data-[state=active]:text-white text-white dark:text-black transition-all"
+                  className="rounded-none h-full font-black uppercase  text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-black data-[state=active]:text-black dark:data-[state=active]:text-white text-white dark:text-black transition-all"
                 >
                   CONNECT_MODE
                 </TabsTrigger>
                 <TabsTrigger
                   value="view-all"
-                  className="rounded-none h-full font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-black data-[state=active]:text-black dark:data-[state=active]:text-white text-white dark:text-black transition-all"
+                  className="rounded-none h-full font-black uppercase  text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-black data-[state=active]:text-black dark:data-[state=active]:text-white text-white dark:text-black transition-all"
                 >
                   DATA_GRID
                 </TabsTrigger>
@@ -411,7 +411,7 @@ export default function GatheringRoomPage() {
                             <div>
                               <p className="font-black text-sm uppercase tracking-tight text-black dark:text-white">{user.name}</p>
                               {user._id === gathering.hostId && (
-                                <p className="font-bold text-[8px] uppercase tracking-widest text-swiss-red mt-1">PRIMARY_HOST</p>
+                                <p className="font-bold text-[8px] uppercase  text-swiss-red mt-1">PRIMARY_HOST</p>
                               )}
                             </div>
                           </div>
@@ -446,7 +446,7 @@ export default function GatheringRoomPage() {
         <div className="border-8 border-black dark:border-white bg-white dark:bg-black shadow-[16px_16px_0_0_rgba(0,0,0,1)] dark:shadow-[16px_16px_0_0_rgba(255,255,255,1)] p-12 h-fit flex flex-col transition-colors">
           <div className="mb-12 border-l-8 border-black dark:border-white pl-8 transition-colors">
             <h2 className="font-black text-4xl uppercase tracking-tighter text-black dark:text-white">INVITE_PEERS</h2>
-            <p className="font-bold uppercase tracking-widest text-xs text-swiss-red">EXPAND_LOCAL_NETWORK</p>
+            <p className="font-bold uppercase  text-xs text-swiss-red">EXPAND_LOCAL_NETWORK</p>
           </div>
 
           <div className="space-y-12">
@@ -459,7 +459,7 @@ export default function GatheringRoomPage() {
 
             <div className="space-y-6 text-black dark:text-white">
               <div className="space-y-3">
-                <label className="font-black text-[10px] uppercase tracking-widest">TRANSMISSION_LINK</label>
+                <label className="font-black text-[10px] uppercase ">TRANSMISSION_LINK</label>
                 <div className="flex gap-3">
                   <Input
                     readOnly

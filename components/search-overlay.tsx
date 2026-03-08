@@ -195,7 +195,7 @@ export function SearchOverlay({ onClose, onSearch }: SearchOverlayProps) {
 
               {query && filteredItems.length === 0 && (
                 <div className="p-12 text-center">
-                  <p className="text-xl font-black uppercase tracking-widest opacity-20 italic">
+                  <p className="text-xl font-black uppercase  opacity-20 italic">
                     NO_MATCHING_COMMANDS_FOR: &quot;{query}&quot;
                   </p>
                 </div>
@@ -207,15 +207,15 @@ export function SearchOverlay({ onClose, onSearch }: SearchOverlayProps) {
           <div className="p-6 border-t-8 border-swiss-black bg-swiss-muted/50 flex flex-wrap gap-8 items-center justify-center">
             <div className="flex items-center gap-3">
               <kbd className="px-2 py-0.5 border-2 border-swiss-black text-[10px] font-black uppercase">ESC</kbd>
-              <span className="text-[10px] font-black uppercase tracking-widest opacity-40">TERMINATE</span>
+              <span className="text-[10px] font-black uppercase  opacity-40">TERMINATE</span>
             </div>
             <div className="flex items-center gap-3">
               <kbd className="px-2 py-0.5 border-2 border-swiss-black text-[10px] font-black uppercase">ENTER</kbd>
-              <span className="text-[10px] font-black uppercase tracking-widest opacity-40">EXECUTE</span>
+              <span className="text-[10px] font-black uppercase  opacity-40">EXECUTE</span>
             </div>
             <div className="flex items-center gap-3">
               <kbd className="px-2 py-0.5 border-2 border-swiss-black text-[10px] font-black uppercase">ALT + ↑↓</kbd>
-              <span className="text-[10px] font-black uppercase tracking-widest opacity-40">NAVIGATE</span>
+              <span className="text-[10px] font-black uppercase  opacity-40">NAVIGATE</span>
             </div>
           </div>
         </SwissCard>

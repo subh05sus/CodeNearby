@@ -54,7 +54,7 @@ export function ChatList() {
     return (
       <div className="flex flex-col justify-center items-center h-64 gap-4">
         <Loader2 className="h-8 w-8 animate-spin text-swiss-red" />
-        <span className="text-xs font-black uppercase tracking-widest italic opacity-40">SCANNING_NODES...</span>
+        <span className="text-xs font-black uppercase  italic opacity-40">SCANNING_NODES...</span>
       </div>
     );
   }
@@ -111,7 +111,7 @@ export function ChatList() {
                     </h3>
                     {friend.lastMessage?.timestamp && (
                       <span className={cn(
-                        "text-[10px] font-black uppercase tracking-widest whitespace-nowrap opacity-60",
+                        "text-[10px] font-black uppercase  whitespace-nowrap opacity-60",
                         isActive ? "text-white" : "text-swiss-red"
                       )}>
                         {formatDistanceToNow(friend.lastMessage.timestamp, { addSuffix: false })}

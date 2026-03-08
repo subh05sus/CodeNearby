@@ -27,7 +27,7 @@ export default function Footer() {
               <Logo />
             </Link>
 
-            <p className="text-sm font-bold uppercase tracking-widest leading-relaxed max-w-sm text-swiss-black dark:text-swiss-white">
+            <p className="text-sm font-bold uppercase  leading-relaxed max-w-sm text-swiss-black dark:text-swiss-white">
               Connecting nodes in the local development cluster.
               Built for high-performance peer discovery.
             </p>

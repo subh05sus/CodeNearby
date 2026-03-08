@@ -95,7 +95,7 @@ export default function ReportIssuePage() {
                 PLEASE PROVIDE PRECISE DETAILS REGARDING THE TECHNICAL ANOMALY DETECTED.
               </p>
               <div className="border-t-4 border-white/20 pt-6">
-                <p className="text-sm font-black uppercase tracking-widest text-white/80 transition-colors">Protocol: Debug-01</p>
+                <p className="text-sm font-black uppercase  text-white/80 transition-colors">Protocol: Debug-01</p>
               </div>
             </SwissCard>
           </div>
@@ -104,7 +104,7 @@ export default function ReportIssuePage() {
             <SwissCard variant="white">
               <form onSubmit={handleSubmit} className="space-y-8">
                 <div className="space-y-2">
-                  <label htmlFor="title" className="text-sm font-black uppercase tracking-widest text-black dark:text-white">Title</label>
+                  <label htmlFor="title" className="text-sm font-black uppercase  text-black dark:text-white">Title</label>
                   <input
                     id="title"
                     value={title}
@@ -116,7 +116,7 @@ export default function ReportIssuePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="description" className="text-sm font-black uppercase tracking-widest text-black dark:text-white">Description</label>
+                  <label htmlFor="description" className="text-sm font-black uppercase  text-black dark:text-white">Description</label>
                   <textarea
                     id="description"
                     value={description}
@@ -129,7 +129,7 @@ export default function ReportIssuePage() {
                 </div>
 
                 <div className="space-y-4">
-                  <label className="text-sm font-black uppercase tracking-widest text-black dark:text-white">Media Attachments (Optional)</label>
+                  <label className="text-sm font-black uppercase  text-black dark:text-white">Media Attachments (Optional)</label>
                   <div className="flex flex-col gap-4">
                     <SwissButton
                       type="button"

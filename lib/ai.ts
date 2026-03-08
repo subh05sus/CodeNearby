@@ -6,7 +6,7 @@ export async function generateMessage(prompt: string, maxTokens?: number) {
   try {
     // Generate a response about the detailed profile
     const response = await generateText({
-      model: google("models/gemini-2.0-flash-exp"),
+      model: google("models/gemini-2.5-flash"),
       prompt: `${prompt}`,
       maxTokens: maxTokens || 8000,
     });

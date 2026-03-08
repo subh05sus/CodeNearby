@@ -58,7 +58,7 @@ export default function OnboardingCompleted() {
               <h1 className="text-5xl md:text-6xl font-black uppercase tracking-tighter italic leading-none text-black dark:text-white">
                 SETUP_<span className="text-swiss-red">VERIFIED</span>
               </h1>
-              <p className="text-lg font-bold uppercase tracking-widest opacity-40 italic text-black dark:text-white">
+              <p className="text-lg font-bold uppercase  opacity-40 italic text-black dark:text-white">
                 ONBOARDING_ALREADY_COMPLETED // SYSTEM_READY
               </p>
             </div>

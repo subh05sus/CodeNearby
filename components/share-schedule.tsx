@@ -40,7 +40,7 @@ export function ShareSchedule({ onShareSchedule }: ShareScheduleProps) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] rounded-none border-4 border-black p-8">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-black uppercase tracking-tightest mb-4">Share Your Schedule</DialogTitle>
+          <DialogTitle className="text-2xl font-black uppercase  mb-4">Share Your Schedule</DialogTitle>
         </DialogHeader>
         <div className="py-4 border-t-2 border-black/10">
           <Calendar
@@ -60,7 +60,7 @@ export function ShareSchedule({ onShareSchedule }: ShareScheduleProps) {
             className="rounded-none border-4 border-black p-4 mb-6"
           />
           <div className="mb-6">
-            <p className="text-xs font-black uppercase tracking-widest text-swiss-red mb-2 italic">Set Time</p>
+            <p className="text-xs font-black uppercase  text-swiss-red mb-2 italic">Set Time</p>
             <TimePickerInput
               date={selectedDateTime}
               setDate={setSelectedDateTime}
@@ -68,7 +68,7 @@ export function ShareSchedule({ onShareSchedule }: ShareScheduleProps) {
           </div>
           {selectedDateTime && (
             <div className="bg-muted p-4 border-2 border-black mb-6">
-              <p className="text-xs font-black uppercase tracking-widest opacity-50 mb-1">Target Selection</p>
+              <p className="text-xs font-black uppercase  opacity-50 mb-1">Target Selection</p>
               <p className="font-bold text-lg leading-tight uppercase">
                 {format(selectedDateTime, "PPP p")}
               </p>

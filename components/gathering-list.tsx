@@ -35,7 +35,7 @@ export function GatheringList({ gatherings }: GatheringListProps) {
                 <Zap className="h-4 w-4 text-swiss-red fill-swiss-red" />
               </div>
             </div>
-            <div className="flex items-center gap-3 font-bold uppercase tracking-widest text-[10px]">
+            <div className="flex items-center gap-3 font-bold uppercase  text-[10px]">
               <Users className="h-4 w-4" />
               {gathering.participants.length} PARTICIPANTS
             </div>

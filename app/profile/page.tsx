@@ -457,7 +457,7 @@ export default function ProfilePage() {
               </h1>
 
               <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2">
-                <div className="bg-swiss-black text-swiss-white px-3 py-1 font-black text-sm tracking-widest">
+                <div className="bg-swiss-black text-swiss-white px-3 py-1 font-black text-sm ">
                   @{session.user.githubUsername?.toUpperCase()}
                 </div>
 
@@ -531,7 +531,7 @@ export default function ProfilePage() {
               {profile.skills.map((skill: string, index: number) => (
                 <div
                   key={index}
-                  className="px-4 py-2 border-4 border-swiss-black font-black uppercase text-xs tracking-widest hover:bg-swiss-black hover:text-swiss-white transition-all cursor-default"
+                  className="px-4 py-2 border-4 border-swiss-black font-black uppercase text-xs  hover:bg-swiss-black hover:text-swiss-white transition-all cursor-default"
                 >
                   {skill}
                 </div>
@@ -622,11 +622,11 @@ export default function ProfilePage() {
                     <div className="mt-auto flex items-center gap-6">
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 bg-swiss-red" />
-                        <span className="font-black text-[10px] tracking-widest">{repo.language?.toUpperCase() || "DATA"}</span>
+                        <span className="font-black text-[10px] ">{repo.language?.toUpperCase() || "DATA"}</span>
                       </div>
                       <div className="flex items-center gap-2 opacity-40">
                         <Star className="h-3 w-3 fill-current" />
-                        <span className="font-black text-[10px] tracking-widest">{repo.stargazers_count}</span>
+                        <span className="font-black text-[10px] ">{repo.stargazers_count}</span>
                       </div>
                     </div>
                   </div>
@@ -649,7 +649,7 @@ export default function ProfilePage() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  "px-8 py-4 border-4 border-swiss-black font-black uppercase tracking-widest text-sm flex items-center gap-3 transition-all",
+                  "px-8 py-4 border-4 border-swiss-black font-black uppercase  text-sm flex items-center gap-3 transition-all",
                   activeTab === tab.id
                     ? "bg-swiss-black text-swiss-white shadow-[8px_8px_0_0_rgba(255,0,0,1)] -translate-y-2"
                     : "bg-swiss-white text-swiss-black hover:bg-swiss-muted"
@@ -673,7 +673,7 @@ export default function ProfilePage() {
                   {activities.map((activity, i) => (
                     <div key={i} className="group border-l-8 border-swiss-black hover:border-swiss-red pl-6 py-4 transition-all">
                       <div className="flex items-center gap-4 mb-1">
-                        <span className="font-black text-[10px] tracking-widest text-swiss-red uppercase">{activity.type.replace('Event', '')}</span>
+                        <span className="font-black text-[10px]  text-swiss-red uppercase">{activity.type.replace('Event', '')}</span>
                         <span className="text-[10px] font-bold opacity-30 uppercase">{formatDistanceToNow(new Date(activity.createdAt || activity.created_at || Date.now()))} AGO</span>
                       </div>
                       <p className="font-bold uppercase tracking-tight text-lg group-hover:translate-x-2 transition-transform">
@@ -718,7 +718,7 @@ export default function ProfilePage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="font-black uppercase tracking-tight truncate group-hover:text-swiss-white text-sm">{friend.name}</h4>
-                        <p className="font-bold text-[10px] tracking-widest uppercase opacity-40 group-hover:text-swiss-white group-hover:opacity-100">@{friend.githubUsername}</p>
+                        <p className="font-bold text-[10px]  uppercase opacity-40 group-hover:text-swiss-white group-hover:opacity-100">@{friend.githubUsername}</p>
                       </div>
                       <div className="flex flex-col gap-2">
                         <SwissButton variant="secondary" size="icon" className="h-10 w-10" asChild>
@@ -748,7 +748,7 @@ export default function ProfilePage() {
                   <div className="space-y-12">
                     <div className="flex items-center justify-between group pb-8 border-b-4 border-swiss-muted">
                       <div>
-                        <p className="font-black uppercase tracking-widest text-sm">SPOTLIGHT_OVERLAY</p>
+                        <p className="font-black uppercase  text-sm">SPOTLIGHT_OVERLAY</p>
                         <p className="text-[10px] font-bold uppercase opacity-40 mt-1">EMIT_VISUAL_ENERGY_PARTICLES</p>
                       </div>
                       <button
@@ -764,7 +764,7 @@ export default function ProfilePage() {
 
                     <div className="flex items-center justify-between group pb-8 border-b-4 border-swiss-muted">
                       <div>
-                        <p className="font-black uppercase tracking-widest text-sm">GITHUB_PULSE</p>
+                        <p className="font-black uppercase  text-sm">GITHUB_PULSE</p>
                         <p className="text-[10px] font-bold uppercase opacity-40 mt-1">REALTIME_ACTIVITY_MIRRORING</p>
                       </div>
                       <button

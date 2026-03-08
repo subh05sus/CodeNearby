@@ -231,7 +231,7 @@ export default function DevelopersStep({
                       <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-40 dark:opacity-60 italic text-black dark:text-white">@{developer.githubUsername}</p>
                     </div>
 
-                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest opacity-60 mb-6 bg-swiss-muted dark:bg-white dark:text-black px-3 py-1 border-2 border-swiss-black dark:border-white">
+                    <div className="flex items-center gap-2 text-[10px] font-black uppercase  opacity-60 mb-6 bg-swiss-muted dark:bg-white dark:text-black px-3 py-1 border-2 border-swiss-black dark:border-white">
                       <MapPin className="h-3 w-3" />
                       {(developer.githubLocation || "UNKNOWN_LOCATION").toUpperCase()}
                     </div>
@@ -239,7 +239,7 @@ export default function DevelopersStep({
                     {skills.length > 0 && matchCount > 0 && (
                       <div className="w-full space-y-2 mb-6 text-black dark:text-white">
                         <div className="flex justify-between items-end">
-                          <span className="text-[10px] font-black uppercase tracking-widest leading-none">MATCH_PRECISION</span>
+                          <span className="text-[10px] font-black uppercase  leading-none">MATCH_PRECISION</span>
                           <span className="text-xl font-black uppercase tracking-tighter italic leading-none">{matchPercentage}%</span>
                         </div>
                         <div className="h-4 w-full bg-swiss-muted dark:bg-white/10 border-2 border-swiss-black dark:border-white group overflow-hidden">
@@ -283,7 +283,7 @@ export default function DevelopersStep({
                             </div>
                           </TooltipTrigger>
                           <TooltipContent className="bg-swiss-black dark:bg-white text-swiss-white dark:text-black border-2 border-swiss-white dark:border-black p-4 rounded-none">
-                            <p className="text-[10px] font-black uppercase tracking-widest italic">
+                            <p className="text-[10px] font-black uppercase  italic">
                               {requestStatus === "success" || requestStatus === "exists" ? "ACCESS_GRANTED" : `SEND_REQUEST_TO_${developer.name.toUpperCase()}`}
                             </p>
                           </TooltipContent>

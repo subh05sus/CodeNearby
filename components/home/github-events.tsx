@@ -78,7 +78,7 @@ export function GitHubEvents({ username }: { username: string }) {
   return (
     <SwissCard variant="white" pattern="grid" className="h-full">
       <div className="mb-6 border-b-2 border-black dark:border-white pb-2 transition-colors">
-        <h2 className="text-xl font-black uppercase tracking-widest text-black dark:text-white transition-colors">
+        <h2 className="text-xl font-black uppercase  text-black dark:text-white transition-colors">
           System Logs
         </h2>
       </div>
@@ -99,7 +99,7 @@ export function GitHubEvents({ username }: { username: string }) {
                   <div className="mt-1">{getEventIcon(event.type)}</div>
                   <div className="flex flex-col">
                     <span className="text-xs font-black uppercase leading-tight text-black dark:text-white">{getEventDescription(event)}</span>
-                    <span className="text-[10px] uppercase font-bold tracking-widest opacity-30 dark:opacity-40 mt-1 italic text-black dark:text-white">
+                    <span className="text-[10px] uppercase font-bold  opacity-30 dark:opacity-40 mt-1 italic text-black dark:text-white">
                       {new Date(event.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
@@ -107,7 +107,7 @@ export function GitHubEvents({ username }: { username: string }) {
               ))}
             </ul>
           ) : (
-            <p className="text-center font-black uppercase tracking-widest opacity-30 dark:opacity-20 italic py-8 border-2 border-dashed border-black/20 dark:border-white/20 text-black dark:text-white transition-colors">
+            <p className="text-center font-black uppercase  opacity-30 dark:opacity-20 italic py-8 border-2 border-dashed border-black/20 dark:border-white/20 text-black dark:text-white transition-colors">
               NO SYSTEM ACTIVITY
             </p>
           )}

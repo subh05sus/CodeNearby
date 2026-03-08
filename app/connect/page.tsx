@@ -244,7 +244,7 @@ export default function ConnectPage() {
             <h1 className="text-6xl font-black uppercase tracking-tighter italic text-swiss-white leading-none mb-4">
               RESTRICTED_ACCESS
             </h1>
-            <p className="text-xl font-black uppercase tracking-widest text-swiss-black">
+            <p className="text-xl font-black uppercase  text-swiss-black">
               AUTHENTICATION_REQUIRED_FOR_NODE_CONNECT
             </p>
           </div>
@@ -262,7 +262,7 @@ export default function ConnectPage() {
             <h1 className="text-7xl font-black uppercase tracking-tighter italic leading-none border-b-8 border-swiss-black pb-4 mb-4">
               NODE_SCANNER
             </h1>
-            <p className="text-sm font-bold uppercase tracking-widest opacity-40">
+            <p className="text-sm font-bold uppercase  opacity-40">
               LOCATE_DEVELOPERS_IN_YOUR_PROXIMITY
             </p>
           </div>
@@ -270,7 +270,7 @@ export default function ConnectPage() {
           <SwissCard className="p-10 w-full border-8 border-swiss-black shadow-[16px_16px_0_0_rgba(0,0,0,1)]">
             <form onSubmit={handleLocationSubmit} className="space-y-10">
               <div className="space-y-4">
-                <label className="text-xs font-black uppercase tracking-widest opacity-60">LOCATION_VECTOR_INPUT</label>
+                <label className="text-xs font-black uppercase  opacity-60">LOCATION_VECTOR_INPUT</label>
                 <input
                   type="text"
                   placeholder="ENTER_CITY_OR_COORD"
@@ -316,7 +316,7 @@ export default function ConnectPage() {
               <MapPin className="h-6 w-6 text-swiss-white" />
             </div>
             <div>
-              <p className="text-xs font-black uppercase tracking-widest opacity-40">ACTIVE_GRID_SECTOR</p>
+              <p className="text-xs font-black uppercase  opacity-40">ACTIVE_GRID_SECTOR</p>
               <h2 className="text-2xl font-black uppercase tracking-tighter italic">{location || "UNKNOWN_SECTOR"}</h2>
             </div>
           </div>
@@ -363,7 +363,7 @@ export default function ConnectPage() {
                         )}
                       </div>
                       {developer.distance && (
-                        <div className="bg-swiss-white text-swiss-black px-4 py-2 border-4 border-swiss-black font-black text-xs tracking-widest uppercase">
+                        <div className="bg-swiss-white text-swiss-black px-4 py-2 border-4 border-swiss-black font-black text-xs  uppercase">
                           {developer.distance}
                         </div>
                       )}
@@ -374,7 +374,7 @@ export default function ConnectPage() {
                     <div className="grid grid-cols-2 gap-4">
                       {developer.details?.public_repos !== undefined && (
                         <div className="border-4 border-swiss-black p-4 bg-swiss-white">
-                          <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-1">REPOS</p>
+                          <p className="text-[10px] font-black uppercase  opacity-40 mb-1">REPOS</p>
                           <div className="flex items-center gap-2">
                             <GitBranch className="h-4 w-4 text-swiss-red" />
                             <span className="text-xl font-black italic">{developer.details.public_repos}</span>
@@ -383,7 +383,7 @@ export default function ConnectPage() {
                       )}
                       {developer.details?.followers !== undefined && (
                         <div className="border-4 border-swiss-black p-4 bg-swiss-white">
-                          <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-1">FOLLOWERS</p>
+                          <p className="text-[10px] font-black uppercase  opacity-40 mb-1">FOLLOWERS</p>
                           <div className="flex items-center gap-2">
                             <Users className="h-4 w-4 text-swiss-red" />
                             <span className="text-xl font-black italic">{developer.details.followers}</span>

@@ -13,7 +13,7 @@ export default function PrivacyPolicyPage() {
         pattern="grid"
       >
         <div className="max-w-4xl">
-          <p className="text-xl font-bold uppercase mb-12 tracking-widest text-swiss-red">
+          <p className="text-xl font-bold uppercase mb-12  text-swiss-red">
             Last updated: {updatedDate}
           </p>
           <div className="space-y-12">
@@ -57,7 +57,7 @@ export default function PrivacyPolicyPage() {
 
           <div className="mt-24 pt-12 border-t-8 border-black dark:border-white flex justify-between items-end transition-colors">
             <div>
-              <p className="text-sm font-black uppercase tracking-widest mb-4 text-black dark:text-white transition-colors">The system is objective.</p>
+              <p className="text-sm font-black uppercase  mb-4 text-black dark:text-white transition-colors">The system is objective.</p>
               <SwissButton variant="primary" asChild className="dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
                 <Link href="/">RETURN TO ROOT</Link>
               </SwissButton>

@@ -100,7 +100,7 @@ export default function AboutPage() {
             Networking should be effortless for developers. Whether you&apos;re looking for an open-source collaborator, a mentor, or a hackathon buddy, Codenearby makes it simple and effective.
           </p>
           <div className="border-t-4 border-black dark:border-white pt-12">
-            <p className="text-lg font-bold mb-12 uppercase tracking-widest text-black dark:text-white">
+            <p className="text-lg font-bold mb-12 uppercase  text-black dark:text-white">
               Join Codenearby today and become part of a vibrant community of developers.
             </p>
             <SwissButton variant="primary" size="xl" asChild className="dark:shadow-[12px_12px_0_0_rgba(255,255,255,1)]">

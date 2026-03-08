@@ -65,7 +65,7 @@ export default function GatheringsStep({
               </h3>
 
               <div className={cn(
-                "px-4 py-2 text-sm font-black uppercase tracking-widest border-4 transition-colors",
+                "px-4 py-2 text-sm font-black uppercase  border-4 transition-colors",
                 isJoining
                   ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white"
                   : "bg-white dark:bg-black text-swiss-red border-swiss-red"
@@ -136,7 +136,7 @@ export default function GatheringsStep({
                 </div>
               </TooltipTrigger>
               <TooltipContent className="bg-black dark:bg-white text-white dark:text-black border-2 border-white dark:border-black p-4 max-w-xs rounded-none transition-colors">
-                <p className="text-[10px] font-black uppercase tracking-widest">
+                <p className="text-[10px] font-black uppercase ">
                   MEMBERSHIP_STATUS_CAN_BE_MODIFIED_IN_CORE_NETWORK_SETTINGS_POST_ONBOARDING.
                 </p>
               </TooltipContent>

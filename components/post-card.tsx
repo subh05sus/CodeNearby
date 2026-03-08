@@ -196,13 +196,13 @@ export function PostCard({
               {post.user?.name || "Anonymous"}
             </p>
             {post.user?.githubUsername && (
-              <p className="text-[10px] font-bold uppercase tracking-widest text-swiss-red mt-1">
+              <p className="text-[10px] font-bold uppercase  text-swiss-red mt-1">
                 @{post.user.githubUsername}
               </p>
             )}
           </div>
         </Link>
-        <div className="text-[10px] font-bold uppercase tracking-widest opacity-60 flex items-center gap-1">
+        <div className="text-[10px] font-bold uppercase  opacity-60 flex items-center gap-1">
           <Clock className="h-3 w-3" />
           {post.createdAt ? formatDistanceToNow(new Date(post.createdAt), { addSuffix: true }) : "Unknown"}
         </div>
@@ -274,7 +274,7 @@ export function PostCard({
               <Calendar className="h-8 w-8 text-swiss-red" />
               <div>
                 <p className="text-sm font-black uppercase tracking-tighter">{format(new Date(post.schedule), "PPPP")}</p>
-                <p className="text-xs font-bold uppercase tracking-widest opacity-60">{format(new Date(post.schedule), "p")}</p>
+                <p className="text-xs font-bold uppercase  opacity-60">{format(new Date(post.schedule), "p")}</p>
               </div>
             </div>
             <SwissButton variant="secondary" size="sm" onClick={addToCalendar}>ADD</SwissButton>
@@ -298,7 +298,7 @@ export function PostCard({
           </button>
           <div className="flex-1 aspect-square flex flex-col items-center justify-center bg-swiss-white">
             <span className="text-2xl font-black tracking-tighter">{score}</span>
-            <span className="text-[8px] font-black uppercase tracking-widest opacity-40 -mt-1">Rank</span>
+            <span className="text-[8px] font-black uppercase  opacity-40 -mt-1">Rank</span>
           </div>
           <button
             onClick={() => handleVote("down")}
@@ -319,7 +319,7 @@ export function PostCard({
             className="flex-1 flex flex-col items-center justify-center hover:bg-swiss-red hover:text-swiss-white transition-colors py-2"
           >
             <MessageSquare className="h-6 w-6 mb-1" />
-            <span className="text-[10px] font-black uppercase tracking-widest">{post.comments?.length || 0} Comments</span>
+            <span className="text-[10px] font-black uppercase ">{post.comments?.length || 0} Comments</span>
           </button>
 
           <DropdownMenu open={isShareMenuOpen} onOpenChange={setIsShareMenuOpen}>
@@ -331,7 +331,7 @@ export function PostCard({
                 <Share2 className="h-6 w-6" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="rounded-none border-4 border-swiss-black p-2 font-black uppercase tracking-widest text-[10px]">
+            <DropdownMenuContent align="end" className="rounded-none border-4 border-swiss-black p-2 font-black uppercase  text-[10px]">
               <DropdownMenuItem onClick={shareOnWhatsApp} className="focus:bg-swiss-black focus:text-swiss-white">WhatsApp</DropdownMenuItem>
               <DropdownMenuItem onClick={shareOnTwitter} className="focus:bg-swiss-black focus:text-swiss-white">Twitter</DropdownMenuItem>
               <DropdownMenuItem onClick={sharePost} className="focus:bg-swiss-black focus:text-swiss-white">System Share</DropdownMenuItem>

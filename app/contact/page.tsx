@@ -30,7 +30,7 @@ export default function ContactPage() {
               <SwissCard variant="white">
                 <Mail className="h-8 w-8 mb-4 text-swiss-red" />
                 <h4 className="text-xl font-black uppercase mb-2 text-black dark:text-white transition-colors">Primary</h4>
-                <p className="text-sm font-bold uppercase tracking-widest mb-4 opacity-60 text-black dark:text-white transition-colors">General Inquiries</p>
+                <p className="text-sm font-bold uppercase  mb-4 opacity-60 text-black dark:text-white transition-colors">General Inquiries</p>
                 <a href="mailto:hello@codenearby.space" className="text-lg font-black uppercase tracking-tighter hover:text-swiss-red transition-colors text-black dark:text-white dark:hover:text-swiss-red">
                   hello@codenearby.space
                 </a>
@@ -39,7 +39,7 @@ export default function ContactPage() {
               <SwissCard variant="white">
                 <Mail className="h-8 w-8 mb-4 text-swiss-red" />
                 <h4 className="text-xl font-black uppercase mb-2 text-black dark:text-white transition-colors">Developer</h4>
-                <p className="text-sm font-bold uppercase tracking-widest mb-4 opacity-60 text-black dark:text-white transition-colors">Technical Support</p>
+                <p className="text-sm font-bold uppercase  mb-4 opacity-60 text-black dark:text-white transition-colors">Technical Support</p>
                 <a href="mailto:sahasubhadip54@gmail.com" className="text-lg font-black uppercase tracking-tighter hover:text-swiss-red transition-colors text-black dark:text-white dark:hover:text-swiss-red">
                   sahasubhadip54@gmail.com
                 </a>
@@ -48,7 +48,7 @@ export default function ContactPage() {
               <SwissCard variant="white">
                 <Phone className="h-8 w-8 mb-4 text-swiss-red" />
                 <h4 className="text-xl font-black uppercase mb-2 text-black dark:text-white transition-colors">Urgent</h4>
-                <p className="text-sm font-bold uppercase tracking-widest mb-4 opacity-60 text-black dark:text-white transition-colors">Phone Support</p>
+                <p className="text-sm font-bold uppercase  mb-4 opacity-60 text-black dark:text-white transition-colors">Phone Support</p>
                 <a href="tel:+918653462940" className="text-lg font-black uppercase tracking-tighter hover:text-swiss-red transition-colors text-black dark:text-white dark:hover:text-swiss-red">
                   +91 8653462940
                 </a>
@@ -57,7 +57,7 @@ export default function ContactPage() {
               <SwissCard variant="white">
                 <Globe className="h-8 w-8 mb-4 text-swiss-red" />
                 <h4 className="text-xl font-black uppercase mb-2 text-black dark:text-white transition-colors">Platform</h4>
-                <p className="text-sm font-bold uppercase tracking-widest mb-4 opacity-60 text-black dark:text-white transition-colors">Main Website</p>
+                <p className="text-sm font-bold uppercase  mb-4 opacity-60 text-black dark:text-white transition-colors">Main Website</p>
                 <a href="https://codenearby.space" target="_blank" rel="noopener noreferrer" className="text-lg font-black uppercase tracking-tighter hover:text-swiss-red transition-colors text-black dark:text-white dark:hover:text-swiss-red">
                   codenearby.space
                 </a>
@@ -72,7 +72,7 @@ export default function ContactPage() {
                 WE AIM TO RESPOND TO ALL INQUIRIES WITHIN 24 HOURS.
               </p>
               <div className="border-t-4 border-white/20 pt-6">
-                <p className="text-sm font-black uppercase tracking-widest text-white/80">System Efficiency: 100%</p>
+                <p className="text-sm font-black uppercase  text-white/80">System Efficiency: 100%</p>
               </div>
             </SwissCard>
           </div>
@@ -87,7 +87,7 @@ export default function ContactPage() {
           </SwissButton>
           <div className="mt-24 pt-12 border-t-8 border-black dark:border-white flex justify-between items-end transition-colors">
             <div>
-              <p className="text-sm font-black uppercase tracking-widest mb-4 text-black dark:text-white transition-colors">The system is objective.</p>
+              <p className="text-sm font-black uppercase  mb-4 text-black dark:text-white transition-colors">The system is objective.</p>
               <SwissButton variant="primary" asChild className="dark:shadow-[8px_8px_0_0_rgba(255,255,255,1)]">
                 <Link href="/">RETURN TO ROOT</Link>
               </SwissButton>

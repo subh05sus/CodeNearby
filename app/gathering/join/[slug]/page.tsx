@@ -97,7 +97,7 @@ export default function JoinGatheringPage() {
             <h1 className="text-5xl font-black uppercase tracking-tighter italic leading-none border-b-8 border-swiss-red pb-4 mb-6 text-black dark:text-white">
               RESTRICTED_ACCESS
             </h1>
-            <p className="text-sm font-bold uppercase tracking-widest opacity-40 mb-12 text-black dark:text-white">
+            <p className="text-sm font-bold uppercase  opacity-40 mb-12 text-black dark:text-white">
               AUTHENTICATION_REQUIRED_FOR_NODE_ENTRY
             </p>
             <div className="flex justify-center">
@@ -125,7 +125,7 @@ export default function JoinGatheringPage() {
         <div className="flex flex-col items-center justify-center min-h-[50vh] max-w-2xl mx-auto text-center">
           <SwissCard className="p-12 border-4 border-black dark:border-white bg-gray-100/50 dark:bg-gray-900/50 opacity-50 transition-colors">
             <h1 className="text-4xl font-black uppercase tracking-tighter italic mb-4 text-black dark:text-white">NODE_NOT_FOUND</h1>
-            <p className="font-bold uppercase tracking-widest text-xs opacity-60 mb-8 italic leading-relaxed text-black dark:text-white">
+            <p className="font-bold uppercase  text-xs opacity-60 mb-8 italic leading-relaxed text-black dark:text-white">
               THE_REQUESTED_GATHERING_DOES_NOT_EXIST<br />OR_HAS_BEEN_TERMINATED
             </p>
             <SwissButton variant="secondary" onClick={() => router.push("/gathering")}>
@@ -147,7 +147,7 @@ export default function JoinGatheringPage() {
         <div className="flex flex-col items-center justify-center min-h-[50vh] max-w-2xl mx-auto text-center">
           <SwissCard className="p-12 border-8 border-black dark:border-white shadow-[16px_16px_0_0_rgba(0,0,0,1)] dark:shadow-[16px_16px_0_0_rgba(255,255,255,1)] transition-colors">
             <h1 className="text-5xl font-black uppercase tracking-tighter italic border-b-8 border-black dark:border-white pb-4 mb-6 text-black dark:text-white transition-colors">ALREADY_SYNCED</h1>
-            <p className="font-bold uppercase tracking-widest text-xs opacity-40 mb-12 text-black dark:text-white">YOUR_NODE_IS_ALREADY_CONNECTED_TO_THIS_STREAM</p>
+            <p className="font-bold uppercase  text-xs opacity-40 mb-12 text-black dark:text-white">YOUR_NODE_IS_ALREADY_CONNECTED_TO_THIS_STREAM</p>
             <SwissButton variant="primary" className="h-16 px-12" onClick={() => router.push(`/gathering/${gathering.slug}`)}>
               ACCESS_GATHERING_DATA
             </SwissButton>
@@ -175,7 +175,7 @@ export default function JoinGatheringPage() {
             <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter italic leading-[0.9] mb-6">
               {gathering.name}
             </h1>
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-swiss-red">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase  text-swiss-red">
               <Clock className="h-4 w-4" />
               {isExpired
                 ? "GATHERING_HAS_EXPIRED"
@@ -190,7 +190,7 @@ export default function JoinGatheringPage() {
                 <Image src={gathering.host?.image} width={80} height={80} alt={gathering.host?.name} className="object-cover" />
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest opacity-40 mb-1">HOST_NODE</p>
+                <p className="text-[10px] font-black uppercase  opacity-40 mb-1">HOST_NODE</p>
                 <p className="text-3xl font-black uppercase tracking-tighter italic leading-none">{gathering.host?.name}</p>
               </div>
             </div>
@@ -199,7 +199,7 @@ export default function JoinGatheringPage() {
               <div className="flex items-center justify-between border-b-4 border-gray-100 dark:border-gray-900 pb-4 transition-colors">
                 <div className="flex items-center gap-3">
                   <Users className="h-5 w-5 text-swiss-red" />
-                  <span className="text-xs font-black uppercase tracking-widest">PARTICIPANT_LOAD</span>
+                  <span className="text-xs font-black uppercase ">PARTICIPANT_LOAD</span>
                 </div>
                 <span className="text-3xl font-black tracking-tighter">{gathering.participants?.length || 0}</span>
               </div>

@@ -271,7 +271,7 @@ export default function TokenAPIPage() {
                 <div className="text-6xl font-black uppercase tracking-tighter italic leading-none truncate text-black dark:text-white">
                   {tile.value}
                 </div>
-                <div className="mt-2 text-[10px] font-black uppercase tracking-widest italic opacity-60 text-black dark:text-white">{tile.sub}</div>
+                <div className="mt-2 text-[10px] font-black uppercase  italic opacity-60 text-black dark:text-white">{tile.sub}</div>
               </div>
             </div>
           ))}
@@ -341,7 +341,7 @@ export default function TokenAPIPage() {
                   </div>
 
                   <div className="bg-swiss-white/10 border-4 border-swiss-white/20 p-8 flex flex-col md:flex-row items-center gap-6">
-                    <code className="text-2xl font-black tracking-widest break-all flex-grow">
+                    <code className="text-2xl font-black  break-all flex-grow">
                       {showKey ? newlyCreatedKey : "•".repeat(32)}
                     </code>
                     <div className="flex gap-4 shrink-0">
@@ -355,10 +355,10 @@ export default function TokenAPIPage() {
                   </div>
 
                   <div className="flex justify-between items-center gap-6">
-                    <p className="text-sm font-black uppercase tracking-widest text-swiss-red italic">
+                    <p className="text-sm font-black uppercase  text-swiss-red italic">
                       WARNING: KEY WILL NOT BE SHOWN AGAIN. MINIMIZE EXPOSURE.
                     </p>
-                    <button className="text-swiss-white uppercase font-black tracking-widest italic hover:underline" onClick={() => setNewlyCreatedKey(null)}>
+                    <button className="text-swiss-white uppercase font-black  italic hover:underline" onClick={() => setNewlyCreatedKey(null)}>
                       DISMISS_LOGS
                     </button>
                   </div>
@@ -384,14 +384,14 @@ export default function TokenAPIPage() {
                       <div className="space-y-4 flex-grow">
                         <div className="flex items-center gap-4">
                           <h3 className="text-3xl font-black uppercase tracking-tighter italic leading-none text-black dark:text-white">{key.name}</h3>
-                          <span className="bg-black dark:bg-white text-white dark:text-black px-3 py-1 text-[10px] font-black uppercase tracking-widest">
+                          <span className="bg-black dark:bg-white text-white dark:text-black px-3 py-1 text-[10px] font-black uppercase ">
                             {key.tier}
                           </span>
                         </div>
                         <code className="block text-xl font-bold opacity-40 font-mono tracking-tighter truncate max-w-xl text-black dark:text-white">
                           {key.keyPreview}
                         </code>
-                        <div className="flex flex-wrap gap-8 text-[10px] font-black uppercase tracking-widest opacity-60 italic text-black dark:text-white">
+                        <div className="flex flex-wrap gap-8 text-[10px] font-black uppercase  opacity-60 italic text-black dark:text-white">
                           <span>CREATED: {new Date(key.createdAt).toLocaleDateString()}</span>
                           {key.lastUsed && <span>LAST_ACCESS: {new Date(key.lastUsed).toLocaleDateString()}</span>}
                         </div>
@@ -422,11 +422,11 @@ export default function TokenAPIPage() {
                 <h3 className="text-3xl font-black uppercase tracking-tighter italic text-swiss-red border-b-4 border-swiss-red/20 pb-4">REAL_TIME_LOAD</h3>
                 <div className="space-y-6">
                   <div className="flex justify-between items-end border-b-2 border-white/10 pb-4">
-                    <span className="text-xs font-black uppercase tracking-widest opacity-60">TOKENS_CONSUMED</span>
+                    <span className="text-xs font-black uppercase  opacity-60">TOKENS_CONSUMED</span>
                     <span className="text-4xl font-black italic">{userTierData?.usage.today.tokens || 0}</span>
                   </div>
                   <div className="flex justify-between items-end border-b-2 border-white/10 pb-4">
-                    <span className="text-xs font-black uppercase tracking-widest opacity-60">PROTOCOL_REQUESTS</span>
+                    <span className="text-xs font-black uppercase  opacity-60">PROTOCOL_REQUESTS</span>
                     <span className="text-4xl font-black italic">{userTierData?.usage.today.requests || 0}</span>
                   </div>
                 </div>
@@ -435,11 +435,11 @@ export default function TokenAPIPage() {
                 <h3 className="text-3xl font-black uppercase tracking-tighter italic border-b-4 border-black/10 dark:border-white/10 pb-4">ACCUMULATED_DATA</h3>
                 <div className="space-y-6">
                   <div className="flex justify-between items-end border-b-2 border-black/10 dark:border-white/10 pb-4">
-                    <span className="text-xs font-black uppercase tracking-widest opacity-60">LIFETIME_TOKENS</span>
+                    <span className="text-xs font-black uppercase  opacity-60">LIFETIME_TOKENS</span>
                     <span className="text-4xl font-black italic">{userTierData?.usage.total.tokens || 0}</span>
                   </div>
                   <div className="flex justify-between items-end border-b-2 border-black/10 dark:border-white/10 pb-4">
-                    <span className="text-xs font-black uppercase tracking-widest opacity-60">LIFETIME_REQUESTS</span>
+                    <span className="text-xs font-black uppercase  opacity-60">LIFETIME_REQUESTS</span>
                     <span className="text-4xl font-black italic">{userTierData?.usage.total.requests || 0}</span>
                   </div>
                 </div>
@@ -505,7 +505,7 @@ export default function TokenAPIPage() {
                 </div>
 
                 <div className="space-y-4">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-swiss-red italic">IDENTIFIER_LABEL</label>
+                  <label className="text-[10px] font-black uppercase  text-swiss-red italic">IDENTIFIER_LABEL</label>
                   <input
                     placeholder="E.G. PRODUCTION_NODE_V1"
                     value={newKeyName}

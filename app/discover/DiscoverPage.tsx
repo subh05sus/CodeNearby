@@ -357,7 +357,7 @@ export default function DiscoverPage() {
                             </h3>
                             <button
                               onClick={() => window.open(developer.html_url, '_blank')}
-                              className="font-bold uppercase tracking-widest text-[10px] text-swiss-red flex items-center gap-2 hover:translate-x-2 transition-transform"
+                              className="font-bold uppercase  text-[10px] text-swiss-red flex items-center gap-2 hover:translate-x-2 transition-transform"
                             >
                               VIEW_GITHUB_PROFILE <SkipForward className="h-3 w-3" />
                             </button>
@@ -406,7 +406,7 @@ export default function DiscoverPage() {
           <div className="lg:col-span-12 xl:col-span-7 space-y-8">
             <div className="flex items-center justify-between border-b-4 border-black dark:border-white pb-4">
               <h2 className="font-black text-4xl uppercase tracking-tighter text-black dark:text-white">EXPLORE</h2>
-              <p className="font-bold uppercase tracking-widest text-[10px] text-swiss-red">REGION: {location || 'GLOBAL'}</p>
+              <p className="font-bold uppercase  text-[10px] text-swiss-red">REGION: {location || 'GLOBAL'}</p>
             </div>
 
             <div className="relative border-4 border-black dark:border-white p-6 bg-gray-50 dark:bg-gray-950 min-h-[60vh]">

@@ -123,7 +123,7 @@ export default function DeveloperGrid({
                     <h2 className="font-black text-5xl uppercase tracking-tighter leading-none mb-2">
                       {details?.name || active.login}
                     </h2>
-                    <span className="font-bold uppercase tracking-widest text-xs text-swiss-red">
+                    <span className="font-bold uppercase  text-xs text-swiss-red">
                       GITHUB / @{active.login}
                     </span>
                   </div>
@@ -150,15 +150,15 @@ export default function DeveloperGrid({
                       <div className="grid grid-cols-3 border-4 border-swiss-black divide-x-4 divide-swiss-black bg-swiss-black">
                         <div className="p-4 bg-swiss-white flex flex-col items-center">
                           <span className="font-black text-2xl">{details.followers}</span>
-                          <span className="font-bold uppercase text-[10px] tracking-widest text-swiss-red">FOLLOWERS</span>
+                          <span className="font-bold uppercase text-[10px]  text-swiss-red">FOLLOWERS</span>
                         </div>
                         <div className="p-4 bg-swiss-white flex flex-col items-center">
                           <span className="font-black text-2xl">{details.following}</span>
-                          <span className="font-bold uppercase text-[10px] tracking-widest text-swiss-red">FOLLOWING</span>
+                          <span className="font-bold uppercase text-[10px]  text-swiss-red">FOLLOWING</span>
                         </div>
                         <div className="p-4 bg-swiss-white flex flex-col items-center">
                           <span className="font-black text-2xl">{details.public_repos}</span>
-                          <span className="font-bold uppercase text-[10px] tracking-widest text-swiss-red">REPOS</span>
+                          <span className="font-bold uppercase text-[10px]  text-swiss-red">REPOS</span>
                         </div>
                       </div>
 
@@ -239,7 +239,7 @@ export default function DeveloperGrid({
                 <h3 className="font-black text-2xl uppercase tracking-tighter leading-none mb-1">
                   {developer.login}
                 </h3>
-                <p className="font-bold uppercase tracking-widest text-[8px] text-swiss-red mb-4">
+                <p className="font-bold uppercase  text-[8px] text-swiss-red mb-4">
                   DEV / ACTIVE_NODE
                 </p>
 

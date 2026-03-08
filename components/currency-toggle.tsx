@@ -17,7 +17,7 @@ export function CurrencyToggle({ currency, onToggle }: CurrencyToggleProps) {
       >
         <button
           className={cn(
-            "px-6 py-2 text-sm font-black uppercase tracking-widest transition-colors",
+            "px-6 py-2 text-sm font-black uppercase  transition-colors",
             currency.code === "USD" ? "bg-black dark:bg-white text-white dark:text-black" : "bg-white dark:bg-black text-black dark:text-white hover:bg-muted dark:hover:bg-neutral-900"
           )}
         >
@@ -26,7 +26,7 @@ export function CurrencyToggle({ currency, onToggle }: CurrencyToggleProps) {
         <div className="w-1 h-10 bg-black dark:bg-white" />
         <button
           className={cn(
-            "px-6 py-2 text-sm font-black uppercase tracking-widest transition-colors",
+            "px-6 py-2 text-sm font-black uppercase  transition-colors",
             currency.code === "INR" ? "bg-black dark:bg-white text-white dark:text-black" : "bg-white dark:bg-black text-black dark:text-white hover:bg-muted dark:hover:bg-neutral-900"
           )}
         >

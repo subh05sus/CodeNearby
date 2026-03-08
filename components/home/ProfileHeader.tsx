@@ -132,7 +132,7 @@ const ProfileHeader = ({
                   style={{ maxHeight: "80vh", width: "auto" }}
                 />
                 <div className="absolute bottom-0 left-0 right-0 bg-white dark:bg-black p-4 border-t-4 border-black dark:border-white">
-                  <p className="font-black uppercase tracking-widest text-black dark:text-white text-xs text-center">
+                  <p className="font-black uppercase  text-black dark:text-white text-xs text-center">
                     VISUAL_DATA_INTERCEPT / {previewId?.toUpperCase()}
                   </p>
                 </div>

@@ -17,9 +17,9 @@ export function ThemeToggle() {
         </SwissButton>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="rounded-none border-2 border-black bg-white">
-        <DropdownMenuItem onClick={() => setTheme("light")} className="font-black uppercase text-xs tracking-widest cursor-pointer focus:bg-black focus:text-white rounded-none">LIGHT_MODE</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")} className="font-black uppercase text-xs tracking-widest cursor-pointer focus:bg-black focus:text-white rounded-none">DARK_MODE</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")} className="font-black uppercase text-xs tracking-widest cursor-pointer focus:bg-black focus:text-white rounded-none">SYSTEM_SYNC</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("light")} className="font-black uppercase text-xs  cursor-pointer focus:bg-black focus:text-white rounded-none">LIGHT_MODE</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("dark")} className="font-black uppercase text-xs  cursor-pointer focus:bg-black focus:text-white rounded-none">DARK_MODE</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("system")} className="font-black uppercase text-xs  cursor-pointer focus:bg-black focus:text-white rounded-none">SYSTEM_SYNC</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )

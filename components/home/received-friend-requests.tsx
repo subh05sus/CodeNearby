@@ -69,7 +69,7 @@ export function ReceivedFriendRequests() {
   return (
     <SwissCard variant="accent" pattern="grid" className="mb-8">
       <div className="flex justify-between items-center mb-6 border-b-4 border-black dark:border-white pb-2 transition-colors">
-        <h2 className="text-2xl font-black uppercase tracking-tightest flex items-center gap-2 text-white transition-colors">
+        <h2 className="text-2xl font-black uppercase  flex items-center gap-2 text-white transition-colors">
           <UserSearch size={24} />
           Incoming Signals
         </h2>
@@ -100,7 +100,7 @@ export function ReceivedFriendRequests() {
                   </div>
                   <div className="transition-colors">
                     <p className="font-black uppercase tracking-tight text-sm leading-none mb-1 text-black dark:text-white transition-colors">{request.sender.name}</p>
-                    <p className="text-[10px] font-black uppercase tracking-widest opacity-40 dark:opacity-30 italic text-black dark:text-white transition-colors">PENDING AUTHENTICATION</p>
+                    <p className="text-[10px] font-black uppercase  opacity-40 dark:opacity-30 italic text-black dark:text-white transition-colors">PENDING AUTHENTICATION</p>
                   </div>
                 </div>
                 <div className="flex gap-2">
@@ -125,7 +125,7 @@ export function ReceivedFriendRequests() {
             ))}
           </ul>
         ) : (
-          <p className="text-center font-black uppercase tracking-widest opacity-50 dark:opacity-20 py-12 border-4 border-dashed border-black/10 dark:border-white/10 text-white transition-colors">NO SIGNAL DETECTED</p>
+          <p className="text-center font-black uppercase  opacity-50 dark:opacity-20 py-12 border-4 border-dashed border-black/10 dark:border-white/10 text-white transition-colors">NO SIGNAL DETECTED</p>
         )}
       </div>
     </SwissCard>

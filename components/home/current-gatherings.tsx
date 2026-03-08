@@ -37,7 +37,7 @@ export function CurrentGatherings() {
   return (
     <SwissCard variant="white" pattern="dots">
       <div className="mb-6 border-b-2 border-black dark:border-white pb-2">
-        <h2 className="text-xl font-black uppercase tracking-widest flex items-center gap-2 text-black dark:text-white">
+        <h2 className="text-xl font-black uppercase  flex items-center gap-2 text-black dark:text-white">
           <Users size={20} className="text-swiss-red" />
           Current Gatherings
         </h2>
@@ -61,7 +61,7 @@ export function CurrentGatherings() {
                     <h3 className="font-black uppercase text-lg leading-tight group-hover:text-swiss-red transition-colors text-black dark:text-white">
                       {gathering.name}
                     </h3>
-                    <p className="text-[10px] font-black uppercase tracking-widest opacity-50 dark:opacity-40 italic mt-1 text-black dark:text-white">
+                    <p className="text-[10px] font-black uppercase  opacity-50 dark:opacity-40 italic mt-1 text-black dark:text-white">
                       EXPIRES: {new Date(gathering.expiresAt).toLocaleString().split(",")[0]}
                     </p>
                   </div>
@@ -74,7 +74,7 @@ export function CurrentGatherings() {
               ))}
             </ul>
           ) : (
-            <p className="text-sm font-black uppercase tracking-widest opacity-30 dark:opacity-20 italic py-8 border-2 border-dashed border-black/20 dark:border-white/20 text-center text-black dark:text-white">
+            <p className="text-sm font-black uppercase  opacity-30 dark:opacity-20 italic py-8 border-2 border-dashed border-black/20 dark:border-white/20 text-center text-black dark:text-white">
               NO CURRENT GATHERINGS
             </p>
           )}

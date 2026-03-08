@@ -100,7 +100,7 @@ export default function FinalStep() {
               </div>
               <div className="flex-1 space-y-2">
                 <h3 className="font-black text-3xl uppercase tracking-tighter italic leading-none text-black dark:text-white group-hover:text-inherit">{path.title}</h3>
-                <p className="text-xs font-black uppercase tracking-widest opacity-60 dark:opacity-40 italic group-hover:opacity-100 transition-opacity text-black dark:text-white group-hover:text-inherit">
+                <p className="text-xs font-black uppercase  opacity-60 dark:opacity-40 italic group-hover:opacity-100 transition-opacity text-black dark:text-white group-hover:text-inherit">
                   {path.description}
                 </p>
               </div>

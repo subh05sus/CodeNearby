@@ -52,7 +52,7 @@ export function ShareLocation({ onShareLocation }: ShareLocationProps) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] rounded-none border-4 border-black p-8">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-black uppercase tracking-tightest mb-4">Share Your Location</DialogTitle>
+          <DialogTitle className="text-2xl font-black uppercase  mb-4">Share Your Location</DialogTitle>
         </DialogHeader>
         <div className="py-4 border-t-2 border-black/10">
           {location ? (

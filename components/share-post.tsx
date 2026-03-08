@@ -175,17 +175,17 @@ export function SharePost({ post }: SharePostProps) {
 
               <div className="flex flex-wrap gap-4 pl-4">
                 {post.imageUrl && (
-                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest bg-swiss-black text-swiss-white px-2 py-1">
+                  <div className="flex items-center gap-2 text-[10px] font-black uppercase  bg-swiss-black text-swiss-white px-2 py-1">
                     <Heart className="h-3 w-3 fill-swiss-red text-swiss-red" /> VISUAL_DATA
                   </div>
                 )}
                 {post.poll && (
-                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest bg-swiss-black text-swiss-white px-2 py-1">
+                  <div className="flex items-center gap-2 text-[10px] font-black uppercase  bg-swiss-black text-swiss-white px-2 py-1">
                     <BarChart className="h-3 w-3" /> POLL_ARRAY
                   </div>
                 )}
                 {post.location && (
-                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest bg-swiss-black text-swiss-white px-2 py-1">
+                  <div className="flex items-center gap-2 text-[10px] font-black uppercase  bg-swiss-black text-swiss-white px-2 py-1">
                     <MapPin className="h-3 w-3" /> GEO_SYNC
                   </div>
                 )}
@@ -216,7 +216,7 @@ export function SharePost({ post }: SharePostProps) {
                             className="object-cover h-full w-full"
                           />
                         </div>
-                        <span className="text-[8px] font-black uppercase tracking-widest truncate w-16 text-center">
+                        <span className="text-[8px] font-black uppercase  truncate w-16 text-center">
                           {friend.name}
                         </span>
                       </button>
@@ -226,7 +226,7 @@ export function SharePost({ post }: SharePostProps) {
                       <Loader2 className="h-8 w-8 animate-spin text-swiss-red" />
                     </div>
                   ) : (
-                    <p className="col-span-full text-[10px] font-bold uppercase tracking-widest opacity-20 text-center py-4">
+                    <p className="col-span-full text-[10px] font-bold uppercase  opacity-20 text-center py-4">
                       NO_ACTIVE_UPLINKS_FOUND
                     </p>
                   )}
@@ -259,7 +259,7 @@ export function SharePost({ post }: SharePostProps) {
                       <Loader2 className="h-8 w-8 animate-spin text-swiss-red" />
                     </div>
                   ) : (
-                    <p className="col-span-full text-[10px] font-bold uppercase tracking-widest opacity-20 text-center py-4">
+                    <p className="col-span-full text-[10px] font-bold uppercase  opacity-20 text-center py-4">
                       NO_STREAMS_AVAILABLE
                     </p>
                   )}

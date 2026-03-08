@@ -15,7 +15,7 @@ export default function ChangelogPage() {
         <div className="flex flex-col items-start mb-20">
           <Link
             href="/"
-            className="flex items-center text-xs font-black uppercase tracking-widest mb-6 text-black dark:text-white hover:text-swiss-red dark:hover:text-swiss-red transition-colors group"
+            className="flex items-center text-xs font-black uppercase  mb-6 text-black dark:text-white hover:text-swiss-red dark:hover:text-swiss-red transition-colors group"
           >
             <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
             RETURN_TO_HOME
@@ -23,7 +23,7 @@ export default function ChangelogPage() {
           <h1 className="text-7xl md:text-8xl font-black uppercase tracking-tighter italic leading-none border-b-8 border-black dark:border-white pb-6 text-black dark:text-white">
             VERSION_LOGS
           </h1>
-          <p className="text-sm font-bold uppercase tracking-widest opacity-40 mt-6 text-black dark:text-white">
+          <p className="text-sm font-bold uppercase  opacity-40 mt-6 text-black dark:text-white">
             TRACKING_SYSTEM_EVOLUTION // SINCE_INITIALIZATION
           </p>
         </div>
@@ -44,16 +44,16 @@ export default function ChangelogPage() {
                         V.{entry.version}
                       </h2>
                       {entry.beta ? (
-                        <span className="bg-swiss-red text-white px-3 py-1 font-black text-[10px] tracking-widest">
+                        <span className="bg-swiss-red text-white px-3 py-1 font-black text-[10px] ">
                           BETA_STREAM
                         </span>
                       ) : (
-                        <span className="bg-black dark:bg-white text-white dark:text-black px-3 py-1 font-black text-[10px] tracking-widest">
+                        <span className="bg-black dark:bg-white text-white dark:text-black px-3 py-1 font-black text-[10px] ">
                           STABLE_BUILD
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest opacity-40 text-black dark:text-white">
+                    <div className="flex items-center gap-2 text-xs font-bold uppercase  opacity-40 text-black dark:text-white">
                       <Clock className="h-3 w-3" />
                       {format(new Date(entry.date), "yyyy.MM.dd")}
                     </div>

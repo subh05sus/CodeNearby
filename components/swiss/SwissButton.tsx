@@ -31,7 +31,7 @@ const SwissButton = React.forwardRef<HTMLButtonElement, SwissButtonProps>(
             <Comp
                 ref={ref}
                 className={cn(
-                    "inline-flex items-center justify-center font-black uppercase tracking-widest transition-colors duration-150 ease-linear active:scale-95",
+                    "inline-flex items-center justify-center font-black uppercase  transition-colors duration-150 ease-linear active:scale-95",
                     variants[variant],
                     sizes[size],
                     className

@@ -110,12 +110,12 @@ export default function CreateGatheringPage() {
         <div className="w-full max-w-2xl bg-white dark:bg-black border-8 border-black dark:border-white p-12 shadow-[24px_24px_0_0_rgba(0,0,0,1)] dark:shadow-[24px_24px_0_0_rgba(255,255,255,1)] transition-colors">
           <div className="mb-12 border-l-8 border-black dark:border-white pl-8 transition-colors">
             <h2 className="font-black text-4xl uppercase tracking-tighter mb-2 text-black dark:text-white">GATHER_POINT_CONFIG</h2>
-            <p className="font-bold uppercase tracking-widest text-xs text-swiss-red">ESTABLISHING_PEER_NETWORK</p>
+            <p className="font-bold uppercase  text-xs text-swiss-red">ESTABLISHING_PEER_NETWORK</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-10">
             <div className="space-y-4 text-black dark:text-white">
-              <label htmlFor="name" className="font-black text-xs uppercase tracking-widest flex items-center gap-2">
+              <label htmlFor="name" className="font-black text-xs uppercase  flex items-center gap-2">
                 <Users2 className="h-4 w-4 text-swiss-red" /> GATHERING_NAME
               </label>
               <Input
@@ -129,7 +129,7 @@ export default function CreateGatheringPage() {
             </div>
 
             <div className="space-y-4 text-black dark:text-white">
-              <label htmlFor="expiration" className="font-black text-xs uppercase tracking-widest flex items-center gap-2">
+              <label htmlFor="expiration" className="font-black text-xs uppercase  flex items-center gap-2">
                 <Clock className="h-4 w-4 text-swiss-red" /> EXPIRATION_PROTOCOL
               </label>
               <Select value={expiration} onValueChange={setExpiration}>

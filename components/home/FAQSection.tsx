@@ -12,7 +12,7 @@ export default function FAQSection() {
     <div className="max-w-4xl mx-auto w-full space-y-12 py-16 px-8">
       <div className="border-b-8 border-black dark:border-white pb-4 mb-12">
         <p className="text-xs font-black uppercase tracking-[0.5em] text-swiss-red mb-2">Knowledge Base</p>
-        <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tightest leading-none text-black dark:text-white">
+        <h2 className="text-5xl md:text-7xl font-black uppercase  leading-none text-black dark:text-white">
           FREQUENTLY<br />ASKED<br />QUESTIONS
         </h2>
       </div>
@@ -45,7 +45,7 @@ export default function FAQSection() {
                   transition={{ duration: 0.2 }}
                   className="overflow-hidden bg-muted dark:bg-neutral-900"
                 >
-                  <div className="p-8 border-t-2 border-black dark:border-white font-bold uppercase tracking-widest text-sm italic leading-relaxed text-black dark:text-white/80">
+                  <div className="p-8 border-t-2 border-black dark:border-white font-bold uppercase  text-sm italic leading-relaxed text-black dark:text-white/80">
                     {faq.answer}
                   </div>
                 </motion.div>

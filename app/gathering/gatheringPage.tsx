@@ -69,7 +69,7 @@ export default function GatheringPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[70vh] bg-white dark:bg-black transition-colors duration-300">
         <div className="w-32 h-32 bg-black dark:bg-white animate-pulse border-8 border-gray-100 dark:border-gray-900" />
-        <p className="font-black mt-6 uppercase tracking-widest text-xs text-black dark:text-white">SYNCHRONIZING_NODES...</p>
+        <p className="font-black mt-6 uppercase  text-xs text-black dark:text-white">SYNCHRONIZING_NODES...</p>
       </div>
     );
   }
@@ -117,7 +117,7 @@ export default function GatheringPage() {
         ) : (
           <div className="space-y-12">
             <div className="border-l-8 border-black dark:border-white pl-8 transition-colors">
-              <p className="font-bold uppercase tracking-widest text-xs text-swiss-red mb-2">ACTIVE_SESSIONS</p>
+              <p className="font-bold uppercase  text-xs text-swiss-red mb-2">ACTIVE_SESSIONS</p>
               <h3 className="font-black text-4xl uppercase tracking-tighter text-black dark:text-white">SURROUNDING_EVENTS</h3>
             </div>
             <GatheringList gatherings={gatherings} />

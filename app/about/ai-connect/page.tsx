@@ -123,7 +123,7 @@ export default function AIConnectAboutPage() {
                 <p className="text-xl font-bold uppercase tracking-tight opacity-80">{item.desc}</p>
                 <div className="flex flex-wrap gap-2 pt-4">
                   {item.signals.map(s => (
-                    <span key={s} className="bg-swiss-black text-swiss-white px-3 py-1 text-[10px] font-black uppercase tracking-widest italic">{s}</span>
+                    <span key={s} className="bg-swiss-black text-swiss-white px-3 py-1 text-[10px] font-black uppercase  italic">{s}</span>
                   ))}
                 </div>
               </div>

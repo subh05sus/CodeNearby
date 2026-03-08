@@ -5,7 +5,7 @@ import { TextRotate } from "../dev/text-rotate";
 
 function TextRotatePreview() {
   return (
-    <div className="text-base flex flex-row items-center justify-center font-black overflow-hidden uppercase tracking-widest">
+    <div className="text-base flex flex-row items-center justify-center font-black overflow-hidden uppercase ">
       <LayoutGroup>
         <motion.div className="flex items-center gap-4" layout>
           <motion.span
@@ -26,14 +26,14 @@ function TextRotatePreview() {
             <TextRotate
               texts={[
                 "real.",
-               "meaningful ✽",
-               "with developers.",
-               "that inspire.",
-               "through code.",
-               "that last.",
-               "with innovators.",
-               "that matter.",
-               "for the future.",
+                "meaningful ✽",
+                "with developers.",
+                "that inspire.",
+                "through code.",
+                "that last.",
+                "with innovators.",
+                "that matter.",
+                "for the future.",
               ]}
               mainClassName="w-full overflow-hidden"
               staggerFrom="last"

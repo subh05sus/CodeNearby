@@ -190,7 +190,7 @@ export default function OnboardingPage({
               </div>
               <span className="text-xs font-black uppercase tracking-[0.4em] text-black dark:text-white">INIT_FLOW // PREFERENCES</span>
             </div>
-            <div className="text-[10px] font-black uppercase tracking-widest opacity-40 dark:opacity-60 italic text-black dark:text-white">
+            <div className="text-[10px] font-black uppercase  opacity-40 dark:opacity-60 italic text-black dark:text-white">
               STEP_0{currentStep + 1} // 0{totalSteps}
             </div>
           </div>
@@ -220,7 +220,7 @@ export default function OnboardingPage({
                 </div>
                 <span
                   className={cn(
-                    "text-[10px] font-black uppercase tracking-widest transition-opacity leading-none text-black dark:text-white",
+                    "text-[10px] font-black uppercase  transition-opacity leading-none text-black dark:text-white",
                     currentStep === i ? "opacity-100" : "opacity-40 flex dark:opacity-20"
                   )}
                 >
@@ -283,7 +283,7 @@ export default function OnboardingPage({
                   className="h-16 px-8 border-4"
                 >
                   <ChevronLeft className="h-5 w-5 mr-2" />
-                  <span className="font-black uppercase tracking-widest sm:inline hidden">PREVIOUS_NODE</span>
+                  <span className="font-black uppercase  sm:inline hidden">PREVIOUS_NODE</span>
                 </SwissButton>
               )}
             </div>
@@ -331,13 +331,13 @@ export default function OnboardingPage({
                       <TooltipTrigger asChild>
                         <SwissButton
                           onClick={nextStep}
-                          className="h-20 px-12 text-xl font-black uppercase tracking-widest border-4 bg-swiss-red text-white dark:text-black hover:shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0_0_rgba(255,255,255,1)] group"
+                          className="h-20 px-12 text-xl font-black uppercase  border-4 bg-swiss-red text-white dark:text-black hover:shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0_0_rgba(255,255,255,1)] group"
                         >
                           <span>CONTINUE</span>
                           <ChevronRight className="h-6 w-6 ml-2 transition-transform group-hover:translate-x-1" />
                         </SwissButton>
                       </TooltipTrigger>
-                      <TooltipContent className="bg-black dark:bg-white text-white dark:text-black border-0 font-black uppercase tracking-widest p-4 italic">
+                      <TooltipContent className="bg-black dark:bg-white text-white dark:text-black border-0 font-black uppercase  p-4 italic">
                         MOVE_TO: {steps[currentStep + 1]?.name}
                       </TooltipContent>
                     </Tooltip>
@@ -346,7 +346,7 @@ export default function OnboardingPage({
               ) : (
                 <SwissButton
                   onClick={completeOnboarding}
-                  className="h-20 px-12 text-xl font-black uppercase tracking-widest border-4 bg-swiss-black dark:bg-white text-swiss-white dark:text-black hover:bg-swiss-red dark:hover:bg-swiss-red hover:shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0_0_rgba(255,255,255,1)]"
+                  className="h-20 px-12 text-xl font-black uppercase  border-4 bg-swiss-black dark:bg-white text-swiss-white dark:text-black hover:bg-swiss-red dark:hover:bg-swiss-red hover:shadow-[8px_8px_0_0_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0_0_rgba(255,255,255,1)]"
                   disabled={isLoading}
                 >
                   {isLoading ? (

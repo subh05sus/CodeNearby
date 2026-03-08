@@ -13,7 +13,7 @@ const LatestChangelog: React.FC = () => {
         Latest Release: v{latestVersion.version}
       </div>
       <SwissCard variant="white" pattern="grid" className="pt-12">
-        <h2 className="font-black uppercase tracking-widest text-swiss-red mb-6 border-b-2 border-black dark:border-white pb-2 w-fit">
+        <h2 className="font-black uppercase  text-swiss-red mb-6 border-b-2 border-black dark:border-white pb-2 w-fit">
           Additions
         </h2>
         <ul className="space-y-4 text-black dark:text-white font-medium text-sm">
@@ -27,7 +27,7 @@ const LatestChangelog: React.FC = () => {
         <div className="mt-12 border-t border-black/10 dark:border-white/10 pt-6">
           <Link
             href="/changelog"
-            className="group text-xs font-black uppercase tracking-widest flex items-center gap-2 text-black dark:text-white hover:text-swiss-red dark:hover:text-swiss-red transition-colors"
+            className="group text-xs font-black uppercase  flex items-center gap-2 text-black dark:text-white hover:text-swiss-red dark:hover:text-swiss-red transition-colors"
           >
             <span>View Changelog history</span>
             <ChevronRight

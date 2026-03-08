@@ -444,7 +444,7 @@ export default function UserProfilePage() {
               {profile.name}
             </h1>
             <div className="flex flex-wrap gap-4">
-              <span className="font-black bg-black dark:bg-white text-white dark:text-black px-4 py-1 text-xl tracking-widest uppercase">
+              <span className="font-black bg-black dark:bg-white text-white dark:text-black px-4 py-1 text-xl  uppercase">
                 @{profile.githubUsername}
               </span>
               {profile.githubLocation && (
@@ -569,7 +569,7 @@ export default function UserProfilePage() {
                     {repo.language && (
                       <div className="mt-4 flex items-center gap-2">
                         <div className="w-3 h-3 bg-swiss-red" />
-                        <span className="text-[10px] font-black tracking-widest uppercase text-black dark:text-white group-hover:text-white dark:group-hover:text-black">{repo.language}</span>
+                        <span className="text-[10px] font-black  uppercase text-black dark:text-white group-hover:text-white dark:group-hover:text-black">{repo.language}</span>
                       </div>
                     )}
                   </SwissCard>
@@ -590,7 +590,7 @@ export default function UserProfilePage() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  "px-8 py-4 border-4 border-black dark:border-white font-black uppercase tracking-widest text-sm flex items-center gap-3 transition-all",
+                  "px-8 py-4 border-4 border-black dark:border-white font-black uppercase  text-sm flex items-center gap-3 transition-all",
                   activeTab === tab.id
                     ? "bg-black dark:bg-white text-white dark:text-black shadow-[8px_8px_0_0_rgba(255,0,0,1)] -translate-y-2"
                     : "bg-white dark:bg-black text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-900"
@@ -638,7 +638,7 @@ export default function UserProfilePage() {
                   {activities.map((activity, i) => (
                     <div key={i} className="group border-l-8 border-black dark:border-white hover:border-swiss-red pl-6 py-4 transition-all bg-white dark:bg-black">
                       <div className="flex items-center gap-4 mb-1">
-                        <span className="font-black text-[10px] tracking-widest text-swiss-red uppercase">{activity.type.replace('Event', '')}</span>
+                        <span className="font-black text-[10px]  text-swiss-red uppercase">{activity.type.replace('Event', '')}</span>
                         <span className="text-[10px] font-bold opacity-30 uppercase text-black dark:text-white">{formatDistanceToNow(new Date(activity.created_at || Date.now()), { addSuffix: true })}</span>
                       </div>
                       <p className="font-bold uppercase tracking-tight text-lg group-hover:translate-x-2 transition-transform text-black dark:text-white">

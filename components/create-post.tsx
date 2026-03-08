@@ -151,7 +151,7 @@ export function CreatePost({ onSubmit }: CreatePostProps) {
         <div className="flex-1 flex flex-col">
           {isOnboarding && !content.trim() && (
             <div className="p-6 border-b-4 border-swiss-black">
-              <p className="text-xs font-black uppercase tracking-widest mb-4">Prompt Ideas / Start here</p>
+              <p className="text-xs font-black uppercase  mb-4">Prompt Ideas / Start here</p>
               <div className="flex flex-wrap gap-2">
                 {suggestions.map((s, i) => (
                   <button
@@ -180,7 +180,7 @@ export function CreatePost({ onSubmit }: CreatePostProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 px-6 mb-6">
             {poll && (
               <SwissCard variant="muted" className="border-4 p-4 relative h-full">
-                <p className="text-xs font-black uppercase tracking-widest mb-3">Poll Active</p>
+                <p className="text-xs font-black uppercase  mb-3">Poll Active</p>
                 <h4 className="text-sm font-black uppercase mb-4">{poll.question}</h4>
                 <div className="space-y-2">
                   {poll.options.map((opt, i) => (
@@ -198,7 +198,7 @@ export function CreatePost({ onSubmit }: CreatePostProps) {
 
             {location && (
               <SwissCard variant="muted" className="border-4 p-4 relative h-full">
-                <p className="text-xs font-black uppercase tracking-widest mb-3">Geo-Location</p>
+                <p className="text-xs font-black uppercase  mb-3">Geo-Location</p>
                 <div className="flex items-center gap-2">
                   <MapPin className="h-6 w-6 text-swiss-red" />
                   <p className="text-xs font-black">{location.lat.toFixed(4)}, {location.lng.toFixed(4)}</p>
@@ -214,7 +214,7 @@ export function CreatePost({ onSubmit }: CreatePostProps) {
 
             {schedule && (
               <SwissCard variant="muted" className="border-4 p-4 relative h-full">
-                <p className="text-xs font-black uppercase tracking-widest mb-3">Temporal Tag</p>
+                <p className="text-xs font-black uppercase  mb-3">Temporal Tag</p>
                 <div className="flex items-center gap-2">
                   <Calendar className="h-6 w-6 text-swiss-red" />
                   <p className="text-xs font-black uppercase">{schedule.toLocaleDateString()} {schedule.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>

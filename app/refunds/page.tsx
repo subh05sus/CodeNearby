@@ -22,7 +22,7 @@ export default function CancellationsRefundsPage() {
         pattern="grid"
       >
         <div className="max-w-4xl">
-          <p className="text-xl font-bold uppercase mb-12 tracking-widest text-swiss-red">
+          <p className="text-xl font-bold uppercase mb-12  text-swiss-red">
             Last updated: {updatedDate}
           </p>
 
@@ -59,7 +59,7 @@ export default function CancellationsRefundsPage() {
               <p className="font-bold uppercase tracking-tight mb-6 text-black dark:text-white transition-colors">
                 Exceptional circumstances may be considered at our sole discretion:
               </p>
-              <ul className="space-y-2 text-sm font-black uppercase tracking-widest opacity-80 text-black dark:text-white transition-colors">
+              <ul className="space-y-2 text-sm font-black uppercase  opacity-80 text-black dark:text-white transition-colors">
                 <li>/ Technical access issues</li>
                 <li>/ Billing errors</li>
                 <li>/ Service delivery failure</li>

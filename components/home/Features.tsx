@@ -64,10 +64,10 @@ function FeatureCard({
         <div className="mb-6 p-4 border-2 border-black dark:border-white bg-black dark:bg-white text-white dark:text-black w-fit group-hover:bg-swiss-red dark:group-hover:bg-swiss-red transition-colors">
           {icon}
         </div>
-        <h2 className="text-2xl font-black uppercase tracking-tightest mb-4 leading-none text-black dark:text-white">
+        <h2 className="text-2xl font-black uppercase  mb-4 leading-none text-black dark:text-white">
           {title}
         </h2>
-        <p className="text-xs font-bold uppercase tracking-widest opacity-60 dark:opacity-80 leading-relaxed italic text-black dark:text-white/60">
+        <p className="text-xs font-bold uppercase  opacity-60 dark:opacity-80 leading-relaxed italic text-black dark:text-white/60">
           {description}
         </p>
         <div className="mt-auto pt-8 flex items-center gap-2">

@@ -44,10 +44,10 @@ function NotLoggedInView() {
 
         <div className="mt-32 relative z-10 w-full">
           <div className="flex flex-col gap-2 mb-4">
-            <span className="inline-block px-4 py-1 bg-black dark:bg-white text-white dark:text-black text-xs font-black uppercase tracking-widest w-fit">
+            <span className="inline-block px-4 py-1 bg-black dark:bg-white text-white dark:text-black text-xs font-black uppercase  w-fit">
               AI Connect is Live
             </span>
-            <h2 className="text-2xl font-black uppercase tracking-widest text-swiss-red">Welcome to</h2>
+            <h2 className="text-2xl font-black uppercase  text-swiss-red">Welcome to</h2>
           </div>
 
           <h1 className="text-[12vw] md:text-[min(15vw,15rem)] font-black text-black dark:text-white uppercase tracking- leading-[0.85] mb-8">
@@ -104,7 +104,7 @@ function NotLoggedInView() {
                 <p className="font-bold text-lg">Use our intelligent assistant powered by AI to find GitHub developers based on skills, location, or specific requirements through natural conversations.</p>
               </div>
               <div className="pt-8 border-t border-white/20 dark:border-black/20">
-                <p className="text-sm uppercase tracking-widest font-black">AI Connect is Live</p>
+                <p className="text-sm uppercase  font-black">AI Connect is Live</p>
               </div>
             </SwissCard>
           </div>
@@ -187,7 +187,7 @@ function NotLoggedInView() {
                 className="object-cover"
               />
               <div className="absolute bottom-8 left-8 right-8 bg-white dark:bg-black p-6 border-t-4 border-swiss-red transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
-                <p className="font-black uppercase tracking-widest text-xs mb-2 text-black dark:text-white">Feature Preview</p>
+                <p className="font-black uppercase  text-xs mb-2 text-black dark:text-white">Feature Preview</p>
                 <p className="font-bold italic text-lg text-black dark:text-white">&ldquo;Find a web developers in Kolkata&ldquo;</p>
               </div>
             </div>
@@ -220,7 +220,7 @@ function NotLoggedInView() {
       <SwissSection number="06" title="System Logs" variant="muted" pattern="grid">
         <div className="flex flex-col md:flex-row gap-12">
           <div className="md:w-1/3">
-            <p className="text-xl font-black uppercase tracking-widest text-swiss-red mb-8">Latest Release: v1.3.0</p>
+            <p className="text-xl font-black uppercase  text-swiss-red mb-8">Latest Release: v1.3.0</p>
             <p className="text-2xl font-bold italic leading-tight mb-8 text-black dark:text-white">
               Continuous iteration on the core engine to ensure the highest fidelity of developer connections.
             </p>
@@ -254,8 +254,8 @@ function NotLoggedInView() {
       <SwissSection title="Questions" variant="white" className="border-b-0">
         <div className="flex flex-col md:flex-row gap-16">
           <div className="md:w-1/3">
-            <h2 className="text-6xl font-black uppercase leading-none tracking-tightest mb-8 text-black dark:text-white">Frequently asked questions</h2>
-            <p className="text-xl font-black uppercase tracking-widest text-swiss-red">FAQS</p>
+            <h2 className="text-6xl font-black uppercase leading-none  mb-8 text-black dark:text-white">Frequently asked questions</h2>
+            <p className="text-xl font-black uppercase  text-swiss-red">FAQS</p>
           </div>
           <div className="md:w-2/3 grid grid-cols-1 gap-4">
             {faqs.map((item, i) => (

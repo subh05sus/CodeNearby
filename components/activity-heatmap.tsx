@@ -82,11 +82,11 @@ export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
       <div className="mb-8 border-b-2 border-black pb-4 flex justify-between items-end">
         <div>
           <p className="text-[10px] font-black uppercase tracking-[0.4em] text-swiss-red mb-1">System Audit</p>
-          <h3 className="text-3xl font-black uppercase tracking-tightest">Activity Heatmap</h3>
+          <h3 className="text-3xl font-black uppercase ">Activity Heatmap</h3>
         </div>
         <div className="text-right">
           <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50">Sync Status</p>
-          <p className="text-xs font-black uppercase tracking-widest">LIVE / ENCRYPTED</p>
+          <p className="text-xs font-black uppercase ">LIVE / ENCRYPTED</p>
         </div>
       </div>
       <div className="swiss-heatmap-container">
@@ -115,7 +115,7 @@ export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
       <Tooltip
         id="activity-tooltip"
         place="top"
-        className="!rounded-none !bg-black !text-white !font-black !uppercase !tracking-widest !text-[10px] !p-2 !opacity-100"
+        className="!rounded-none !bg-black !text-white !font-black !uppercase ! !text-[10px] !p-2 !opacity-100"
       />
     </div>
   );

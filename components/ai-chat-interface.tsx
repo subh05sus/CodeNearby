@@ -1067,7 +1067,7 @@ ${existingDev.followers ? `Followers: ${existingDev.followers}` : ""}`,
                 {/* Header info in bubble */}
                 <div className="flex items-center gap-2 mb-3 border-b-2 border-current/20 pb-2">
                   {isUser ? <User className="h-3 w-3 italic" /> : <Bot className="h-3 w-3 italic" />}
-                  <span className="text-[10px] font-black uppercase tracking-widest italic opacity-60">
+                  <span className="text-[10px] font-black uppercase  italic opacity-60">
                     {isUser ? "CLIENT_INPUT" : "SYSTEM_RESPONSE"}
                   </span>
                 </div>
@@ -1103,7 +1103,7 @@ ${existingDev.followers ? `Followers: ${existingDev.followers}` : ""}`,
                                   <h3 className="text-2xl font-black uppercase tracking-tighter italic leading-none">
                                     {index + 1}. {dev.name || dev.login}
                                   </h3>
-                                  <p className="text-swiss-red font-black uppercase tracking-widest text-xs">
+                                  <p className="text-swiss-red font-black uppercase  text-xs">
                                     @{dev.login}
                                   </p>
                                 </div>
@@ -1115,7 +1115,7 @@ ${existingDev.followers ? `Followers: ${existingDev.followers}` : ""}`,
                                   </Link>
                                   {dev.isBasicInfo && (
                                     <button
-                                      className="bg-swiss-red text-swiss-white px-3 py-1 font-black uppercase tracking-widest text-[10px] hover:invert transition-all"
+                                      className="bg-swiss-red text-swiss-white px-3 py-1 font-black uppercase  text-[10px] hover:invert transition-all"
                                       onClick={() => handleGetDetailedProfile(dev.login, index)}
                                       disabled={isLoading}
                                     >
@@ -1133,14 +1133,14 @@ ${existingDev.followers ? `Followers: ${existingDev.followers}` : ""}`,
 
                               <div className="flex flex-wrap gap-4 pt-2">
                                 {dev.location && (
-                                  <span className="text-[10px] font-black uppercase tracking-widest text-swiss-red">
+                                  <span className="text-[10px] font-black uppercase  text-swiss-red">
                                     LOC: {dev.location}
                                   </span>
                                 )}
-                                <span className="text-[10px] font-black uppercase tracking-widest opacity-60">
+                                <span className="text-[10px] font-black uppercase  opacity-60">
                                   REPOS: {dev.public_repos}
                                 </span>
-                                <span className="text-[10px] font-black uppercase tracking-widest opacity-60">
+                                <span className="text-[10px] font-black uppercase  opacity-60">
                                   NETWORK: {dev.followers}
                                 </span>
                               </div>
@@ -1168,20 +1168,20 @@ ${existingDev.followers ? `Followers: ${existingDev.followers}` : ""}`,
                           <div className="flex flex-col gap-6">
                             <div className="flex justify-between items-start gap-4">
                               <div className="space-y-2">
-                                <span className="bg-swiss-red text-swiss-white px-2 py-0.5 text-[10px] font-black uppercase tracking-widest">
+                                <span className="bg-swiss-red text-swiss-white px-2 py-0.5 text-[10px] font-black uppercase ">
                                   {repo.language || "CODE_MODULE"}
                                 </span>
                                 <h3 className="text-3xl font-black uppercase tracking-tighter italic leading-none">
                                   {repo.name}
                                 </h3>
-                                <p className="text-xs font-bold uppercase tracking-widest opacity-40">
+                                <p className="text-xs font-bold uppercase  opacity-40">
                                   SOURCE: {repo.full_name}
                                 </p>
                               </div>
                               <div className="flex gap-4 font-black italic">
                                 <div className="text-center">
                                   <p className="text-2xl leading-none">★</p>
-                                  <p className="text-[10px] uppercase tracking-widest">{repo.stargazers_count}</p>
+                                  <p className="text-[10px] uppercase ">{repo.stargazers_count}</p>
                                 </div>
                               </div>
                             </div>
@@ -1199,7 +1199,7 @@ ${existingDev.followers ? `Followers: ${existingDev.followers}` : ""}`,
                                 </SwissButton>
                               </Link>
                               <button
-                                className="px-6 h-10 border-4 border-swiss-black font-black uppercase tracking-widest text-[10px] hover:bg-swiss-black hover:text-swiss-white transition-all"
+                                className="px-6 h-10 border-4 border-swiss-black font-black uppercase  text-[10px] hover:bg-swiss-black hover:text-swiss-white transition-all"
                                 onClick={() => handleSuggestionClick(`Find repositories similar to ${repo.name}`)}
                                 disabled={isLoading}
                               >
@@ -1230,7 +1230,7 @@ ${existingDev.followers ? `Followers: ${existingDev.followers}` : ""}`,
                 )}
 
                 <div className={cn(
-                  "mt-6 text-[10px] font-black uppercase tracking-widest opacity-30 italic",
+                  "mt-6 text-[10px] font-black uppercase  opacity-30 italic",
                   isUser ? "text-right" : "text-left"
                 )}>
                   {format(message.timestamp, "HH:mm:ss")}
@@ -1247,7 +1247,7 @@ ${existingDev.followers ? `Followers: ${existingDev.followers}` : ""}`,
                 <Loader2 className="h-6 w-6 animate-spin text-swiss-red" />
                 <span className="text-xl font-black uppercase tracking-tighter italic">EXECUTING_QUERY...</span>
               </div>
-              <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">
+              <p className="text-[10px] font-bold uppercase  opacity-40">
                 {loadingMessage}
               </p>
             </div>

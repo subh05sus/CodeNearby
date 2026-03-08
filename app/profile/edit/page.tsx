@@ -385,7 +385,7 @@ export default function EditProfilePage() {
         <div className="flex flex-col items-start mb-12">
           <button
             onClick={() => router.push("/profile")}
-            className="flex items-center text-xs font-black uppercase tracking-widest mb-6 hover:text-swiss-red transition-colors"
+            className="flex items-center text-xs font-black uppercase  mb-6 hover:text-swiss-red transition-colors"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             RETURN_TO_NODE
@@ -452,7 +452,7 @@ export default function EditProfilePage() {
                   <p className="text-xl font-black uppercase tracking-tighter italic">
                     UPLOAD_BANNER_PLANE
                   </p>
-                  <p className="text-[10px] font-bold uppercase tracking-widest opacity-40 mt-2">
+                  <p className="text-[10px] font-bold uppercase  opacity-40 mt-2">
                     RECOMMENDED_RESOLUTION: 1500X500
                   </p>
                 </div>
@@ -528,7 +528,7 @@ export default function EditProfilePage() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  "px-8 py-4 border-4 border-swiss-black font-black uppercase tracking-widest text-sm transition-all shadow-[4px_4px_0_0_rgba(0,0,0,1)]",
+                  "px-8 py-4 border-4 border-swiss-black font-black uppercase  text-sm transition-all shadow-[4px_4px_0_0_rgba(0,0,0,1)]",
                   activeTab === tab.id
                     ? "bg-swiss-black text-swiss-white shadow-[8px_8px_0_0_rgba(255,0,0,1)] -translate-y-1"
                     : "bg-swiss-white text-swiss-black hover:bg-swiss-muted"
@@ -548,7 +548,7 @@ export default function EditProfilePage() {
                   </h3>
                   <div className="space-y-8">
                     <div className="space-y-3">
-                      <Label htmlFor="name" className="text-xs font-black uppercase tracking-widest opacity-60">
+                      <Label htmlFor="name" className="text-xs font-black uppercase  opacity-60">
                         IDENTIFIER_LABEL
                       </Label>
                       <input
@@ -561,7 +561,7 @@ export default function EditProfilePage() {
                     </div>
 
                     <div className="space-y-3 opacity-60">
-                      <Label htmlFor="username" className="text-xs font-black uppercase tracking-widest">
+                      <Label htmlFor="username" className="text-xs font-black uppercase ">
                         UPLINK_SERIAL
                       </Label>
                       <input
@@ -570,13 +570,13 @@ export default function EditProfilePage() {
                         disabled
                         className="w-full h-16 bg-swiss-muted/5 border-4 border-swiss-black/20 px-6 text-xl font-black uppercase tracking-tighter italic"
                       />
-                      <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">
+                      <span className="text-[10px] font-bold uppercase  opacity-40">
                         // READ_ONLY: SYNCED_WITH_GITHUB_CORE
                       </span>
                     </div>
 
                     <div className="space-y-3">
-                      <Label htmlFor="bio" className="text-xs font-black uppercase tracking-widest opacity-60">
+                      <Label htmlFor="bio" className="text-xs font-black uppercase  opacity-60">
                         NEURAL_SYNOPSIS
                       </Label>
                       <textarea
@@ -590,7 +590,7 @@ export default function EditProfilePage() {
                     </div>
 
                     <div className="space-y-3">
-                      <Label htmlFor="location" className="text-xs font-black uppercase tracking-widest opacity-60">
+                      <Label htmlFor="location" className="text-xs font-black uppercase  opacity-60">
                         GEOSPATIAL_COORD
                       </Label>
                       <input
@@ -603,14 +603,14 @@ export default function EditProfilePage() {
                     </div>
 
                     <div className="space-y-6 pt-6">
-                      <Label htmlFor="skills" className="text-xs font-black uppercase tracking-widest opacity-60">
+                      <Label htmlFor="skills" className="text-xs font-black uppercase  opacity-60">
                         CAPABILITY_MATRIX
                       </Label>
                       <div className="flex flex-wrap gap-3">
                         {skills.map((skill, index) => (
                           <div
                             key={index}
-                            className="px-4 py-2 bg-swiss-black text-swiss-white font-black uppercase text-xs tracking-widest flex items-center gap-3 group"
+                            className="px-4 py-2 bg-swiss-black text-swiss-white font-black uppercase text-xs  flex items-center gap-3 group"
                           >
                             {skill}
                             <X
@@ -622,7 +622,7 @@ export default function EditProfilePage() {
                           </div>
                         ))}
                         {skills.length >= 15 && (
-                          <div className="px-4 py-2 border-4 border-swiss-red text-swiss-red font-black uppercase text-[10px] tracking-widest">
+                          <div className="px-4 py-2 border-4 border-swiss-red text-swiss-red font-black uppercase text-[10px] ">
                             CAPACITY_LIMIT_REACHED
                           </div>
                         )}
@@ -671,7 +671,7 @@ export default function EditProfilePage() {
                       </div>
 
                       <div className="pt-8">
-                        <Label className="text-xs font-black uppercase tracking-widest opacity-60 block mb-6">
+                        <Label className="text-xs font-black uppercase  opacity-60 block mb-6">
                           QUICK_SYNC_MODULES
                         </Label>
                         <div className="flex flex-wrap gap-3">
@@ -686,7 +686,7 @@ export default function EditProfilePage() {
                                 }
                               }}
                               className={cn(
-                                "px-4 py-2 border-4 font-black uppercase text-[10px] tracking-widest transition-all",
+                                "px-4 py-2 border-4 font-black uppercase text-[10px]  transition-all",
                                 skills.includes(skill)
                                   ? "bg-swiss-muted text-swiss-black opacity-20 cursor-not-allowed"
                                   : "border-swiss-black hover:bg-swiss-black hover:text-swiss-white"
@@ -716,7 +716,7 @@ export default function EditProfilePage() {
 
                   <div className="space-y-8">
                     <div>
-                      <h4 className="text-xs font-black uppercase tracking-widest opacity-40 mb-6 italic">CURRENTLY_PINNED</h4>
+                      <h4 className="text-xs font-black uppercase  opacity-40 mb-6 italic">CURRENTLY_PINNED</h4>
                       {pinnedRepos.length === 0 ? (
                         <div className="p-10 border-4 border-dashed border-swiss-black/10 text-center">
                           <p className="text-xl font-black uppercase tracking-tighter opacity-10 italic">
@@ -740,7 +740,7 @@ export default function EditProfilePage() {
                                 <p className="text-xs font-bold uppercase tracking-tight opacity-60 line-clamp-2 mb-4 italic leading-none">
                                   {repo.description || "NO_DESCRIPTION_AVAILABLE"}
                                 </p>
-                                <div className="flex items-center gap-6 text-[10px] font-black uppercase tracking-widest opacity-40">
+                                <div className="flex items-center gap-6 text-[10px] font-black uppercase  opacity-40">
                                   {repo.language && (
                                     <div className="flex items-center gap-2">
                                       <CodeIcon className="h-3 w-3" />
@@ -772,7 +772,7 @@ export default function EditProfilePage() {
                     </div>
 
                     <div className="space-y-6 pt-10 border-t-8 border-swiss-muted/10">
-                      <h4 className="text-xs font-black uppercase tracking-widest opacity-40 italic">REPOSITORY_SCRAPER</h4>
+                      <h4 className="text-xs font-black uppercase  opacity-40 italic">REPOSITORY_SCRAPER</h4>
                       <div className="relative">
                         <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-6 w-6 text-swiss-red" />
                         <input
@@ -816,7 +816,7 @@ export default function EditProfilePage() {
                                     <p className="text-xl font-black uppercase tracking-tighter italic">
                                       {repo.name}
                                     </p>
-                                    <p className="text-[10px] font-bold uppercase tracking-widest opacity-40 mt-1 italic">
+                                    <p className="text-[10px] font-bold uppercase  opacity-40 mt-1 italic">
                                       {repo.language || "DATA_TYPE_UNKNOWN"} // {repo.stargazers_count} STARS
                                     </p>
                                   </div>
@@ -874,7 +874,7 @@ export default function EditProfilePage() {
                     ].map((setting) => (
                       <div key={setting.key} className="flex items-center justify-between group pb-8 border-b-4 border-swiss-muted/20 last:border-0 last:pb-0">
                         <div>
-                          <p className="font-black uppercase tracking-widest text-sm">{setting.label}</p>
+                          <p className="font-black uppercase  text-sm">{setting.label}</p>
                           <p className="text-[10px] font-bold uppercase opacity-40 mt-1">{setting.sub}</p>
                         </div>
                         <button

@@ -345,7 +345,7 @@ export default function GatheringChatPage() {
                 />
               </div>
             )}
-            <div className="flex flex-col gap-1 font-black text-[8px] uppercase tracking-widest opacity-70">
+            <div className="flex flex-col gap-1 font-black text-[8px] uppercase  opacity-70">
               {jsonContent.postPoll && <span>POLL_ATTACHED: {jsonContent.postPoll.question}</span>}
               {jsonContent.postLocation && <span>GEODATA_SIGNAL_DETECTED</span>}
               {jsonContent.postSchedule && <span>SCHEDULED: {format(new Date(jsonContent.postSchedule), "PPp")}</span>}
@@ -396,7 +396,7 @@ export default function GatheringChatPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[70vh] bg-white dark:bg-black transition-colors duration-300">
         <div className="w-32 h-32 bg-black dark:bg-white animate-pulse border-8 border-gray-100 dark:border-gray-900 transition-colors" />
-        <p className="font-black mt-6 uppercase tracking-widest text-xs text-black dark:text-white transition-colors">SYNCING_NODE...</p>
+        <p className="font-black mt-6 uppercase  text-xs text-black dark:text-white transition-colors">SYNCING_NODE...</p>
       </div>
     );
   }
@@ -434,7 +434,7 @@ export default function GatheringChatPage() {
           {pinnedMessageId && (
             <button
               onClick={scrollToPinnedMessage}
-              className="bg-swiss-red text-swiss-white px-6 py-3 font-black uppercase tracking-widest text-xs flex items-center gap-3 hover:translate-y-[-2px] transition-transform shadow-[4px_4px_0_0_rgba(0,0,0,1)]"
+              className="bg-swiss-red text-swiss-white px-6 py-3 font-black uppercase  text-xs flex items-center gap-3 hover:translate-y-[-2px] transition-transform shadow-[4px_4px_0_0_rgba(0,0,0,1)]"
             >
               <Pin className="h-4 w-4 fill-swiss-white" /> VIEW_PINNED_NODE
             </button>
@@ -477,7 +477,7 @@ export default function GatheringChatPage() {
 
                       <div className={cn("max-w-[70%] group", isOwnMessage ? "text-right" : "text-left")}>
                         <div className="mb-2 flex items-center gap-3 px-1 text-black dark:text-white">
-                          <span className="font-black text-[10px] uppercase tracking-widest">
+                          <span className="font-black text-[10px] uppercase ">
                             {message.isAnonymous ? "ANONYMOUS_USER" : message.senderName}
                             {isHost && message.realSenderInfo && <span className="text-swiss-red ml-2">[ID: {message.realSenderInfo.name.toUpperCase()}]</span>}
                           </span>
@@ -493,7 +493,7 @@ export default function GatheringChatPage() {
                             <div className="space-y-6 min-w-[300px]">
                               <div className="border-l-4 border-swiss-red pl-4">
                                 <h3 className="font-black text-xl uppercase tracking-tighter">{pollData.question}</h3>
-                                <p className="font-bold text-[8px] uppercase tracking-widest opacity-60">POLL_PROTOCOL_ACTIVE</p>
+                                <p className="font-bold text-[8px] uppercase  opacity-60">POLL_PROTOCOL_ACTIVE</p>
                               </div>
                               <div className="space-y-3">
                                 {pollData.options.map((option, index) => {
@@ -576,7 +576,7 @@ export default function GatheringChatPage() {
                       key={name}
                       onClick={() => handleMentionSelect(name)}
                       className={cn(
-                        "w-full px-6 py-3 text-left font-black uppercase tracking-widest text-xs border-b-2 border-black dark:border-white last:border-b-0 transition-colors",
+                        "w-full px-6 py-3 text-left font-black uppercase  text-xs border-b-2 border-black dark:border-white last:border-b-0 transition-colors",
                         index === 0 ? "bg-swiss-red text-white" : "hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black text-black dark:text-white"
                       )}
                     >
@@ -609,7 +609,7 @@ export default function GatheringChatPage() {
                       id="anonymous-mode"
                       className="scale-125 data-[state=checked]:bg-swiss-red"
                     />
-                    <span className="font-black text-[8px] uppercase tracking-widest self-center opacity-40 text-black dark:text-white transition-colors">ANON_PROTO</span>
+                    <span className="font-black text-[8px] uppercase  self-center opacity-40 text-black dark:text-white transition-colors">ANON_PROTO</span>
                   </div>
                 </div>
 
@@ -658,7 +658,7 @@ export default function GatheringChatPage() {
                       </div>
                     ))}
                   </div>
-                  <span className="font-black text-[10px] uppercase tracking-widest text-swiss-red animate-pulse">
+                  <span className="font-black text-[10px] uppercase  text-swiss-red animate-pulse">
                     {gathering.participants.length}_NODE_STREAM_ACTIVE
                   </span>
                 </div>

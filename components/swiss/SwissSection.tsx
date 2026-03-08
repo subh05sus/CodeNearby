@@ -33,7 +33,7 @@ const SwissSection = React.forwardRef<HTMLDivElement, SwissSectionProps>(
                 <div className="max-w-7xl mx-auto">
                     {(number || title) && (
                         <div className="flex items-baseline gap-4 mb-24">
-                            {number && <span className="text-swiss-red font-black text-2xl tracking-widest">{number}.</span>}
+                            {number && <span className="text-swiss-red font-black text-2xl ">{number}.</span>}
                             {title && <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none text-black dark:text-white transition-colors">{title}</h2>}
                         </div>
                     )}
