@@ -25,13 +25,15 @@ function TextRotatePreview() {
           >
             <TextRotate
               texts={[
-                "happen!",
-                "real",
-                "meaningful",
-                "fast",
-                "strong",
-                "immediate",
-                "objective",
+                "real.",
+               "meaningful ✽",
+               "with developers.",
+               "that inspire.",
+               "through code.",
+               "that last.",
+               "with innovators.",
+               "that matter.",
+               "for the future.",
               ]}
               mainClassName="w-full overflow-hidden"
               staggerFrom="last"
