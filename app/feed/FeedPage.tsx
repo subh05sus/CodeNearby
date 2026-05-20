@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useInView } from "react-intersection-observer";
-import { Loader2 } from "lucide-react";
+import { Loader2, Rss, Github, LayoutGrid } from "lucide-react";
 import { CreatePost } from "@/components/create-post";
 import { PostCard } from "@/components/post-card";
 import { MasonryGrid } from "@/components/masonry-grid";
@@ -18,6 +18,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Slider } from "@/components/ui/slider";
+import { motion } from "framer-motion";
 
 interface Post {
   _id: string;
@@ -69,9 +70,7 @@ export default function FeedPage() {
   const { ref, inView } = useInView();
 
   useEffect(() => {
-    // restore toggle from localStorage
     try {
-      // Detect mobile viewport and lock columns to 1 on small devices
       const mq = window.matchMedia("(max-width: 768px)");
 
       const applyViewport = (matches: boolean) => {
@@ -87,10 +86,8 @@ export default function FeedPage() {
         }
       };
 
-      // initial run
       applyViewport(mq.matches);
 
-      // restore toggle
       const saved = localStorage.getItem("feed:showGithubEvents");
       if (saved !== null) setShowGithubEvents(saved === "1");
 
@@ -118,7 +115,6 @@ export default function FeedPage() {
     }
   }, [inView]);
 
-  // When toggling, refresh first page quickly by resetting pagination
   useEffect(() => {
     try {
       localStorage.setItem(
@@ -126,10 +122,8 @@ export default function FeedPage() {
         showGithubEvents ? "1" : "0"
       );
     } catch {}
-    // Reset and refetch from page 1
     setPosts([]);
     setPage(1);
-    // Trigger immediate fetch
     loadMorePosts(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showGithubEvents]);
@@ -144,16 +138,13 @@ export default function FeedPage() {
         }`
       );
       const newPosts = await response.json();
-      // Dedupe by _id across pages
       setPosts((prevPosts) => {
         let filtered = Array.isArray(newPosts) ? newPosts : [];
-        // If toggle hides events, filter them out just in case backend included any
         if (!showGithubEvents) {
           filtered = filtered.filter(
             (p: any) => !String(p._id).startsWith("gh_event_")
           );
         }
-        // const filtered = incoming.filter((p: any) => !seen.has(p._id));
         return force ? filtered : [...prevPosts, ...filtered];
       });
       setPage((prevPage) => (force ? 2 : prevPage + 1));
@@ -220,7 +211,6 @@ export default function FeedPage() {
       return;
     }
 
-    // Ignore votes on GitHub event synthetic items
     if (postId.startsWith("gh_event_")) {
       return;
     }
@@ -263,7 +253,6 @@ export default function FeedPage() {
       toast.error("You must be logged in to comment");
       return;
     }
-    // Ignore comments on GitHub event synthetic items
     if (postId.startsWith("gh_event_")) {
       return;
     }
@@ -339,7 +328,6 @@ export default function FeedPage() {
       return;
     }
 
-    // Ignore poll votes on GitHub event synthetic items
     if (postId.startsWith("gh_event_")) {
       return;
     }
@@ -379,7 +367,6 @@ export default function FeedPage() {
       return;
     }
 
-    // Ignore comment votes on GitHub event synthetic items
     if (postId.startsWith("gh_event_")) {
       return;
     }
@@ -439,11 +426,17 @@ export default function FeedPage() {
 
   if (!session) {
     return (
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)]">
-        <p className="text-lg text-center">
-          You must be logged in to view the feed
-        </p>
-
+      <div className="flex flex-col items-center justify-center min-h-[calc(100dvh-250px)] gap-6 px-4">
+        <div
+          className="w-14 h-14 rounded-2xl flex items-center justify-center"
+          style={{ background: "hsl(24 95% 53% / 0.10)", border: "1px solid hsl(24 95% 53% / 0.25)" }}
+        >
+          <Rss className="w-7 h-7 text-primary" />
+        </div>
+        <div className="text-center max-w-xs">
+          <h2 className="font-heading text-xl mb-2">Your developer feed</h2>
+          <p className="text-sm text-muted-foreground">Sign in with GitHub to see posts from your network.</p>
+        </div>
         <LoginButton />
       </div>
     );
@@ -453,57 +446,71 @@ export default function FeedPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4">
-      <div className="relative mb-8">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 blur-3xl -z-10" />
-        <CreatePost onSubmit={handleCreatePost} />
-        <div className="flex justify-end items-center gap-2 mt-2">
+      {/* Feed header */}
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-6"
+      >
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div
+              className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{ background: "hsl(24 95% 53% / 0.12)" }}
+            >
+              <Rss className="w-4 h-4 text-primary" />
+            </div>
+            <h1 className="font-heading text-xl">Feed</h1>
+          </div>
+
           <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="flex items-center gap-2 cursor-default select-none">
-                  <span className="text-sm text-muted-foreground">
-                    More personalized mode
-                  </span>
-                  <Switch
-                    checked={showGithubEvents}
-                    onCheckedChange={(v) => setShowGithubEvents(!!v)}
-                    aria-label="Toggle GitHub events"
+            <div className="flex items-center gap-3 flex-wrap justify-end">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-2 cursor-default select-none">
+                    <Github className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground hidden sm:inline">GitHub events</span>
+                    <Switch
+                      checked={showGithubEvents}
+                      onCheckedChange={(v) => setShowGithubEvents(!!v)}
+                      aria-label="Toggle GitHub events"
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  Show GitHub received events from people you follow mixed into your feed.
+                </TooltipContent>
+              </Tooltip>
+
+              <div className="hidden md:flex items-center gap-2">
+                <LayoutGrid className="h-3.5 w-3.5 text-muted-foreground" />
+                <div className="w-28">
+                  <Slider
+                    min={1}
+                    max={4}
+                    step={1}
+                    value={[columns]}
+                    onValueChange={(vals: number[]) => {
+                      const n = Math.min(4, Math.max(1, vals[0] ?? columns));
+                      setColumns(n);
+                      try {
+                        localStorage.setItem("feed:columns", String(n));
+                      } catch {}
+                    }}
                   />
                 </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                Show GitHub received events from people you follow mixed into
-                your feed.
-              </TooltipContent>
-            </Tooltip>
-            {/* Column slider */}
-            <div className="hidden md:flex items-center gap-2 md:ml-4">
-              <span className="text-sm text-muted-foreground">Columns</span>
-              <div className="w-40">
-                <Slider
-                  min={1}
-                  max={4}
-                  step={1}
-                  value={[columns]}
-                  onValueChange={(vals: number[]) => {
-                    const n = Math.min(4, Math.max(1, vals[0] ?? columns));
-                    setColumns(n);
-                    try {
-                      localStorage.setItem("feed:columns", String(n));
-                    } catch {}
-                  }}
-                />
+                <span className="text-xs text-muted-foreground font-mono w-3">{columns}</span>
               </div>
-              <span className="text-sm w-5 text-center">{columns}</span>
             </div>
           </TooltipProvider>
         </div>
-      </div>
+
+        <CreatePost onSubmit={handleCreatePost} />
+      </motion.div>
 
       <div className="mt-6">
         <MasonryGrid columns={effectiveColumns}>
           {posts.map((post) => {
-            // Scale cards a bit smaller at higher column counts to prevent overflow
             const scaleClass =
               effectiveColumns >= 6
                 ? "scale-[0.9] origin-top-left"
@@ -515,9 +522,7 @@ export default function FeedPage() {
             return (
               <div
                 key={post._id}
-                className={`${scaleClass} ${
-                  effectiveColumns >= 5 ? "text-sm" : ""
-                }`}
+                className={`${scaleClass} ${effectiveColumns >= 5 ? "text-sm" : ""}`}
               >
                 <PostCard
                   post={post}
@@ -536,8 +541,11 @@ export default function FeedPage() {
       </div>
 
       {loading && (
-        <div className="flex justify-center my-4">
-          <Loader2 className="h-6 w-6 animate-spin" />
+        <div className="flex justify-center my-8">
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin text-primary" />
+            <span className="text-sm">Loading posts...</span>
+          </div>
         </div>
       )}
 

@@ -4,7 +4,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,6 +23,9 @@ import {
   Pin,
   Github,
   CodeIcon,
+  User,
+  Palette,
+  BookMarked,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { UserProfile, PinnedRepo } from "@/types";
@@ -45,46 +47,15 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
-// List of popular programming skills
 const popularSkills = [
-  "JavaScript",
-  "TypeScript",
-  "React",
-  "Next.js",
-  "Node.js",
-  "Python",
-  "Java",
-  "C#",
-  "Go",
-  "Rust",
-  "PHP",
-  "Ruby",
-  "Swift",
-  "Kotlin",
-  "HTML",
-  "CSS",
-  "SQL",
-  "MongoDB",
-  "GraphQL",
-  "Docker",
-  "AWS",
-  "Azure",
-  "Git",
-  "DevOps",
-  "TailwindCSS",
-  "Vue.js",
-  "Angular",
-  "Svelte",
-  "Flutter",
-  "React Native",
+  "JavaScript", "TypeScript", "React", "Next.js", "Node.js", "Python",
+  "Java", "C#", "Go", "Rust", "PHP", "Ruby", "Swift", "Kotlin",
+  "HTML", "CSS", "SQL", "MongoDB", "GraphQL", "Docker", "AWS", "Azure",
+  "Git", "DevOps", "TailwindCSS", "Vue.js", "Angular", "Svelte",
+  "Flutter", "React Native",
 ];
 
-// Component to safely use search parameters with Suspense
-function TabParamReader({
-  onParamLoad,
-}: {
-  onParamLoad: (param: string | null) => void;
-}) {
+function TabParamReader({ onParamLoad }: { onParamLoad: (param: string | null) => void }) {
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
 
@@ -109,31 +80,18 @@ export default function EditProfilePage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [customSkill, setCustomSkill] = useState("");
 
-  // For repositories
   const [repositories, setRepositories] = useState<PinnedRepo[]>([]);
   const [loadingRepos, setLoadingRepos] = useState(false);
   const [pinnedRepos, setPinnedRepos] = useState<PinnedRepo[]>([]);
 
-  // For profile image cropping
   const [cropDialogOpen, setCropDialogOpen] = useState(false);
   const [imageType, setImageType] = useState<"profile" | "banner">("profile");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [crop, setCrop] = useState<Crop>({
-    unit: "%",
-    width: 90,
-    height: 90,
-    x: 5,
-    y: 5,
-  });
+  const [crop, setCrop] = useState<Crop>({ unit: "%", width: 90, height: 90, x: 5, y: 5 });
   const [completedCrop, setCompletedCrop] = useState<Crop | null>(null);
-  const [croppedProfileImage, setCroppedProfileImage] = useState<string | null>(
-    null
-  );
-  const [croppedBannerImage, setCroppedBannerImage] = useState<string | null>(
-    null
-  );
+  const [croppedProfileImage, setCroppedProfileImage] = useState<string | null>(null);
+  const [croppedBannerImage, setCroppedBannerImage] = useState<string | null>(null);
 
-  // For image preview modal
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [previewId, setPreviewId] = useState<string | null>(null);
 
@@ -141,7 +99,6 @@ export default function EditProfilePage() {
   const profileInputRef = useRef<HTMLInputElement | null>(null);
   const bannerInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Appearance settings
   const [appearance, setAppearance] = useState({
     theme: "default",
     showActivity: true,
@@ -150,27 +107,17 @@ export default function EditProfilePage() {
     showSpotlight: true,
   });
 
-  // Handler for tab parameter
   const handleTabParamLoad = (param: string | null) => {
-    if (param) {
-      setActiveTab(param);
-    }
+    if (param) setActiveTab(param);
   };
 
   useEffect(() => {
-    if (!session) {
-      router.push("/profile");
-      return;
-    }
-
+    if (!session) { router.push("/profile"); return; }
     fetchProfile();
   }, [session, router]);
 
-  // Fetch the GitHub repositories when the profile loads
   useEffect(() => {
-    if (profile?.githubUsername) {
-      loadRepositories();
-    }
+    if (profile?.githubUsername) loadRepositories();
   }, [profile]);
 
   const fetchProfile = async () => {
@@ -182,16 +129,8 @@ export default function EditProfilePage() {
       setBio(data.githubBio || "");
       setLocation(data.githubLocation || "");
       setSkills(data.skills || []);
-
-      // Initialize pinned repos if they exist
-      if (data.pinnedRepos && data.pinnedRepos.length > 0) {
-        setPinnedRepos(data.pinnedRepos);
-      }
-
-      // Initialize appearance settings if they exist
-      if (data.appearance) {
-        setAppearance(data.appearance);
-      }
+      if (data.pinnedRepos && data.pinnedRepos.length > 0) setPinnedRepos(data.pinnedRepos);
+      if (data.appearance) setAppearance(data.appearance);
     } catch {
       toast.error("Failed to fetch profile.");
     } finally {
@@ -201,7 +140,6 @@ export default function EditProfilePage() {
 
   const loadRepositories = async () => {
     if (!profile?.githubUsername) return;
-
     setLoadingRepos(true);
     try {
       const repos = await fetchUserRepositories(profile.githubUsername);
@@ -215,41 +153,24 @@ export default function EditProfilePage() {
 
   const handleSave = async () => {
     if (!session) return;
-
     setSaving(true);
     try {
       let profileImageUrl = profile?.image;
       let bannerImageUrl = profile?.bannerImage;
-
-      // If there's a cropped profile image, upload it first
-      if (croppedProfileImage) {
-        profileImageUrl = await uploadImage(croppedProfileImage);
-      }
-
-      // If there's a cropped banner image, upload it
-      if (croppedBannerImage) {
-        bannerImageUrl = await uploadImage(croppedBannerImage);
-      }
+      if (croppedProfileImage) profileImageUrl = await uploadImage(croppedProfileImage);
+      if (croppedBannerImage) bannerImageUrl = await uploadImage(croppedBannerImage);
 
       const response = await fetch("/api/profile/update", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name,
-          githubBio: bio,
-          githubLocation: location,
-          image: profileImageUrl,
-          bannerImage: bannerImageUrl,
-          pinnedRepos,
-          appearance,
-          skills,
+          name, githubBio: bio, githubLocation: location,
+          image: profileImageUrl, bannerImage: bannerImageUrl,
+          pinnedRepos, appearance, skills,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to update profile");
-      }
-
+      if (!response.ok) throw new Error("Failed to update profile");
       toast.success("Profile updated successfully!");
       router.push("/profile");
     } catch {
@@ -260,118 +181,60 @@ export default function EditProfilePage() {
   };
 
   const uploadImage = async (base64Image: string) => {
-    // Convert base64 to blob
     const fetchResponse = await fetch(base64Image);
     const blob = await fetchResponse.blob();
-
-    // Create form data
     const formData = new FormData();
     formData.append("file", blob, "image.jpg");
-
-    // Upload to server
-    const response = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to upload image");
-    }
-
+    const response = await fetch("/api/upload", { method: "POST", body: formData });
+    if (!response.ok) throw new Error("Failed to upload image");
     const data = await response.json();
     return data.imageUrl;
   };
 
-  const handleImageChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    type: "profile" | "banner"
-  ) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, type: "profile" | "banner") => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = () => {
       if (typeof reader.result === "string") {
         setImagePreview(reader.result);
         setImageType(type);
-
-        // Set different crop settings for profile vs banner
-        if (type === "profile") {
-          setCrop({
-            unit: "%",
-            width: 90,
-            height: 90,
-            x: 5,
-            y: 5,
-          });
-        } else {
-          setCrop({
-            unit: "%",
-            width: 90,
-            height: 40,
-            x: 5,
-            y: 5,
-          });
-        }
-
+        setCrop(type === "profile"
+          ? { unit: "%", width: 90, height: 90, x: 5, y: 5 }
+          : { unit: "%", width: 90, height: 40, x: 5, y: 5 });
         setCropDialogOpen(true);
       }
     };
     reader.readAsDataURL(file);
   };
 
-  const handleCropComplete = (crop: Crop) => {
-    setCompletedCrop(crop);
-  };
+  const handleCropComplete = (crop: Crop) => setCompletedCrop(crop);
 
   const getCroppedImg = () => {
     if (!imageRef.current || !completedCrop) return;
-
     const canvas = document.createElement("canvas");
     const scaleX = imageRef.current.naturalWidth / imageRef.current.width;
     const scaleY = imageRef.current.naturalHeight / imageRef.current.height;
-
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-
     const pixelRatio = window.devicePixelRatio;
     canvas.width = completedCrop.width * scaleX * pixelRatio;
     canvas.height = completedCrop.height * scaleY * pixelRatio;
-
     ctx.scale(pixelRatio, pixelRatio);
     ctx.imageSmoothingQuality = "high";
-
-    const cropX = completedCrop.x * scaleX;
-    const cropY = completedCrop.y * scaleY;
-    const cropWidth = completedCrop.width * scaleX;
-    const cropHeight = completedCrop.height * scaleY;
-
     ctx.drawImage(
       imageRef.current,
-      cropX,
-      cropY,
-      cropWidth,
-      cropHeight,
-      0,
-      0,
-      cropWidth,
-      cropHeight
+      completedCrop.x * scaleX, completedCrop.y * scaleY,
+      completedCrop.width * scaleX, completedCrop.height * scaleY,
+      0, 0, completedCrop.width * scaleX, completedCrop.height * scaleY
     );
-
     const base64Image = canvas.toDataURL("image/jpeg", 0.95);
-
-    if (imageType === "profile") {
-      setCroppedProfileImage(base64Image);
-    } else {
-      setCroppedBannerImage(base64Image);
-    }
-
+    if (imageType === "profile") setCroppedProfileImage(base64Image);
+    else setCroppedBannerImage(base64Image);
     setCropDialogOpen(false);
   };
 
-  const clearBannerImage = () => {
-    setCroppedBannerImage(null);
-  };
+  const clearBannerImage = () => setCroppedBannerImage(null);
 
   const handleOpenPreview = (image: string, id: string) => {
     setPreviewImage(image);
@@ -386,48 +249,57 @@ export default function EditProfilePage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     );
   }
 
+  const themeColors: Record<string, string> = {
+    default: "hsl(24 95% 53%)",
+    blue: "hsl(217 91% 60%)",
+    green: "hsl(142 71% 45%)",
+    purple: "hsl(270 70% 60%)",
+    orange: "hsl(24 95% 53%)",
+  };
+
+  const themeGradients: Record<string, string> = {
+    default: "from-primary/30 to-primary/10",
+    blue: "from-blue-500/30 to-blue-600/10",
+    green: "from-green-500/30 to-green-600/10",
+    purple: "from-purple-500/30 to-purple-600/10",
+    orange: "from-orange-500/30 to-orange-600/10",
+  };
+
   return (
     <Suspense>
       <TabParamReader onParamLoad={handleTabParamLoad} />
-      <div className="mx-auto px-2 max-w-4xl py-8">
+      <div className="mx-auto px-2 max-w-3xl py-8">
         <div className="flex flex-col items-start mb-6">
-          <span
+          <button
             onClick={() => router.push("/profile")}
-            className="flex items-center cursor-pointer text-sm text-muted-foreground mb-2 hover:text-primary transition-colors"
+            className="flex items-center text-sm text-muted-foreground mb-3 hover:text-primary transition-colors"
           >
-            <ArrowLeft className="h-4 w-4 mr-2 inline" />
+            <ArrowLeft className="h-4 w-4 mr-1.5" />
             Back to Profile
-          </span>
-          <h1 className="text-4xl font-bold">Edit Profile</h1>
+          </button>
+          <h1 className="font-heading text-3xl">Edit Profile</h1>
         </div>
 
-        <div className="space-y-8">
-          {/* Banner Image Section */}
-          <Card className="border-2 border-dashed border-primary/20 hover:border-primary/50 transition-colors">
-            <div className="relative w-full h-[180px] overflow-hidden rounded-t-lg">
+        <div className="space-y-6">
+          {/* Banner + Avatar card */}
+          <div className="rounded-2xl border-2 border-dashed border-primary/20 hover:border-primary/40 transition-colors overflow-hidden">
+            <div className="relative w-full h-44 bg-muted">
               {croppedBannerImage || profile?.bannerImage ? (
                 <>
                   <motion.div
                     layoutId="banner"
                     className="w-full h-full cursor-pointer"
                     onClick={() =>
-                      handleOpenPreview(
-                        croppedBannerImage ||
-                          profile?.bannerImage ||
-                          "/bg.webp",
-                        "banner"
-                      )
+                      handleOpenPreview(croppedBannerImage || profile?.bannerImage || "/bg.webp", "banner")
                     }
                   >
                     <Image
-                      src={
-                        croppedBannerImage || profile?.bannerImage || "/bg.webp"
-                      }
+                      src={croppedBannerImage || profile?.bannerImage || "/bg.webp"}
                       alt="Banner"
                       fill
                       className="object-cover"
@@ -435,39 +307,35 @@ export default function EditProfilePage() {
                       priority
                     />
                   </motion.div>
-                  <div className="absolute bottom-4 right-4 flex gap-2">
+                  <div className="absolute bottom-3 right-3 flex gap-2">
                     <Button
                       size="sm"
                       variant="secondary"
-                      className="rounded-full"
+                      className="rounded-full h-7 text-xs"
                       onClick={() => bannerInputRef.current?.click()}
                     >
-                      <Camera className="h-4 w-4 mr-2" />
+                      <Camera className="h-3.5 w-3.5 mr-1" />
                       Change
                     </Button>
                     <Button
                       size="sm"
                       variant="destructive"
-                      className="rounded-full"
+                      className="rounded-full h-7 text-xs"
                       onClick={clearBannerImage}
                     >
-                      <Trash2 className="h-4 w-4 mr-2" />
+                      <Trash2 className="h-3.5 w-3.5 mr-1" />
                       Remove
                     </Button>
                   </div>
                 </>
               ) : (
                 <div
-                  className="flex flex-col items-center justify-center w-full h-full bg-muted cursor-pointer"
+                  className="flex flex-col items-center justify-center w-full h-full cursor-pointer"
                   onClick={() => bannerInputRef.current?.click()}
                 >
-                  <ImageIcon className="h-12 w-12 mb-2 text-primary/50" />
-                  <p className="text-sm font-medium">
-                    Click to add a banner image
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Recommended size: 1500x500
-                  </p>
+                  <ImageIcon className="h-10 w-10 mb-2 text-primary/40" />
+                  <p className="text-sm font-medium text-muted-foreground">Click to add a banner image</p>
+                  <p className="text-xs text-muted-foreground/60">Recommended: 1500×500</p>
                 </div>
               )}
               <input
@@ -479,27 +347,18 @@ export default function EditProfilePage() {
               />
             </div>
 
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-4">
-                <div className="relative">
+            <div className="px-6 pb-5 pt-3">
+              <div className="flex items-center gap-4">
+                <div className="relative -mt-12">
                   <div
-                    className="h-24 w-24 rounded-full overflow-hidden border-4 border-background shadow-lg cursor-pointer"
+                    className="h-20 w-20 rounded-full overflow-hidden border-4 border-background shadow-lg cursor-pointer"
                     onClick={() =>
-                      handleOpenPreview(
-                        croppedProfileImage ||
-                          profile?.image ||
-                          "/placeholder.svg",
-                        "profile"
-                      )
+                      handleOpenPreview(croppedProfileImage || profile?.image || "/placeholder.svg", "profile")
                     }
                   >
                     <motion.div layoutId="profile">
                       <img
-                        src={
-                          croppedProfileImage ||
-                          profile?.image ||
-                          "/placeholder.svg"
-                        }
+                        src={croppedProfileImage || profile?.image || "/placeholder.svg"}
                         alt="Profile"
                         className="h-full w-full object-cover"
                         style={{ pointerEvents: "none" }}
@@ -509,10 +368,10 @@ export default function EditProfilePage() {
                   <Button
                     size="icon"
                     variant="secondary"
-                    className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full shadow-md"
+                    className="absolute -bottom-1 -right-1 h-7 w-7 rounded-full shadow-md"
                     onClick={() => profileInputRef.current?.click()}
                   >
-                    <Camera className="h-4 w-4" />
+                    <Camera className="h-3.5 w-3.5" />
                   </Button>
                   <input
                     type="file"
@@ -523,525 +382,397 @@ export default function EditProfilePage() {
                   />
                 </div>
                 <div>
-                  <h2 className="text-xl font-semibold">
-                    {name || "Your Name"}
-                  </h2>
-                  <p className="text-sm text-muted-foreground">
-                    @{profile?.githubUsername}
-                  </p>
+                  <h2 className="font-semibold">{name || "Your Name"}</h2>
+                  <p className="text-sm text-muted-foreground font-mono">@{profile?.githubUsername}</p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
+          {/* Tabs */}
           <Tabs defaultValue={activeTab} className="space-y-4">
-            <TabsList className="w-full">
-              <TabsTrigger value="information" className="flex-1">
-                Profile Information
+            <TabsList className="w-full rounded-2xl bg-muted/50 border border-border p-1">
+              <TabsTrigger value="information" className="flex-1 rounded-xl flex items-center gap-1.5">
+                <User className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Information</span>
               </TabsTrigger>
-              <TabsTrigger value="repositories" className="flex-1">
-                Pinned Repositories
+              <TabsTrigger value="repositories" className="flex-1 rounded-xl flex items-center gap-1.5">
+                <BookMarked className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Repositories</span>
               </TabsTrigger>
-              <TabsTrigger value="appearance" className="flex-1">
-                Appearance
+              <TabsTrigger value="appearance" className="flex-1 rounded-xl flex items-center gap-1.5">
+                <Palette className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Appearance</span>
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="information" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Personal Details</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Display Name</Label>
-                    <Input
-                      id="name"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Your name"
-                    />
-                  </div>
+              <div className="rounded-2xl border border-border bg-card p-5 space-y-5">
+                <h2 className="font-semibold">Personal Details</h2>
+                <div className="space-y-1.5">
+                  <Label htmlFor="name" className="text-sm">Display Name</Label>
+                  <Input
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your name"
+                    className="rounded-xl"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="username" className="text-sm">GitHub Username</Label>
+                  <Input
+                    id="username"
+                    value={profile?.githubUsername || ""}
+                    disabled
+                    className="bg-muted rounded-xl font-mono text-sm"
+                  />
+                  <p className="text-xs text-muted-foreground">Synced with GitHub — cannot be changed.</p>
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="bio" className="text-sm">Bio</Label>
+                  <Textarea
+                    id="bio"
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                    placeholder="Tell us about yourself"
+                    rows={3}
+                    className="rounded-xl resize-none"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="location" className="text-sm">Location</Label>
+                  <Input
+                    id="location"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder="Your location"
+                    className="rounded-xl"
+                  />
+                </div>
+              </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="username">Username</Label>
-                    <Input
-                      id="username"
-                      value={profile?.githubUsername || ""}
-                      disabled
-                      className="bg-muted"
-                    />
-                    <span className="text-xs text-muted-foreground">
-                      Username cannot be changed (synced with GitHub)
-                    </span>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="bio">Bio</Label>
-                    <Textarea
-                      id="bio"
-                      value={bio}
-                      onChange={(e) => setBio(e.target.value)}
-                      placeholder="Tell us about yourself"
-                      rows={4}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="location">Location</Label>
-                    <Input
-                      id="location"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      placeholder="Your location"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="skills">Skills</Label>{" "}
-                    <div className="flex flex-wrap gap-2 mb-2">
-                      {skills.map((skill, index) => (
-                        <Badge
-                          key={index}
-                          variant="secondary"
-                          className="gap-1 px-3 py-1"
-                        >
-                          {skill}
-                          <X
-                            className="h-3 w-3 ml-1 cursor-pointer hover:text-destructive"
-                            onClick={() => {
-                              setSkills(skills.filter((_, i) => i !== index));
-                            }}
-                          />
-                        </Badge>
-                      ))}
-                      {skills.length === 15 && (
-                        <Badge
-                          variant="outline"
-                          className="bg-yellow-100/20 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300"
-                        >
-                          Maximum limit reached
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="flex gap-2">
-                      <Input
-                        id="customSkill"
-                        value={customSkill}
-                        onChange={(e) => setCustomSkill(e.target.value)}
-                        placeholder="Add a skill (e.g., JavaScript, React, Python)"
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" && customSkill.trim()) {
-                            e.preventDefault();
-                            if (
-                              !skills.includes(customSkill.trim()) &&
-                              skills.length < 15
-                            ) {
-                              setSkills([...skills, customSkill.trim()]);
-                              setCustomSkill("");
-                            } else if (skills.length >= 15) {
-                              toast.error("You can add a maximum of 15 skills");
-                            }
-                          }
-                        }}
-                      />
-                      <Button
-                        type="button"
-                        variant="secondary"
+              {/* Skills */}
+              <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="font-semibold">Skills</h2>
+                  <span className="text-xs text-muted-foreground font-mono">{skills.length}/15</span>
+                </div>
+                <div className="flex flex-wrap gap-1.5 min-h-[2rem]">
+                  {skills.map((skill, index) => (
+                    <Badge
+                      key={index}
+                      variant="secondary"
+                      className="rounded-full px-2.5 py-1 gap-1 text-xs"
+                      style={{ background: "hsl(24 95% 53% / 0.12)", color: "hsl(24 95% 53%)" }}
+                    >
+                      {skill}
+                      <button
+                        onClick={() => setSkills(skills.filter((_, i) => i !== index))}
+                        className="hover:opacity-60 transition-opacity"
+                      >
+                        <X className="h-2.5 w-2.5" />
+                      </button>
+                    </Badge>
+                  ))}
+                  {skills.length === 15 && (
+                    <Badge variant="outline" className="rounded-full text-xs bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800">
+                      Max reached
+                    </Badge>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    id="customSkill"
+                    value={customSkill}
+                    onChange={(e) => setCustomSkill(e.target.value)}
+                    placeholder="Add a skill (e.g., React, Python)"
+                    className="rounded-xl text-sm"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && customSkill.trim()) {
+                        e.preventDefault();
+                        if (!skills.includes(customSkill.trim()) && skills.length < 15) {
+                          setSkills([...skills, customSkill.trim()]);
+                          setCustomSkill("");
+                        } else if (skills.length >= 15) {
+                          toast.error("You can add a maximum of 15 skills");
+                        }
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="rounded-xl flex-shrink-0"
+                    onClick={() => {
+                      if (customSkill.trim() && !skills.includes(customSkill.trim()) && skills.length < 15) {
+                        setSkills([...skills, customSkill.trim()]);
+                        setCustomSkill("");
+                      } else if (skills.length >= 15) {
+                        toast.error("You can add a maximum of 15 skills");
+                      }
+                    }}
+                  >
+                    Add
+                  </Button>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground mb-2">Popular skills — click to add:</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {popularSkills.map((skill, index) => (
+                      <button
+                        key={index}
+                        disabled={skills.includes(skill) || skills.length >= 15}
                         onClick={() => {
-                          if (
-                            customSkill.trim() &&
-                            !skills.includes(customSkill.trim()) &&
-                            skills.length < 15
-                          ) {
-                            setSkills([...skills, customSkill.trim()]);
-                            setCustomSkill("");
+                          if (!skills.includes(skill) && skills.length < 15) {
+                            setSkills([...skills, skill]);
                           } else if (skills.length >= 15) {
                             toast.error("You can add a maximum of 15 skills");
                           }
                         }}
+                        className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                          skills.includes(skill)
+                            ? "bg-primary/10 border-primary/30 text-primary cursor-default"
+                            : "border-border hover:border-primary/40 hover:bg-primary/5 disabled:opacity-40 disabled:cursor-not-allowed"
+                        }`}
                       >
-                        Add
-                      </Button>
-                    </div>{" "}
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Press Enter to add a skill, or click the Add button. These
-                      skills will be displayed on your profile. Maximum of 15
-                      skills allowed.
-                    </p>
+                        {skill}
+                      </button>
+                    ))}
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="popularSkills">Popular Skills</Label>
-                    <div className="flex flex-wrap gap-2">
-                      {popularSkills.map((skill, index) => (
-                        <Badge
-                          key={index}
-                          variant="outline"
-                          className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
-                          onClick={() => {
-                            if (!skills.includes(skill) && skills.length < 15) {
-                              setSkills([...skills, skill]);
-                            } else if (skills.length >= 15) {
-                              toast.error("You can add a maximum of 15 skills");
-                            }
-                          }}
-                        >
-                          {skill}
-                        </Badge>
-                      ))}
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Click on a skill to add it to your profile.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </TabsContent>
 
             <TabsContent value="repositories" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Pinned Repositories</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Select up to 2 repositories to showcase on your profile.
-                      These will be visible to anyone who visits your profile.
-                    </p>
+              <div className="rounded-2xl border border-border bg-card p-5 space-y-5">
+                <div>
+                  <h2 className="font-semibold mb-1">Pinned Repositories</h2>
+                  <p className="text-sm text-muted-foreground">Select up to 2 repositories to showcase on your profile.</p>
+                </div>
 
-                    {/* Currently pinned repositories */}
-                    <div className="mb-6">
-                      <h3 className="text-sm font-medium mb-3">
-                        Currently Pinned
-                      </h3>
-                      {pinnedRepos.length === 0 ? (
-                        <div className="bg-muted p-4 rounded-md text-center">
-                          <p className="text-sm text-muted-foreground">
-                            No repositories pinned yet
-                          </p>
+                {/* Currently pinned */}
+                <div>
+                  <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">Currently Pinned</h3>
+                  {pinnedRepos.length === 0 ? (
+                    <div className="bg-muted/50 rounded-xl p-4 text-center">
+                      <p className="text-sm text-muted-foreground">No repositories pinned yet</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {pinnedRepos.map((repo) => (
+                        <div key={repo.id} className="flex items-start justify-between rounded-xl border border-border bg-card p-3 gap-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Pin className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                              <span className="font-medium text-sm truncate">{repo.name}</span>
+                            </div>
+                            <p className="text-xs text-muted-foreground line-clamp-1 pl-5 mb-1">
+                              {repo.description || "No description"}
+                            </p>
+                            <div className="flex items-center gap-3 text-xs text-muted-foreground pl-5">
+                              {repo.language && (
+                                <div className="flex items-center gap-1">
+                                  <CodeIcon className="h-3 w-3" />
+                                  {repo.language}
+                                </div>
+                              )}
+                              <div className="flex items-center gap-1">
+                                <Star className="h-3 w-3" />
+                                {repo.stargazers_count}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <GitFork className="h-3 w-3" />
+                                {repo.forks_count}
+                              </div>
+                            </div>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="rounded-xl text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 h-8 w-8 p-0 flex-shrink-0"
+                            onClick={() => {
+                              setPinnedRepos(pinnedRepos.filter((r) => r.id !== repo.id));
+                              toast.success(`Unpinned ${repo.name}`);
+                            }}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
                         </div>
-                      ) : (
-                        <div className="grid gap-3">
-                          {pinnedRepos.map((repo) => (
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Search repos */}
+                <div className="space-y-3">
+                  <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Add Repositories</h3>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search your repositories"
+                      className="pl-9 rounded-xl"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
+
+                  {loadingRepos ? (
+                    <div className="flex justify-center p-8">
+                      <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                    </div>
+                  ) : (
+                    <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
+                      {repositories
+                        .filter((repo) =>
+                          repo.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (repo.description && repo.description.toLowerCase().includes(searchTerm.toLowerCase()))
+                        )
+                        .map((repo) => {
+                          const isPinned = pinnedRepos.some((r) => r.id === repo.id);
+                          const isPinningDisabled = pinnedRepos.length >= 2 && !isPinned;
+
+                          return (
                             <div
                               key={repo.id}
-                              className="flex items-start justify-between bg-card border rounded-md p-3"
+                              className={`flex items-start justify-between rounded-xl border p-3 gap-3 transition-colors ${
+                                isPinned ? "border-primary/30 bg-primary/5" : "border-border hover:bg-muted/30"
+                              }`}
                             >
-                              <div className="flex-1 mr-4">
+                              <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2 mb-1">
-                                  <Pin className="h-4 w-4 text-primary" />
-                                  <span className="font-medium">
-                                    {repo.name}
-                                  </span>
+                                  <Github className="h-3.5 w-3.5 flex-shrink-0 text-muted-foreground" />
+                                  <span className="font-medium text-sm truncate">{repo.name}</span>
                                 </div>
-                                <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                                <p className="text-xs text-muted-foreground line-clamp-1 pl-5 mb-1">
                                   {repo.description || "No description"}
                                 </p>
-                                <div className="flex items-center gap-3 text-xs">
+                                <div className="flex items-center gap-3 text-xs text-muted-foreground pl-5">
                                   {repo.language && (
-                                    <div className="flex items-center">
-                                      <CodeIcon className="h-3 w-3 mr-1" />
-                                      <span>{repo.language}</span>
+                                    <div className="flex items-center gap-1">
+                                      <span className="h-2 w-2 rounded-full bg-primary" />
+                                      {repo.language}
                                     </div>
                                   )}
-                                  <div className="flex items-center">
-                                    <Star className="h-3 w-3 mr-1" />
-                                    <span>{repo.stargazers_count}</span>
+                                  <div className="flex items-center gap-1">
+                                    <Star className="h-3 w-3" />
+                                    {repo.stargazers_count}
                                   </div>
-                                  <div className="flex items-center">
-                                    <GitFork className="h-3 w-3 mr-1" />
-                                    <span>{repo.forks_count}</span>
+                                  <div className="flex items-center gap-1">
+                                    <GitFork className="h-3 w-3" />
+                                    {repo.forks_count}
                                   </div>
                                 </div>
                               </div>
                               <Button
-                                variant="destructive"
+                                variant={isPinned ? "destructive" : "secondary"}
                                 size="sm"
+                                className="rounded-xl text-xs flex-shrink-0 h-7"
+                                disabled={isPinningDisabled}
                                 onClick={() => {
-                                  setPinnedRepos(
-                                    pinnedRepos.filter((r) => r.id !== repo.id)
-                                  );
-                                  toast.success(`Unpinned ${repo.name}`);
+                                  if (isPinned) {
+                                    setPinnedRepos(pinnedRepos.filter((r) => r.id !== repo.id));
+                                    toast.success(`Unpinned ${repo.name}`);
+                                  } else {
+                                    setPinnedRepos([...pinnedRepos, repo]);
+                                    toast.success(`Pinned ${repo.name}`);
+                                  }
                                 }}
                               >
-                                <Trash2 className="h-4 w-4" />
+                                {isPinned ? "Unpin" : "Pin"}
                               </Button>
                             </div>
-                          ))}
-                        </div>
-                      )}
+                          );
+                        })}
                     </div>
-
-                    {/* Repository search and selection */}
-                    <div className="space-y-4">
-                      <h3 className="text-sm font-medium">Add Repositories</h3>
-                      <div className="relative">
-                        <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          placeholder="Search your repositories"
-                          className="pl-9"
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                      </div>
-
-                      {loadingRepos ? (
-                        <div className="flex justify-center p-8">
-                          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                        </div>
-                      ) : (
-                        <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
-                          {repositories
-                            .filter(
-                              (repo) =>
-                                repo.name
-                                  .toLowerCase()
-                                  .includes(searchTerm.toLowerCase()) ||
-                                (repo.description &&
-                                  repo.description
-                                    .toLowerCase()
-                                    .includes(searchTerm.toLowerCase()))
-                            )
-                            .map((repo) => {
-                              const isPinned = pinnedRepos.some(
-                                (r) => r.id === repo.id
-                              );
-                              const isPinningDisabled =
-                                pinnedRepos.length >= 2 && !isPinned;
-
-                              return (
-                                <div
-                                  key={repo.id}
-                                  className="flex items-start justify-between border rounded-md p-3 hover:bg-accent/10"
-                                >
-                                  <div className="flex-1 mr-4">
-                                    <div className="flex items-center gap-2 mb-1">
-                                      <Github className="h-4 w-4" />
-                                      <span className="font-medium">
-                                        {repo.name}
-                                      </span>
-                                    </div>
-                                    <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
-                                      {repo.description || "No description"}
-                                    </p>
-                                    <div className="flex items-center gap-3 text-xs">
-                                      {repo.language && (
-                                        <div className="flex items-center">
-                                          <span className="h-2 w-2 rounded-full bg-primary mr-1"></span>
-                                          <span>{repo.language}</span>
-                                        </div>
-                                      )}
-                                      <div className="flex items-center">
-                                        <Star className="h-3 w-3 mr-1" />
-                                        <span>{repo.stargazers_count}</span>
-                                      </div>
-                                      <div className="flex items-center">
-                                        <GitFork className="h-3 w-3 mr-1" />
-                                        <span>{repo.forks_count}</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <Button
-                                    variant={
-                                      isPinned ? "destructive" : "secondary"
-                                    }
-                                    size="sm"
-                                    disabled={isPinningDisabled}
-                                    onClick={() => {
-                                      if (isPinned) {
-                                        setPinnedRepos(
-                                          pinnedRepos.filter(
-                                            (r) => r.id !== repo.id
-                                          )
-                                        );
-                                        toast.success(`Unpinned ${repo.name}`);
-                                      } else {
-                                        setPinnedRepos([...pinnedRepos, repo]);
-                                        toast.success(
-                                          `Pinned ${repo.name} to your profile`
-                                        );
-                                      }
-                                    }}
-                                  >
-                                    {isPinned ? "Unpin" : "Pin"}
-                                  </Button>
-                                </div>
-                              );
-                            })}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  )}
+                </div>
+              </div>
             </TabsContent>
 
             <TabsContent value="appearance" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Theme & Visual Preferences</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="text-sm font-medium mb-3">
-                        Profile Theme
-                      </h3>
-                      <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
-                        {["default", "blue", "green", "purple", "orange"].map(
-                          (color) => (
-                            <div
-                              key={color}
-                              className={`
-                            relative cursor-pointer rounded-md overflow-hidden border-2 h-20
-                            ${
-                              appearance.theme === color
-                                ? "border-primary ring-2 ring-primary/20"
-                                : "border-border hover:border-primary/50"
-                            }
-                          `}
-                              onClick={() => {
-                                setAppearance((prev) => ({
-                                  ...prev,
-                                  theme: color as any,
-                                }));
-                              }}
-                            >
-                              <div
-                                className={`
-                            absolute inset-0 
-                            ${
-                              color === "default"
-                                ? "bg-gradient-to-br from-primary/30 to-primary/10"
-                                : ""
-                            }
-                            ${
-                              color === "blue"
-                                ? "bg-gradient-to-br from-blue-500/30 to-blue-600/10"
-                                : ""
-                            }
-                            ${
-                              color === "green"
-                                ? "bg-gradient-to-br from-green-500/30 to-green-600/10"
-                                : ""
-                            }
-                            ${
-                              color === "purple"
-                                ? "bg-gradient-to-br from-purple-500/30 to-purple-600/10"
-                                : ""
-                            }
-                            ${
-                              color === "orange"
-                                ? "bg-gradient-to-br from-orange-500/30 to-orange-600/10"
-                                : ""
-                            }
-                          `}
-                              />
-                              <div className="absolute bottom-1 left-0 right-0 text-center text-xs font-medium">
-                                {color.charAt(0).toUpperCase() + color.slice(1)}
-                              </div>
-                              {appearance.theme === color && (
-                                <div className="absolute top-1 right-1">
-                                  <Check className="h-4 w-4 text-primary" />
-                                </div>
-                              )}
-                            </div>
-                          )
+              <div className="rounded-2xl border border-border bg-card p-5 space-y-6">
+                <h2 className="font-semibold">Theme & Visual Preferences</h2>
+
+                <div>
+                  <h3 className="text-sm font-medium mb-3">Profile Theme</h3>
+                  <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
+                    {["default", "blue", "green", "purple", "orange"].map((color) => (
+                      <button
+                        key={color}
+                        onClick={() => setAppearance((prev) => ({ ...prev, theme: color as any }))}
+                        className={`relative rounded-xl overflow-hidden border-2 h-20 transition-all ${
+                          appearance.theme === color
+                            ? "border-primary shadow-md"
+                            : "border-border hover:border-primary/40"
+                        }`}
+                      >
+                        <div className={`absolute inset-0 bg-gradient-to-br ${themeGradients[color] || themeGradients.default}`} />
+                        <div className="absolute bottom-1.5 left-0 right-0 text-center text-xs font-medium capitalize">
+                          {color}
+                        </div>
+                        {appearance.theme === color && (
+                          <div className="absolute top-1.5 right-1.5">
+                            <Check className="h-3.5 w-3.5 text-primary" />
+                          </div>
                         )}
-                      </div>
-                    </div>
-
-                    <div className="pt-4">
-                      <h3 className="text-sm font-medium mb-3">
-                        Display Options
-                      </h3>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <Label
-                              htmlFor="showActivity"
-                              className="font-medium"
-                            >
-                              Show GitHub Activity
-                            </Label>
-                            <p className="text-xs text-muted-foreground">
-                              Display your recent GitHub activity on your
-                              profile
-                            </p>
-                          </div>
-                          <Switch
-                            id="showActivity"
-                            checked={appearance.showActivity}
-                            onCheckedChange={(checked) => {
-                              setAppearance((prev) => ({
-                                ...prev,
-                                showActivity: checked,
-                              }));
-                            }}
-                          />
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <Label
-                              htmlFor="compactPosts"
-                              className="font-medium"
-                            >
-                              Compact Posts
-                            </Label>
-                            <p className="text-xs text-muted-foreground">
-                              Display posts in a more compact layout
-                            </p>
-                          </div>
-                          <Switch
-                            id="compactPosts"
-                            checked={appearance.compactPosts}
-                            onCheckedChange={(checked) => {
-                              setAppearance((prev) => ({
-                                ...prev,
-                                compactPosts: checked,
-                              }));
-                            }}
-                          />
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <Label
-                              htmlFor="showSpotlight"
-                              className="font-medium"
-                            >
-                              Show Animated Spotlight
-                            </Label>
-                            <p className="text-xs text-muted-foreground">
-                              Show an animated spotlight on your profile
-                            </p>
-                          </div>
-                          <Switch
-                            id="showSpotlight"
-                            checked={appearance.showSpotlight}
-                            onCheckedChange={(checked) => {
-                              setAppearance((prev) => ({
-                                ...prev,
-                                showSpotlight: checked,
-                              }));
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
+                      </button>
+                    ))}
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium">Display Options</h3>
+                  {[
+                    {
+                      id: "showActivity",
+                      label: "Show GitHub Activity",
+                      desc: "Display your recent GitHub activity on your profile",
+                      key: "showActivity" as const,
+                    },
+                    {
+                      id: "compactPosts",
+                      label: "Compact Posts",
+                      desc: "Display posts in a more compact layout",
+                      key: "compactPosts" as const,
+                    },
+                    {
+                      id: "showSpotlight",
+                      label: "Show Animated Spotlight",
+                      desc: "Show an animated spotlight on your profile",
+                      key: "showSpotlight" as const,
+                    },
+                  ].map((opt) => (
+                    <div key={opt.id} className="flex items-center justify-between gap-4">
+                      <div>
+                        <Label htmlFor={opt.id} className="font-medium text-sm cursor-pointer">{opt.label}</Label>
+                        <p className="text-xs text-muted-foreground">{opt.desc}</p>
+                      </div>
+                      <Switch
+                        id={opt.id}
+                        checked={appearance[opt.key]}
+                        onCheckedChange={(checked) =>
+                          setAppearance((prev) => ({ ...prev, [opt.key]: checked }))
+                        }
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
             </TabsContent>
           </Tabs>
 
-          <div className="flex justify-end gap-4">
-            <Button variant="outline" onClick={() => router.push("/profile")}>
+          {/* Actions */}
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" className="rounded-full" onClick={() => router.push("/profile")}>
               Cancel
             </Button>
-            <Button onClick={handleSave} disabled={saving}>
+            <Button
+              className="rounded-full text-white"
+              style={{ background: "hsl(24 95% 53%)" }}
+              onClick={handleSave}
+              disabled={saving}
+            >
               {saving ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -1057,17 +788,14 @@ export default function EditProfilePage() {
           </div>
         </div>
 
-        {/* Image Cropping Dialog */}
+        {/* Crop Dialog */}
         <Dialog open={cropDialogOpen} onOpenChange={setCropDialogOpen}>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="max-w-lg rounded-2xl">
             <DialogHeader>
               <DialogTitle>
-                {imageType === "profile"
-                  ? "Crop Profile Picture"
-                  : "Crop Banner Image"}
+                {imageType === "profile" ? "Crop Profile Picture" : "Crop Banner Image"}
               </DialogTitle>
             </DialogHeader>
-
             <div className="my-4 max-h-[60vh] overflow-auto">
               {imagePreview && (
                 <ReactCrop
@@ -1086,16 +814,16 @@ export default function EditProfilePage() {
                 </ReactCrop>
               )}
             </div>
-
             <DialogFooter>
-              <Button
-                variant="secondary"
-                onClick={() => setCropDialogOpen(false)}
-              >
+              <Button variant="secondary" className="rounded-xl" onClick={() => setCropDialogOpen(false)}>
                 <X className="mr-2 h-4 w-4" />
                 Cancel
               </Button>
-              <Button onClick={getCroppedImg}>
+              <Button
+                className="rounded-xl text-white"
+                style={{ background: "hsl(24 95% 53%)" }}
+                onClick={getCroppedImg}
+              >
                 <Check className="mr-2 h-4 w-4" />
                 Apply
               </Button>
@@ -1122,15 +850,11 @@ export default function EditProfilePage() {
                   initial={{ scale: 0.8 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                  className="relative w-full h-full overflow-hidden rounded-lg"
+                  className="relative w-full h-full overflow-hidden rounded-2xl"
                 >
                   <Image
                     src={previewImage}
-                    alt={
-                      previewId === "banner"
-                        ? "Banner Preview"
-                        : "Profile Preview"
-                    }
+                    alt={previewId === "banner" ? "Banner Preview" : "Profile Preview"}
                     width={previewId === "banner" ? 1920 : 1000}
                     height={previewId === "banner" ? 1080 : 1000}
                     className="object-contain"
@@ -1144,7 +868,7 @@ export default function EditProfilePage() {
                   className="absolute top-4 right-4 p-2 bg-black/60 rounded-full text-white"
                   onClick={handleClosePreview}
                 >
-                  <X className="h-6 w-6" />
+                  <X className="h-5 w-5" />
                 </motion.button>
               </motion.div>
             </motion.div>

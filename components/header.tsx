@@ -53,7 +53,6 @@ import { Menu } from "lucide-react";
 import { useTheme } from "next-themes";
 import Logo from "./logo";
 import { RainbowButton } from "./magicui/rainbowbutton";
-import { Badge } from "./ui/badge";
 import { AuroraText } from "./magicui/aurora-text";
 
 export default function Header() {
@@ -90,29 +89,20 @@ export default function Header() {
     setTheme(value);
   };
 
-  // Add these functions before the return statement in the Header component
   const handleInviteUsersViaEmail = () => {
-    // Create a mailto link with pre-filled content
     const subject = encodeURIComponent("Join me on CodeNearby");
     const body = encodeURIComponent(
-      `Hey! I'd like to invite you to join CodeNearby. Check it out!\n\n${
-        window.location.origin
-      }/invite${
-        session?.user?.githubUsername
-          ? `?ref=${session.user.githubUsername}`
-          : ""
+      `Hey! I'd like to invite you to join CodeNearby. Check it out!\n\n${window.location.origin}/invite${
+        session?.user?.githubUsername ? `?ref=${session.user.githubUsername}` : ""
       }`
     );
     window.open(`mailto:?subject=${subject}&body=${body}`);
   };
 
   const handleInviteUsersViaWhatsApp = () => {
-    // Create a WhatsApp share link
     const text = encodeURIComponent(
       `Hey! Join me on CodeNearby: ${window.location.origin}/invite${
-        session?.user?.githubUsername
-          ? `?ref=${session.user.githubUsername}`
-          : ""
+        session?.user?.githubUsername ? `?ref=${session.user.githubUsername}` : ""
       }`
     );
     window.open(`https://wa.me/?text=${text}`);
@@ -125,474 +115,250 @@ export default function Header() {
 
     if (navigator.share) {
       try {
-        await navigator.share({
-          title: "Join CodeNearby",
-          text: "Hey! Join me on CodeNearby",
-          url: link,
-        });
+        await navigator.share({ title: "Join CodeNearby", text: "Hey! Join me on CodeNearby", url: link });
       } catch (error) {
         console.error("Error sharing:", error);
       }
     } else {
-      // Fallback to clipboard
-      navigator.clipboard
-        .writeText(link)
-        .then(() => {
-          toast.success("Invite link copied to clipboard!");
-        })
-        .catch((err) => {
-          console.error("Failed to copy link:", err);
-        });
+      navigator.clipboard.writeText(link).then(() => {
+        toast.success("Invite link copied to clipboard!");
+      }).catch((err) => {
+        console.error("Failed to copy link:", err);
+      });
     }
   };
 
+  const isHome = pathname === "/";
+
+  // Nav link style helper
+  const navBtnVariant = (active: boolean) =>
+    isHome && theme === "light" ? (active ? "secondary" : "ghost") : active ? "secondary" : "ghost";
+
   return (
-    <header className={`${pathname === "/" ? "" : "border-b bg-background"}`}>
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+    <header className={`${isHome ? "" : "border-b bg-background/95 backdrop-blur-sm"} sticky top-0 z-40`}>
+      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <Link href="/">
           <Logo />
         </Link>
+
+        {/* Desktop nav */}
         <nav className="hidden lg:block">
-          <ul className="flex space-x-2 items-center">
+          <ul className="flex items-center gap-1">
             {session ? (
               <>
+                {/* AI Connect */}
                 <li>
                   <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
+                    variant="ghost"
                     asChild
-                    className="xl:block hidden"
+                    size="sm"
+                    className="xl:flex hidden items-center gap-1.5 rounded-xl"
                   >
                     <Link href="/ai-connect">
-                      <span>
-                        <AuroraText>AI Connect</AuroraText>{" "}
-                        <span className="text-[0.65rem] mb-4 px-1 py-0.5 bg-orange-600 rounded-md text-white font-semibold">
-                          NEW
-                        </span>
+                      <Sparkles className="h-3.5 w-3.5" />
+                      <AuroraText>AI Connect</AuroraText>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-primary text-white font-bold ml-0.5">
+                        NEW
                       </span>
                     </Link>
                   </Button>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    size="icon"
-                    className="xl:hidden flex items-center"
-                  >
-                    <Link href="/ai-connect">
-                      <Sparkles />
-                    </Link>
-                  </Button>
-                </li>
-                <li>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    className="xl:block hidden"
-                  >
-                    <Link href="/discover">
-                      <span>Discover</span>
-                    </Link>
-                  </Button>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    size="icon"
-                    className="xl:hidden flex items-center"
-                  >
-                    <Link href="/discover">
-                      <Globe />
-                    </Link>
-                  </Button>
-                </li>
-                <li>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    className="xl:block hidden"
-                  >
-                    <Link href="/feed">
-                      <span>Feed</span>
-                    </Link>
-                  </Button>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    size="icon"
-                    className="xl:hidden flex items-center"
-                  >
-                    <Link href="/feed">
-                      <RssIcon />
-                    </Link>
-                  </Button>
-                </li>
-                <li>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    className="xl:block hidden"
-                  >
-                    <Link href="/gathering">
-                      <span>Gathering</span>
-                    </Link>
-                  </Button>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    size="icon"
-                    className="xl:hidden flex items-center"
-                  >
-                    <Link href="/gathering">
-                      <Users />
-                    </Link>
+                  <Button variant="ghost" size="icon" className="xl:hidden h-9 w-9 rounded-xl" asChild>
+                    <Link href="/ai-connect"><Sparkles className="h-4 w-4" /></Link>
                   </Button>
                 </li>
 
+                {/* Discover */}
                 <li>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    className="xl:block hidden"
-                  >
-                    <Link href="/requests">
-                      <span>Requests</span>
-                    </Link>
+                  <Button variant="ghost" size="sm" className="xl:flex hidden rounded-xl" asChild>
+                    <Link href="/discover"><Globe className="h-3.5 w-3.5 mr-1.5" />Discover</Link>
                   </Button>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    size="icon"
-                    className="xl:hidden flex items-center"
-                  >
-                    <Link href="/requests">
-                      <Mail />
-                    </Link>
-                  </Button>
-                </li>
-                <li>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    className="xl:block hidden"
-                  >
-                    <Link href="/messages">
-                      <span>Messages</span>
-                    </Link>
-                  </Button>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                    size="icon"
-                    className="xl:hidden flex items-center"
-                  >
-                    <Link href="/messages">
-                      <MessageSquare />
-                    </Link>
+                  <Button variant="ghost" size="icon" className="xl:hidden h-9 w-9 rounded-xl" asChild>
+                    <Link href="/discover"><Globe className="h-4 w-4" /></Link>
                   </Button>
                 </li>
 
-                {session && (
-                  <li>
-                    <Button
-                      variant={`${
-                        pathname === "/api-dashboard" && theme === "light"
-                          ? "outline"
-                          : "ghost"
-                      }`}
-                      asChild
-                      className="xl:block hidden"
-                    >
-                      <Link href="/api-dashboard">
-                        <span>API</span>
-                      </Link>
-                    </Button>
-                    <Button
-                      variant={`${
-                        pathname === "/api-dashboard" && theme === "light"
-                          ? "outline"
-                          : "ghost"
-                      }`}
-                      asChild
-                      size="icon"
-                      className="xl:hidden flex items-center"
-                    >
-                      <Link href="/api-dashboard">
-                        <Key />
-                      </Link>
-                    </Button>
-                  </li>
-                )}
+                {/* Feed */}
+                <li>
+                  <Button variant="ghost" size="sm" className="xl:flex hidden rounded-xl" asChild>
+                    <Link href="/feed"><RssIcon className="h-3.5 w-3.5 mr-1.5" />Feed</Link>
+                  </Button>
+                  <Button variant="ghost" size="icon" className="xl:hidden h-9 w-9 rounded-xl" asChild>
+                    <Link href="/feed"><RssIcon className="h-4 w-4" /></Link>
+                  </Button>
+                </li>
 
+                {/* Gathering */}
+                <li>
+                  <Button variant="ghost" size="sm" className="xl:flex hidden rounded-xl" asChild>
+                    <Link href="/gathering"><Users className="h-3.5 w-3.5 mr-1.5" />Gathering</Link>
+                  </Button>
+                  <Button variant="ghost" size="icon" className="xl:hidden h-9 w-9 rounded-xl" asChild>
+                    <Link href="/gathering"><Users className="h-4 w-4" /></Link>
+                  </Button>
+                </li>
+
+                {/* Requests */}
+                <li>
+                  <Button variant="ghost" size="sm" className="xl:flex hidden rounded-xl" asChild>
+                    <Link href="/requests"><Mail className="h-3.5 w-3.5 mr-1.5" />Requests</Link>
+                  </Button>
+                  <Button variant="ghost" size="icon" className="xl:hidden h-9 w-9 rounded-xl" asChild>
+                    <Link href="/requests"><Mail className="h-4 w-4" /></Link>
+                  </Button>
+                </li>
+
+                {/* Messages */}
+                <li>
+                  <Button variant="ghost" size="sm" className="xl:flex hidden rounded-xl" asChild>
+                    <Link href="/messages"><MessageSquare className="h-3.5 w-3.5 mr-1.5" />Messages</Link>
+                  </Button>
+                  <Button variant="ghost" size="icon" className="xl:hidden h-9 w-9 rounded-xl" asChild>
+                    <Link href="/messages"><MessageSquare className="h-4 w-4" /></Link>
+                  </Button>
+                </li>
+
+                {/* API */}
+                <li>
+                  <Button variant="ghost" size="sm" className="xl:flex hidden rounded-xl" asChild>
+                    <Link href="/api-dashboard"><Key className="h-3.5 w-3.5 mr-1.5" />API</Link>
+                  </Button>
+                  <Button variant="ghost" size="icon" className="xl:hidden h-9 w-9 rounded-xl" asChild>
+                    <Link href="/api-dashboard"><Key className="h-4 w-4" /></Link>
+                  </Button>
+                </li>
+
+                {/* Search */}
                 <li>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="px-1 py-[18px] rounded-lg"
+                    className="rounded-xl h-9 px-3 gap-2 border-border/60 bg-muted/30"
                     onClick={() => setShowSearch(true)}
                   >
-                    <Search className="h-5 w-5 ml-2" />
-                    <span className="mx-4">Search</span>
-                    <div className="border rounded-md p-1 flex text-center items-center justify-center gap-1 mr-0.5 bg-muted text-muted-foreground">
-                      <Command className="h-5 w-5 inline-block" /> K
+                    <Search className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="text-muted-foreground text-xs hidden xl:inline">Search...</span>
+                    <div className="hidden xl:flex items-center gap-0.5 ml-1 border rounded-lg px-1 py-0.5 bg-background text-muted-foreground text-[10px] font-mono">
+                      <Command className="h-3 w-3" />K
                     </div>
                   </Button>
                 </li>
+
+                {/* User dropdown */}
                 <li>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
                         variant="outline"
-                        className="flex items-center gap-2 h-fit"
+                        size="sm"
+                        className="rounded-xl h-9 pl-1.5 pr-2.5 gap-2 border-border/60"
                       >
                         <Image
-                          height={20}
-                          width={20}
+                          height={24}
+                          width={24}
                           src={session.user.image || "/placeholder.svg"}
                           alt={session.user.name || ""}
-                          className="w-8 h-8 rounded-full"
+                          className="w-6 h-6 rounded-full ring-1 ring-border"
                         />
-                        <div className="text-left">
-                          <p className="text-sm">{session.user.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            @{session.user.githubUsername}
-                          </p>
-                        </div>
-                        <div className="flex  flex-col items-center">
-                          <ChevronUp size={5} />
-                          <ChevronDown size={5} />
-                        </div>
+                        <span className="text-sm font-medium hidden xl:block max-w-[120px] truncate">
+                          {session.user.name}
+                        </span>
+                        <ChevronDown className="h-3 w-3 text-muted-foreground" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56">
-                      <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuContent className="w-56 rounded-2xl p-1.5" align="end">
+                      <div className="px-2 py-2 mb-1">
+                        <p className="text-sm font-semibold truncate">{session.user.name}</p>
+                        <p className="text-xs text-muted-foreground font-mono truncate">
+                          @{session.user.githubUsername}
+                        </p>
+                      </div>
                       <DropdownMenuSeparator />
-                      {/* profile */}
-                      <DropdownMenuItem asChild>
-                        <Link href="/profile">
-                          <User />
-                          <span>Profile</span>
-                        </Link>
+                      <DropdownMenuItem asChild className="rounded-xl">
+                        <Link href="/profile"><User className="h-4 w-4" /><span>Profile</span></Link>
                       </DropdownMenuItem>
-
-                      {/* messages */}
-                      <DropdownMenuItem asChild>
-                        <Link href="/messages">
-                          <MessagesSquare />
-                          <span>Messages</span>
-                        </Link>
+                      <DropdownMenuItem asChild className="rounded-xl">
+                        <Link href="/messages"><MessagesSquare className="h-4 w-4" /><span>Messages</span></Link>
                       </DropdownMenuItem>
-                      {/* Requests */}
-                      <DropdownMenuItem asChild>
-                        <Link href="/requests">
-                          <Users />
-                          <span>Requests</span>
-                        </Link>
+                      <DropdownMenuItem asChild className="rounded-xl">
+                        <Link href="/requests"><Users className="h-4 w-4" /><span>Requests</span></Link>
                       </DropdownMenuItem>
-
                       <DropdownMenuSeparator />
-
-                      {/* API Dashboard */}
-                      <DropdownMenuItem asChild>
+                      <DropdownMenuItem asChild className="rounded-xl">
                         <Link href="/api-dashboard">
-                          <Key />
-                          <span>API Dashboard</span>{" "}
-                          <span className="text-[0.6rem] px-1  bg-orange-600 rounded-md text-white font-semibold">
-                            NEW
-                          </span>
+                          <Key className="h-4 w-4" />
+                          <span>API Dashboard</span>
+                          <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded-full bg-primary text-white font-bold">NEW</span>
                         </Link>
                       </DropdownMenuItem>
-
-                      {/* API Documentation */}
-                      <DropdownMenuItem asChild>
-                        <Link href="/api-docs">
-                          <Book />
-                          <span>API Docs</span>
-                        </Link>
+                      <DropdownMenuItem asChild className="rounded-xl">
+                        <Link href="/api-docs"><Book className="h-4 w-4" /><span>API Docs</span></Link>
                       </DropdownMenuItem>
-
-                      {/* Upgrade */}
-                      <DropdownMenuItem asChild>
-                        <Link href="/upgrade">
-                          <Zap />
-                          <span>Upgrade</span>
-                        </Link>
+                      <DropdownMenuItem asChild className="rounded-xl">
+                        <Link href="/upgrade"><Zap className="h-4 w-4" /><span>Upgrade</span></Link>
                       </DropdownMenuItem>
-
-                      {/* Projects */}
-
-                      {/* Edit Profile */}
-
-                      {/* apperance */}
                       <DropdownMenuSeparator />
                       <DropdownMenuSub>
-                        <DropdownMenuSubTrigger>
-                          {/* Dynamically changing the icon based on the theme */}
-                          {currentTheme === "dark" && <MoonIcon size={16} />}
-                          {currentTheme === "light" && (
-                            <SunMediumIcon size={16} />
-                          )}
-                          {currentTheme === "system" && <Monitor size={16} />}
+                        <DropdownMenuSubTrigger className="rounded-xl">
+                          {currentTheme === "dark" && <MoonIcon className="h-4 w-4" />}
+                          {currentTheme === "light" && <SunMediumIcon className="h-4 w-4" />}
+                          {currentTheme === "system" && <Monitor className="h-4 w-4" />}
                           <span>Appearance</span>
                         </DropdownMenuSubTrigger>
                         <DropdownMenuPortal>
-                          <DropdownMenuSubContent>
-                            <DropdownMenuRadioGroup
-                              value={currentTheme}
-                              onValueChange={toggleMode}
-                            >
-                              <DropdownMenuRadioItem
-                                value="system"
-                                className="flex items-center gap-2"
-                              >
-                                <Monitor size={16} />
-                                <span>System</span>
+                          <DropdownMenuSubContent className="rounded-2xl">
+                            <DropdownMenuRadioGroup value={currentTheme} onValueChange={toggleMode}>
+                              <DropdownMenuRadioItem value="system" className="rounded-xl">
+                                <Monitor className="h-4 w-4" /><span>System</span>
                               </DropdownMenuRadioItem>
-                              <DropdownMenuRadioItem
-                                value="light"
-                                className="flex items-center gap-2"
-                              >
-                                <SunMediumIcon size={16} />
-                                <span>Light</span>
+                              <DropdownMenuRadioItem value="light" className="rounded-xl">
+                                <SunMediumIcon className="h-4 w-4" /><span>Light</span>
                               </DropdownMenuRadioItem>
-                              <DropdownMenuRadioItem
-                                value="dark"
-                                className="flex items-center gap-2"
-                              >
-                                <MoonIcon size={16} />
-                                <span>Dark</span>
+                              <DropdownMenuRadioItem value="dark" className="rounded-xl">
+                                <MoonIcon className="h-4 w-4" /><span>Dark</span>
                               </DropdownMenuRadioItem>
                             </DropdownMenuRadioGroup>
                           </DropdownMenuSubContent>
                         </DropdownMenuPortal>
                       </DropdownMenuSub>
-                      {/* invite */}
                       <DropdownMenuSub>
-                        <DropdownMenuSubTrigger>
-                          <UserPlus />
-                          <span>Invite users</span>
+                        <DropdownMenuSubTrigger className="rounded-xl">
+                          <UserPlus className="h-4 w-4" /><span>Invite users</span>
                         </DropdownMenuSubTrigger>
                         <DropdownMenuPortal>
-                          <DropdownMenuSubContent>
-                            <DropdownMenuItem
-                              onClick={handleInviteUsersViaEmail}
-                            >
-                              <Mail />
-                              <span>Email</span>
+                          <DropdownMenuSubContent className="rounded-2xl">
+                            <DropdownMenuItem onClick={handleInviteUsersViaEmail} className="rounded-xl">
+                              <Mail className="h-4 w-4" /><span>Email</span>
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={handleInviteUsersViaWhatsApp}
-                            >
-                              <MessageSquare />
-                              <span>WhatsApp</span>
+                            <DropdownMenuItem onClick={handleInviteUsersViaWhatsApp} className="rounded-xl">
+                              <MessageSquare className="h-4 w-4" /><span>WhatsApp</span>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={handleInviteUsersViaLink}
-                            >
-                              <PlusCircle />
-                              <span>More...</span>
+                            <DropdownMenuItem onClick={handleInviteUsersViaLink} className="rounded-xl">
+                              <PlusCircle className="h-4 w-4" /><span>More...</span>
                             </DropdownMenuItem>
                           </DropdownMenuSubContent>
                         </DropdownMenuPortal>
                       </DropdownMenuSub>
-                      {/* sign out */}
                       <DropdownMenuSeparator />
-
                       <DropdownMenuItem
                         onClick={() => signOut({ callbackUrl: "/" })}
+                        className="rounded-xl text-red-500 focus:text-red-500 focus:bg-red-50 dark:focus:bg-red-950/30"
                       >
-                        <LogOut />
-                        <span>Log out</span>
+                        <LogOut className="h-4 w-4" /><span>Log out</span>
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </li>
-                {/* <li>
-                  <Link href="/profile">
-                    <Image
-                      height={32}
-                      width={32}
-                      src={session.user.image || "/placeholder.svg"}
-                      alt={session.user.name || ""}
-                      className="w-8 h-8 rounded-full"
-                    />
-                  </Link>
-                </li>
-                <li>
-                  <Button variant="outline" onClick={() => signOut()}>
-                    Logout
-                  </Button>
-                </li> */}
               </>
             ) : (
               <>
                 <li>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                  >
+                  <Button variant="ghost" size="sm" className="rounded-xl" asChild>
                     <Link href="/about">About</Link>
                   </Button>
                 </li>
                 <li>
-                  <Button
-                    variant={`${
-                      pathname === "/" && theme === "light"
-                        ? "outline"
-                        : "ghost"
-                    }`}
-                    asChild
-                  >
+                  <Button variant="ghost" size="sm" className="rounded-xl" asChild>
                     <Link href="/explore">Explore</Link>
                   </Button>
                 </li>
@@ -605,64 +371,64 @@ export default function Header() {
             )}
           </ul>
         </nav>
-        <div className="lg:hidden flex items-center space-x-2">
-          {/* <ThemeToggle /> */}
+
+        {/* Mobile hamburger */}
+        <div className="lg:hidden flex items-center gap-2">
+          {session && (
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-9 w-9 rounded-xl border-border/60"
+              onClick={() => setShowSearch(true)}
+            >
+              <Search className="h-4 w-4" />
+            </Button>
+          )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon">
-                <Menu className="h-5 w-5" />
+              <Button variant="outline" size="icon" className="h-9 w-9 rounded-xl border-border/60">
+                <Menu className="h-4 w-4" />
                 <span className="sr-only">Open menu</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onSelect={() => setShowSearch(true)}>
-                <Search className="mr-2 h-4 w-4" />
-                <span>Search</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => router.push("/explore")}>
+            <DropdownMenuContent align="end" className="w-52 rounded-2xl p-1.5">
+              <DropdownMenuItem onSelect={() => router.push("/explore")} className="rounded-xl">
                 Explore
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => router.push("/discover")}>
+              <DropdownMenuItem onSelect={() => router.push("/discover")} className="rounded-xl">
                 Discover
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => router.push("/feed")}>
+              <DropdownMenuItem onSelect={() => router.push("/feed")} className="rounded-xl">
                 Feed
               </DropdownMenuItem>
               {session ? (
                 <>
-                  <DropdownMenuItem onSelect={() => router.push("/ai-connect")}>
-                    AI Connect{" "}
-                    <span className="text-[0.6rem] px-1  bg-orange-600 rounded-md text-white font-semibold">
-                      NEW
-                    </span>
+                  <DropdownMenuItem onSelect={() => router.push("/ai-connect")} className="rounded-xl">
+                    AI Connect
+                    <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded-full bg-primary text-white font-bold">NEW</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onSelect={() => router.push("/api-dashboard")}
-                  >
-                    API Dashboard{" "}
-                    <span className="text-[0.6rem] px-1  bg-orange-600 rounded-md text-white font-semibold">
-                      NEW
-                    </span>
+                  <DropdownMenuItem onSelect={() => router.push("/api-dashboard")} className="rounded-xl">
+                    API Dashboard
                   </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => router.push("/gathering")}>
+                  <DropdownMenuItem onSelect={() => router.push("/gathering")} className="rounded-xl">
                     Gathering
                   </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => router.push("/requests")}>
+                  <DropdownMenuItem onSelect={() => router.push("/requests")} className="rounded-xl">
                     Requests
                   </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => router.push("/messages")}>
+                  <DropdownMenuItem onSelect={() => router.push("/messages")} className="rounded-xl">
                     Messages
                   </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => router.push("/profile")}>
+                  <DropdownMenuItem onSelect={() => router.push("/profile")} className="rounded-xl">
                     Profile
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onSelect={() => signOut()}>
+                  <DropdownMenuItem onSelect={() => signOut()} className="rounded-xl text-red-500">
                     Logout
                   </DropdownMenuItem>
                 </>
               ) : (
-                <DropdownMenuItem onSelect={() => signIn("github")}>
+                <DropdownMenuItem onSelect={() => signIn("github")} className="rounded-xl">
                   Login with GitHub
                 </DropdownMenuItem>
               )}
@@ -670,11 +436,9 @@ export default function Header() {
           </DropdownMenu>
         </div>
       </div>
+
       {showSearch && (
-        <SearchOverlay
-          onClose={() => setShowSearch(false)}
-          onSearch={handleSearch}
-        />
+        <SearchOverlay onClose={() => setShowSearch(false)} onSearch={handleSearch} />
       )}
     </header>
   );

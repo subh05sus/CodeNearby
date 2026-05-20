@@ -44,10 +44,7 @@ export function QuickActions() {
         >
           <Link
             href={action.href}
-            className={`group flex flex-col gap-2 rounded-2xl border p-4 h-full transition-all duration-200 hover:border-primary/30 hover:bg-primary/5 ${
-              action.highlight
-                ? "border-primary/25 bg-primary/5"
-                : "border-border bg-card"
+            className={`group flex flex-col gap-2 rounded-2xl border p-4 h-full transition-all duration-200 hover:border-primary/30 hover:bg-card/95 border-border bg-card
             }`}
           >
             <div className="flex items-center justify-between">

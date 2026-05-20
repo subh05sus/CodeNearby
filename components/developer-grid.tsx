@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+'use client';
 
-import { useEffect, useId, useRef, useState } from "react";
-import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useOutsideClick } from "@/hooks/use-outside-click";
-import type { Developer } from "@/types";
-import { GithubIcon, X } from "lucide-react";
-import { Calendar, LinkIcon, MapPin, Twitter } from "lucide-react";
+import { useEffect, useId, useRef, useState } from 'react';
+import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useOutsideClick } from '@/hooks/use-outside-click';
+import type { Developer } from '@/types';
+import { X } from 'lucide-react';
+import { Calendar, LinkIcon, MapPin, Twitter } from 'lucide-react';
 
 interface DeveloperDetails {
   name: string;
@@ -39,20 +39,20 @@ export default function DeveloperGrid({
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
+      if (event.key === 'Escape') {
         setActive(null);
         setDetails(null);
       }
     }
 
     if (active) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = "auto";
+      document.body.style.overflow = 'auto';
     }
 
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
   }, [active]);
 
   useOutsideClick(ref, () => {
@@ -77,7 +77,7 @@ export default function DeveloperGrid({
         created_at: data.created_at,
       });
     } catch (error) {
-      console.error("Error fetching developer details:", error);
+      console.error('Error fetching developer details:', error);
     } finally {
       setLoading(false);
     }
@@ -126,7 +126,7 @@ export default function DeveloperGrid({
                     className="w-full h-60 relative"
                   >
                     <Image
-                      src={active.avatar_url || "/placeholder.svg"}
+                      src={active.avatar_url || '/placeholder.svg'}
                       alt={active.login}
                       fill
                       className="object-cover"
@@ -159,17 +159,17 @@ export default function DeveloperGrid({
                             onClick={() => {
                               handleAddFriend(active);
                               const btn = document.getElementById(
-                                `add-friend-${active.id}`
+                                `add-friend-${active.id}`,
                               ) as HTMLButtonElement;
                               if (btn) {
-                                btn.innerHTML = "Request Sent";
+                                btn.innerHTML = 'Request Sent';
                                 btn.disabled = true;
                               }
                             }}
                             id={`add-friend-${active.id}`}
                             layoutId={`add-friend-${active.id}`}
                           >
-                            Add Friend
+                            Add
                           </motion.button>
                         )}
                         <motion.button
@@ -177,14 +177,12 @@ export default function DeveloperGrid({
                           className="h-9 rounded-md px-3 text-sm font-medium border bg-background hover:bg-accent hover:text-accent-foreground"
                           onClick={(e) => {
                             e.stopPropagation();
-                            window.open(active.html_url, "_blank");
+                            window.open(active.html_url, '_blank');
                           }}
                         >
                           <span className="flex items-center text-center justify-center">
-                            <GithubIcon size={15} className="mr-1 md:mr-0" />
-                            <span className="md:hidden">View GitHub</span>
+                            <span className="md:hidden">GitHub</span>
                           </span>
-                          <span></span>
                         </motion.button>
                       </motion.div>
                     </motion.div>
@@ -207,7 +205,7 @@ export default function DeveloperGrid({
                           className="space-y-6"
                         >
                           <p className="text-muted-foreground">
-                            {details.bio || "No bio available"}
+                            {details.bio || 'No bio available'}
                           </p>
 
                           <div className="grid grid-cols-3 gap-4">
@@ -274,9 +272,9 @@ export default function DeveloperGrid({
                               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <Calendar size={16} />
                                 <span>
-                                  Joined{" "}
+                                  Joined{' '}
                                   {new Date(
-                                    details.created_at
+                                    details.created_at,
                                   ).toLocaleDateString()}
                                 </span>
                               </div>
@@ -314,7 +312,7 @@ export default function DeveloperGrid({
                   className="w-16 h-16 relative"
                 >
                   <Image
-                    src={developer.avatar_url || "/placeholder.svg"}
+                    src={developer.avatar_url || '/placeholder.svg'}
                     alt={developer.login}
                     fill
                     className="rounded-full object-cover"
@@ -353,12 +351,10 @@ export default function DeveloperGrid({
                     className="h-8 rounded-md px-3 text-xs border bg-background hover:bg-accent hover:text-accent-foreground"
                     onClick={(e) => {
                       e.stopPropagation();
-                      window.open(developer.html_url, "_blank");
+                      window.open(developer.html_url, '_blank');
                     }}
                   >
-                    <span className="flex items-center">
-                      View GitHub
-                    </span>
+                    <span className="flex items-center">GitHub</span>
                   </motion.button>
                 </div>
               </motion.div>

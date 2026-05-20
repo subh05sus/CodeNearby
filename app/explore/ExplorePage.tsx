@@ -7,7 +7,7 @@ import type React from "react";
 import { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, MapPin, Search } from "lucide-react";
+import { Loader2, MapPin, Search, Compass } from "lucide-react";
 import type { Developer } from "@/types";
 import { getLocationByIp } from "@/lib/location";
 import { motion } from "framer-motion";
@@ -25,9 +25,7 @@ export default function ExplorePage() {
       if (!location) return;
       setLoading(true);
       try {
-        const response = await fetch(
-          `/api/developers?location=${encodeURIComponent(location)}`
-        );
+        const response = await fetch(`/api/developers?location=${encodeURIComponent(location)}`);
         const data = await response.json();
         setDevelopers(data);
       } catch {
@@ -43,9 +41,7 @@ export default function ExplorePage() {
     if (!location) return;
     setLoading(true);
     try {
-      const response = await fetch(
-        `/api/developers?location=${encodeURIComponent(location)}`
-      );
+      const response = await fetch(`/api/developers?location=${encodeURIComponent(location)}`);
       const data = await response.json();
       setDevelopers(data);
     } catch {
@@ -60,15 +56,11 @@ export default function ExplorePage() {
       try {
         const data = await getLocationByIp();
         setLocation(data.city);
-        if (data.city) {
-          initialLocationSubmit(data.city);
-        }
+        if (data.city) initialLocationSubmit(data.city);
       } catch {}
     };
 
-    if (!location) {
-      fetchLocation();
-    }
+    if (!location) fetchLocation();
   }, [handleLocationSubmit]);
 
   const handleGeolocation = () => {
@@ -83,18 +75,11 @@ export default function ExplorePage() {
             );
             const data = await response.json();
             const locationName =
-              data.address.city ||
-              data.address.town ||
-              data.address.village ||
-              data.address.county;
+              data.address.city || data.address.town || data.address.village || data.address.county;
             setLocation(locationName);
-            handleLocationSubmit({
-              preventDefault: () => {},
-            } as React.FormEvent);
+            handleLocationSubmit({ preventDefault: () => {} } as React.FormEvent);
           } catch {
-            toast.error(
-              "Failed to get your location. Please enter it manually."
-            );
+            toast.error("Failed to get your location. Please enter it manually.");
             setLoading(false);
           }
         },
@@ -104,94 +89,109 @@ export default function ExplorePage() {
         }
       );
     } else {
-      toast.error(
-        "Geolocation is not supported by your browser. Please enter your location manually."
-      );
+      toast.error("Geolocation is not supported by your browser. Please enter your location manually.");
       setLoading(false);
     }
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <motion.h1
-        className="text-4xl font-bold mb-8 text-center"
-        initial={{ opacity: 0, y: -20 }}
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
+        className="text-center mb-8"
       >
-        Explore Nearby Developers
-      </motion.h1>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.2 }}
-      >
-        <form
-          onSubmit={handleLocationSubmit}
-          className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mb-8"
+        <div
+          className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4"
+          style={{ background: "hsl(24 95% 53% / 0.12)", border: "1px solid hsl(24 95% 53% / 0.25)" }}
         >
-          <div className="relative flex-grow">
+          <Compass className="w-6 h-6 text-primary" />
+        </div>
+        <h1 className="font-heading text-3xl md:text-4xl mb-2">Explore Nearby Developers</h1>
+        <p className="text-sm text-muted-foreground">
+          Discover developers in your city or anywhere in the world.
+        </p>
+      </motion.div>
+
+      {/* Search bar */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+        className="max-w-2xl mx-auto mb-10"
+      >
+        <form onSubmit={handleLocationSubmit} className="flex flex-col sm:flex-row gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
-              placeholder="Enter location"
+              placeholder="Enter a city or location..."
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="pl-10"
-            />
-            <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-              size={20}
+              className="pl-10 rounded-2xl h-11 bg-card border-border focus-visible:ring-primary/30"
             />
           </div>
-          <Button type="submit" disabled={loading}>
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Search
+          <Button
+            type="submit"
+            disabled={loading}
+            className="rounded-2xl h-11 px-5 text-white flex-shrink-0"
+            style={{ background: "hsl(24 95% 53%)" }}
+          >
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+            <span className="ml-2">Search</span>
           </Button>
           <Button
             type="button"
             onClick={handleGeolocation}
             disabled={loading}
             variant="outline"
+            className="rounded-2xl h-11 flex-shrink-0"
           >
-            <MapPin className="mr-2 h-4 w-4" />
+            <MapPin className="h-4 w-4 mr-1.5" />
             Use My Location
           </Button>
         </form>
-      </motion.div>
-      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {developers.map((dev, index) => (
+
+        {/* Current location pill */}
+        {location && (
           <motion.div
-            key={dev.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex items-center justify-center gap-1.5 mt-3"
           >
-            <Card className="h-full flex gap-4 p-3 items-center">
-              <Image
-                src={dev.avatar_url || "/placeholder.svg"}
-                alt={dev.login}
-                className="w-24 h-24 rounded-full"
-                width={128}
-                height={128}
-              />
-              <div className="flex-1 flex flex-col gap-2 w-fit">
-                <span>{dev.login}</span>
-                <Button asChild className="w-fit border" variant={"secondary"}>
-                  <Link
-                    href={dev.html_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <GithubIcon className="inline" />
-                    View GitHub Profile
-                  </Link>
-                </Button>
-              </div>
-            </Card>
+            <MapPin className="h-3.5 w-3.5 text-primary" />
+            <span className="text-xs text-muted-foreground">
+              Showing developers near{" "}
+              <span className="font-semibold text-foreground">{location}</span>
+            </span>
           </motion.div>
-        ))}
-      </div> */}
-      <ExploreDeveloperGrid developers={developers} />
+        )}
+      </motion.div>
+
+      {/* Loading */}
+      {loading && (
+        <div className="flex flex-col items-center gap-3 py-16">
+          <div className="flex gap-1">
+            {[0, 1, 2].map((i) => (
+              <motion.div
+                key={i}
+                className="w-2 h-2 rounded-full"
+                style={{ background: "hsl(24 95% 53%)" }}
+                animate={{ y: [-4, 4, -4] }}
+                transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.15 }}
+              />
+            ))}
+          </div>
+          <p className="text-sm text-muted-foreground">Finding developers...</p>
+        </div>
+      )}
+
+      {/* Results */}
+      {!loading && (
+        <ExploreDeveloperGrid developers={developers} />
+      )}
     </div>
   );
 }
