@@ -346,7 +346,7 @@ export default function DeveloperGrid({
                     }}
                     id={`add-friend-${developer.id}`}
                   >
-                    Add Friend
+                    Add
                   </motion.button>
                   <motion.button
                     layoutId={`view-github-${developer.id}`}
@@ -357,7 +357,6 @@ export default function DeveloperGrid({
                     }}
                   >
                     <span className="flex items-center">
-                      <GithubIcon size={12} className="mr-1" />
                       View GitHub
                     </span>
                   </motion.button>

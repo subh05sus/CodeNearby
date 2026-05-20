@@ -5,16 +5,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  Loader2,
-  Send,
-  ArrowLeft,
-  BarChart,
-  MapPin,
-  Calendar,
-} from "lucide-react";
+import { Loader2, Send, ArrowLeft, BarChart, MapPin, Calendar, Github } from "lucide-react";
 import Image from "next/image";
 import { ref, push, onChildAdded, off } from "firebase/database";
 import { format } from "date-fns";
@@ -22,6 +13,7 @@ import type { Session } from "next-auth";
 import { db as database } from "@/lib/firebase";
 import LoginButton from "@/components/login-button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { signIn } from "next-auth/react";
 import { toast } from "sonner";
 
 interface Message {
@@ -54,38 +46,23 @@ export default function MessagePage() {
 
   const fetchMessages = async () => {
     if (!session?.user?.githubId || !params.id) return;
-
     setMessages([]);
-
     const roomId =
       minimum(params.id as string, session.user.githubId) +
       maximum(params.id as string, session.user.githubId);
-
     const messagesRef = ref(database, `messages/${roomId}`);
-
     off(messagesRef);
-
     onChildAdded(messagesRef, (snapshot) => {
-      const message = {
-        id: snapshot.key,
-        ...snapshot.val(),
-      };
-
-      setMessages((prevMessages) => {
-        if (prevMessages.some((m) => m.id === message.id)) {
-          return prevMessages;
-        }
-        const newMessages = [...prevMessages, message];
+      const message = { id: snapshot.key, ...snapshot.val() };
+      setMessages((prev) => {
+        if (prev.some((m) => m.id === message.id)) return prev;
+        const updated = [...prev, message];
         setTimeout(scrollToBottom, 100);
-        return newMessages;
+        return updated;
       });
     });
-
     setLoading(false);
-
-    return () => {
-      off(messagesRef);
-    };
+    return () => off(messagesRef);
   };
 
   const fetchFriend = async () => {
@@ -94,23 +71,19 @@ export default function MessagePage() {
       const data = await response.json();
       setFriend(data);
     } catch {
-      toast.error("Failed to fetch friend details. Please try again.");
+      toast.error("Failed to fetch friend details.");
     }
   };
 
   const sendMessage = () => {
-    if (inputMessage.trim() === "" || !session?.user?.githubId || !params.id)
-      return;
-
+    if (!inputMessage.trim() || !session?.user?.githubId || !params.id) return;
     const roomId = [session.user.githubId, params.id].sort().join("");
-
     const messagesRef = ref(database, `messages/${roomId}`);
     push(messagesRef, {
       senderId: session.user.githubId,
       content: inputMessage,
       timestamp: Date.now(),
     });
-
     setInputMessage("");
   };
 
@@ -118,13 +91,12 @@ export default function MessagePage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(scrollToBottom, [messages]); // Updated useEffect dependency
+  useEffect(scrollToBottom, [messages]);
 
   if (!session) {
     return (
-      <div className="flex flex-col items-center justify-center h-full p-4">
-        <h1 className="text-2xl font-bold mb-4">Please Sign In</h1>
-        <p>You need to be signed in to view messages.</p>
+      <div className="flex flex-col items-center justify-center h-full gap-4 p-8 text-center">
+        <h2 className="font-heading text-xl">Sign in to view messages</h2>
         <LoginButton />
       </div>
     );
@@ -133,130 +105,155 @@ export default function MessagePage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-full">
-        <Loader2 className="h-8 w-8 animate-spin" />
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     );
   }
 
+  const renderContent = (content: string) => {
+    try {
+      const jsonContent = JSON.parse(content);
+      if (jsonContent.type === "post") {
+        return (
+          <div
+            className="bg-black/20 rounded-xl p-3 cursor-pointer mt-1 border border-white/10"
+            onClick={() => router.push(`/posts/${jsonContent.postId}`)}
+          >
+            <p className="text-sm mb-2 line-clamp-2">{jsonContent.postContent}</p>
+            {jsonContent.postImage && (
+              <div className="relative w-full aspect-video h-28 rounded-lg overflow-hidden">
+                <Image src={jsonContent.postImage || "/placeholder.svg"} alt="Post" fill className="object-cover" />
+              </div>
+            )}
+            {jsonContent.postPoll && (
+              <div className="flex items-center text-xs opacity-70 mt-1">
+                <BarChart className="h-3.5 w-3.5 mr-1" />
+                Poll: {jsonContent.postPoll.question}
+              </div>
+            )}
+            {jsonContent.postLocation && (
+              <div className="flex items-center text-xs opacity-70 mt-1">
+                <MapPin className="h-3.5 w-3.5 mr-1" />
+                Location attached
+              </div>
+            )}
+            {jsonContent.postSchedule && (
+              <div className="flex items-center text-xs opacity-70 mt-1">
+                <Calendar className="h-3.5 w-3.5 mr-1" />
+                {format(new Date(jsonContent.postSchedule), "PPp")}
+              </div>
+            )}
+          </div>
+        );
+      }
+    } catch {
+      return <p className="whitespace-pre-wrap break-words">{content}</p>;
+    }
+  };
+
   return (
-    <>
-      <div className="border-b border-gray-200 dark:border-gray-800 p-4 flex items-center">
-        <Button
-          variant="ghost"
-          className="mr-2 md:hidden"
+    <div className="flex flex-col h-full min-h-0">
+      {/* Header */}
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-border flex-shrink-0">
+        <button
+          className="md:hidden p-1.5 rounded-lg hover:bg-muted transition-colors"
           onClick={() => router.push("/messages")}
         >
           <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <Image
-          src={friend?.image || "/placeholder.svg"}
-          alt={friend?.name || ""}
-          className="w-10 h-10 rounded-full mr-4"
-          width={40}
-          height={40}
-        />
-        <h2 className="text-xl font-semibold">{friend?.name || "Chat"}</h2>
+        </button>
+        {friend?.image && (
+          <Image
+            src={friend.image || "/placeholder.svg"}
+            alt={friend?.name || ""}
+            width={36}
+            height={36}
+            className="rounded-full flex-shrink-0"
+          />
+        )}
+        <div className="min-w-0">
+          <p className="font-semibold text-sm truncate">{friend?.name || "Chat"}</p>
+          {friend?.githubUsername && (
+            <p className="text-[11px] text-muted-foreground font-mono truncate">
+              @{friend.githubUsername}
+            </p>
+          )}
+        </div>
+        {friend?.githubUsername && (
+          <a
+            href={`https://github.com/${friend.githubUsername}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ml-auto p-2 rounded-xl hover:bg-muted transition-colors flex-shrink-0"
+          >
+            <Github className="h-4 w-4 text-muted-foreground" />
+          </a>
+        )}
       </div>
-      <div className="flex-grow overflow-y-auto portrait:max-h-[65vh] no-scrollbar p-4">
-        <ScrollArea className="h-full w-full pr-3">
-          {messages.map((message) => {
-            return (
-              <div
-                key={message.id}
-                className={`mb-4  flex ${
-                  message.senderId === session.user.githubId
-                    ? "justify-end"
-                    : "justify-start"
-                }`}
-              >
-                <div
-                  className={`max-w-[70%] p-3 rounded-lg ${
-                    message.senderId === session.user.githubId
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 dark:bg-zinc-800"
-                  }`}
-                >
-                  {(() => {
-                    try {
-                      const jsonContent = JSON.parse(message.content);
-                      if (jsonContent.type === "post") {
-                        return (
-                          <div
-                            className="text-inherit bg-black p-2 rounded-lg cursor-pointer mb-2"
-                            onClick={() =>
-                              router.push(`/posts/${jsonContent.postId}`)
-                            }
-                          >
-                            <p className="text-sm mb-2 line-clamp-2">
-                              {jsonContent.postContent}
-                            </p>
-                            {jsonContent.postImage && (
-                              <div className="relative w-full aspect-video h-32 ">
-                                <Image
-                                  src={
-                                    jsonContent.postImage || "/placeholder.svg"
-                                  }
-                                  alt="Post image"
-                                  fill
-                                  className="rounded-md object-cover"
-                                />
-                              </div>
-                            )}
-                            {jsonContent.postPoll && (
-                              <div className="flex items-center text-sm opacity-70">
-                                <BarChart className="h-4 w-4 mr-1" />
-                                Poll: {jsonContent.postPoll.question}
-                              </div>
-                            )}
-                            {jsonContent.postLocation && (
-                              <div className="flex items-center text-sm opacity-70">
-                                <MapPin className="h-4 w-4 mr-1" />
-                                Location attached
-                              </div>
-                            )}
-                            {jsonContent.postSchedule && (
-                              <div className="flex items-center text-sm text-muted-foreground">
-                                <Calendar className="h-4 w-4 mr-1" />
-                                {jsonContent.postSchedule &&
-                                  format(
-                                    new Date(jsonContent.postSchedule),
-                                    "PPp"
-                                  )}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      }
-                    } catch {
-                      // If parsing fails, treat as regular message
-                      return <p>{message.content}</p>;
-                    }
-                  })()}
-                  <p className="text-xs mt-1 opacity-70">
-                    {format(new Date(message.timestamp), "HH:mm")}
-                  </p>
-                </div>
+
+      {/* Messages */}
+      <div className="flex-1 overflow-hidden min-h-0">
+        <ScrollArea className="h-full w-full">
+          <div className="flex flex-col p-4 gap-3 pb-2">
+            {messages.length === 0 && (
+              <div className="text-center py-8">
+                <p className="text-sm text-muted-foreground">
+                  No messages yet. Say hello! 👋
+                </p>
               </div>
-            );
-          })}
-          <div ref={messagesEndRef} />
+            )}
+            {messages.map((message) => {
+              const isOwn = message.senderId === session.user.githubId;
+              return (
+                <div
+                  key={message.id}
+                  className={`flex ${isOwn ? "justify-end" : "justify-start"}`}
+                >
+                  <div
+                    className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${
+                      isOwn
+                        ? "rounded-br-sm text-white"
+                        : "rounded-bl-sm bg-muted"
+                    }`}
+                    style={isOwn ? { background: "hsl(24 95% 53%)" } : {}}
+                  >
+                    {renderContent(message.content)}
+                    <p
+                      className={`text-[10px] mt-1 font-mono ${
+                        isOwn ? "text-white/60 text-right" : "text-muted-foreground"
+                      }`}
+                    >
+                      {format(new Date(message.timestamp), "HH:mm")}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+            <div ref={messagesEndRef} />
+          </div>
         </ScrollArea>
-        {/* <div ref={messagesEndRef} className="h-2" /> */}
       </div>
-      <div className="border-t border-gray-200 dark:border-gray-800 p-4 flex relative">
-        <Input
-          type="text"
-          placeholder="Type a message..."
-          value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-          className="flex-grow mr-2"
-        />
-        <Button onClick={sendMessage}>
-          <Send className="h-4 w-4 mr-2" />
-          Send
-        </Button>
+
+      {/* Input */}
+      <div className="flex-shrink-0 border-t border-border p-3 flex items-center gap-2">
+        <div className="flex-1 flex items-center bg-muted rounded-2xl px-4 py-2.5 focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+          <input
+            type="text"
+            placeholder="Type a message..."
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground/50"
+          />
+        </div>
+        <button
+          onClick={sendMessage}
+          disabled={!inputMessage.trim()}
+          className="w-10 h-10 rounded-full flex items-center justify-center text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-40 flex-shrink-0"
+          style={{ background: "hsl(24 95% 53%)" }}
+        >
+          <Send className="h-4 w-4" />
+        </button>
       </div>
-    </>
+    </div>
   );
 }
