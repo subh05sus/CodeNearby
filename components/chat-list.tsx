@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { Loader2, MessageCircle } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { useParams } from "next/navigation";

@@ -254,14 +254,6 @@ export default function EditProfilePage() {
     );
   }
 
-  const themeColors: Record<string, string> = {
-    default: "hsl(24 95% 53%)",
-    blue: "hsl(217 91% 60%)",
-    green: "hsl(142 71% 45%)",
-    purple: "hsl(270 70% 60%)",
-    orange: "hsl(24 95% 53%)",
-  };
-
   const themeGradients: Record<string, string> = {
     default: "from-primary/30 to-primary/10",
     blue: "from-blue-500/30 to-blue-600/10",

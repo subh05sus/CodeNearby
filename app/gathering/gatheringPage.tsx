@@ -3,9 +3,8 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Loader2, Plus, Radio, Clock, Users, Github, ArrowRight } from "lucide-react";
+import { Plus, Radio, Clock, Users, Github, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { GatheringList } from "@/components/gathering-list";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
 

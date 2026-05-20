@@ -13,7 +13,6 @@ import type { Session } from "next-auth";
 import { db as database } from "@/lib/firebase";
 import LoginButton from "@/components/login-button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { signIn } from "next-auth/react";
 import { toast } from "sonner";
 
 interface Message {

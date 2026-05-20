@@ -12,12 +12,10 @@ import {
   ArrowRight,
   Sparkles,
   Radio,
-  Github,
 } from "lucide-react";
 import LoginButton from "@/components/login-button";
 import { motion } from "framer-motion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatDistanceToNow } from "date-fns";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
 import { Session } from "next-auth";
