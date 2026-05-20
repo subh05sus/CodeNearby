@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Users2, Clock, Sparkles } from "lucide-react";
+import { Loader2, Users2, Clock } from "lucide-react";
 import LoginButton from "@/components/login-button";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
@@ -132,7 +132,6 @@ export default function CreateGatheringPage() {
           <CardHeader className="relative">
             <motion.div variants={item}>
               <CardTitle className="text-3xl font-bold flex items-center gap-2">
-                <Sparkles className="h-6 w-6 text-primary" />
                 Create a Gathering
               </CardTitle>
               <CardDescription>

@@ -1057,7 +1057,7 @@ ${existingDev.followers ? `Followers: ${existingDev.followers}` : ""}`,
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-16rem)] sm:h-[calc(100vh-18rem)] md:h-[calc(100vh-20rem)]">
+    <div className="flex flex-col h-full">
       <Card className="flex-1 overflow-hidden flex flex-col rounded-xl shadow-lg border-opacity-50">
         <CardContent className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-5 space-y-3 sm:space-y-4 md:space-y-5">
           {messages.map((message) => (
