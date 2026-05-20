@@ -23,8 +23,8 @@ function SVGblob() {
             y2="118.965"
             gradientUnits="userSpaceOnUse"
           >
-            <stop offset="0%" style={{ stopColor: "#06b6d4" }} />
-            <stop offset="100%" style={{ stopColor: "#a855f7" }} />
+            <stop offset="0%" style={{ stopColor: "#f97316" }} />
+            <stop offset="100%" style={{ stopColor: "#fb923c" }} />
           </linearGradient>
         </defs>
       </svg>

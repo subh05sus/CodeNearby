@@ -7,9 +7,9 @@ export function CodeNearbyText() {
   const theme = useTheme();
   const shadowColor = theme.resolvedTheme === "dark" ? "white" : "black";
   return (
-    <h1 className="text-balance text-5xl font-semibold leading-none tracking-tighter  md:text-7xl">
+    <h1 className="text-balance text-6xl font-semibold leading-none tracking-wide md:text-7xl font-heading italic">
       Code
-      <LineShadowText className="italic" shadowColor={shadowColor}>
+      <LineShadowText className="ml-1.5" shadowColor={shadowColor}>
         Nearby
       </LineShadowText>
     </h1>

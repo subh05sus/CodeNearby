@@ -1,5 +1,5 @@
 import "./globals.css";
-import { Inter } from "next/font/google";
+import { Space_Grotesk, Instrument_Serif } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/header";
 import { NextAuthProvider } from "@/components/providers";
@@ -9,7 +9,18 @@ import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
 
-const inter = Inter({ subsets: ["latin"] });
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
+  variable: "--font-heading",
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://codenearby.space"),
 
@@ -167,7 +178,7 @@ export default function RootLayout({
           async
         />
       </head>
-      <body className={inter.className}>
+      <body className={`${spaceGrotesk.variable} ${instrumentSerif.variable} font-sans antialiased`}>
         <NextAuthProvider>
           <ThemeProvider
             attribute="class"

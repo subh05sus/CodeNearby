@@ -11,7 +11,7 @@ export default function FAQSection() {
   return (
     <div className="max-w-3xl mx-auto w-full space-y-8">
       <div className="text-center space-y-2">
-        <h2 className="text-2xl text-primary relative">
+        <h2 className="text-2xl text-primary relative font-heading">
           Frequently asked questions
           <span className="absolute -z-50 text-primary/5 left-1/2 transform -translate-x-1/2 -translate-y-1/3 font-extrabold text-8xl">
             FAQS
@@ -37,7 +37,7 @@ export default function FAQSection() {
                   animate={{ rotate: expandedIndex === index ? 180 : 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <ChevronDown className="w-5 h-5 dark:text-orange-300" />
+                  <ChevronDown className="w-5 h-5 text-primary" />
                 </motion.div>
               </button>
 
@@ -50,7 +50,7 @@ export default function FAQSection() {
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                     className="overflow-hidden"
                   >
-                    <div className="p-4 text-primary/70 text-sm leading-relaxed">
+                    <div className="p-4 text-muted-foreground text-sm leading-relaxed">
                       {faq.answer}
                     </div>
                   </motion.div>

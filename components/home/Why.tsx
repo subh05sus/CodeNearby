@@ -11,7 +11,7 @@ export function Why() {
 
   return (
     <div className="w-full h-full py-20">
-      <h2 className="max-w-7xl pl-4 mx-auto text-xl md:text-5xl font-bold text-neutral-800 dark:text-neutral-200 font-sans">
+      <h2 className="max-w-7xl pl-4 mx-auto text-xl md:text-5xl font-bold text-foreground font-heading">
         Why <AuroraText>CodeNearby.</AuroraText>
       </h2>
       <Carousel items={cards} />
@@ -21,9 +21,9 @@ export function Why() {
 
 const DummyContentNetworking = () => {
   return (
-    <div className="bg-[#F5F5F7] dark:bg-neutral-800 p-8 md:p-14 rounded-3xl mb-4">
-      <p className="text-neutral-600 dark:text-neutral-400 text-base md:text-2xl font-sans max-w-3xl mx-auto">
-        <span className="font-bold text-neutral-700 dark:text-neutral-200">
+    <div className="bg-orange-50 dark:bg-orange-950/30 p-8 md:p-14 rounded-3xl mb-4">
+      <p className="text-foreground/70 text-base md:text-2xl font-sans max-w-3xl mx-auto">
+        <span className="font-bold text-foreground">
           &quot;Your next coding partner is just a swipe away.&quot;
         </span>{" "}
         Whether you&apos;re looking for a co-founder, a mentor, or just someone
@@ -43,9 +43,9 @@ const DummyContentNetworking = () => {
 
 const DummyContentCollaboration = () => {
   return (
-    <div className="bg-[#F5F5F7] dark:bg-neutral-800 p-8 md:p-14 rounded-3xl mb-4">
-      <p className="text-neutral-600 dark:text-neutral-400 text-base md:text-2xl font-sans max-w-3xl mx-auto">
-        <span className="font-bold text-neutral-700 dark:text-neutral-200">
+    <div className="bg-orange-50 dark:bg-orange-950/30 p-8 md:p-14 rounded-3xl mb-4">
+      <p className="text-foreground/70 text-base md:text-2xl font-sans max-w-3xl mx-auto">
+        <span className="font-bold text-foreground">
           &quot;Great projects start with great teams.&quot;
         </span>{" "}
         Find developers with similar interests and work together on real
@@ -64,9 +64,9 @@ const DummyContentCollaboration = () => {
 };
 const DummyContentFeed = () => {
   return (
-    <div className="bg-[#F5F5F7] dark:bg-neutral-800 p-8 md:p-14 rounded-3xl mb-4">
-      <p className="text-neutral-600 dark:text-neutral-400 text-base md:text-2xl font-sans max-w-3xl mx-auto">
-        <span className="font-bold text-neutral-700 dark:text-neutral-200">
+    <div className="bg-orange-50 dark:bg-orange-950/30 p-8 md:p-14 rounded-3xl mb-4">
+      <p className="text-foreground/70 text-base md:text-2xl font-sans max-w-3xl mx-auto">
+        <span className="font-bold text-foreground">
           &quot;Your ideas, your voice, your space.&quot;
         </span>{" "}
         Share thoughts, post polls, upload code snippets, and start discussions
@@ -86,9 +86,9 @@ const DummyContentFeed = () => {
 
 const DummyContentMessaging = () => {
   return (
-    <div className="bg-[#F5F5F7] dark:bg-neutral-800 p-8 md:p-14 rounded-3xl mb-4">
-      <p className="text-neutral-600 dark:text-neutral-400 text-base md:text-2xl font-sans max-w-3xl mx-auto">
-        <span className="font-bold text-neutral-700 dark:text-neutral-200">
+    <div className="bg-orange-50 dark:bg-orange-950/30 p-8 md:p-14 rounded-3xl mb-4">
+      <p className="text-foreground/70 text-base md:text-2xl font-sans max-w-3xl mx-auto">
+        <span className="font-bold text-foreground">
           &quot;Code together, chat together.&quot;
         </span>{" "}
         Connect with fellow developers through real-time messaging. Share GitHub
@@ -107,9 +107,9 @@ const DummyContentMessaging = () => {
 
 const DummyContentGatherings = () => {
   return (
-    <div className="bg-[#F5F5F7] dark:bg-neutral-800 p-8 md:p-14 rounded-3xl mb-4">
-      <p className="text-neutral-600 dark:text-neutral-400 text-base md:text-2xl font-sans max-w-3xl mx-auto">
-        <span className="font-bold text-neutral-700 dark:text-neutral-200">
+    <div className="bg-orange-50 dark:bg-orange-950/30 p-8 md:p-14 rounded-3xl mb-4">
+      <p className="text-foreground/70 text-base md:text-2xl font-sans max-w-3xl mx-auto">
+        <span className="font-bold text-foreground">
           &quot;Meet, code, and connect.&quot;
         </span>{" "}
         Join or create developer meetups, coding sessions, and tech talks.
@@ -129,9 +129,9 @@ const DummyContentGatherings = () => {
 
 const DummyContentHackathons = () => {
   return (
-    <div className="bg-[#F5F5F7] dark:bg-neutral-800 p-8 md:p-14 rounded-3xl mb-4">
-      <p className="text-neutral-600 dark:text-neutral-400 text-base md:text-2xl font-sans max-w-3xl mx-auto">
-        <span className="font-bold text-neutral-700 dark:text-neutral-200">
+    <div className="bg-orange-50 dark:bg-orange-950/30 p-8 md:p-14 rounded-3xl mb-4">
+      <p className="text-foreground/70 text-base md:text-2xl font-sans max-w-3xl mx-auto">
+        <span className="font-bold text-foreground">
           &quot;Code. Compete. Conquer.&quot;
         </span>{" "}
         Join hackathons, find teammates, and build something extraordinary.
