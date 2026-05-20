@@ -1,11 +1,14 @@
 import FeaturedTitle from "./FeaturedTitle";
 import { CodeNearbyText } from "./home/CodeNearbyText";
+import { CTASection } from "./home/CTASection";
 import Details from "./home/Details";
 import FAQSection from "./home/FAQSection";
 import Features from "./home/Features";
 import { HowItWorks } from "./home/HowItWorks";
+import { OpenSourceSection } from "./home/OpenSourceSection";
 import { Quote } from "./home/Quote";
 import { StatsSection } from "./home/StatsSection";
+import { TestimonialsSection } from "./home/TestimonialsSection";
 import { TextRotatePreview } from "./home/TextRotation";
 import { Why } from "./home/Why";
 import LatestChangelog from "./latest-changelog";
@@ -40,15 +43,21 @@ function NotLoggedInView() {
 
       <HowItWorks />
 
+      <OpenSourceSection />
+
       <Why />
       <div className="mb-16">
         <FeatureBigPreview />
       </div>
 
+      <TestimonialsSection />
+
       <Details />
       <Quote />
 
       <LatestChangelog />
+
+      <CTASection />
 
       <FAQSection />
     </div>

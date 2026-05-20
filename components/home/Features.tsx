@@ -30,7 +30,6 @@ function Features() {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
           className="md:col-span-2 group relative bg-card border border-border hover:border-primary/30 rounded-2xl p-8 transition-colors duration-300 overflow-hidden"
         >
-          <div className="absolute top-0 right-0 w-72 h-72 rounded-full -translate-y-1/2 translate-x-1/3 bg-primary/5 group-hover:bg-primary/8 transition-colors duration-500" />
           <Users className="w-10 h-10 text-primary mb-5 relative z-10" />
           <h3 className="text-2xl font-heading mb-3 relative z-10">
             Discover Developers
