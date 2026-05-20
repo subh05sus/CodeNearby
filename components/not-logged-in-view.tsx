@@ -3,7 +3,9 @@ import { CodeNearbyText } from "./home/CodeNearbyText";
 import Details from "./home/Details";
 import FAQSection from "./home/FAQSection";
 import Features from "./home/Features";
+import { HowItWorks } from "./home/HowItWorks";
 import { Quote } from "./home/Quote";
+import { StatsSection } from "./home/StatsSection";
 import { TextRotatePreview } from "./home/TextRotation";
 import { Why } from "./home/Why";
 import LatestChangelog from "./latest-changelog";
@@ -32,7 +34,11 @@ function NotLoggedInView() {
         <FeaturedTitle />
       </div>
 
+      <StatsSection />
+
       <Features />
+
+      <HowItWorks />
 
       <Why />
       <div className="mb-16">

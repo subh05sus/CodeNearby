@@ -9,7 +9,7 @@ function Details() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="flex gap-3 flex-col">
-            <h2 className="text-xl md:text-3xl lg:text-5xl tracking-tighter lg:max-w-xl font-semibold text-left font-heading">
+            <h2 className="text-xl md:text-3xl lg:text-5xl lg:max-w-xl text-left font-heading">
               This is the start of something new
             </h2>
             <p className="text-base max-w-xl lg:max-w-full leading-relaxed text-muted-foreground text-left">

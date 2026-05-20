@@ -597,7 +597,7 @@ export default function Header() {
                   </Button>
                 </li>
                 <li>
-                  <RainbowButton onClick={() => signIn("github")}>
+                  <RainbowButton onClick={() => signIn("github")} className="text-secondary">
                     Login with GitHub
                   </RainbowButton>
                 </li>
