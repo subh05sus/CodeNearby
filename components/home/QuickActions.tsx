@@ -16,7 +16,6 @@ const actions = [
     label: "AI-Connect",
     description: "Let AI find your match",
     href: "/ai-connect",
-    highlight: true,
   },
   {
     icon: Rss,
@@ -50,16 +49,12 @@ export function QuickActions() {
             <div className="flex items-center justify-between">
               <div
                 className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors duration-200 ${
-                  action.highlight
-                    ? "bg-primary/15"
-                    : "bg-muted group-hover:bg-primary/10"
+                  "bg-muted group-hover:bg-primary/10"
                 }`}
               >
                 <action.icon
                   className={`w-4 h-4 transition-colors duration-200 ${
-                    action.highlight
-                      ? "text-primary"
-                      : "text-muted-foreground group-hover:text-primary"
+                    "text-muted-foreground group-hover:text-primary"
                   }`}
                 />
               </div>
@@ -68,7 +63,7 @@ export function QuickActions() {
             <div>
               <p
                 className={`text-sm font-semibold leading-tight transition-colors duration-200 ${
-                  action.highlight ? "text-primary" : "group-hover:text-primary"
+                  "group-hover:text-primary"
                 }`}
               >
                 {action.label}

@@ -156,7 +156,7 @@ export default function Header() {
                   >
                     <Link href="/ai-connect">
                       <Sparkles className="h-3.5 w-3.5" />
-                      <AuroraText>AI Connect</AuroraText>
+                      <span>AI Connect</span>
                       <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-primary text-white font-bold ml-0.5">
                         NEW
                       </span>
@@ -232,7 +232,7 @@ export default function Header() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="rounded-xl h-9 px-3 gap-2 border-border/60 bg-muted/30"
+                    className="rounded-xl h-9 px-3 gap-2 border-border/60 bg-background/70"
                     onClick={() => setShowSearch(true)}
                   >
                     <Search className="h-3.5 w-3.5 text-muted-foreground" />
