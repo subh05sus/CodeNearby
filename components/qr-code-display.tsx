@@ -47,7 +47,7 @@ export function QRCodeDisplay({ slug }: QRCodeDisplayProps) {
             height={256}
             src={qrCodeUrl || "/placeholder.svg"}
             alt="Gathering QR Code"
-            className="mb-4"
+            className="mb-4 rounded-lg"
           />
         )}
         <Button onClick={downloadQRCode}>Download QR Code</Button>
