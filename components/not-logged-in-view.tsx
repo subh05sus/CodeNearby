@@ -15,6 +15,8 @@ import LatestChangelog from "./latest-changelog";
 // import ProductHunt from "./ProductHunt";
 import { Spotlight } from "./ui/spotlight-new";
 import FeatureBigPreview from "./FeatureBigPreview";
+import { TechStackMarquee } from "./home/TechStackMarquee";
+import { CompareSection } from "./home/CompareSection";
 
 function NotLoggedInView() {
   return (
@@ -39,11 +41,15 @@ function NotLoggedInView() {
 
       <StatsSection />
 
+      <TechStackMarquee />
+
       <Features />
 
       <HowItWorks />
 
       <OpenSourceSection />
+
+      <CompareSection />
 
       <Why />
       <div className="mb-16">
