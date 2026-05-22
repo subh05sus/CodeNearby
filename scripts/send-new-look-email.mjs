@@ -2,11 +2,13 @@
  * One-time broadcast: "CodeNearby 2.0" email to all users.
  *
  * Usage:
- *   node --env-file=.env scripts/send-new-look-email.mjs          # dry-run (default)
- *   node --env-file=.env scripts/send-new-look-email.mjs --send   # actually send
+ *   node --env-file=.env scripts/send-new-look-email.mjs                      # dry-run day 1 (1–100)
+ *   node --env-file=.env scripts/send-new-look-email.mjs --send               # send day 1 (1–100)
+ *   node --env-file=.env scripts/send-new-look-email.mjs --send --day=2       # send day 2 (101–200)
+ *   node --env-file=.env scripts/send-new-look-email.mjs --day=3              # dry-run day 3 (201–300)
  *
- * Skips users who already received this email (newLookEmailSentAt is set).
- * Rate-limited to 2 sends/sec to stay within Resend free-tier limits.
+ * Resend free tier = 100 emails/day. Run with --day=N each day.
+ * Rate-limited to 2 sends/sec to stay within Resend limits.
  */
 
 import { MongoClient } from "mongodb";
@@ -17,6 +19,10 @@ const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const EMAIL_FROM = process.env.EMAIL_FROM || "CodeNearby <hello@codenearby.space>";
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://codenearby.space";
 const DRY_RUN = !process.argv.includes("--send");
+const dayArg = process.argv.find((a) => a.startsWith("--day="));
+const DAY = dayArg ? parseInt(dayArg.split("=")[1], 10) : 1;
+const BATCH_SIZE = 100;
+const SKIP = (DAY - 1) * BATCH_SIZE;
 
 if (!MONGODB_URI) {
   console.error("ERROR: MONGODB_URI not set in .env");
@@ -120,7 +126,7 @@ function buildHtml(name) {
 
 async function main() {
   console.log(`\n=== CodeNearby 2.0 Broadcast ===`);
-  console.log(`Mode: ${DRY_RUN ? "DRY RUN (no emails sent)" : "LIVE"}\n`);
+  console.log(`Mode: ${DRY_RUN ? "DRY RUN (no emails sent)" : "LIVE"} | Day ${DAY} | Users ${SKIP + 1}–${SKIP + BATCH_SIZE}\n`);
 
   const client = new MongoClient(MONGODB_URI);
   await client.connect();
@@ -130,12 +136,15 @@ async function main() {
     .collection("users")
     .find({
       email: { $exists: true, $ne: null, $ne: "" },
-      newLookEmailSentAt: { $exists: false },
     })
-    .project({ _id: 1, email: 1, name: 1 })
+    .project({ _id: 1, email: 1, name: 1, newLookEmailSentAt: 1 })
+    .skip(SKIP)
+    .limit(BATCH_SIZE)
     .toArray();
 
-  console.log(`Found ${users.length} users to email.\n`);
+  const total = await db.collection("users").countDocuments({ email: { $exists: true, $ne: null, $ne: "" } });
+  const totalDays = Math.ceil(total / BATCH_SIZE);
+  console.log(`Total users: ${total} | Total days needed: ${totalDays} | This batch: ${users.length} users\n`);
 
   if (users.length === 0) {
     console.log("Nothing to do.");
@@ -148,7 +157,7 @@ async function main() {
   let errors = 0;
 
   for (const user of users) {
-    if (!user.email) { skipped++; continue; }
+    if (!user.email || user.newLookEmailSentAt) { skipped++; continue; }
 
     if (DRY_RUN) {
       console.log(`[DRY] Would send to: ${user.email} (${user.name || "no name"})`);
