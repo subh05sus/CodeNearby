@@ -3,6 +3,11 @@ import { getServerSession } from "next-auth/next";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { authOptions } from "@/app/options";
+import { sendEmail } from "@/lib/email/send";
+import { PostMilestoneEmail } from "@/lib/email/templates/post-milestone";
+import React from "react";
+
+const VOTE_MILESTONES = [1, 10, 50, 100];
 
 export async function POST(
   request: Request,
@@ -52,6 +57,38 @@ export async function POST(
         { error: "Failed to update vote" },
         { status: 500 }
       );
+    }
+
+    // Check vote milestones and notify post author (only for upvotes)
+    if (voteType === "up") {
+      const newUpVotes = updateResult.votes?.up ?? 0;
+      const alreadyEmailed: number[] = updateResult.milestonesEmailed || [];
+      const hitMilestone = VOTE_MILESTONES.find(
+        (m) => newUpVotes >= m && !alreadyEmailed.includes(m)
+      );
+      if (hitMilestone && updateResult.userId && updateResult.userId.toString() !== userId) {
+        await db
+          .collection("posts")
+          .updateOne(
+            { _id: postId },
+            { $addToSet: { milestonesEmailed: hitMilestone } }
+          );
+        const postAuthor = await db
+          .collection("users")
+          .findOne({ _id: new ObjectId(updateResult.userId.toString()) });
+        if (postAuthor?.email) {
+          sendEmail({
+            to: postAuthor.email,
+            subject: `Your post hit ${hitMilestone} votes on CodeNearby!`,
+            react: React.createElement(PostMilestoneEmail, {
+              authorName: postAuthor.name || postAuthor.email,
+              postTitle: updateResult.title,
+              postId: params.id,
+              milestone: hitMilestone,
+            }),
+          }).catch(console.error);
+        }
+      }
     }
 
     // Return only serializable data

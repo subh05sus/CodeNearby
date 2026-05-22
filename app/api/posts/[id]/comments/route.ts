@@ -4,6 +4,9 @@ import { getServerSession } from "next-auth/next";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 import { authOptions } from "@/app/options";
+import { sendEmail } from "@/lib/email/send";
+import { PostCommentEmail } from "@/lib/email/templates/post-comment";
+import React from "react";
 
 // Recursive function to insert a reply at the correct depth
 function addReplyToComment(
@@ -92,6 +95,28 @@ export async function POST(
       await db
         .collection("posts")
         .updateOne({ _id: postId }, { $push: { comments: newComment as any } });
+    }
+
+    // Notify post author if they are not the commenter
+    if (post.userId && post.userId.toString() !== session.user.id) {
+      const postAuthor = await db
+        .collection("users")
+        .findOne({ _id: new ObjectId(post.userId.toString()) });
+      if (postAuthor?.email) {
+        sendEmail({
+          to: postAuthor.email,
+          subject: `${session.user.name} commented on your post`,
+          react: React.createElement(PostCommentEmail, {
+            authorName: postAuthor.name || postAuthor.email,
+            commenterName: session.user.name,
+            commenterUsername: session.user.githubUsername,
+            commenterAvatar: session.user.image,
+            postTitle: post.title,
+            commentPreview: content,
+            postId: params.id,
+          }),
+        }).catch(console.error);
+      }
     }
 
     return NextResponse.json({

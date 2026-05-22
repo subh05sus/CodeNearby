@@ -3,6 +3,9 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import clientPromise from "@/lib/mongodb";
 import { authOptions } from "@/app/options";
+import { sendEmail } from "@/lib/email/send";
+import { FriendRequestEmail } from "@/lib/email/templates/friend-request";
+import React from "react";
 
 export async function POST(request: Request) {
   try {
@@ -51,6 +54,21 @@ export async function POST(request: Request) {
       },
       receiverInCodeNearby: !!receiverUser,
     });
+
+    // Notify receiver if they have a CodeNearby account with an email
+    if (receiverUser?.email) {
+      sendEmail({
+        to: receiverUser.email,
+        subject: `${session.user.name} wants to connect on CodeNearby`,
+        react: React.createElement(FriendRequestEmail, {
+          recipientName: receiverUser.name || receiverUser.email,
+          senderName: session.user.name,
+          senderUsername: session.user.githubUsername,
+          senderAvatar: session.user.image,
+          senderBio: session.user.githubBio,
+        }),
+      }).catch(console.error);
+    }
 
     return NextResponse.json({ id: result.insertedId });
   } catch (error) {

@@ -3,6 +3,9 @@ import { getServerSession } from "next-auth/next";
 import { ObjectId } from "mongodb";
 import clientPromise from "@/lib/mongodb";
 import { authOptions } from "@/app/options";
+import { sendEmail } from "@/lib/email/send";
+import { FriendAcceptedEmail } from "@/lib/email/templates/friend-accepted";
+import React from "react";
 
 export async function PATCH(
   request: Request,
@@ -45,6 +48,23 @@ export async function PATCH(
           { githubId: friendRequest.senderGithubId },
           { $addToSet: { friends: Number.parseInt(session.user.githubId) } }
         );
+
+      // Notify original sender that their request was accepted
+      const senderUser = await db.collection("users").findOne({
+        githubId: friendRequest.senderGithubId,
+      });
+      if (senderUser?.email) {
+        sendEmail({
+          to: senderUser.email,
+          subject: `${session.user.name} accepted your connection request 🎉`,
+          react: React.createElement(FriendAcceptedEmail, {
+            recipientName: senderUser.name || senderUser.email,
+            acceptorName: session.user.name,
+            acceptorUsername: session.user.githubUsername,
+            acceptorAvatar: session.user.image,
+          }),
+        }).catch(console.error);
+      }
     }
 
     return NextResponse.json({ success: true });

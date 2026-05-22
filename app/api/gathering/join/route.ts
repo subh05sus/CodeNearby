@@ -3,6 +3,9 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/options";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import { sendEmail } from "@/lib/email/send";
+import { GatheringJoinedEmail } from "@/lib/email/templates/gathering-joined";
+import React from "react";
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
@@ -39,6 +42,29 @@ export async function POST(request: Request) {
         { _id: gathering._id },
         { $addToSet: { participants: new ObjectId(session.user.id) } }
       );
+
+    // Notify host if they are not the one joining
+    if (gathering.hostId && gathering.hostId.toString() !== session.user.id) {
+      const host = await db
+        .collection("users")
+        .findOne({ _id: new ObjectId(gathering.hostId.toString()) });
+      if (host?.email) {
+        const participantCount = (gathering.participants?.length ?? 0) + 1;
+        sendEmail({
+          to: host.email,
+          subject: `${session.user.name} joined your gathering`,
+          react: React.createElement(GatheringJoinedEmail, {
+            hostName: host.name || host.email,
+            joinerName: session.user.name,
+            joinerUsername: session.user.githubUsername,
+            joinerAvatar: session.user.image,
+            gatheringName: gathering.name || gathering.title || "your gathering",
+            gatheringSlug: gathering.slug || uniqueSlug,
+            participantCount,
+          }),
+        }).catch(console.error);
+      }
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

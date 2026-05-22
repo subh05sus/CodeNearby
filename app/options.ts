@@ -3,6 +3,9 @@ import GithubProvider from "next-auth/providers/github";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import { sendEmail } from "@/lib/email/send";
+import { WelcomeEmail } from "@/lib/email/templates/welcome";
+import React from "react";
 
 declare module "next-auth" {
   interface Session {
@@ -86,6 +89,13 @@ export const authOptions = {
             onboardingCompleted: false,
           });
 
+          // Send welcome email to new user
+          sendEmail({
+            to: user.email,
+            subject: "Welcome to CodeNearby 👋",
+            react: React.createElement(WelcomeEmail, { name: user.name || user.email }),
+          }).catch(console.error);
+
           // Add the user to the default gathering
           const userId = result.insertedId;
           const gatheringId = process.env.ALL_GATHERING_ID; // Default gathering ID
@@ -110,6 +120,20 @@ export const authOptions = {
         session.user.githubLocation = user.githubLocation;
         session.user.githubBio = user.githubBio;
         session.user.githubProfileUrl = user.githubProfileUrl;
+
+        // Update lastSeenAt at most once per hour to avoid excess writes
+        const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+        if (!user.lastSeenAt || new Date(user.lastSeenAt) < oneHourAgo) {
+          const client = await clientPromise;
+          client
+            .db()
+            .collection("users")
+            .updateOne(
+              { _id: new ObjectId(user.id) },
+              { $set: { lastSeenAt: new Date() } }
+            )
+            .catch(console.error);
+        }
       }
       return session;
     },
