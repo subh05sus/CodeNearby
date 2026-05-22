@@ -2,6 +2,14 @@
 
 All notable changes to CodeNearby will be documented in this file.
 
+## [2.0.0] - 2026-05-22
+
+### Changes
+- Redesigned UI with refreshed look and improved visual consistency across all pages
+- Integrated transactional email system — welcome emails, friend request notifications, comment alerts, and gathering updates
+- Added post milestone emails when your post hits 10, 50, or 100 upvotes
+- Re-engagement emails to keep you connected with the developer community
+
 ## [1.3.0] - 2025-08-15
 
 ### Changes
