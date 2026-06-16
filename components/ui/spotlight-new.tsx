@@ -94,50 +94,50 @@ export const Spotlight = ({
         typeof window !== "undefined" &&
         window.matchMedia("(prefers-color-scheme: dark)").matches);
 
-    // Light mode gradients
+    // Light mode gradients - maintaining blue theme with visibility on white
     const lightGradients = {
       default: {
         first:
           gradientFirst ||
-          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.02) 50%, rgba(0, 0, 0, 0) 80%)",
+          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(70, 130, 180, 0.08) 0%, rgba(70, 130, 180, 0.05) 50%, rgba(70, 130, 180, 0.02) 80%)",
         second:
           gradientSecond ||
-          "radial-gradient(50% 50% at 50% 50%, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.02) 80%, transparent 100%)",
+          "radial-gradient(50% 50% at 50% 50%, rgba(70, 130, 180, 0.06) 0%, rgba(70, 130, 180, 0.04) 80%, transparent 100%)",
         third:
           gradientThird ||
-          "radial-gradient(50% 50% at 50% 50%, rgba(0, 0, 0, 0.02) 0%, rgba(0, 0, 0, 0.01) 80%, transparent 100%)",
+          "radial-gradient(50% 50% at 50% 50%, rgba(70, 130, 180, 0.04) 0%, rgba(70, 130, 180, 0.02) 80%, transparent 100%)",
       },
       blue: {
         first:
-          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(28, 100, 242, 0.08) 0%, rgba(28, 100, 242, 0.04) 50%, rgba(28, 100, 242, 0) 80%)",
+          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(70, 130, 180, 0.10) 0%, rgba(70, 130, 180, 0.06) 50%, rgba(70, 130, 180, 0.03) 80%)",
         second:
-          "radial-gradient(50% 50% at 50% 50%, rgba(28, 100, 242, 0.06) 0%, rgba(28, 100, 242, 0.03) 80%, transparent 100%)",
+          "radial-gradient(50% 50% at 50% 50%, rgba(70, 130, 180, 0.08) 0%, rgba(70, 130, 180, 0.05) 80%, transparent 100%)",
         third:
-          "radial-gradient(50% 50% at 50% 50%, rgba(28, 100, 242, 0.04) 0%, rgba(28, 100, 242, 0.02) 80%, transparent 100%)",
+          "radial-gradient(50% 50% at 50% 50%, rgba(70, 130, 180, 0.06) 0%, rgba(70, 130, 180, 0.03) 80%, transparent 100%)",
       },
       green: {
         first:
-          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(22, 163, 74, 0.08) 0%, rgba(22, 163, 74, 0.04) 50%, rgba(22, 163, 74, 0) 80%)",
+          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(72, 209, 204, 0.08) 0%, rgba(72, 209, 204, 0.05) 50%, rgba(72, 209, 204, 0.02) 80%)",
         second:
-          "radial-gradient(50% 50% at 50% 50%, rgba(22, 163, 74, 0.06) 0%, rgba(22, 163, 74, 0.03) 80%, transparent 100%)",
+          "radial-gradient(50% 50% at 50% 50%, rgba(72, 209, 204, 0.06) 0%, rgba(72, 209, 204, 0.04) 80%, transparent 100%)",
         third:
-          "radial-gradient(50% 50% at 50% 50%, rgba(22, 163, 74, 0.04) 0%, rgba(22, 163, 74, 0.02) 80%, transparent 100%)",
+          "radial-gradient(50% 50% at 50% 50%, rgba(72, 209, 204, 0.04) 0%, rgba(72, 209, 204, 0.02) 80%, transparent 100%)",
       },
       purple: {
         first:
-          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(147, 51, 234, 0.08) 0%, rgba(147, 51, 234, 0.04) 50%, rgba(147, 51, 234, 0) 80%)",
+          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(147, 112, 219, 0.08) 0%, rgba(147, 112, 219, 0.05) 50%, rgba(147, 112, 219, 0.02) 80%)",
         second:
-          "radial-gradient(50% 50% at 50% 50%, rgba(147, 51, 234, 0.06) 0%, rgba(147, 51, 234, 0.03) 80%, transparent 100%)",
+          "radial-gradient(50% 50% at 50% 50%, rgba(147, 112, 219, 0.06) 0%, rgba(147, 112, 219, 0.04) 80%, transparent 100%)",
         third:
-          "radial-gradient(50% 50% at 50% 50%, rgba(147, 51, 234, 0.04) 0%, rgba(147, 51, 234, 0.02) 80%, transparent 100%)",
+          "radial-gradient(50% 50% at 50% 50%, rgba(147, 112, 219, 0.04) 0%, rgba(147, 112, 219, 0.02) 80%, transparent 100%)",
       },
       orange: {
         first:
-          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(234, 88, 12, 0.08) 0%, rgba(234, 88, 12, 0.04) 50%, rgba(234, 88, 12, 0) 80%)",
+          "radial-gradient(68.54% 68.72% at 55.02% 31.46%, rgba(255, 160, 122, 0.08) 0%, rgba(255, 160, 122, 0.05) 50%, rgba(255, 160, 122, 0.02) 80%)",
         second:
-          "radial-gradient(50% 50% at 50% 50%, rgba(234, 88, 12, 0.06) 0%, rgba(234, 88, 12, 0.03) 80%, transparent 100%)",
+          "radial-gradient(50% 50% at 50% 50%, rgba(255, 160, 122, 0.06) 0%, rgba(255, 160, 122, 0.04) 80%, transparent 100%)",
         third:
-          "radial-gradient(50% 50% at 50% 50%, rgba(234, 88, 12, 0.04) 0%, rgba(234, 88, 12, 0.02) 80%, transparent 100%)",
+          "radial-gradient(50% 50% at 50% 50%, rgba(255, 160, 122, 0.04) 0%, rgba(255, 160, 122, 0.02) 80%, transparent 100%)",
       },
     };
 
