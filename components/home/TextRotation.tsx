@@ -19,19 +19,21 @@ function TextRotatePreview() {
           <div
             className="bg-[#ff5941] text-white rounded-lg px-4 inline-flex items-center justify-center text-center whitespace-nowrap"
             style={{
-              height: "2.5rem",
-              lineHeight: "1",
+              height: "2.6rem",
+              lineHeight: "normal",
             }}
           >
             <TextRotate
               texts={[
-                "happen!",
-                "real",
-                "meaningful ✽",
-                "fast",
-                "strong",
-                "fun",
-                "👨‍💻🚀👩‍💻",
+                "real.",
+               "meaningful ✽",
+               "with developers.",
+               "that inspire.",
+               "through code.",
+               "that last.",
+               "with innovators.",
+               "that matter.",
+               "for the future.",
               ]}
               mainClassName="w-full overflow-hidden"
               staggerFrom="last"
