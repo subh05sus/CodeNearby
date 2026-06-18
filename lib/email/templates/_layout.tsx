@@ -118,9 +118,10 @@ const styles = {
 interface EmailLayoutProps {
   previewText: string;
   children: React.ReactNode;
+  brandSub?: string;
 }
 
-export function EmailLayout({ previewText, children }: EmailLayoutProps) {
+export function EmailLayout({ previewText, children, brandSub = "Connect with developers nearby" }: EmailLayoutProps) {
   return (
     <Html lang="en">
       <Head />
@@ -140,7 +141,7 @@ export function EmailLayout({ previewText, children }: EmailLayoutProps) {
                 />
               </div>
               <Text style={styles.brandName}>CodeNearby</Text>
-              <Text style={styles.brandSub}>Connect with developers nearby</Text>
+              <Text style={styles.brandSub}>{brandSub}</Text>
             </Section>
 
             {/* Content */}
