@@ -298,7 +298,7 @@ export default function AIConnectAboutPage() {
           {faqItems.map((item, i) => (
             <div key={i} className="rounded-2xl border border-border bg-card overflow-hidden">
               <button
-                className="w-full flex items-center justify-between p-4 text-left"
+                className="w-full flex items-center justify-between p-4 text-left hover:bg-accent hover:text-accent-foreground rounded-xl transition-colors duration-200"
                 onClick={() => setOpenFaq(openFaq === i ? null : i)}
               >
                 <span className="font-medium text-sm">{item.q}</span>

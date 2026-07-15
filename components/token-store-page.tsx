@@ -240,7 +240,7 @@ export default function TokenStorePage() {
         <h2 className="font-heading text-2xl text-center mb-6">Frequently Asked Questions</h2>
         <div className="space-y-3">
           {faqItems.map((item, i) => (
-            <div key={i} className="rounded-2xl border border-border bg-card p-4">
+            <div key={i} className="rounded-2xl border border-border bg-card p-4 hover:bg-accent hover:border-accent-foreground/20 transition-colors duration-200">
               <h3 className="font-semibold text-sm mb-2">{item.q}</h3>
               <p className="text-xs text-muted-foreground leading-relaxed">{item.a}</p>
             </div>

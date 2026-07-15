@@ -30,7 +30,7 @@ export default function FAQSection() {
                 onClick={() =>
                   setExpandedIndex(expandedIndex === index ? null : index)
                 }
-                className="w-full flex items-center justify-between text-left text-primary p-4 hover:bg-primary/5 rounded-lg transition-colors"
+                className="w-full flex items-center justify-between text-left text-primary p-4 hover:bg-primary/10 hover:text-primary/80 rounded-lg transition-colors duration-200"
               >
                 <span className="text-lg">{faq.question}</span>
                 <motion.div
