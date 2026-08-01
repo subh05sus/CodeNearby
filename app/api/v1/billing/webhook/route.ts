@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import crypto from "crypto";
+import { safeEqualHex } from "@/lib/razorpay";
 
 export async function POST(request: Request) {
   try {
@@ -23,7 +24,7 @@ export async function POST(request: Request) {
       .update(body)
       .digest("hex");
 
-    if (expectedSignature !== signature) {
+    if (!safeEqualHex(expectedSignature, signature)) {
       return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
     }
 

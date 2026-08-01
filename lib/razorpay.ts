@@ -35,6 +35,16 @@ export const generateReceiptId = (userId: string): string => {
   return `rcpt_${Date.now()}_${userId.slice(-8)}`;
 };
 
+// Constant-time comparison for hex HMAC signatures. Plain `===` on strings
+// leaks a timing side-channel; timingSafeEqual does not. It throws on
+// unequal-length buffers, so a length mismatch (always a bad signature here,
+// since the expected value is a fixed-length sha256 hex) short-circuits first.
+export const safeEqualHex = (a: string, b: string): boolean => {
+  const ab = Buffer.from(a, "utf8");
+  const bb = Buffer.from(b, "utf8");
+  return ab.length === bb.length && crypto.timingSafeEqual(ab, bb);
+};
+
 // Validate Razorpay payment signature
 export const validatePaymentSignature = (
   orderId: string,
@@ -47,7 +57,7 @@ export const validatePaymentSignature = (
     .update(body.toString())
     .digest("hex");
 
-  return expectedSignature === signature;
+  return safeEqualHex(expectedSignature, signature);
 };
 
 // Razorpay order status
