@@ -131,4 +131,4 @@ Before submitting your Pull Request (PR), ensure you:
 - **Fork** and work on exciting ideas.
 - **Share** CodeNearby with other developers.
 
-> Built with ❤️ by [Subhadip](https://subhadip.me) and contributors.
+> Built with ❤️ by [Subhadip](https://thatdevguy.in) and contributors.

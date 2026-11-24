@@ -228,9 +228,9 @@ Let's make the developer community stronger, more collaborative, and accessible 
 
 - Join the [GitHub Discussions](https://github.com/subh05sus/codenearby/discussions) for community support  
 - Open an issue for bugs or feature requests  
-- Contact [Subhadip](https://subhadip.me/) directly for inquiries  
+- Contact [Subhadip](https://thatdevguy.in/) directly for inquiries  
 
 
-> Built with ❤️ by [Subhadip](https://subhadip.me) and the awesome [contributors](https://github.com/subh05sus/codenearby/graphs/contributors).
+> Built with ❤️ by [Subhadip](https://thatdevguy.in) and the awesome [contributors](https://github.com/subh05sus/codenearby/graphs/contributors).
 
 

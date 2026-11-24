@@ -1,7 +1,7 @@
 # Maintainers
 
 Primary Maintainer
-- Subhadip Saha — https://subhadip.me — sahasubhadip54@gmail.com
+- Subhadip Saha — https://thatdevguy.in — sahasubhadip54@gmail.com
 
 Contact
 - Issues: https://github.com/subh05sus/codenearby/issues
