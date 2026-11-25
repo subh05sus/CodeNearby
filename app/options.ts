@@ -12,14 +12,14 @@ import { redis } from "@/lib/redis";
  * Sign-in errors only show up as "?error=OAuthCallback" in the browser. The
  * real reason (e.g. GitHub's "incorrect_client_credentials") goes to the logs
  * and, so it can be read without the Vercel dashboard, the last 20 are kept in
- * Redis under "auth:errors" for a week.
+ * Redis under "codenearby:auth:errors" for a week.
  */
 async function recordAuthError(code: string, detail: Record<string, unknown>) {
   try {
     const entry = JSON.stringify({ code, ...detail, at: new Date().toISOString() });
-    await redis.lpush("auth:errors", entry);
-    await redis.ltrim("auth:errors", 0, 19);
-    await redis.expire("auth:errors", 60 * 60 * 24 * 7);
+    await redis.lpush("codenearby:auth:errors", entry);
+    await redis.ltrim("codenearby:auth:errors", 0, 19);
+    await redis.expire("codenearby:auth:errors", 60 * 60 * 24 * 7);
   } catch {
     // Logging must never break sign-in.
   }
