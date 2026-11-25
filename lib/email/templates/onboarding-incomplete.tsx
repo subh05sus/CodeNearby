@@ -86,7 +86,7 @@ export function OnboardingIncompleteEmail({ userName, variant = 0 }: OnboardingI
 
           {ERRORS.map((e, i) => (
             <Text key={i} style={{ fontSize: "13px", color: "#ef4444", margin: "0 0 4px", fontFamily: "monospace" }}>
-              ✗ ERROR &nbsp; {e.field}: {e.value} &nbsp;&nbsp;<span style={{ color: "#52525b" }}>// {e.desc}</span>
+              ✗ ERROR &nbsp; {e.field}: {e.value} &nbsp;&nbsp;<span style={{ color: "#52525b" }}>{"// "}{e.desc}</span>
             </Text>
           ))}
 
